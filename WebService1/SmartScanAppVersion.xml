@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Applications>
+  <SmartScan UpdatesCabFile="SmartScanCab.CAB"
+    LatestVersion="1.2" VersionDate="08-Mar-2011" />
+</Applications>

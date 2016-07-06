@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiteSFATESTWebServices", "LiteSFATestWebService\LiteSFATESTWebServices.csproj", "{28260C72-D857-42D2-85E7-70B0B67731D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistributieTESTWebServices", "DistributieWebServices\DistributieTESTWebServices.csproj", "{C696CC5C-A854-4657-B7E2-37A4AB36C610}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TiparireDocumenteTest", "TiparireDocumente\TiparireDocumenteTest.csproj", "{5C537693-1731-4674-A9BA-27435FFE8CBC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flota", "Flota\Flota.csproj", "{A9CD2BA5-DC79-44BA-AD4C-D8097AC3384C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{28260C72-D857-42D2-85E7-70B0B67731D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28260C72-D857-42D2-85E7-70B0B67731D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28260C72-D857-42D2-85E7-70B0B67731D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28260C72-D857-42D2-85E7-70B0B67731D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C696CC5C-A854-4657-B7E2-37A4AB36C610}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C696CC5C-A854-4657-B7E2-37A4AB36C610}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C696CC5C-A854-4657-B7E2-37A4AB36C610}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C696CC5C-A854-4657-B7E2-37A4AB36C610}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C537693-1731-4674-A9BA-27435FFE8CBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C537693-1731-4674-A9BA-27435FFE8CBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C537693-1731-4674-A9BA-27435FFE8CBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C537693-1731-4674-A9BA-27435FFE8CBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9CD2BA5-DC79-44BA-AD4C-D8097AC3384C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9CD2BA5-DC79-44BA-AD4C-D8097AC3384C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9CD2BA5-DC79-44BA-AD4C-D8097AC3384C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9CD2BA5-DC79-44BA-AD4C-D8097AC3384C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

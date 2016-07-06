@@ -1,0 +1,1 @@
+﻿<%@ WebService Language="C#" CodeBehind="DistributieTESTService.asmx.cs" Class="DistributieTESTWebServices.Service1" %>

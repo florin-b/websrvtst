@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="WebService1.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="WebService1_SAPWebServices_ZTBL_WEBSERVICEService" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://sap-prd4a.arabesque.ro:8034/sap/bc/srt/rfc/sap/ztbl_webservice/900/ztbl_webservice/ztbl_webservice</Value>
+    </Setting>
+    <Setting Name="WebService1_SapWsClp_ZCLP_WEBSERVICE" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://sap-prd3a.arabesque.ro:8033/sap/bc/srt/rfc/sap/zclp_webservice/900/zclp_webservice/zclp_webservice</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
