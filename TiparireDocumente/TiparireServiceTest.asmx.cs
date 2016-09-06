@@ -136,8 +136,7 @@ namespace TiparireDocumenteTest
 
                 }
 
-                oReader.Close();
-                oReader.Dispose();
+               
 
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 serializedResult = serializer.Serialize(listaDocumente);
@@ -150,6 +149,13 @@ namespace TiparireDocumenteTest
             }
             finally
             {
+
+                if (oReader != null)
+                {
+                    oReader.Close();
+                    oReader.Dispose();
+                }
+
                 cmd.Dispose();
                 connection.Close();
                 connection.Dispose();
@@ -195,6 +201,22 @@ namespace TiparireDocumenteTest
             {
                 sendErrorToMail(ex.ToString());
             }
+
+            finally
+            {
+                try {
+                    if (oReader != null)
+                    {
+                        oReader.Close();
+                        oReader.Dispose();
+                    }
+
+                    cmd.Dispose();
+                }
+                catch(Exception e)
+                { }
+            }
+
 
             return isOpen;
 
@@ -338,7 +360,6 @@ namespace TiparireDocumenteTest
                 cmd.Dispose();
                 connection.Close();
                 connection.Dispose();
-
             }
 
 
@@ -440,6 +461,8 @@ namespace TiparireDocumenteTest
 
 
             OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = null;
+
 
             string connectionString = testConnectionString();
 
@@ -459,7 +482,7 @@ namespace TiparireDocumenteTest
                 string sec = cDate.Second.ToString("00");
                 string nowTime = hour + minute + sec;
 
-                OracleCommand cmd = connection.CreateCommand();
+                cmd = connection.CreateCommand();
 
             
                     query = " insert into sapprd.ztipariredoc(mandt,codgestionar, document, datac, orac) " +
@@ -491,7 +514,7 @@ namespace TiparireDocumenteTest
                     cmd.ExecuteNonQuery();
 
                
-
+                
 
             }
             catch (Exception ex)
@@ -501,6 +524,9 @@ namespace TiparireDocumenteTest
             }
             finally
             {
+                if (cmd != null)
+                    cmd.Dispose();
+
                 connection.Close();
                 connection.Dispose();
             }

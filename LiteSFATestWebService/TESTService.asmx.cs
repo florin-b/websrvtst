@@ -24,7 +24,7 @@ using LiteSFATestWebService.WEBTable;
 
 using LiteSFATestWebService.WebNecesar1;
 
-using LiteSFATestWebService.WebServiceSalarizareAG;
+using LiteSFATestWebService.WebServiceSalarizareAV;
 using LiteSFATestWebService.ClientiSemiactivi;
 
 using System.Drawing;
@@ -103,67 +103,12 @@ namespace LiteSFATestWebService
 
 
 
-
-
         [WebMethod]
-        public String salarizareAV()
+        public String salarizareAV(string codAgent, string departament, string filiala)
         {
-            string retVal = "";
+            Salarizare salarizare = new Salarizare();
+            return salarizare.getSalarizareAV(codAgent, departament, filiala);
 
-            WebServiceSalarizareAG.ZWBS_SAL_AV webService = new ZWBS_SAL_AV();
-
-            System.Net.NetworkCredential nc = new System.Net.NetworkCredential(getUser(), getPass());
-            webService.Credentials = nc;
-            webService.Timeout = 300000;
-
-            WebServiceSalarizareAG.ZgetSalav inParam = new WebServiceSalarizareAG.ZgetSalav();
-
-
-            WebServiceSalarizareAG.Ztmarja[] zMarja = new Ztmarja[1];
-            WebServiceSalarizareAG.ZtprsSapreport[] zTPR = new ZtprsSapreport[1];
-            WebServiceSalarizareAG.Zstcf[] zTCF = new Zstcf[1];
-            WebServiceSalarizareAG.Zspenalty[] zPenalty = new Zspenalty[1];
-            WebServiceSalarizareAG.Zsalav3[] zFinal = new Zsalav3[1];
-            WebServiceSalarizareAG.ZprocincSapreport[] zProcente = new ZprocincSapreport[1];
-
-
-            WebServiceSalarizareAG.Zpernr[] codAgenti = new Zpernr[3];
-            codAgenti[0] = new Zpernr();
-            codAgenti[0].Pernr = "00059358";
-
-
-            inParam.An = "2014";
-            inParam.Divizie = "07";
-            inParam.Luna = "05";
-            inParam.Ul = "BU10";
-            inParam.ItPernr = codAgenti;
-
-            inParam.GtMarjaAv = zMarja;
-            inParam.GtTprsdsAv = zTPR;
-            inParam.GtTcfAv = zTCF;
-            inParam.GtPenalty99 = zPenalty;
-            inParam.GtOuttabAv = zFinal;
-            inParam.GtProcenteAv = zProcente;
-
-
-
-            WebServiceSalarizareAG.ZgetSalavResponse response = new ZgetSalavResponse();
-
-            response = webService.ZgetSalav(inParam);
-
-
-
-
-
-            int i = 1;
-
-            //zMarja[0].VenitMarja = webService.ZgetSalav(inParam).GtMarjaAv[0].VenitMarja;
-
-            //retVal = zMarja[0].CoefRealiz.ToString();
-
-            //retVal = zTPRS[0].Targetcant.ToString();
-
-            return retVal;
         }
 
 
@@ -1563,11 +1508,11 @@ namespace LiteSFATestWebService
 
 
         [WebMethod]
-        public string getArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament)
+        public string getArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament, string afisStoc)
         {
 
             OperatiiArticole articole = new OperatiiArticole();
-            return articole.getListArticoleDistributie(searchString, tipArticol, tipCautare, filiala, departament);
+            return articole.getListArticoleDistributie(searchString, tipArticol, tipCautare, filiala, departament, afisStoc);
 
         }
 
@@ -3375,14 +3320,33 @@ namespace LiteSFATestWebService
         {
 
 
+
+
+
             string serializedResult = "", retVal = "";
             string unitLog1 = "", termenPlata = "", obsLivrare = "", tipPersClient = "";
             string cmp = "";
 
             string conditieDepart = "";
 
-            if ((tipUser.Equals("DV") || tipUser.Equals("DD")) && !departament.Equals("00"))
-                conditieDepart = " and (b.spart = '" + departament + "' or b.dep_aprobare = '" + departament + "') ";
+            string condArticole111 = " and ((exists (select 1 from sapprd.zfilhome where  filiala = z.ul) and a.cod not like '0000000000111%') " +
+                                     " or " +
+                                     " (not exists (select 1 from sapprd.zfilhome where filiala = z.ul)))";
+
+            if ((tipUser.Equals("DV") || tipUser.Equals("DD")) && !departament.Equals("00") && !departament.Equals("11"))
+                conditieDepart = " and (b.spart = '" + departament + "' or b.dep_aprobare = '" + departament + "' or b.spart = '11') " + condArticole111;
+            else if ((tipUser.Equals("DV") || tipUser.Equals("DD")) && (departament.Equals("00") || departament.Equals("11")))
+                conditieDepart = " and a.cod like '0000000000111%' ";
+
+
+
+            string condBlocAprov = " ,'-1' blocAprov ";
+
+            if (tipUser.Equals("DV") || tipUser.Equals("DD"))
+            {
+                condBlocAprov = " ,nvl((select '1' from sapprd.mara m where m.mandt = '900' and m.matnr = a.cod and m.mstae = 'Z1'),'-1') blocAprov ";
+            }
+
 
 
             //
@@ -3420,7 +3384,7 @@ namespace LiteSFATestWebService
                 cmd.CommandText = " select a.pers_contact, a.telefon, a.adr_livrare, a.mt, a.tip_plata, a.cantar, a.fact_red, a.city, a.region, a.ul, " +
                                   " decode(a.pmnttrms,'',' ',a.pmnttrms) pmnttrms, decode(a.obstra,'',' ',a.obstra) obstra, b.tip_pers, a.email, a.obsplata, a.ketdat, " +
                                   " a.adr_livrare_d, a.city_d, a.region_d, a.macara, a.nume_client, a.stceg, a.id_obiectiv, a.adresa_obiectiv, " +
-                                  " nvl((select latitude||','||longitude from sapprd.zcoordcomenzi where idcomanda = a.id),'0,0') coord" +
+                                  " nvl((select latitude||','||longitude from sapprd.zcoordcomenzi where idcomanda = a.id),'0,0') coord " +
                                   " from sapprd.zcomhead_tableta a, clienti b " +
                                   " where a.id=:idcmd and a.cod_client = b.cod ";
 
@@ -3502,7 +3466,7 @@ namespace LiteSFATestWebService
                 if (isFilialaWood(dateLivrare.unitLog))
                     conditieDepart = " and b.spart in ('01','02') ";
 
-                cmd.CommandText = " select a.status, decode(length(a.cod),18,substr(a.cod,-8),a.cod) cod ,nvl(b.nume,' '), a.cantitate, decode(trim(a.depoz),'','0000',a.depoz) depoz, " +
+                cmd.CommandText = " select a.status, decode(length(a.cod),18,substr(a.cod,-8),a.cod) codart ,nvl(b.nume,' '), a.cantitate, decode(trim(a.depoz),'','0000',a.depoz) depoz, " +
                                   " a.valoare, a.um, a.procent, nvl(a.procent_fc,0) procent_fc, decode(trim(a.conditie),'','0',a.conditie) conditie " + cmp +
                                   " , nvl(a.disclient,0) disclient, nvl(a1.discount,0) av, " +
                                   " nvl((select distinct discount from sapprd.zdisc_pers_sint where  functie='SD' and spart =substr(c.cod_nivel1,2,2) " +
@@ -3511,7 +3475,7 @@ namespace LiteSFATestWebService
                                   " and werks ='" + unitLog1 + "' and inactiv <> 'X' and matkl = c.cod),0) dv, nvl(a.procent_aprob,0) procent_aprob, " +
                                   " decode(s.matkl,'','0','1') permitsubcmp, nvl(a.multiplu,1) multiplu, nvl(a.val_poz,0) " + infoPret +
                                   " ,nvl(a.cant_umb,0) cant_umb , nvl(a.umb,' ') umb, a.ul_stoc, z.depart, nvl(b.tip_mat,' '), nvl(a.ponderat,'-1'), nvl(b.spart,' '), " +
-                                  " decode(trim(b.dep_aprobare),'','00', b.dep_aprobare)  dep_aprobare " +
+                                  " decode(trim(b.dep_aprobare),'','00', b.dep_aprobare)  dep_aprobare " + condBlocAprov +
                                   " from sapprd.zcomdet_tableta a, sapprd.zdisc_pers_sint a1,  sintetice c," +
                                   " articole b, sapprd.zpretsubcmp s " + condTabKA + " where a.cod = b.cod(+) " + condIdKA + " and " +
                                   " a1.inactiv(+) <> 'X' and a1.functie(+)='AV' and a1.spart(+)=substr(c.COD_NIVEL1,2,2) and a1.werks(+) ='" + unitLog1 + "' " +
@@ -3528,6 +3492,7 @@ namespace LiteSFATestWebService
 
                 oReader1 = cmd.ExecuteReader();
                 String unitLogAlt = "NN10", depart = "00", tipMat = "", lnumeArt = "", lDepoz = "";
+                String blocAprov = "";
 
                 ArticolComandaRap articol;
                 if (oReader1.HasRows)
@@ -3536,6 +3501,8 @@ namespace LiteSFATestWebService
                     {
                         depart = oReader1.GetString(23).Trim() != "" ? oReader1.GetString(23) : "00";
                         tipMat = oReader1.GetString(24);
+                        blocAprov = oReader1.GetString(28);
+
                         lnumeArt = oReader1.GetString(2).Replace("#", "");
                         lDepoz = oReader1.GetString(4);
 
@@ -3554,6 +3521,8 @@ namespace LiteSFATestWebService
                         if (tipMat.Trim() != "")
                             lnumeArt += " (" + tipMat + ")";
 
+                        if (!blocAprov.Equals("-1"))
+                            lnumeArt += " (Bloc.aprov.)";
 
                         if (oReader1.GetString(1).Equals("00000000"))
                             lnumeArt = "Taxa verde";
@@ -3856,8 +3825,6 @@ namespace LiteSFATestWebService
         {
 
 
-
-
             string retVal = "0";
             string blocLimCredit = "0", comenziConditionate = "0", cereriClp = "0", cereriDl = "0";
 
@@ -3871,9 +3838,11 @@ namespace LiteSFATestWebService
                 string connectionString = GetConnectionString_android();
 
                 connection.ConnectionString = connectionString;
+
                 connection.Open();
 
                 cmd = connection.CreateCommand();
+
 
                 if (depart.Equals("-1") || tipUser.Equals("KA") || tipUser.Equals("CV") || tipUser.Equals("WOOD")) //doar comenzile refuzate cu conditii (pt. agenti, cv si ka)
                 {
@@ -3947,6 +3916,8 @@ namespace LiteSFATestWebService
                 else //doar comenzile ce necesita aprobare (pt. sd si dv) si cele blocate pt. lim. credit
                 {
                     string localDepart = depart;
+                    string condHome = "";
+                    string tabelaHome = "";
 
                     string tipAprov = "", tabDV = "", condDV = "";
                     if (tipUser == "SD")
@@ -3954,31 +3925,39 @@ namespace LiteSFATestWebService
                         string localFilGed = filiala.Substring(0, 2) + "2" + filiala.Substring(3, 1);  //cu 20
 
                         tipAprov = " and a.ul in ('" + filiala + "','" + localFilGed + "') and (a.accept1 = 'X' or a.accept2 = 'X') and ora_accept1 = '000000' " +
-                                   " and a.status_aprov in ('1','6') and " +
+                                   " and a.status_aprov in ('1','6') and a.aprob_cv_necesar = ' ' and " +
                                    " (substr(ag.divizie,0,2) ='" + localDepart + "' or a.depart ='" + localDepart + "') ";
                     }
 
                     if (tipUser == "DV")
                     {
 
-
-
                         tabDV = " , sapprd.zfil_dv v ";
 
+
+                        //Cristi Matei
                         if (agCode.Equals("00010281"))
+                        {
                             localDepart = "11";
+                            condHome = " and h.filiala = a.ul  ";
+                            tabelaHome = ", sapprd.zfilhome h ";
+                        }
+                        else
+                        {
+                            condHome = "  ";
+                            tabelaHome = "";
+                        }
 
                         if (isDV_WOOD(agCode))
                         {
                             tipAprov = " and a.accept2 = 'X' and ora_accept2 = '000000' and a.status_aprov in ('1','6') ";
-
                             condDV = " and v.pernr = '" + agCode + "' and v.spart ='" + localDepart + "' and v.prctr = a.ul ";
 
                         }
                         else
                         {
                             tipAprov = " and ((a.accept2 = 'X' and ora_accept2 = '000000' and decode(a.accept1,'X',a.ora_accept1,'1') != '000000' and a.status_aprov in ('1','6') " +
-                                      " and a.aprob_cv_necesar=' ')  ";
+                                       " and a.aprob_cv_necesar=' ')  ";
 
                             tipAprov += " or (a.tip_pers = 'CV' and a.aprob_cv_necesar like '%" + localDepart + "%' and " +
                                         " a.status_aprov in ('1','4','6','21') and a.aprob_cv_realiz not like '%" + localDepart + "%' and " +
@@ -3996,13 +3975,13 @@ namespace LiteSFATestWebService
                         string filSM = filiala.Substring(0, 2) + "2" + filiala.Substring(3, 1);  //cu 20
 
                         tabDV = "";
-                        tipAprov = " and a.ul = '" + filSM + "' and a.accept1 = 'X' and a.ora_accept1 = '000000' and a.status_aprov in ('1','6') ";
+                        tipAprov = " and a.ul = '" + filSM + "' and a.accept1 = 'X' and a.ora_accept1 = '000000' and a.status_aprov in ('1','6') and a.aprob_cv_necesar = ' ' ";
                         condDV = " and depart ='" + localDepart + "' ";
                     }
 
 
-                    cmd.CommandText = " select count(a.id) from sapprd.zcomhead_tableta a, agenti ag " + tabDV +
-                                      " where a.status in ('2','11')   " + tipAprov + condDV +
+                    cmd.CommandText = " select count(a.id) from sapprd.zcomhead_tableta a, agenti ag " + tabelaHome + tabDV +
+                                      " where a.status in ('2','11')   " + tipAprov + condDV + condHome +
                                       " and a.cod_agent = ag.cod ";
 
 
@@ -4026,6 +4005,10 @@ namespace LiteSFATestWebService
                     {
                         retVal = "0";
                     }
+
+
+
+
 
                     oReader.Close();
                     oReader.Dispose();
@@ -4167,7 +4150,7 @@ namespace LiteSFATestWebService
                         if (tipUser == "DV")
                         {
                             cmd.CommandText = " select count(a.id) from sapprd.zclphead a where a.status = '2' and a.status_aprov = '1' and a.accept1 = '1' " +
-                                              " and a.mt = 'TERT' and a.depart =:depart and a.dl !='X' and a.ul in (select prctr from sapprd.zfil_dv where pernr = '" + agCode + "' ) ";
+                                              " and (a.mt = 'TERT' or ( a.mt = 'TRAP' and a.curier = 'BV90')) and a.depart =:depart and a.dl !='X' and a.ul in (select prctr from sapprd.zfil_dv where pernr = '" + agCode + "' ) ";
                         }
 
 
@@ -6579,7 +6562,7 @@ namespace LiteSFATestWebService
 
 
 
-        [WebMethod]//Android
+        [WebMethod]
         public string getListComenzi(string filiala, string codUser, string tipCmd, string tipUser, string depart, string interval, int restrictii, string codClient)
         {
             string serializedResult = "";
@@ -6600,6 +6583,9 @@ namespace LiteSFATestWebService
                 connection.Open();
 
                 cmd = connection.CreateCommand();
+
+                string condHome = "";
+                string tabelaHome = "";
 
                 //lista comenzi
 
@@ -6712,7 +6698,7 @@ namespace LiteSFATestWebService
                         selCmd = " and (a.accept1 = 'X' or a.accept2 = 'X') and ora_accept1 = '000000' and " +
                                  " (substr(ag.divizie,0,2) = '" + depart + "' or a.depart = '" + depart + "') and a.ul in ('" + filiala + "','" + localFilGed + "')";
 
-                        tipComanda = " and a.status_aprov in ('1','6') and a.status in ('2','11') " + selCmd;
+                        tipComanda = " and a.status_aprov in ('1','6') and a.aprob_cv_necesar = ' ' and a.status in ('2','11') " + selCmd;
 
                     }
 
@@ -6720,9 +6706,18 @@ namespace LiteSFATestWebService
                     {
 
                         string localDepart = depart;
-
+                        //CMATEI
                         if (codUser == "00010281")
+                        {
                             localDepart = "11";
+                            condHome = " and h.filiala = a.ul and a.aprob_cv_necesar like '%11%' and a.aprob_cv_realiz not like '%11%' ";
+                            tabelaHome = ", sapprd.zfilhome h";
+                        }
+                        else
+                        {
+                            condHome = "  ";
+                            tabelaHome = "";
+                        }
 
 
 
@@ -6739,7 +6734,8 @@ namespace LiteSFATestWebService
                             selCmd = " and a.accept2 = 'X' and a.ora_accept2 = '000000' and decode(a.accept1,'X',a.ora_accept1,'1') != '000000'  ";
 
                             condDV = " and v.pernr = '" + codUser + "' and v.spart = '" + localDepart + "' and substr(v.prctr,0,2) = substr(a.ul,0,2) and substr(a.ul,3,1) != 4 and " +
-                                     " (v.spart = a.depart or substr(ag.divizie,0,2)=v.spart) ";
+                                     " v.spart = a.depart  ";
+
                         }
 
 
@@ -6854,10 +6850,10 @@ namespace LiteSFATestWebService
                                 " nvl((select  cl.tip from clie_tip cl where cl.depart = a.depart  " + condCanal + "   and cl.cod_cli = a.cod_client),' ') tip" +
                                 " , ag.nume, decode(a.pmnttrms,'',' ',a.pmnttrms) pmnttrms, a.datac, nvl(a.docin,-1) docin1, " +
                                 " nvl(a.adr_noua,-1) adr_noua1, a.city ||', '|| a.adr_livrare adr_livrare1, ag.divizie, a.nume_client, a.depart, " +
-                                " ' ' aprob_cv_necesar, ' ' aprob_cv_realiz, ' ' cod_client_generic_ged, ' ' conditii, nvl(ag.nrtel,'-1') telAgent " +
+                                " a.aprob_cv_necesar , a.aprob_cv_realiz, ' ' cod_client_generic_ged, ' ' conditii, nvl(ag.nrtel,'-1') telAgent " +
                                 " from sapprd.zcomhead_tableta a, " +
-                                " clienti b, agenti ag, clie_tip cl " + tabDV +
-                                " where a.cod_client=b.cod and ag.cod = a.cod_agent " + tipComanda + condDV + condData + condRestr + condClient + condDepart +
+                                " clienti b, agenti ag, clie_tip cl " + tabelaHome + tabDV +
+                                " where a.cod_client=b.cod and ag.cod = a.cod_agent " + tipComanda + condDV + condData + condRestr + condClient + condDepart + condHome +
                                 "  and cl.cod_cli = a.cod_client order by id ";
 
 
@@ -7081,13 +7077,13 @@ namespace LiteSFATestWebService
                                 " decode(a.nrcmdsap,' ','-1',a.nrcmdsap) cmdsap, nvl(a.status_aprov,-1) status_aprov, a.fact_red,  a.ul, a.accept1, a.accept2, " +
                                 " ' ' cl_tip, ag.nume, decode(a.pmnttrms,'',' ',a.pmnttrms) pmnttrms, a.datac, nvl(a.docin,-1) docin1, " +
                                 " nvl(a.adr_noua,-1) adr_noua1, a.city ||', '|| a.adr_livrare adr_livrare1, ag.divizie, a.nume_client, a.depart, " +
-                                " ' ' aprob_cv_necesar, nvl(a.aprob_cv_realiz,' ') aprob_cv_realiz, nvl(ag.nrtel,'-1') telAgent " +
+                                " a.aprob_cv_necesar, nvl(a.aprob_cv_realiz,' ') aprob_cv_realiz, nvl(ag.nrtel,'-1') telAgent " +
                                 " from sapprd.zcomhead_tableta a, " +
                                 " clienti b, agenti ag " + tabDV +
-                                " where a.cod_client=b.cod and ag.cod = a.cod_agent and a.accept2 = 'X' and a.ora_accept2 = '000000' " +
+                                " where a.cod_client=b.cod and ag.cod = a.cod_agent and a.tip_pers = 'CV' " +
                                 " and a.status_aprov in ('1','4','6','21') and a.status in ('2','11') " +
                                 " and v.pernr = '" + codUser + "' and v.spart = '" + depart + "' and substr(v.prctr,0,2) = substr(a.ul,0,2) and a.depart='11' " +
-                                " and a.aprob_cv_necesar like '%" + depart + "%' and a.aprob_cv_realiz not like '%" + depart + "%'" +
+                                " and ((a.aprob_cv_necesar like '%" + depart + "%' and a.aprob_cv_realiz not like '%" + depart + "%') or (v.spart = substr(ag.divizie, 0, 2))) " +
                                 " and a.cond_cv not like '%" + depart + "%' " +
                                 " order by id ";
 
@@ -7097,7 +7093,7 @@ namespace LiteSFATestWebService
                     {
                         sqlString = " select x.id, x.nume1, to_char(to_date(x.datac,'yyyymmdd')), x.valoare, x.status, x.cod_client, x.cmdsap, x.status_aprov, " +
                                     " x.fact_red, x.ul, x.accept1, x.accept2, ' ' x_tip, x.nume, x.pmnttrms, x.datac, x.docin1, " +
-                                    " x.adr_noua1, x.adr_livrare1, x.divizie, x.nume_client, x.depart, x.aprob_cv_realiz, x.telAgent from ( " + sqlString + " ) x where rownum<=15 ";
+                                    " x.adr_noua1, x.adr_livrare1, x.divizie, x.nume_client, x.depart, x.aprob_cv_necesar, x.aprob_cv_realiz, x.telAgent  from ( " + sqlString + " ) x where rownum<=15 ";
                     }
 
 
@@ -7143,9 +7139,9 @@ namespace LiteSFATestWebService
                             comanda.adresaLivrare = oReader.GetString(18);
                             comanda.divizieAgent = oReader.GetString(19);
                             comanda.divizieComanda = oReader.GetString(21);
-                            comanda.aprobariNecesare = "";
-                            comanda.aprobariPrimite = oReader.GetString(22);
-                            comanda.telAgent = oReader.GetString(23);
+                            comanda.aprobariNecesare = oReader.GetString(22);
+                            comanda.aprobariPrimite = oReader.GetString(23);
+                            comanda.telAgent = oReader.GetString(24);
                             comanda.avans = "0";
 
                             comanda.monedaComanda = "RON";
@@ -7688,7 +7684,7 @@ namespace LiteSFATestWebService
                 }
                 if (tipUser == "DV")
                 {
-                    tipComanda = " and a.mt = 'TERT' and a.accept1 = '1' and a.depart = '" + depart + "' and a.ul in (select prctr from sapprd.zfil_dv where pernr = '" + codUser + "' ) ";
+                    tipComanda = " and (a.mt = 'TERT' or (a.mt = 'TRAP' and a.curier = 'BV90')) and a.accept1 = '1' and a.depart = '" + depart + "' and a.ul in (select prctr from sapprd.zfil_dv where pernr = '" + codUser + "' ) ";
                 }
 
 
@@ -7710,7 +7706,7 @@ namespace LiteSFATestWebService
 
                 if (tipUser == "DV")
                 {
-                    tipComanda = " and a.mt = 'TERT' and a.status_aprov = 2 and a.depart = '" + depart + "' and a.ul in (select prctr from sapprd.zfil_dv where pernr = '" + codUser + "' ) ";
+                    tipComanda = " and (a.mt = 'TERT' or (a.mt = 'TRAP' and a.curier = 'BV90')) and a.status_aprov = 2 and a.depart = '" + depart + "' and a.ul in (select prctr from sapprd.zfil_dv where pernr = '" + codUser + "' ) ";
                 }
 
 
@@ -7974,7 +7970,7 @@ namespace LiteSFATestWebService
                                   " (select count(*) from sapprd.ekbe e where e.mandt = '900' and e.ebeln = nrcmdsap " +
                                   " and ( e.bewtp <> 'L' or (e.bewtp = 'L' and exists (select * from sapprd.vttp p where p.mandt = '900' and p.vbeln = e.belnr)))), status_aprov, " +
                                   " nvl(val_comanda,0), nvl(obs,' '), nvl(val_transp,0), nvl(proc_transp,0),  " +
-                                  " (select  k.acc_dz from sapprd.ekko k where k.mandt = '900' and k.ebeln = nrcmdsap ) acc_dz, " +
+                                  " nvl((select  k.acc_dz from sapprd.ekko k where k.mandt = '900' and k.ebeln = nrcmdsap ),' ') acc_dz, " +
                                   " nvl((select i.dincarc from sapprd.zcom m, sapprd.zcomdti i where m.mandt = '900' and m.docn = nrcmdsap " +
                                   " and m.mandt = i.mandt and m.nrcom = i.nr  and rownum = 1),' ') data_inc " +
                                   " from sapprd.zclphead where id=:idcmd ";
@@ -8014,10 +8010,10 @@ namespace LiteSFATestWebService
                     dateLivrare.procTransp = oReader.GetDouble(18).ToString();
                     dateLivrare.acceptDV = oReader.GetString(19);
                     dateLivrare.dataIncarcare = oReader.GetString(20).Trim();
-                    
+
 
                 }
-               
+
                 //sf. date livrare
 
 
@@ -8057,12 +8053,12 @@ namespace LiteSFATestWebService
                     }
                 }
                 else
-               
 
 
-                //sf. articole comanda
 
-                oReader.Close();
+                    //sf. articole comanda
+
+                    oReader.Close();
                 oReader.Dispose();
 
                 comandaCLP.dateLivrare = dateLivrare;
@@ -8988,9 +8984,7 @@ namespace LiteSFATestWebService
 
                 string sqlString = "";
 
-                string connectionString = "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
-                              " (HOST = 10.1.3.95)(PORT = 1521)))(CONNECT_DATA = (SERVICE_NAME = TABLET))); " +
-                              " User Id = WEBSAP; Password = 2INTER7;";
+                string connectionString = DatabaseConnections.ConnectToProdEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -9105,114 +9099,16 @@ namespace LiteSFATestWebService
         [WebMethod]
         public string getRaportNeincasateData(string reportParams, string filiala)
         {
+            Neincasate neincasate = new Neincasate();
+            return neincasate.getRaportNeincasateData(reportParams, filiala);
+        }
 
 
-            string serializedResult = "";
-            string sqlString = "";
-            string[] mainToken = reportParams.Split('@');
-
-            OracleConnection connection = new OracleConnection();
-            OracleCommand cmd = new OracleCommand();
-            OracleDataReader oReader = null;
-            string clienti = mainToken[0];
-            string agent = mainToken[1];
-
-
-            string listClienti = " ";
-            string tabAgenti = " ", condAgenti = " ", campAg1 = " , '0' ", campAg2 = " ";
-
-            if (!clienti.Equals("0"))
-            {
-                listClienti = " and kunnr in ('" + clienti.Replace("#", "','") + "') and prctr = '" + filiala + "' ";
-                tabAgenti = " , agenti ag ";
-                condAgenti = " and ag.cod = angaj ";
-                campAg1 = ", ag.nume ";
-                campAg2 = ", ag.nume ";
-            }
-            else
-            {
-                condAgenti = " and angaj =:codAg ";
-            }
-
-            try
-            {
-
-
-                string connectionString = "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
-                             " (HOST = 10.1.3.95)(PORT = 1521)))(CONNECT_DATA = (SERVICE_NAME = TABLET))); " +
-                             " User Id = WEBSAP; Password = 2INTER7;";
-
-
-                connection.ConnectionString = connectionString;
-                connection.Open();
-
-                cmd = connection.CreateCommand();
-
-
-                sqlString = " select nume_client , kunnr, xblnr,to_char(to_date(bldat,'yyyymmdd')) bldat,decode(termen,'00000000','-',to_char(to_date(termen,'yyyymmdd'))) termen1,val_fml total, " +
-                            " incasatml incasat,restplataml restplata,acoperitml acoperit,decode(scadentabo,'00000000','-',to_char(to_date(scadentabo,'yyyymmdd'))) scadentabo, metplata, bldat dat1 " + campAg1 +
-                            " from sapprd.zneincasate " + tabAgenti + " where mandt='900' and waerkml='RON' " + condAgenti + listClienti + "  and bldat<=to_char(sysdate,'yyyymmdd') order by nume_client " + campAg2 + " , dat1 ";
-
-                cmd.CommandText = sqlString;
-
-                cmd.Parameters.Clear();
-
-                if (clienti.Equals("0"))
-                {
-                    cmd.Parameters.Add(":codAg", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
-                    cmd.Parameters[0].Value = agent;
-                }
-
-                oReader = cmd.ExecuteReader();
-
-                List<FacturaNeincasata> listaFacturi = new List<FacturaNeincasata>();
-                FacturaNeincasata oFactura = null;
-
-                if (oReader.HasRows)
-                {
-                    while (oReader.Read())
-                    {
-
-
-                        oFactura = new FacturaNeincasata();
-                        oFactura.numeClient = oReader.GetString(0);
-                        oFactura.codClient = oReader.GetString(1);
-                        oFactura.referinta = oReader.GetString(2);
-                        oFactura.emitere = oReader.GetString(3);
-                        oFactura.scadenta = oReader.GetString(4);
-                        oFactura.valoare = oReader.GetDouble(5).ToString();
-                        oFactura.incasat = oReader.GetDouble(6).ToString();
-                        oFactura.rest = oReader.GetDouble(7).ToString();
-                        oFactura.acoperit = oReader.GetDouble(8).ToString();
-                        oFactura.scadentaBO = oReader.GetString(9);
-                        oFactura.tipPlata = oReader.GetString(10);
-                        oFactura.numeAgent = oReader.GetString(12);
-                        listaFacturi.Add(oFactura);
-
-                    }
-
-
-                }
-
-                JavaScriptSerializer serializer = new JavaScriptSerializer();
-                serializedResult = serializer.Serialize(listaFacturi);
-
-            }
-            catch (Exception ex)
-            {
-                sendErrorToMail(ex.ToString());
-            }
-            finally
-            {
-                oReader.Close();
-                oReader.Dispose();
-
-                cmd.Dispose();
-                connection.Close();
-                connection.Dispose();
-            }
-
-            return serializedResult;
+        [WebMethod]
+        public string getArtDocNeincasat(string nrDocument)
+        {
+            Neincasate neincasate = new Neincasate();
+            return neincasate.getArticoleDocumentNeincasat(nrDocument);
         }
 
 
@@ -9635,284 +9531,9 @@ namespace LiteSFATestWebService
         [WebMethod]
         public string getPret(string client, string articol, string cantitate, string depart, string um, string ul, string tipUser, string depoz, string codUser, string canalDistrib, string filialaAlternativa)
         {
-            string retVal = "";
-            SAPWebServices.ZTBL_WEBSERVICE webService = null;
+            Preturi preturi = new Preturi();
+            return preturi.getPret( client,  articol,  cantitate,  depart,  um,  ul,  tipUser,  depoz,  codUser,  canalDistrib,  filialaAlternativa);
 
-            string tipUserLocal;
-
-            if (tipUser == null || (tipUser != null && tipUser.Trim().Length == 0))
-            {
-                tipUserLocal = getTipUser(codUser);
-            }
-            else
-            {
-                tipUserLocal = tipUser;
-            }
-
-
-            try
-            {
-
-                webService = new ZTBL_WEBSERVICE();
-                SAPWebServices.ZgetPrice inParam = new SAPWebServices.ZgetPrice();
-
-                System.Net.NetworkCredential nc = new System.Net.NetworkCredential(getUser(), getPass());
-
-                webService.Credentials = nc;
-                webService.Timeout = 300000;
-
-                inParam.GvKunnr = client;
-                inParam.GvMatnr = articol;
-                inParam.GvSpart = depart;
-                inParam.GvVrkme = um;
-                inParam.GvWerks = ul;
-                inParam.GvLgort = depoz;
-                inParam.GvCant = Decimal.Parse(cantitate);
-                inParam.GvCantSpecified = true;
-                inParam.GvSite = " ";
-                inParam.TipPers = tipUserLocal;
-                inParam.Canal = canalDistrib;
-
-
-                SAPWebServices.ZgetPriceResponse outParam = webService.ZgetPrice(inParam);
-
-                string pretOut = outParam.GvNetwr.ToString() != "" ? outParam.GvNetwr.ToString() : "-1";
-                string umOut = outParam.GvVrkme.ToString() != "" ? outParam.GvVrkme.ToString() : "-1";
-                string noDiscOut = outParam.GvNoDisc.ToString();
-                string codArtPromo = outParam.GvMatnrFree.ToString() != "" ? outParam.GvMatnrFree.ToString() : "-1";
-                string cantArtPromo = outParam.GvCantFree.ToString() != "" ? outParam.GvCantFree.ToString() : "-1";
-                string pretArtPromo = outParam.GvNetwrFree.ToString() != "" ? outParam.GvNetwrFree.ToString() : "-1";
-                string umArtPromo = outParam.GvVrkmeFree.ToString() != "" ? outParam.GvVrkmeFree.ToString() : "-1";
-                string pretLista = outParam.GvNetwrList.ToString() != "" ? outParam.GvNetwrList.ToString() : "-1";
-                string cantOut = outParam.GvCant.ToString() != "" ? outParam.GvCant.ToString() : "-1";
-                string condPret = outParam.GvCond.ToString() != "" ? outParam.GvCond.ToString() : "-1";
-                string multiplu = outParam.Multiplu.ToString() != "" ? outParam.Multiplu.ToString() : "-1";
-                string cantUmb = outParam.OutCantUmb.ToString() != "" ? outParam.OutCantUmb.ToString() : "-1";
-                string Umb = outParam.OutUmb.ToString() != "" ? outParam.OutUmb.ToString() : "-1";
-
-
-                string extindere11 = outParam.ErrorCode.ToString();
-
-                if (depart.Equals("11") && extindere11.Equals("1"))
-                {
-                    if (extindeClient(client).Equals("0"))
-                    {
-                        return getPret(client, articol, cantitate, depart, um, ul, tipUserLocal, depoz, codUser, canalDistrib, filialaAlternativa);
-                    }
-                    else
-                    {
-                        return "-1";
-                    }
-                }
-
-
-                //---verificare cmp
-
-                OracleConnection connection = new OracleConnection();
-                OracleCommand cmd = new OracleCommand();
-                OracleDataReader oReader = null;
-
-                string filialaCmp = filialaAlternativa;
-
-                if (depart.Equals("11"))
-                {
-                    if (filialaAlternativa.Equals("BV90"))
-                        filialaCmp = "BV92";
-                    else
-                        filialaCmp = filialaAlternativa.Substring(0, 2) + "2" + filialaAlternativa.Substring(3, 1);
-                }
-
-                string connectionString = GetConnectionString_android();
-
-                connection.ConnectionString = connectionString;
-                connection.Open();
-
-                cmd = connection.CreateCommand();
-
-                cmd.CommandText = " select nvl(to_char(decode(y.lbkum,0,y.verpr,y.salk3/y.lbkum),'99999.9999'),0) from sapprd.mbew y where " +
-                                  " y.mandt='900' and y.matnr=:matnr  and y.bwkey = :unitLog ";
-
-                cmd.CommandType = CommandType.Text;
-
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add(":matnr", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
-                cmd.Parameters[0].Value = articol;
-
-                cmd.Parameters.Add(":unitLog", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[1].Value = filialaCmp;
-
-
-
-                oReader = cmd.ExecuteReader();
-                double cmpArticol = 0;
-                if (oReader.HasRows)
-                {
-                    oReader.Read();
-                    cmpArticol = Convert.ToDouble(oReader.GetString(0));
-                }
-
-                //---sf. verificare cmp
-
-
-                retVal = cantOut + "#" + pretOut + "#" + umOut + "#" + noDiscOut + "#" + codArtPromo + "#" +
-                         cantArtPromo + "#" + pretArtPromo + "#" + umArtPromo + "#" + pretLista + "#";
-
-
-
-                //descriere conditii pret
-                string[] codReduceri = condPret.Split(';');
-                string[] tokCod;
-
-
-
-                condPret = "";
-                for (int jj = 0; jj < codReduceri.Length; jj++)
-                {
-
-                    tokCod = codReduceri[jj].Split(':');
-
-
-                    cmd = connection.CreateCommand();
-
-                    //stoc la zi
-                    cmd.CommandText = " SELECT vtext FROM SAPPRD.T685t r where mandt = '900' and spras = '4' " +
-                                      " and r.kvewe = 'A' and r.kappl = 'V' and KSCHL=:codRed ";
-
-                    cmd.Parameters.Clear();
-                    cmd.Parameters.Add(":codRed", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
-                    cmd.Parameters[0].Value = tokCod[0];
-
-                    oReader = cmd.ExecuteReader();
-
-                    if (oReader.HasRows)
-                    {
-                        oReader.Read();
-
-                        condPret += oReader.GetString(0) + ":" + tokCod[1] + ";";
-                    }
-                    else
-                    {
-                        condPret += "Taxa verde:0,00;Pret net:0,00;TVA încasat:0,00;";
-                    }
-
-
-                }//sf. for
-
-                retVal += condPret + "#";
-
-                oReader.Close();
-                oReader.Dispose();
-
-
-                //
-
-                //discounturi maxime
-                string discMaxAV = "0", discMaxSD = "0", discMaxDV = "0", discMaxKA = "0";
-
-                cmd = connection.CreateCommand();
-
-                cmd.CommandText = " select distinct nvl(a.discount,0) av, " +
-                                  " nvl((select distinct discount from sapprd.zdisc_pers_sint where  functie='SD' and spart =:depart and werks =:filiala and inactiv <> 'X' and matkl = c.cod),0) sd, " +
-                                  " nvl((select distinct discount from sapprd.zdisc_pers_sint where  functie='DV' and spart =:depart and werks =:filiala and inactiv <> 'X' and matkl = c.cod),0) dv, " +
-                                  " nvl((select distinct discount from sapprd.zdisc_pers_sint where  functie='AV' and spart ='10' and werks =:filiala and inactiv <> 'X' and matkl = c.cod),0) ka " +
-                                  " from sapprd.zdisc_pers_sint a, articole b, sintetice c where  a.functie='AV' and a.spart =:depart and a.werks =:filiala " +
-                                  " and b.sintetic = c.cod and inactiv <> 'X' and matkl = c.cod and b.cod =:cod ";
-
-
-
-
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add(":cod", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
-                cmd.Parameters[0].Value = articol;
-
-                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[1].Value = ul;
-
-                cmd.Parameters.Add(":depart", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[2].Value = depart;
-
-
-                oReader = cmd.ExecuteReader();
-
-                if (oReader.HasRows)
-                {
-                    oReader.Read();
-                    discMaxAV = oReader.GetDouble(0).ToString();
-                    discMaxSD = oReader.GetDouble(1).ToString();
-                    discMaxDV = oReader.GetDouble(2).ToString();
-                    discMaxKA = oReader.GetDouble(3).ToString();
-                }
-
-
-
-
-                //sf. disc.
-
-                //KA - la preturile promotionale nu se mai aplica alte discounturi
-                if (noDiscOut.Equals("X"))
-                {
-                    discMaxKA = "0";
-                }
-
-
-
-
-                //pret mediu oras
-                string pretMediu = "0";
-
-                if (tipUserLocal.Equals("KA"))
-                {
-                    cmd.CommandText = " select pret_med, adaos_med, cant from sapprd.zpret_mediu_oras where matnr =:articol and pdl=:ul ";
-
-                    cmd.Parameters.Clear();
-                    cmd.Parameters.Add(":articol", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
-                    cmd.Parameters[0].Value = articol;
-
-                    cmd.Parameters.Add(":ul", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
-                    cmd.Parameters[1].Value = ul;
-
-                    oReader = cmd.ExecuteReader();
-
-                    if (oReader.HasRows)
-                    {
-                        oReader.Read();
-                        double dblPretMediu = oReader.GetDouble(0) / oReader.GetDouble(2) + (oReader.GetDouble(1) / oReader.GetDouble(2)) * 0.15;
-                        pretMediu = dblPretMediu.ToString();
-
-                    }
-
-                }
-
-                oReader.Close();
-                oReader.Dispose();
-
-                cmd.Dispose();
-                connection.Close();
-                connection.Dispose();
-
-                retVal += discMaxAV + "#" + discMaxSD + "#" + discMaxDV + "#" +
-                         Convert.ToInt32(Double.Parse(multiplu)).ToString() + "#" +
-                         cantUmb + "#" + Umb + "#" + discMaxKA + "#" + cmpArticol.ToString() + "#" + pretMediu + "#";
-
-
-                if (pretOut.Equals("0.0"))
-                    retVal = "-1";
-
-
-
-            }
-            catch (Exception ex)
-            {
-                sendErrorToMail(ex.ToString());
-                retVal = "-1";
-            }
-            finally
-            {
-                webService.Dispose();
-
-            }
-
-            return retVal;
         }
 
 
@@ -12933,7 +12554,7 @@ namespace LiteSFATestWebService
         }
 
 
-        private string getTipUser(string codAgent)
+        public static string getTipUser(string codAgent)
         {
             string tipAgent = "NN";
 
@@ -12980,7 +12601,7 @@ namespace LiteSFATestWebService
             }
             catch (Exception ex)
             {
-                sendErrorToMail(ex.ToString());
+                ErrorHandling.sendErrorToMail(ex.ToString());
             }
             finally
             {
@@ -13329,8 +12950,7 @@ namespace LiteSFATestWebService
 
                 }
 
-                oReader.Close();
-                oReader.Dispose();
+
 
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 serializedResult = serializer.Serialize(listaClienti);
@@ -13342,6 +12962,13 @@ namespace LiteSFATestWebService
             }
             finally
             {
+
+                if (oReader != null)
+                {
+                    oReader.Close();
+                    oReader.Dispose();
+                }
+
                 cmd.Dispose();
                 connection.Close();
                 connection.Dispose();
@@ -13582,9 +13209,11 @@ namespace LiteSFATestWebService
                 //tip user sap
                 string tipAgent = "";
                 string consWood = "";
+                string filialaHome = "false";
+
                 if (idAg.Value.ToString().Trim().Length > 0)
                 {
-                    cmd.CommandText = " select b.tip, b.wood from agenti b where b.cod =:codAg ";
+                    cmd.CommandText = " select b.tip, b.wood, nvl(h.filiala,'-1') filhome from agenti b, sapprd.zfilhome h where b.cod =:codAg and substr(b.filiala,0,2) = substr(h.filiala(+),0,2) ";
                     cmd.CommandType = CommandType.Text;
 
                     cmd.Parameters.Clear();
@@ -13598,6 +13227,7 @@ namespace LiteSFATestWebService
                         oReader.Read();
                         tipAgent = oReader.GetString(0);
                         consWood = oReader.GetString(1);
+                        filialaHome = oReader.GetString(2).Equals("-1") ? "false" : "true";
                     }
 
                     if (consWood.Trim().ToLower().Equals("y"))
@@ -13694,7 +13324,7 @@ namespace LiteSFATestWebService
                 if (tipAgent.Equals("KA3"))
                     tipAgent = "KA";
 
-                retVal += "#" + filiale + "#" + tipAgent + "#" + getExtraFiliale(idAg.Value.ToString()) + "#";
+                retVal += "#" + filiale + "#" + tipAgent + "#" + getExtraFiliale(idAg.Value.ToString()) + "#" + filialaHome + "#";
 
 
 
@@ -15039,6 +14669,9 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Add(":dep", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
                 cmd.Parameters[2].Value = depozit;
 
+
+
+
                 oReader = cmd.ExecuteReader();
                 string stocBV90 = "";
                 double stocFinal = 0;
@@ -15059,7 +14692,7 @@ namespace LiteSFATestWebService
                 {
 
                     //tratare exceptii sintetice feronerie
-                    if (depart.Equals("02") || depart.Equals("05"))
+                    if (depart != null && (depart.Equals("02") || depart.Equals("05")))
                     {
                         //if (isArtPermited(sinteticArt))
                         if (OperatiiArticole.isArtPermBV90(codArt, filiala))
@@ -15189,7 +14822,7 @@ namespace LiteSFATestWebService
 
             //TES
             return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
-                    " (HOST = 10.1.3.89)(PORT = 1527)))(CONNECT_DATA = (SERVICE_NAME = TES))); " +
+                    " (HOST = 10.1.3.89)(PORT = 1527)))(CONNECT_DATA = (SERVICE_NAME = TES)));" +
                     " User Id = WEBSAP; Password = 2INTER7; ";
 
 
@@ -15205,10 +14838,15 @@ namespace LiteSFATestWebService
 
         static private string GetConnectionString_android_prd()
         {
-
+            /*
             return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
                     " (HOST = 10.1.3.95)(PORT = 1521)))(CONNECT_DATA = (SERVICE_NAME = TABLET) )); " +
                     " User Id = WEBSAP; Password = 2INTER7;";
+                    */
+
+            return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
+           " (HOST = 10.1.3.94)(PORT = 1521)))(CONNECT_DATA = (SERVICE_NAME = prim_prd))); " +
+           " User Id = WEBSAP; Password = 2INTER7;";
 
         }
 

@@ -91,6 +91,7 @@ namespace LiteSFATestWebService
 
                 oReader = cmd.ExecuteReader();
                 string umAprov = "";
+                double stocArtStatic = -1;
                 if (oReader.HasRows)
                 {
                     while (oReader.Read())
@@ -107,6 +108,7 @@ namespace LiteSFATestWebService
 
                         articol.umVanz = umAprov;
                         articol.tipAB = "";
+                        articol.stoc = stocArtStatic.ToString();
                         listArticole.Add(articol);
 
                     }
@@ -114,8 +116,7 @@ namespace LiteSFATestWebService
 
                 }
 
-                oReader.Close();
-                oReader.Dispose();
+               
 
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 serializedResult = serializer.Serialize(listArticole);
@@ -127,9 +128,7 @@ namespace LiteSFATestWebService
             }
             finally
             {
-                cmd.Dispose();
-                connection.Close();
-                connection.Dispose();
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
             }
 
             return serializedResult;
@@ -275,10 +274,7 @@ namespace LiteSFATestWebService
 
                 serializedResult = serializer.Serialize(listArtCompl);
 
-                oReader.Close();
-                oReader.Dispose();
-
-                cmd.Dispose();
+                
             }
             catch (Exception ex)
             {
@@ -286,8 +282,7 @@ namespace LiteSFATestWebService
             }
             finally
             {
-                connection.Close();
-                connection.Dispose();
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
             }
 
             return serializedResult;
@@ -297,7 +292,7 @@ namespace LiteSFATestWebService
 
 
 
-        public string getListArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament)
+        public string getListArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament, string afisStoc)
         {
 
 
@@ -306,6 +301,7 @@ namespace LiteSFATestWebService
             string condDepart = " ";
             string condTabCodBare = "";
             string condLimit = " rownum < 300 ";
+            string valStoc = "";
 
             if (!departament.Equals("00") && !departament.Equals("12") && departament.Length > 0)
                 condDepart = " and (a.grup_vz like '" + departament + "%') ";
@@ -345,6 +341,15 @@ namespace LiteSFATestWebService
 
             }
 
+            if (afisStoc != null && afisStoc.Equals("1"))
+            {
+                valStoc = " , nvl ((select sum(stocne) from sapprd.zstoc_job where matnr=a.cod and werks=:filiala),-1) stoc ";
+            }
+            else
+            {
+                valStoc = " , -1 stoc ";
+            }
+
 
             OracleConnection connection = new OracleConnection();
             OracleDataReader oReader = null;
@@ -367,6 +372,7 @@ namespace LiteSFATestWebService
                                     " a.grup_vz, decode(trim(a.dep_aprobare),'','00', a.dep_aprobare)  dep_aprobare, " +
                                     " (select nvl( " +
                                     " (select 1 from sapprd.marm m where m.mandt = '900' and m.matnr = a.cod and m.meinh = 'EPA'),-1) palet from dual) palet " +
+                                    valStoc +
                                     " from articole a, " +
                                     " sintetice b " + condTabCodBare + " where a.sintetic = b.cod and a.cod != 'MAT GENERIC PROD' and a.blocat <> '01' and " + condCautare + condDepart +
                                     " ) x  where  " + condLimit + " order by x.nume ";
@@ -385,6 +391,7 @@ namespace LiteSFATestWebService
                                     " a.grup_vz, decode(trim(a.dep_aprobare),'','00', a.dep_aprobare)  dep_aprobare, " +
                                     " (select nvl( " +
                                     " (select 1 from sapprd.marm m where m.mandt = '900' and m.matnr = a.cod and m.meinh = 'EPA'),-1) palet from dual) palet " +
+                                    valStoc +
                                     " from articole a, " +
                                     " sintetice b, sapprd.marc c " + condTabCodBare + " where c.mandt = '900' and c.matnr = a.cod and c.werks = '" + condFil + "' and c.mmsta <> '01' " +
                                     " and a.sintetic = b.cod and a.cod != 'MAT GENERIC PROD' and a.blocat <> '01' and " + condCautare + condDepart +
@@ -402,6 +409,7 @@ namespace LiteSFATestWebService
                                       " a.grup_vz, decode(trim(a.dep_aprobare),'','00', a.dep_aprobare), " +
                                       " (select nvl( " +
                                       " (select 1 from sapprd.marm m where m.mandt = '900' and m.matnr = a.cod and m.meinh = 'EPA'),-1) palet from dual) palet " +
+                                      valStoc +
                                       " from articole a, " +
                                       " sintetice b, sapprd.marc c " + condTabCodBare + " where c.mandt = '900' and c.matnr = a.cod and c.werks = '" + filGed + "' and c.mmsta <> '01'" +
                                       " and a.sintetic = b.cod and a.cod != 'MAT GENERIC PROD' and a.blocat <> '01' and " + condCautare + condDepart + " and " + condLimit + "  order by a.nume ";
@@ -409,10 +417,16 @@ namespace LiteSFATestWebService
                 }
 
 
-
-
-
                 cmd.CommandType = CommandType.Text;
+
+                cmd.Parameters.Clear();
+
+                if (afisStoc != null && afisStoc.Equals("1"))
+                {
+                    cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                    cmd.Parameters[0].Value = filiala;
+                }
+
 
                 oReader = cmd.ExecuteReader();
 
@@ -434,6 +448,7 @@ namespace LiteSFATestWebService
                         articol.depart = oReader.GetString(8).Substring(0, 2);
                         articol.departAprob = oReader.GetString(9);
                         articol.umPalet = oReader.GetInt32(10).ToString();
+                        articol.stoc = oReader.GetDouble(11).ToString();
 
                         listArticole.Add(articol);
 
@@ -444,10 +459,7 @@ namespace LiteSFATestWebService
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 serializedResult = serializer.Serialize(listArticole);
 
-                oReader.Close();
-                oReader.Dispose();
 
-                cmd.Dispose();
             }
             catch (Exception ex)
             {
@@ -455,8 +467,7 @@ namespace LiteSFATestWebService
             }
             finally
             {
-                connection.Close();
-                connection.Dispose();
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
             }
 
 
@@ -532,10 +543,7 @@ namespace LiteSFATestWebService
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 serializedResult = serializer.Serialize(listArticole);
 
-                oReader.Close();
-                oReader.Dispose();
-
-                cmd.Dispose();
+                
             }
             catch (Exception ex)
             {
@@ -543,8 +551,7 @@ namespace LiteSFATestWebService
             }
             finally
             {
-                connection.Close();
-                connection.Dispose();
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
             }
 
             return serializedResult;
@@ -647,7 +654,7 @@ namespace LiteSFATestWebService
 
 
             string serializedResult = "";
-            string retVal = "";
+            
             SAPWebServices.ZTBL_WEBSERVICE webService = null;
             string localUnitLog = "";
 
@@ -719,6 +726,7 @@ namespace LiteSFATestWebService
                 string cantUmb = outParam.OutCantUmb.ToString() != "" ? outParam.OutCantUmb.ToString() : "-1";
                 string Umb = outParam.OutUmb.ToString() != "" ? outParam.OutUmb.ToString() : "-1";
                 string procentTransport = outParam.ProcTrap.ToString();
+                string impachetare = outParam.Impachet.ToString() != "" ? outParam.Impachet.ToString() : " ";
 
 
                 pretArticolGed.pret = pretOut;
@@ -735,6 +743,7 @@ namespace LiteSFATestWebService
                 pretArticolGed.cantitateUmBaza = cantUmb;
                 pretArticolGed.umBaza = Umb;
                 pretArticolGed.procTransport = procentTransport;
+                pretArticolGed.impachetare = impachetare;
 
 
                 //---verificare cmp
@@ -842,8 +851,7 @@ namespace LiteSFATestWebService
                 pretArticolGed.cmp = cmpArticol.ToString();
 
 
-                retVal = cantOut + "#" + pretOut + "#" + umOut + "#" + noDiscOut + "#" + codArtPromo + "#" +
-                         cantArtPromo + "#" + pretArtPromo + "#" + umArtPromo + "#" + pretLista + "#";
+               
 
 
                 //descriere conditii pret
@@ -869,7 +877,7 @@ namespace LiteSFATestWebService
 
                 pretArticolGed.conditiiPret = condPret;
 
-                retVal += condPret + "#";
+               
 
 
 
@@ -947,14 +955,6 @@ namespace LiteSFATestWebService
                 connection.Dispose();
 
                 //sf. prt si adaos mediu
-
-
-                retVal += discMaxAV + "#" + discMaxSD + "#" + discMaxDV + "#" +
-                          Convert.ToInt32(Double.Parse(multiplu)).ToString() + "#" +
-                          cantUmb + "#" + Umb + "#" + discMaxKA + "#" + cmpArticol.ToString() + "#" + pretMediu + "#" + adaosMediu + "#" + unitMasPretMediu + "#";
-
-                if (pretOut.Equals("0.0"))
-                    retVal = "-1";
 
 
                 pretArticolGed.pretMediu = pretMediu;

@@ -71,9 +71,13 @@ namespace DistributieTESTWebServices
 
 
         [WebMethod]
-        public string saveNewEvent(string serializedEvent)
+        public string saveNewEvent(string serializedEvent, string serializedEtape)
         {
+
             OperatiiEvenimente eveniment = new OperatiiEvenimente();
+            if (serializedEtape != null && serializedEtape != "")
+                eveniment.saveOrdineEtape(serializedEtape);
+
             return eveniment.saveNewEvent(serializedEvent);
         }
 
@@ -90,7 +94,7 @@ namespace DistributieTESTWebServices
         public string saveEvenimentStopIncarcare(string document, string codSofer)
         {
             OperatiiEvenimente eveniment = new OperatiiEvenimente();
-            return eveniment.saveEvenimentStopIncarcare( document,  codSofer);
+            return eveniment.saveEvenimentStopIncarcare(document, codSofer);
         }
 
         [WebMethod]
@@ -105,7 +109,7 @@ namespace DistributieTESTWebServices
         public string cancelEvent(string tipEveniment, string nrDocument, string codClient, string codSofer)
         {
             OperatiiEvenimente eveniment = new OperatiiEvenimente();
-            return eveniment.cancelEvent( tipEveniment,  nrDocument,  codClient,  codSofer);
+            return eveniment.cancelEvent(tipEveniment, nrDocument, codClient, codSofer);
         }
 
         [WebMethod]

@@ -506,7 +506,7 @@ namespace LiteSFATestWebService
             string condFiliala = "";
 
             if (tipActualizare.Equals("03"))
-                condFiliala = " and a.werks = (select filiala from agenti where cod = c.codAgent ) ";
+                condFiliala = " and a.werks = (select filiala from agenti where cod = :codAgent ) ";
 
 
             OracleCommand cmd = connection.CreateCommand();

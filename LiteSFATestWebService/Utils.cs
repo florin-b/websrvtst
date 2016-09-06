@@ -37,5 +37,21 @@ namespace LiteSFATestWebService
             return mTime;
         }
 
+        public static String getCurrentMonth()
+        {
+            DateTime cDate = DateTime.Now.AddMonths(-1);
+            string month = cDate.Month.ToString("00");
+            return month;
+        }
+
+
+        public static String getCurrentYear()
+        {
+            DateTime cDate = DateTime.Now;
+            string year = cDate.Year.ToString();
+            return year;
+        }
+
+
     }
 }

@@ -98,5 +98,16 @@ namespace LiteSFATestWebService.Properties {
                 return ((string)(this["LiteSFATestWebService_ClientiSemiactivi_ZWBS_SEMIACTIVI"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://sap-prd5a.arabesque.ro:8035/sap/bc/srt/rfc/sap/zwbs_sal_av/900/zwbs_sal_av" +
+            "/zwbs_sal_av")]
+        public string LiteSFATestWebService_SalarizareAG_ZWBS_SAL_AV {
+            get {
+                return ((string)(this["LiteSFATestWebService_SalarizareAG_ZWBS_SAL_AV"]));
+            }
+        }
     }
 }

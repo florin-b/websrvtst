@@ -13,7 +13,7 @@
 // 
 #pragma warning disable 1591
 
-namespace LiteSFATestWebService.WebServiceSalarizareAG {
+namespace LiteSFATestWebService.SalarizareAG {
     using System;
     using System.Web.Services;
     using System.Diagnostics;
@@ -23,9 +23,7 @@ namespace LiteSFATestWebService.WebServiceSalarizareAG {
     
     
     /// <remarks/>
-    // CODEGEN: The optional WSDL extension element 'Policy' from namespace 'http://schemas.xmlsoap.org/ws/2004/09/policy' was not handled.
-    // CODEGEN: The optional WSDL extension element 'EndpointReference' from namespace 'http://schemas.xmlsoap.org/ws/2004/08/addressing' was not handled.
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Web.Services.WebServiceBindingAttribute(Name="ZWBS_SAL_AV", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
@@ -37,7 +35,7 @@ namespace LiteSFATestWebService.WebServiceSalarizareAG {
         
         /// <remarks/>
         public ZWBS_SAL_AV() {
-            this.Url = global::LiteSFATestWebService.Properties.Settings.Default.LiteSFATestWebService_WebServiceSalarizareAG_ZWBS_SAL_AV;
+            this.Url = global::LiteSFATestWebService.Properties.Settings.Default.LiteSFATestWebService_SalarizareAG_ZWBS_SAL_AV;
             if ((this.IsLocalFileSystemWebService(this.Url) == true)) {
                 this.UseDefaultCredentials = true;
                 this.useDefaultCredentialsSetExplicitly = false;
@@ -75,7 +73,7 @@ namespace LiteSFATestWebService.WebServiceSalarizareAG {
         public event ZgetSalavCompletedEventHandler ZgetSalavCompleted;
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:sap-com:document:sap:soap:functions:mc-style:ZWBS_SAL_AV:ZgetSalavRequest", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
         [return: System.Xml.Serialization.XmlElementAttribute("ZgetSalavResponse", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
         public ZgetSalavResponse ZgetSalav([System.Xml.Serialization.XmlElementAttribute("ZgetSalav", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")] ZgetSalav ZgetSalav1) {
             object[] results = this.Invoke("ZgetSalav", new object[] {
@@ -124,7 +122,7 @@ namespace LiteSFATestWebService.WebServiceSalarizareAG {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -283,7 +281,7 @@ namespace LiteSFATestWebService.WebServiceSalarizareAG {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -383,7 +381,7 @@ namespace LiteSFATestWebService.WebServiceSalarizareAG {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -405,7 +403,7 @@ namespace LiteSFATestWebService.WebServiceSalarizareAG {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -661,7 +659,7 @@ namespace LiteSFATestWebService.WebServiceSalarizareAG {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -774,7 +772,7 @@ namespace LiteSFATestWebService.WebServiceSalarizareAG {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1433,7 +1431,7 @@ namespace LiteSFATestWebService.WebServiceSalarizareAG {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1507,7 +1505,7 @@ namespace LiteSFATestWebService.WebServiceSalarizareAG {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1737,7 +1735,7 @@ namespace LiteSFATestWebService.WebServiceSalarizareAG {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1844,11 +1842,11 @@ namespace LiteSFATestWebService.WebServiceSalarizareAG {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     public delegate void ZgetSalavCompletedEventHandler(object sender, ZgetSalavCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZgetSalavCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {

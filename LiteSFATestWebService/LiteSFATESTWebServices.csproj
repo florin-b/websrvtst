@@ -92,6 +92,7 @@
     <Compile Include="BeanClient.cs" />
     <Compile Include="BeanComenzi.cs" />
     <Compile Include="Beans.cs" />
+    <Compile Include="BeanSalarizare.cs" />
     <Compile Include="BeansArticole.cs" />
     <Compile Include="BeansConcurenta.cs" />
     <Compile Include="BeansObiective.cs" />
@@ -102,7 +103,9 @@
     <Compile Include="General\BeansObiectiveCVA.cs" />
     <Compile Include="General\DatabaseConnections.cs" />
     <Compile Include="General\ErrorHandling.cs" />
+    <Compile Include="General\GeneralUtils.cs" />
     <Compile Include="HelperObiectiveKA.cs" />
+    <Compile Include="Neincasate.cs" />
     <Compile Include="OperatiiCLP.cs" />
     <Compile Include="OperatiiDocumente.cs" />
     <Compile Include="OperatiiObiectiveCVA.cs" />
@@ -114,6 +117,7 @@
     <Compile Include="OperatiiConditiiComanda.cs" />
     <Compile Include="OperatiiNecesar.cs" />
     <Compile Include="OperatiiObiectiveKA.cs" />
+    <Compile Include="Preturi.cs" />
     <Compile Include="OperatiiRetur.cs" />
     <Compile Include="OperatiiSemiactivi.cs" />
     <Compile Include="OperatiiSuplimentare.cs" />
@@ -122,6 +126,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Salarizare.cs" />
     <Compile Include="Sms.cs" />
     <Compile Include="TESTService.asmx.cs">
       <DependentUpon>TESTService.asmx</DependentUpon>
@@ -130,6 +135,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Web References\ClientiSemiactivi\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+    <Compile Include="Web References\SalarizareAG\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.map</DependentUpon>
@@ -154,7 +164,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>
-    <Compile Include="Web References\WebServiceSalarizareAG\Reference.cs">
+    <Compile Include="Web References\WebServiceSalarizareAV\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.map</DependentUpon>
@@ -171,7 +181,7 @@
   <ItemGroup>
     <WebReferenceUrl Include="http://sap-prd3a:8033/sap/bc/srt/wsdl/bndg_3695A8532502C647E10000000A010361/wsdl11/allinone/ws_policy/document%3fsap-client=900">
       <UrlBehavior>Dynamic</UrlBehavior>
-      <RelPath>Web References\WebServiceSalarizareAG\</RelPath>
+      <RelPath>Web References\WebServiceSalarizareAV\</RelPath>
       <UpdateFromURL>http://sap-prd3a:8033/sap/bc/srt/wsdl/bndg_3695A8532502C647E10000000A010361/wsdl11/allinone/ws_policy/document%3fsap-client=900</UpdateFromURL>
       <ServiceLocationURL>
       </ServiceLocationURL>
@@ -179,6 +189,17 @@
       </CachedDynamicPropName>
       <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
       <CachedSettingsPropName>LiteSFATestWebService_WebServiceSalarizareAG_ZWBS_SAL_AV</CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://sap-prd5a:8035/sap/bc/srt/wsdl/bndg_3695A8532502C647E10000000A010361/wsdl11/allinone/standard/document%3fsap-client=900">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\SalarizareAG\</RelPath>
+      <UpdateFromURL>http://sap-prd5a:8035/sap/bc/srt/wsdl/bndg_3695A8532502C647E10000000A010361/wsdl11/allinone/standard/document%3fsap-client=900</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>LiteSFATestWebService_SalarizareAG_ZWBS_SAL_AV</CachedSettingsPropName>
     </WebReferenceUrl>
     <WebReferenceUrl Include="http://sap-test1a.arabesque.ro:8081/sap/bc/srt/wsdl/flv_10002A111AD1/bndg_url/sap/bc/srt/rfc/sap/zclp_webservice/900/zclp_webservice/zclp_webservice%3fsap-client=900">
       <UrlBehavior>Dynamic</UrlBehavior>
@@ -263,6 +284,14 @@
       <DependentUpon>Reference.map</DependentUpon>
     </None>
     <None Include="Web References\ClientiSemiactivi\zwbs_semiactivi.wsdl" />
+    <None Include="Web References\SalarizareAG\document.wsdl" />
+    <Content Include="Web References\SalarizareAG\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </Content>
+    <Content Include="Web References\SalarizareAG\ZgetSalavResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
     <None Include="Web References\SAPWebServices\ZactDiscMaximResponse.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
@@ -331,14 +360,14 @@
       <DependentUpon>Reference.map</DependentUpon>
     </None>
     <None Include="Web References\WebNecesar1\zwbs_zintrarimarfa.wsdl" />
-    <None Include="Web References\WebServiceSalarizareAG\document.wsdl" />
-    <None Include="Web References\WebServiceSalarizareAG\Reference.map">
+    <None Include="Web References\WebServiceSalarizareAV\document.wsdl" />
+    <None Include="Web References\WebServiceSalarizareAV\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
-    <None Include="Web References\WebServiceSalarizareAG\ZgetSalavResponse.datasource">
+    <Content Include="Web References\WebServiceSalarizareAV\ZgetSalavResponse1.datasource">
       <DependentUpon>Reference.map</DependentUpon>
-    </None>
+    </Content>
     <None Include="Web References\WEBTable\document.wsdl" />
     <None Include="Web References\WEBTable\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>

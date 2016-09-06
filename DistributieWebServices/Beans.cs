@@ -34,6 +34,10 @@ namespace DistributieTESTWebServices
 
         public string dataStartCursa;
 
+        public string pozitie;
+        public string nrFactura;
+
+
     }
 
 
@@ -122,7 +126,14 @@ namespace DistributieTESTWebServices
         public string ora;
     }
 
-
+    public class Etapa
+    {
+        public string borderou;
+        public string client;
+        public string codAdresa;
+        public string pozitie;
+        public string document;
+    }
     
 
 

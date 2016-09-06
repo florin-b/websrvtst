@@ -338,7 +338,8 @@ namespace DistributieTESTWebServices
                                       " c.eveniment = 'S' and c.codadresa = a.adresa_client),0) sosire, nvl((select c.ora from sapprd.zevenimentsofer c where c.document = a.nr_bord and c.client = a.cod_client " +
                                       " and c.eveniment = 'P' and c.codadresa = a.adresa_client),0) plecare, " +
                                       " nvl((select ad.region||','||ad.city1||', '||ad.street||', '||ad.house_num1 from sapprd.adrc ad where ad.client = '900' and ad.addrnumber = a.adresa_client),' ') adresa_client, " +
-                                      " a.adresa_client " +
+                                      " a.adresa_client, " +
+                                      " nvl((select pozitie from sapprd.zordinelivrari where borderou = a.nr_bord and client = a.cod_client and codadresa = a.adresa_client and (document = a.nr_doc or document = a.nr_bord)),'-1') pozitie, a.nr_doc" + 
                                       " from sapprd.zdocumentesms a, clienti b  where a.nr_bord =:nrbord " +
                                       " and a.cod_client = b.cod and tip = 2 order by a.poz ";
                 }
@@ -358,7 +359,7 @@ namespace DistributieTESTWebServices
                 }
 
 
-
+                
 
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add(":nrbord", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
@@ -382,6 +383,8 @@ namespace DistributieTESTWebServices
                             oFactura.plecareClient = oReader.GetString(3);
                             oFactura.adresaClient = UtilsAddresses.formatAdresa(oReader.GetString(4));
                             oFactura.codAdresaClient = oReader.GetString(5);
+                            oFactura.pozitie = oReader.GetString(6);
+                            oFactura.nrFactura = oReader.GetString(7).Length > 1 ? oReader.GetString(7) : nrBorderou;
                             oFactura.dataStartCursa = startCursa;
 
                             oFactura.numeFurnizor = "";
@@ -412,6 +415,8 @@ namespace DistributieTESTWebServices
                             oFactura.sosireClient = oReader.GetString(8);
                             oFactura.plecareClient = oReader.GetString(9);
                             oFactura.codAdresaClient = oReader.GetString(10);
+                            oFactura.pozitie = "-1";
+                            oFactura.nrFactura = "-1";
                             listaFacturi.Add(oFactura);
 
                         }
@@ -429,7 +434,7 @@ namespace DistributieTESTWebServices
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 serializedResult = serializer.Serialize(listaFacturi);
 
-
+               
 
             }
             catch (Exception ex)

@@ -400,6 +400,7 @@ namespace LiteSFATestWebService
         public string depart;
         public string departAprob;
         public string umPalet;
+        public string stoc;
 
     }
 
@@ -635,6 +636,7 @@ namespace LiteSFATestWebService
         public string discMaxSD;
         public string discMaxDV;
         public string discMaxKA;
+        public string impachetare;
 
     }
 

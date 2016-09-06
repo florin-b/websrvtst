@@ -33,6 +33,9 @@ namespace LiteSFATestWebService
         public string nrcExecutant;
         public string telBenef;
         public string filiala;
+        public string numeMeserias;
+        public string prenMeserias;
+        public string telMeserias;
 
     }
 

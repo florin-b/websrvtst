@@ -79,5 +79,30 @@ namespace LiteSFATestWebService.General
         }
 
 
+        public static string getCurrentDate()
+        {
+            string mDate = "";
+            DateTime cDate = DateTime.Now;
+            string year = cDate.Year.ToString();
+            string day = cDate.Day.ToString("00");
+            string month = cDate.Month.ToString("00");
+            mDate = year + month + day;
+            return mDate;
+        }
+
+
+
+        public static string getMonthDate(int months)
+        {
+            string mDate = "";
+            DateTime cDate = DateTime.Now.AddMonths(months);
+            string year = cDate.Year.ToString();
+            string day = cDate.Day.ToString("00");
+            string month = cDate.Month.ToString("00");
+            mDate = year + month + day;
+            return mDate;
+        }
+
+
     }
 }

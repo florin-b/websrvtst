@@ -23,5 +23,8 @@
     <Setting Name="LiteSFATestWebService_ClientiSemiactivi_ZWBS_SEMIACTIVI" Type="(Web Service URL)" Scope="Application">
       <Value Profile="(Default)">http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/zwbs_semiactivi/900/zwbs_semiactivi/zwbs_semiactivi</Value>
     </Setting>
+    <Setting Name="LiteSFATestWebService_SalarizareAG_ZWBS_SAL_AV" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://sap-prd5a.arabesque.ro:8035/sap/bc/srt/rfc/sap/zwbs_sal_av/900/zwbs_sal_av/zwbs_sal_av</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

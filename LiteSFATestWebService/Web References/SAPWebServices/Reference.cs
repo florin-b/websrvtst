@@ -24,7 +24,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     
     /// <remarks/>
     // CODEGEN: The optional WSDL extension element 'Policy' from namespace 'http://schemas.xmlsoap.org/ws/2004/09/policy' was not handled.
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Web.Services.WebServiceBindingAttribute(Name="ZTBL_WEBSERVICE", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
@@ -63,7 +63,15 @@ namespace LiteSFATestWebService.SAPWebServices {
                 this.useDefaultCredentialsSetExplicitly = true;
             }
         }
-        
+
+        protected override System.Net.WebRequest GetWebRequest(Uri uri)
+        {
+            System.Net.HttpWebRequest request = (System.Net.HttpWebRequest)base.GetWebRequest(uri);
+            request.KeepAlive = false;
+            request.ProtocolVersion = System.Net.HttpVersion.Version10;
+            return request;
+        }
+
         public new string Url {
             get {
                 return base.Url;
@@ -448,7 +456,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -536,7 +544,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -597,7 +605,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1594,7 +1602,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -3098,7 +3106,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -3224,7 +3232,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -3675,7 +3683,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -3697,7 +3705,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -4499,7 +4507,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -4612,7 +4620,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -4920,7 +4928,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -5228,7 +5236,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -5419,7 +5427,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -5909,7 +5917,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -6139,7 +6147,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -8774,7 +8782,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -11500,7 +11508,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -13082,7 +13090,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -14716,7 +14724,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -15024,7 +15032,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -15319,7 +15327,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -15458,7 +15466,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -15519,7 +15527,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -15645,7 +15653,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -15693,7 +15701,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -15871,7 +15879,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -16010,7 +16018,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -16201,7 +16209,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -16236,7 +16244,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -16674,7 +16682,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -16865,7 +16873,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -17199,7 +17207,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -18183,7 +18191,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -18270,7 +18278,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -21165,7 +21173,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -21265,7 +21273,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -21339,7 +21347,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -22076,7 +22084,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -22202,7 +22210,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -23407,7 +23415,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -23507,7 +23515,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -23555,7 +23563,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -23707,7 +23715,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -24093,7 +24101,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -24142,7 +24150,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -24203,7 +24211,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -24238,7 +24246,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -24325,7 +24333,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -24347,7 +24355,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -24488,7 +24496,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -24538,7 +24546,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -24730,7 +24738,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -24792,7 +24800,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -24814,7 +24822,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -24836,7 +24844,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -25040,7 +25048,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -25072,6 +25080,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         private string gvVrkmeField;
         
         private string gvVrkmeFreeField;
+        
+        private string impachetField;
         
         private decimal multipluField;
         
@@ -25226,6 +25236,17 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Impachet {
+            get {
+                return this.impachetField;
+            }
+            set {
+                this.impachetField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public decimal Multiplu {
             get {
                 return this.multipluField;
@@ -25270,7 +25291,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -25377,9 +25398,13 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         private string vAchitField;
         
+        private string vAdrdaField;
+        
         private string vMacaraField;
         
         private string vOpField;
+        
+        private string vTipplataField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
@@ -25967,6 +25992,17 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string VAdrda {
+            get {
+                return this.vAdrdaField;
+            }
+            set {
+                this.vAdrdaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public string VMacara {
             get {
                 return this.vMacaraField;
@@ -25986,10 +26022,21 @@ namespace LiteSFATestWebService.SAPWebServices {
                 this.vOpField = value;
             }
         }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string VTipplata {
+            get {
+                return this.vTipplataField;
+            }
+            set {
+                this.vTipplataField = value;
+            }
+        }
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26513,7 +26560,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26561,7 +26608,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26583,7 +26630,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26644,7 +26691,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.6.1064.2")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26679,11 +26726,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     public delegate void ZcalcTrapSiteCompletedEventHandler(object sender, ZcalcTrapSiteCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZcalcTrapSiteCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -26705,11 +26752,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     public delegate void ZcreazaComandaCompletedEventHandler(object sender, ZcreazaComandaCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZcreazaComandaCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -26731,11 +26778,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     public delegate void ZcalcTrapCompletedEventHandler(object sender, ZcalcTrapCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZcalcTrapCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -26757,11 +26804,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     public delegate void ZsablonReducereCompletedEventHandler(object sender, ZsablonReducereCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZsablonReducereCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -26783,11 +26830,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     public delegate void ZretMarfaCompletedEventHandler(object sender, ZretMarfaCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZretMarfaCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -26809,11 +26856,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     public delegate void ZactDiscMaximCompletedEventHandler(object sender, ZactDiscMaximCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZactDiscMaximCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -26835,11 +26882,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     public delegate void ZgetPriceCompletedEventHandler(object sender, ZgetPriceCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZgetPriceCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -26861,11 +26908,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     public delegate void ZsdSalesdocumentCreateCompletedEventHandler(object sender, ZsdSalesdocumentCreateCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZsdSalesdocumentCreateCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -26887,11 +26934,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     public delegate void ZextindeClientCompletedEventHandler(object sender, ZextindeClientCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZextindeClientCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -26913,11 +26960,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     public delegate void ZstareComandaCompletedEventHandler(object sender, ZstareComandaCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1038.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZstareComandaCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {

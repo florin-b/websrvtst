@@ -17,6 +17,8 @@ namespace LiteSFATestWebService
         {
 
 
+            
+
             string statusCode = "1";
 
 
@@ -24,6 +26,9 @@ namespace LiteSFATestWebService
             List<Objective> listObiective = serializer.Deserialize<List<Objective>>(dateObiective);
             List<Beneficiar> listBeneficiari = serializer.Deserialize<List<Beneficiar>>(beneficiari);
             List<ObjectivePhase> listStadii = serializer.Deserialize<List<ObjectivePhase>>(stadii);
+
+
+            ErrorHandling.sendErrorToMail(dateObiective);
 
             OracleConnection connection = new OracleConnection();
             string connectionString = DatabaseConnections.ConnectToTestEnvironment();
@@ -84,10 +89,10 @@ namespace LiteSFATestWebService
 
                     query = " insert into sapprd.ztbl_objectives(mandt, ora_id, id, type_id, cva_code, region_id, name, creation_date, beneficiary_id, beneficiaty_type, " +
                             " authorization_start, authorization_end, estimation_value, address, zip, gps, stage_id, phase_id, expiration_phase, status, status_id, category_id, " +
-                            " nume_executant, cui_executant, nrc_executant, tel_benef, filiala) values " +
+                            " nume_executant, cui_executant, nrc_executant, tel_benef, filiala, numeMeserias, prenMeserias, telMeserias) values " +
                             " ('900', pk_clp.nextval, :id, :type_id, :cva_code, :region_id, :name, :creation_date, :beneficiary_id, :beneficiary_type,  " +
                             " :authorization_start, :authorization_end, :estimation_value, :address, :zip, :gps, :stage_id, :phase_id, :expiration_phase, :status, :status_id, " +
-                            " :category_id, :nume_executant, :cui_executant, :nrc_executant, :tel_benef, :filiala) " +
+                            " :category_id, :nume_executant, :cui_executant, :nrc_executant, :tel_benef, :filiala, :numeMeserias, :prenMeserias, :telMeserias) " +
                             " returning ora_id into :oraid ";
 
 
@@ -172,6 +177,15 @@ namespace LiteSFATestWebService
 
                     cmd.Parameters.Add(":filiala", OracleType.NVarChar, 9).Direction = ParameterDirection.Input;
                     cmd.Parameters[24].Value = obiectiv.filiala;
+
+                    cmd.Parameters.Add(":numeMeserias", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
+                    cmd.Parameters[25].Value = obiectiv.numeMeserias;
+
+                    cmd.Parameters.Add(":prenMeserias", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
+                    cmd.Parameters[26].Value = obiectiv.prenMeserias;
+
+                    cmd.Parameters.Add(":telMeserias", OracleType.NVarChar, 36).Direction = ParameterDirection.Input;
+                    cmd.Parameters[27].Value = obiectiv.telMeserias;
 
                     idCmd = new OracleParameter("oraid", OracleType.Number);
                     idCmd.Direction = ParameterDirection.Output;
@@ -344,7 +358,7 @@ namespace LiteSFATestWebService
 
                 sqlString = " select b.id,b.type_id, b.cva_code, b.region_id, b.name, b.creation_date, b.beneficiary_id, b.beneficiaty_type, b.authorization_start, b.authorization_end, " +
                                   " b.estimation_value, b.address, b.zip, b.gps, b.stage_id, b.phase_id, b.expiration_phase, b.status, b.status_id, b.category_id, b.nume_executant, b.cui_executant, " +
-                                  " b.nrc_executant, b.tel_benef, b.filiala, b.ora_id " +
+                                  " b.nrc_executant, b.tel_benef, b.filiala, b.ora_id, b.numeMeserias, b.prenMeserias, b.telMeserias " +
                                   " from sapprd.ztbl_objectives  b where 1 = 1 " + condAgent + condFiliala + " order by id ";
 
 
@@ -396,6 +410,10 @@ namespace LiteSFATestWebService
                         obiectiv.telBenef = oReader.GetString(23);
                         obiectiv.filiala = oReader.GetString(24);
                         obiectiv.oraid = oReader.GetInt32(25).ToString();
+                        obiectiv.numeMeserias = oReader.GetString(26).ToString();
+                        obiectiv.prenMeserias = oReader.GetString(27).ToString();
+                        obiectiv.telMeserias = oReader.GetString(28).ToString();
+
                         listObiective.Add(obiectiv);
 
                     }
@@ -504,6 +522,8 @@ namespace LiteSFATestWebService
 
                 transaction.Commit();
 
+              
+
             }
             catch (Exception ex)
             {
@@ -512,6 +532,18 @@ namespace LiteSFATestWebService
             }
             finally
             {
+
+                if (oReader != null)
+                {
+                    oReader.Close();
+                    oReader.Dispose();
+                }
+
+                cmd.Dispose();
+
+                connection.Close();
+                connection.Dispose();
+
                 connection.Close();
                 connection.Dispose();
             }

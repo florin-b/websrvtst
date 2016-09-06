@@ -228,7 +228,7 @@ namespace DistributieTESTWebServices
             }
 
 
-            ErrorHandling.sendErrorToMail("exists = " + exists);
+            
 
             return exists;
 
@@ -301,6 +301,71 @@ namespace DistributieTESTWebServices
             return "SOF";
 
         }
+
+
+
+        public void saveOrdineEtape(string serializedEtape)
+        {
+
+            OracleConnection connection = new OracleConnection();
+
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            List<Etapa> listEtape = serializer.Deserialize<List<Etapa>>(serializedEtape);
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                OracleCommand cmd = connection.CreateCommand();
+
+
+                foreach (Etapa etapa in listEtape)
+                {
+                    String query = " insert into sapprd.zordinelivrari(mandt, borderou, client, codadresa, pozitie, document) " +
+                                   " values ('900', :boderou, :client, :codAdresa, :pozitie, :document) ";
+
+                    cmd.CommandType = CommandType.Text;
+                    cmd.CommandText = query;
+                    cmd.Parameters.Clear();
+
+                    cmd.Parameters.Add(":boderou", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                    cmd.Parameters[0].Value = etapa.borderou;
+
+                    cmd.Parameters.Add(":client", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                    cmd.Parameters[1].Value = etapa.client;
+
+                    cmd.Parameters.Add(":codAdresa", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                    cmd.Parameters[2].Value = etapa.codAdresa;
+
+                    cmd.Parameters.Add(":pozitie", OracleType.VarChar, 6).Direction = ParameterDirection.Input;
+                    cmd.Parameters[3].Value = etapa.pozitie;
+
+                    cmd.Parameters.Add(":document", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                    cmd.Parameters[4].Value = etapa.document;
+
+                    cmd.ExecuteNonQuery();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+               
+            }
+            finally
+            {
+                connection.Close();
+                connection.Dispose();
+            }
+
+            return;
+
+        }
+
+
 
 
         public string getEvenimentStopIncarcare(string document, string codSofer)
@@ -782,7 +847,7 @@ namespace DistributieTESTWebServices
 
 
 
-
+            retVal = "0x0";
             return retVal;
         }
 
