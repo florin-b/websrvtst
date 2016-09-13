@@ -349,6 +349,9 @@ namespace DistributieTESTWebServices
                     cmd.ExecuteNonQuery();
                 }
 
+
+                cmd.Dispose();
+
             }
             catch (Exception ex)
             {

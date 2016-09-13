@@ -39,7 +39,7 @@ namespace LiteSFATestWebService
 
         public static String getCurrentMonth()
         {
-            DateTime cDate = DateTime.Now.AddMonths(-1);
+            DateTime cDate = DateTime.Now;
             string month = cDate.Month.ToString("00");
             return month;
         }

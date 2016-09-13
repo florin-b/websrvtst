@@ -14,7 +14,7 @@ namespace LiteSFATestWebService
 
         public string getRaportNeincasateData(string reportParams, string filiala)
         {
-
+            
 
             string serializedResult = "";
             string sqlString = "";
@@ -151,7 +151,7 @@ namespace LiteSFATestWebService
 
                 string sqlString = " select decode(length(b.matnr),18,substr(b.matnr,-8),b.matnr) cod,ar.nume matdesc , " +
                                    " decode(a.fkart, 'ZFRA', 0, 'ZFRB', 0, decode(b.shkzg, 'X', -b.fklmg, b.fklmg)) cant, " +
-                                   " decode(b.shkzg, 'X', -1, 1) * (b.netwr + b.mwsbp) * b.kursk valoare " +
+                                   " 0 valoare " +
                                    " from  sapprd.vbrk a, sapprd.vbrp b, articole ar where a.mandt = '900' and b.mandt = '900' " +
                                    " and a.vbeln = b.vbeln and b.vbeln =:nrDocument and b.matnr = ar.cod order by b.matnr ,ar.nume asc";
 

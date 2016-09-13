@@ -83,7 +83,7 @@ namespace TiparireDocumenteTest
                                    " nvl( (select '1' from sapprd.zpregmarfagest g where g.document=h.vbeln),'-1')  pregatire" +
                                    " from sapprd.likp h, sapprd.lips s, sapprd.vttp p, sapprd.vttk k, clienti c, articole art " +
                                    " where h.mandt = '900'  and s.lgort <> 'DESC' and c.cod = h.kunnr  and h.mandt = s.mandt  and h.vbeln = s.vbeln " +
-                                   " and art.cod = s.matnr and h.wadat between '" + intervData[0] + "' and '" + intervData[1] + "' and art.spart =:depart " +
+                                   " and art.cod = s.matnr and h.wadat between :dataStart and :dataStop and art.spart =:depart " +
                                      condFiliala + " and nvl(k.datbg, '00000000') = '00000000' and s.lfimg > 0 " +
                                    " and h.mandt = p.mandt(+) and substr(s.matnr,11,1) != '3' " +
                                    " and h.vbeln = p.vbeln(+) and h.lfart not in ('EL', 'ZUL', 'ZLR') and p.mandt = k.mandt(+) " +
@@ -103,8 +103,16 @@ namespace TiparireDocumenteTest
                 cmd.Parameters.Clear();
 
 
+                cmd.Parameters.Add(":dataStart", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = intervData[0];
+
+                cmd.Parameters.Add(":dataStop", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = intervData[1];
+
                 cmd.Parameters.Add(":depart", OracleType.VarChar, 6).Direction = ParameterDirection.Input;
-                cmd.Parameters[0].Value = departament;
+                cmd.Parameters[2].Value = departament;
+
+
 
                 oReader = cmd.ExecuteReader();
 

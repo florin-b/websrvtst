@@ -56,7 +56,7 @@ namespace LiteSFATestWebService
                 }
 
 
-              
+
 
 
                 if (oReader != null)
@@ -163,7 +163,7 @@ namespace LiteSFATestWebService
 
 
 
-        public static void insereazaCoordonateAdresa(String idComanda, String coordonate)
+        public static void insereazaCoordonateAdresa(OracleConnection connection, String idComanda, String coordonate)
         {
 
             String[] coords = coordonate.Split('#');
@@ -171,12 +171,7 @@ namespace LiteSFATestWebService
             if (coords[0].Equals("0") || coords[0].Equals("0.0"))
                 return;
 
-            OracleConnection connection = new OracleConnection();
 
-            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
-
-            connection.ConnectionString = connectionString;
-            connection.Open();
 
             OracleCommand cmd = connection.CreateCommand();
 
@@ -199,7 +194,7 @@ namespace LiteSFATestWebService
 
                 cmd.ExecuteNonQuery();
 
-                cmd.Dispose();
+
 
 
             }
@@ -209,8 +204,8 @@ namespace LiteSFATestWebService
             }
             finally
             {
-                connection.Close();
-                connection.Dispose();
+                if (cmd != null)
+                    cmd.Dispose();
             }
 
             return;

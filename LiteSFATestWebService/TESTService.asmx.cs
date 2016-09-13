@@ -1445,7 +1445,8 @@ namespace LiteSFATestWebService
                                   " decode(trim(obstra),'',' ',obstra), ketdat," +
                                   " docin, decode(trim(adr_noua),'',' ',adr_noua), decode(trim(obsplata),'',' ',obsplata), decode(trim(addrnumber),'',' ',addrnumber), " +
                                   " val_incasata, decode(trim(mod_av),'',' ',mod_av), " +
-                                  " nvl((select p.prelucrare from sapprd.zprelucrare04 p where p.idcomanda = nrcmdsap ),'-1') prelucrare " +
+                                  " nvl((select p.prelucrare from sapprd.zprelucrare04 p where p.idcomanda = nrcmdsap ),'-1') prelucrare, " +
+                                  " nvl((select t.greutate from sapprd.ztonajcomanda t where t.idcomanda = id ),'-1') tonaj " +
                                   " from sapprd.zcomhead_tableta where id = :idCmd ";
 
 
@@ -1468,7 +1469,7 @@ namespace LiteSFATestWebService
                              + oReader.GetString(8) + "#" + oReader.GetString(9) + "#" + Regex.Replace(oReader.GetString(10), @"[!]|[#]|[@@]|[,]", " ").Trim() + "#"
                              + oReader.GetString(11) + "#" + oReader.GetString(12) + "#" + oReader.GetString(13) + "#"
                              + Regex.Replace(oReader.GetString(14), @"[!]|[#]|[@@]|[,]", " ") + "#" + oReader.GetString(15) + "#" + oReader.GetDecimal(16) + "#"
-                             + oReader.GetString(17) + "#" + oReader.GetString(18) + "#";
+                             + oReader.GetString(17) + "#" + oReader.GetString(18) + "#" + oReader.GetDouble(19).ToString() + "#";
 
                 }
 
@@ -2412,19 +2413,19 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
                 OracleCommand cmd = connection.CreateCommand();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
 
                 cmd.CommandText = " select nvl(a.city1,' ') city1 , nvl(a.street,' ') street, " +
-                                  " nvl(a.house_num1,' ') house_num, nvl(region,' '), a.addrnumber, nvl(t.greutate,-1) from sapprd.adrc a, sapprd.ztonajclient t " +
+                                  " nvl(a.house_num1,' ') house_num, nvl(region,' '), a.addrnumber from sapprd.adrc a " +
                                   " where a.client = '900' and a.addrnumber =  " +
-                                  " (select k.adrnr from sapprd.kna1 k where k.mandt = '900' and k.kunnr =:codClient) and t.kunnr(+) =:codClient and t.adrnr(+) =a.addrnumber " +
+                                  " (select k.adrnr from sapprd.kna1 k where k.mandt = '900' and k.kunnr =:codClient) " +
                                   " union " +
-                                  " select nvl(z.localitate,' '), nvl(z.adr_livrare,' ') , ' ', nvl(z.regio,' '), z.nr_crt, nvl(t.greutate,-1) from sapprd.zclient_adrese z, sapprd.ztonajclient t " +
-                                  " where z.kunnr =:codClient and t.kunnr(+) =z.kunnr and t.adrnr(+) =z.nr_crt ";
+                                  " select nvl(z.localitate,' '), nvl(z.adr_livrare,' ') , ' ', nvl(z.regio,' '), z.nr_crt from sapprd.zclient_adrese z " +
+                                  " where z.kunnr =:codClient   ";
 
 
 
@@ -2454,7 +2455,7 @@ namespace LiteSFATestWebService
                         oAdresa.nrStrada = oReader.GetString(2);
                         oAdresa.codJudet = oReader.GetString(3);
                         oAdresa.codAdresa = oReader.GetString(4);
-                        oAdresa.tonaj = oReader.GetDouble(5).ToString();
+                        oAdresa.tonaj = "-1";
                         listaAdreseLivrare.Add(oAdresa);
 
                     }
@@ -10016,7 +10017,8 @@ namespace LiteSFATestWebService
 
                         pozArt = 10;
 
-                        OperatiiAdresa.insereazaCoordonateAdresa(idCmd.Value.ToString(), dateLivrare.coordonateGps);
+                        OperatiiAdresa.insereazaCoordonateAdresa(connection, idCmd.Value.ToString(), dateLivrare.coordonateGps);
+                        OperatiiSuplimentare.saveTonajComanda(connection, idCmd.Value.ToString(), dateLivrare.tonaj);
 
                     }
 
@@ -12330,9 +12332,6 @@ namespace LiteSFATestWebService
 
                 }
 
-                OperatiiAdresa.insereazaCoordonateAdresa(idCmd.Value.ToString(), dateLivrare.coordonateGps);
-
-
 
                 transaction.Commit();
 
@@ -12344,6 +12343,8 @@ namespace LiteSFATestWebService
 
                 idComanda = idCmd.Value.ToString();
 
+                OperatiiAdresa.insereazaCoordonateAdresa(connection, idCmd.Value.ToString(), dateLivrare.coordonateGps);
+                OperatiiSuplimentare.saveTonajComanda(connection, idCmd.Value.ToString(), dateLivrare.tonaj);
 
 
                 //comenzile angajament nu se creaza in SAP
@@ -12474,7 +12475,7 @@ namespace LiteSFATestWebService
             }
 
 
-
+            
 
 
             return retVal;
@@ -12494,7 +12495,7 @@ namespace LiteSFATestWebService
             return unitLog.Substring(2, 1).Equals("4") ? true : false;
         }
 
-        private string getDepartAgent(string codAgent)
+        public static string getDepartAgent(string codAgent)
         {
             string departAgent = "00";
 
@@ -12540,7 +12541,7 @@ namespace LiteSFATestWebService
             }
             catch (Exception ex)
             {
-                sendErrorToMail(ex.ToString());
+                ErrorHandling.sendErrorToMail(ex.ToString());
             }
             finally
             {

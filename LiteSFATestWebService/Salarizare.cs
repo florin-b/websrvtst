@@ -14,6 +14,7 @@ namespace LiteSFATestWebService
         public String getSalarizareAV(string codAgent, string departament, string filiala)
         {
             string serResult = "";
+            string localDep = departament.Equals("04") ? Service1.getDepartAgent(codAgent) : departament;
 
             WebServiceSalarizareAV.ZWBS_SAL_AV webService = new ZWBS_SAL_AV();
 
@@ -37,7 +38,7 @@ namespace LiteSFATestWebService
             codAgenti[0].Pernr = codAgent;
 
             inParam.An = Utils.getCurrentYear();
-            inParam.Divizie = departament;
+            inParam.Divizie = localDep;
             inParam.Luna = Utils.getCurrentMonth();
             inParam.Ul = filiala;
             inParam.ItPernr = codAgenti;

@@ -15,9 +15,6 @@ namespace LiteSFATestWebService
         {
             JavaScriptSerializer serializer = new JavaScriptSerializer();
 
-
-           
-
             ComandaVanzare comandaVanzare = serializer.Deserialize<ComandaVanzare>(JSONComanda);
             DateLivrare dateLivrare = serializer.Deserialize<DateLivrare>(JSONDateLivrare);
 
@@ -85,6 +82,58 @@ namespace LiteSFATestWebService
 
             return;
         }
+
+
+
+        public static void saveTonajComanda(OracleConnection connection, string idComanda, string tonaj)
+        {
+
+            if (tonaj == null || tonaj.Equals("-1"))
+                return;
+
+
+            OracleCommand cmd = null;
+
+            try
+            {
+                cmd = connection.CreateCommand();
+
+                string query = " insert into sapprd.ztonajcomanda(mandt, idComanda, greutate, gewei) " +
+                               " values ('900', :idComanda , :greutate, :gewei)";
+
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":idComanda", OracleType.Number, 11).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = Int32.Parse(idComanda);
+
+                cmd.Parameters.Add(":greutate", OracleType.Number, 13).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = tonaj;
+
+                cmd.Parameters.Add(":gewei", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = "TO";
+
+                cmd.ExecuteNonQuery();
+
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                if (cmd != null)
+                    cmd.Dispose();
+            }
+
+
+
+        }
+
 
 
         private bool recordTonajExists(OracleConnection connection, string codClient, string addrNumber)
