@@ -16,7 +16,6 @@ namespace DistributieTESTWebServices
         {
 
 
-
             string retVal = "";
 
             if (serializedEvent.Contains("["))
@@ -25,6 +24,7 @@ namespace DistributieTESTWebServices
             {
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 EvenimentNou newEvent = serializer.Deserialize<EvenimentNou>(serializedEvent);
+
 
                 OracleConnection connection = new OracleConnection();
                 OracleDataReader oReader = null;
@@ -55,7 +55,7 @@ namespace DistributieTESTWebServices
                 }
                 else //eveniment client
                 {
-                    if (newEvent.eveniment.Equals("0"))
+                    if (newEvent.eveniment.Equals("0") || newEvent.eveniment.Equals("P"))
                         strLocalEveniment = "S";
 
                     if (newEvent.eveniment.Equals("S"))
@@ -162,6 +162,15 @@ namespace DistributieTESTWebServices
 
                     retVal = nowDate + "#" + nowTime;
 
+
+                    if (!newEvent.bordParent.Equals("-1"))
+                        saveBordParentSfCursa(connection, newEvent, latit, longit, mileage);
+
+
+                    if (cmd != null)
+                        cmd.Dispose();
+
+
                 }
                 catch (Exception ex)
                 {
@@ -218,7 +227,7 @@ namespace DistributieTESTWebServices
 
                 if (oReader.HasRows)
                 {
-                        exists = true;
+                    exists = true;
                 }
 
             }
@@ -226,9 +235,17 @@ namespace DistributieTESTWebServices
             {
                 ErrorHandling.sendErrorToMail(ex.ToString());
             }
+            finally
+            {
+                if (oReader != null)
+                    oReader.Close();
+
+                if (cmd != null)
+                    cmd.Dispose();
+
+            }
 
 
-            
 
             return exists;
 
@@ -248,6 +265,73 @@ namespace DistributieTESTWebServices
 
         }
 
+
+
+
+        private void saveBordParentSfCursa(OracleConnection connection, EvenimentNou newEvent, String latit, String longit, String mileage)
+        {
+
+
+
+            try
+            {
+
+                OracleCommand cmd = connection.CreateCommand();
+
+                String query = " insert into sapprd.zevenimentsofer(mandt,codsofer,data,ora,document,client,eveniment,gps,fms,codadresa) " +
+                               " values ('900',:codsofer,:data,:ora,:document,:client,:eveniment,:gps,:fms,:codadresa) ";
+
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codsofer", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = newEvent.codSofer;
+
+                cmd.Parameters.Add(":data", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = getDate();
+
+                cmd.Parameters.Add(":ora", OracleType.VarChar, 18).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = getTime();
+
+                cmd.Parameters.Add(":document", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[3].Value = newEvent.document;
+
+                cmd.Parameters.Add(":client", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[4].Value = newEvent.document;
+
+                cmd.Parameters.Add(":eveniment", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[5].Value = "S";
+
+                cmd.Parameters.Add(":gps", OracleType.VarChar, 150).Direction = ParameterDirection.Input;
+                cmd.Parameters[6].Value = latit + "," + longit;
+
+                cmd.Parameters.Add(":fms", OracleType.VarChar, 600).Direction = ParameterDirection.Input;
+                cmd.Parameters[7].Value = mileage;
+
+                cmd.Parameters.Add(":codadresa", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[8].Value = newEvent.codAdresa;
+
+
+                cmd.ExecuteNonQuery();
+
+                if (cmd != null)
+                    cmd.Dispose();
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+
+            }
+
+
+
+        }
 
 
 
@@ -319,6 +403,13 @@ namespace DistributieTESTWebServices
                 connection.ConnectionString = connectionString;
                 connection.Open();
 
+                if (ordineEtapeExista(connection, listEtape[0].borderou))
+                {
+                    connection.Close();
+                    connection.Dispose();
+                    return;
+                }
+
                 OracleCommand cmd = connection.CreateCommand();
 
 
@@ -340,7 +431,7 @@ namespace DistributieTESTWebServices
                     cmd.Parameters.Add(":codAdresa", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
                     cmd.Parameters[2].Value = etapa.codAdresa;
 
-                    cmd.Parameters.Add(":pozitie", OracleType.VarChar, 6).Direction = ParameterDirection.Input;
+                    cmd.Parameters.Add(":pozitie", OracleType.Int32, 10).Direction = ParameterDirection.Input;
                     cmd.Parameters[3].Value = etapa.pozitie;
 
                     cmd.Parameters.Add(":document", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
@@ -356,7 +447,7 @@ namespace DistributieTESTWebServices
             catch (Exception ex)
             {
                 ErrorHandling.sendErrorToMail(ex.ToString());
-               
+
             }
             finally
             {
@@ -369,6 +460,48 @@ namespace DistributieTESTWebServices
         }
 
 
+
+        private bool ordineEtapeExista(OracleConnection connection, string bord)
+        {
+            OracleCommand cmd = connection.CreateCommand();
+            OracleDataReader oReader = null;
+
+            bool etapeExists = false;
+            try
+            {
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select 1 from sapprd.zordinelivrari where borderou=:bord  ";
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":bord", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = bord;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                    etapeExists = true;
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+
+                if (oReader != null)
+                    oReader.Close();
+
+                if (cmd != null)
+                    cmd.Dispose();
+
+            }
+
+            return etapeExists;
+
+        }
 
 
         public string getEvenimentStopIncarcare(string document, string codSofer)

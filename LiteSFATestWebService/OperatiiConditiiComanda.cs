@@ -16,6 +16,8 @@ namespace LiteSFATestWebService
         {
             string retVal = "-1";
 
+            
+
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             ConditiiPrimite conditii = serializer.Deserialize<ConditiiPrimite>(conditiiComanda);
             ConditiiHeader conditiiHeader = serializer.Deserialize<ConditiiHeader>(conditii.header.ToString());

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Data;
 using System.Data.OracleClient;
+using System.Web.Script.Serialization;
+using LiteSFATestWebService.General;
 
 namespace LiteSFATestWebService
 {
@@ -13,8 +15,8 @@ namespace LiteSFATestWebService
         {
             string retVal = "-1";
 
-
-            ErrorHandling.sendErrorToMail(comanda + " , " + codAgent + " , " + filiala + " , " + depart + " , " + alertSD);
+            
+            
 
             OracleConnection connection = new OracleConnection();
             OracleTransaction transaction = null;
@@ -223,6 +225,8 @@ namespace LiteSFATestWebService
                 //sf. alert
 
 
+                OperatiiSuplimentare.saveTonajComanda(connection, idCmd.Value.ToString(), antetClpToken[19]);
+
             }
             catch (Exception ex)
             {
@@ -240,6 +244,138 @@ namespace LiteSFATestWebService
 
             return retVal;
         }
+
+
+
+
+        public string getListArtClpJSON(string nrCmd)
+        {
+
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            ComandaCLP comandaCLP = new ComandaCLP(); ;
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+
+                //date livrare comanda
+                cmd.CommandText = " select pers_contact,telefon,adr_livrare,city,region,decode(ketdat,' ',' ',to_char(to_date(ketdat,'yyyymmdd'))), felmarfa, masa, tipcamion, tipinc, " +
+                                  " tip_plata, mt, " +
+                                  " nvl((select  k.acc_ofc from sapprd.ekko k where k.mandt = '900' and k.ebeln = nrcmdsap ),' '), " +
+                                  " (select count(*) from sapprd.ekbe e where e.mandt = '900' and e.ebeln = nrcmdsap " +
+                                  " and ( e.bewtp <> 'L' or (e.bewtp = 'L' and exists (select * from sapprd.vttp p where p.mandt = '900' and p.vbeln = e.belnr)))), status_aprov, " +
+                                  " nvl(val_comanda,0), nvl(obs,' '), nvl(val_transp,0), nvl(proc_transp,0),  " +
+                                  " nvl((select  k.acc_dz from sapprd.ekko k where k.mandt = '900' and k.ebeln = nrcmdsap ),' ') acc_dz, " +
+                                  " nvl((select i.dincarc from sapprd.zcom m, sapprd.zcomdti i where m.mandt = '900' and m.docn = nrcmdsap " +
+                                  " and m.mandt = i.mandt and m.nrcom = i.nr  and rownum = 1),' ') data_inc, " +
+                                  " (select to_date(o.aedat,'yyyymmdd') || ',' || max(p.plifz) zile_livr from sapprd.ekko o, sapprd.ekpo p where o.ebeln = nrcmdsap " +
+                                  " and o.mandt = '900' and o.mandt = p.mandt and o.ebeln = p.ebeln and p.loekz <> 'L' group by o.aedat ) max_livrare " +
+                                  " from sapprd.zclphead where id=:idcmd ";
+
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":idcmd", OracleType.Int32, 20).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = Int32.Parse(nrCmd);
+
+                oReader = cmd.ExecuteReader();
+
+                DateLivrareCLP dateLivrare = new DateLivrareCLP();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+
+                    dateLivrare.persContact = oReader.GetString(0);
+                    dateLivrare.telefon = oReader.GetString(1);
+                    dateLivrare.adrLivrare = oReader.GetString(2);
+                    dateLivrare.oras = oReader.GetString(3);
+                    dateLivrare.codJudet = oReader.GetString(4);
+                    dateLivrare.data = GeneralUtils.addDays(oReader.GetString(21).Split(',')[0], Int32.Parse(oReader.GetString(21).Split(',')[1]));
+                    dateLivrare.tipMarfa = oReader.GetString(6);
+                    dateLivrare.masa = oReader.GetString(7);
+                    dateLivrare.tipCamion = oReader.GetString(8);
+                    dateLivrare.tipIncarcare = oReader.GetString(9);
+                    dateLivrare.tipPlata = oReader.GetString(10);
+                    dateLivrare.mijlocTransport = oReader.GetString(11);
+                    dateLivrare.aprobatOC = oReader.GetString(12);
+                    dateLivrare.deSters = oReader.GetInt32(13).ToString();
+                    dateLivrare.statusAprov = oReader.GetString(14);
+                    dateLivrare.valComanda = oReader.GetDouble(15).ToString();
+                    dateLivrare.obsComanda = oReader.GetString(16);
+                    dateLivrare.valTransp = oReader.GetDouble(17).ToString();
+                    dateLivrare.procTransp = oReader.GetDouble(18).ToString();
+                    dateLivrare.acceptDV = oReader.GetString(19);
+                    dateLivrare.dataIncarcare = oReader.GetString(20).Trim();
+
+
+                }
+
+                //sf. date livrare
+
+
+
+                //articole comanda
+                cmd.CommandText = " select decode(length(a.cod),18,substr(a.cod,-8),a.cod) cod ,b.nume,a.cantitate,a.umb,a.depoz,a.status from sapprd.zclpdet a, articole b " +
+                                  " where a.cod = b.cod and id=:idcmd ";
+
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":idcmd", OracleType.Int32, 20).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = Int32.Parse(nrCmd);
+
+                oReader = cmd.ExecuteReader();
+
+                ArticolCLP articol;
+                List<ArticolCLP> listArticole = new List<ArticolCLP>();
+
+            
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+
+                        articol = new ArticolCLP();
+                        articol.cod = oReader.GetString(0);
+                        articol.nume = oReader.GetString(1);
+                        articol.cantitate = oReader.GetDouble(2).ToString();
+                        articol.umBaza = oReader.GetString(3);
+                        articol.depozit = oReader.GetString(4);
+                        articol.status = oReader.GetString(5);
+                        listArticole.Add(articol);
+                       
+                    }
+                }
+              
+
+                comandaCLP.dateLivrare = dateLivrare;
+                comandaCLP.articole = listArticole;
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return GeneralUtils.serializeObject(comandaCLP);
+            
+        }
+
+
 
 
 

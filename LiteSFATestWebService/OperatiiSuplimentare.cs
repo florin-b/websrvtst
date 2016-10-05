@@ -88,7 +88,7 @@ namespace LiteSFATestWebService
         public static void saveTonajComanda(OracleConnection connection, string idComanda, string tonaj)
         {
 
-            if (tonaj == null || tonaj.Equals("-1"))
+            if (tonaj == null || tonaj.Equals("-1") || tonaj.Trim().Equals(""))
                 return;
 
 

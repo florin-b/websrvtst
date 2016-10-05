@@ -128,6 +128,7 @@
     </Compile>
     <Compile Include="Salarizare.cs" />
     <Compile Include="Sms.cs" />
+    <Compile Include="Stocuri.cs" />
     <Compile Include="TESTService.asmx.cs">
       <DependentUpon>TESTService.asmx</DependentUpon>
       <SubType>Component</SubType>

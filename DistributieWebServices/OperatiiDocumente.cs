@@ -126,7 +126,7 @@ namespace DistributieTESTWebServices
                 condTip = "";
                 if (tip.Equals("d"))    //doar borderourile deschise
                 {
-                    condTip = " where x.eveniment != 'S' ";
+                    condTip = " where x.eveniment != 'S' and rownum<2 ";
                 }
 
 
@@ -139,12 +139,11 @@ namespace DistributieTESTWebServices
 
                 cmd.CommandText = " select x.* from (select b.numarb,  to_char(b.data_e),  nvl((select nvl(ev.eveniment,'0') eveniment " +
                                   " from sapprd.zevenimentsofer ev where ev.document = b.numarb and ev.data = (select max(data) from sapprd.zevenimentsofer where document = ev.document and client = ev.document) " +
-                                  " and ev.ora = (select max(ora) from sapprd.zevenimentsofer where document = ev.document and client = ev.document and data = ev.data)),0) eveniment, b.shtyp " +
+                                  " and ev.ora = (select max(ora) from sapprd.zevenimentsofer where document = ev.document and client = ev.document and data = ev.data)),0) eveniment, b.shtyp, " +
+                                  " nvl((select distinct nr_bord from sapprd.zdocumentesms where nr_doc =b.numarb),'-1') bordParent " +
                                   " from  borderouri b where b.cod_sofer=:codSofer " + condData + " order by b.data_e, b.numarb desc) x " + condTip;
 
-
-              
-
+                
 
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add(":codSofer", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
@@ -165,6 +164,7 @@ namespace DistributieTESTWebServices
                         unBorderou.dataEmiterii = oReader.GetString(1);
                         unBorderou.evenimentBorderou = oReader.GetString(2);
                         unBorderou.tipBorderou = oReader.GetString(3);
+                        unBorderou.bordParent = oReader.GetString(4);
                         listaBorderouri.Add(unBorderou);
 
                     }
@@ -190,7 +190,7 @@ namespace DistributieTESTWebServices
             }
 
 
-          
+            
 
             return serializedResult;
         }
@@ -334,7 +334,7 @@ namespace DistributieTESTWebServices
 
                 if (tipBorderou.ToLower().Equals("distributie"))
                 {
-                    cmd.CommandText = " select  b.nume, b.cod , nvl((select c.ora from sapprd.zevenimentsofer c where c.document = a.nr_bord and c.client = a.cod_client and " +
+                    cmd.CommandText = " select  a.nume_client, b.cod , nvl((select c.ora from sapprd.zevenimentsofer c where c.document = a.nr_bord and c.client = a.cod_client and " +
                                       " c.eveniment = 'S' and c.codadresa = a.adresa_client),0) sosire, nvl((select c.ora from sapprd.zevenimentsofer c where c.document = a.nr_bord and c.client = a.cod_client " +
                                       " and c.eveniment = 'P' and c.codadresa = a.adresa_client),0) plecare, " +
                                       " nvl((select ad.region||','||ad.city1||', '||ad.street||', '||ad.house_num1 from sapprd.adrc ad where ad.client = '900' and ad.addrnumber = a.adresa_client),' ') adresa_client, " +
@@ -383,7 +383,7 @@ namespace DistributieTESTWebServices
                             oFactura.plecareClient = oReader.GetString(3);
                             oFactura.adresaClient = UtilsAddresses.formatAdresa(oReader.GetString(4));
                             oFactura.codAdresaClient = oReader.GetString(5);
-                            oFactura.pozitie = oReader.GetString(6);
+                            oFactura.pozitie = oReader.GetInt32(6).ToString();
                             oFactura.nrFactura = oReader.GetString(7).Length > 1 ? oReader.GetString(7) : nrBorderou;
                             oFactura.dataStartCursa = startCursa;
 

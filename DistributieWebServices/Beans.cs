@@ -11,6 +11,7 @@ namespace DistributieTESTWebServices
         public string dataEmiterii;
         public string evenimentBorderou;
         public string tipBorderou;
+        public string bordParent;
 
     }
 
@@ -75,6 +76,16 @@ namespace DistributieTESTWebServices
         public string tipEveniment;
         public string data;
         public string ora;
+        public string bordParent;
+
+
+
+        public override string ToString()
+        {
+            return "EvenimentNou: codSofer" + codSofer + ", document " + document + ", client " + client + ", codAdresa " + codAdresa + ", eveniment " + eveniment +
+                    ", truckData " + truckData + ", tipEveniment " + tipEveniment + ", data " + data + ", ora " + ora + ", bordParent " + bordParent;
+        }
+
     }
 
 
@@ -134,7 +145,7 @@ namespace DistributieTESTWebServices
         public string pozitie;
         public string document;
     }
-    
+
 
 
 }
