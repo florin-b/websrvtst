@@ -137,11 +137,16 @@ namespace DistributieTESTWebServices
 
                 cmd = connection.CreateCommand();
 
+              
+
+
+
                 cmd.CommandText = " select x.* from (select b.numarb,  to_char(b.data_e),  nvl((select nvl(ev.eveniment,'0') eveniment " +
                                   " from sapprd.zevenimentsofer ev where ev.document = b.numarb and ev.data = (select max(data) from sapprd.zevenimentsofer where document = ev.document and client = ev.document) " +
                                   " and ev.ora = (select max(ora) from sapprd.zevenimentsofer where document = ev.document and client = ev.document and data = ev.data)),0) eveniment, b.shtyp, " +
-                                  " nvl((select distinct nr_bord from sapprd.zdocumentesms where nr_doc =b.numarb),'-1') bordParent " +
-                                  " from  borderouri b where b.cod_sofer=:codSofer " + condData + " order by b.data_e, b.numarb desc) x " + condTip;
+                                  " nvl((select distinct nr_bord from sapprd.zdocumentebord where nr_bord_urm =b.numarb),'-1') bordParent " +
+                                  " from  borderouri b, sapprd.zdocumentebord c  where  c.nr_bord = b.numarb and b.cod_sofer=:codSofer " + condData + " order by trunc(c.data_e), c.ora_e) x " + condTip;
+
 
                 
 
@@ -334,31 +339,31 @@ namespace DistributieTESTWebServices
 
                 if (tipBorderou.ToLower().Equals("distributie"))
                 {
-                    cmd.CommandText = " select  a.nume_client, b.cod , nvl((select c.ora from sapprd.zevenimentsofer c where c.document = a.nr_bord and c.client = a.cod_client and " +
-                                      " c.eveniment = 'S' and c.codadresa = a.adresa_client),0) sosire, nvl((select c.ora from sapprd.zevenimentsofer c where c.document = a.nr_bord and c.client = a.cod_client " +
-                                      " and c.eveniment = 'P' and c.codadresa = a.adresa_client),0) plecare, " +
-                                      " nvl((select ad.region||','||ad.city1||', '||ad.street||', '||ad.house_num1 from sapprd.adrc ad where ad.client = '900' and ad.addrnumber = a.adresa_client),' ') adresa_client, " +
-                                      " a.adresa_client, " +
-                                      " nvl((select pozitie from sapprd.zordinelivrari where borderou = a.nr_bord and client = a.cod_client and codadresa = a.adresa_client and (document = a.nr_doc or document = a.nr_bord)),'-1') pozitie, a.nr_doc" + 
-                                      " from sapprd.zdocumentesms a, clienti b  where a.nr_bord =:nrbord " +
-                                      " and a.cod_client = b.cod and tip = 2 order by a.poz ";
+                    cmd.CommandText = " select  a.nume, b.cod , nvl((select c.ora from sapprd.zevenimentsofer c where c.document = a.nr_bord and c.client = a.cod and " +
+                                      " c.eveniment = 'S' and c.codadresa = a.adresa),0) sosire, nvl((select c.ora from sapprd.zevenimentsofer c where c.document = a.nr_bord and c.client = a.cod " +
+                                      " and c.eveniment = 'P' and c.codadresa = a.adresa),0) plecare, " +
+                                      " nvl((select ad.region||','||ad.city1||', '||ad.street||', '||ad.house_num1 from sapprd.adrc ad where ad.client = '900' and ad.addrnumber = a.adresa),' ') adresa_client, " +
+                                      " a.adresa, " +
+                                      " nvl((select pozitie from sapprd.zordinelivrari where borderou = a.nr_bord and client = a.cod and codadresa = a.adresa ),'-1') pozitie, a.nr_bord" + 
+                                      " from sapprd.zdocumentebord a, clienti b  where a.nr_bord =:nrbord " +
+                                      " and a.cod = b.cod  order by a.poz ";
                 }
 
                 if (tipBorderou.ToLower().Equals("aprovizionare") || tipBorderou.ToLower().Equals("inchiriere") || tipBorderou.ToLower().Equals("service"))
                 {
-                    cmd.CommandText = " select a.nume_furnizor, a.cod_furnizor, " +
-                                      " (select ad.region||','||ad.city1||', '||ad.street||', '||ad.house_num1 from sapprd.adrc ad where ad.client = '900' and ad.addrnumber = a.adresa_furnizor) adresa_furnizor, " +
-                                      " nvl((select c.ora from sapprd.zevenimentsofer c where c.document = a.nr_bord and c.client = a.cod_furnizor and " +
-                                      " c.eveniment = 'S' and c.codadresa = a.adresa_furnizor),0) sosire_furnizor, nvl((select c.ora from sapprd.zevenimentsofer c where c.document = a.nr_bord and c.client = a.cod_furnizor " +
-                                      " and c.eveniment = 'P' and c.codadresa = a.adresa_furnizor),0) plecare_furnizor, a.nume_client, a.cod_client , " +
-                                      " (select ad.region||','||ad.city1||', '||ad.street||', '||ad.house_num1 from sapprd.adrc ad where ad.client = '900' and ad.addrnumber = a.adresa_client) adresa_client, " +
-                                      " nvl((select c.ora from sapprd.zevenimentsofer c where c.document = a.nr_bord and c.client = a.cod_client and " +
-                                      " c.eveniment = 'S' and c.codadresa = a.adresa_client),0) sosire_client, nvl((select c.ora from sapprd.zevenimentsofer c where c.document = a.nr_bord and c.client = a.cod_client " +
-                                      " and c.eveniment = 'P' and c.codadresa = a.adresa_client),0) plecare_client, a.adresa_client, a.adresa_furnizor from sapprd.zdocumentesms a where a.nr_bord =:nrbord " +
-                                      " and a.tip = 2 order by a.poz";
+                    cmd.CommandText = " select a.nume, a.cod, " +
+                                      " (select ad.region||','||ad.city1||', '||ad.street||', '||ad.house_num1 from sapprd.adrc ad where ad.client = '900' and ad.addrnumber = a.adresa) adresa, " +
+                                      " nvl((select c.ora from sapprd.zevenimentsofer c where c.document = a.nr_bord and c.client = a.cod and " +
+                                      " c.eveniment = 'S' and c.codadresa = a.adresa),0) sosire_furnizor, nvl((select c.ora from sapprd.zevenimentsofer c where c.document = a.nr_bord and c.client = a.cod " +
+                                      " and c.eveniment = 'P' and c.codadresa = a.adresa),0) plecare_furnizor, a.nume, a.cod , " +
+                                      " (select ad.region||','||ad.city1||', '||ad.street||', '||ad.house_num1 from sapprd.adrc ad where ad.client = '900' and ad.addrnumber = a.adresa) adresa_client, " +
+                                      " nvl((select c.ora from sapprd.zevenimentsofer c where c.document = a.nr_bord and c.client = a.cod and " +
+                                      " c.eveniment = 'S' and c.codadresa = a.adresa),0) sosire_client, nvl((select c.ora from sapprd.zevenimentsofer c where c.document = a.nr_bord and c.client = a.cod " +
+                                      " and c.eveniment = 'P' and c.codadresa = a.adresa),0) plecare_client, a.adresa, a.adresa from sapprd.zdocumentebord a where a.nr_bord =:nrbord " +
+                                      "  order by a.poz";
                 }
 
-
+                
                 
 
                 cmd.Parameters.Clear();
@@ -428,13 +433,17 @@ namespace DistributieTESTWebServices
                 }
 
 
+                if (listaFacturi[listaFacturi.Count-1].codClient.Length == 4 || listaFacturi[listaFacturi.Count-1].codFurnizor.Length == 4)
+                {
+                    listaFacturi.RemoveAt(listaFacturi.Count-1);
+                }
+
                 oReader.Close();
                 oReader.Dispose();
 
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 serializedResult = serializer.Serialize(listaFacturi);
 
-               
 
             }
             catch (Exception ex)

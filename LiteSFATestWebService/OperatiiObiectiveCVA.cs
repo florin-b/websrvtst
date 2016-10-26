@@ -28,7 +28,7 @@ namespace LiteSFATestWebService
             List<ObjectivePhase> listStadii = serializer.Deserialize<List<ObjectivePhase>>(stadii);
 
 
-            ErrorHandling.sendErrorToMail(dateObiective);
+            
 
             OracleConnection connection = new OracleConnection();
             string connectionString = DatabaseConnections.ConnectToTestEnvironment();
@@ -430,16 +430,19 @@ namespace LiteSFATestWebService
 
                 foreach (Objective unObiectiv in listObiective)
                 {
-                    sqlString = "select a.id, a.region_id, a.name, a.type, a.cui, a.nr_rc, a.cnp, a.status, a.cva_code from sapprd.ztbl_beneficiari a " +
-                                " where a.ora_id = :oraId ";
+                    sqlString = " select a.id, a.region_id, a.name, a.type, a.cui, a.nr_rc, a.cnp, a.status, a.cva_code from sapprd.ztbl_beneficiari a " +
+                                " where a.cva_code =:codAgent and id=:benefId ";
 
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandText = sqlString;
                     cmd.Parameters.Clear();
 
 
-                    cmd.Parameters.Add(":oraId", OracleType.Number, 11).Direction = ParameterDirection.Input;
-                    cmd.Parameters[0].Value = Int32.Parse(unObiectiv.oraid);
+                    cmd.Parameters.Add(":codAgent", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
+                    cmd.Parameters[0].Value = unObiectiv.cvaCode;
+
+                    cmd.Parameters.Add(":benefId", OracleType.Number, 11).Direction = ParameterDirection.Input;
+                    cmd.Parameters[1].Value = Int32.Parse(unObiectiv.beneficiaryId);
 
 
 
@@ -473,24 +476,23 @@ namespace LiteSFATestWebService
                 strBeneficiari = serializer.Serialize(listBeneficiari);
 
 
-
-
                 ObjectivePhase phase = null;
                 List<ObjectivePhase> listPhases = new List<ObjectivePhase>();
 
                 foreach (Objective unObiectiv in listObiective)
                 {
-                    sqlString = " select a.id, a.phase_id, a.objective_id, a.days_nr, a.phase_start, a.phase_end, a.cva_code from sapprd.ztbl_obj_ph_cva a" +
-                                " where a.ora_id = :oraId ";
+                    sqlString = " select a.id, a.phase_id, a.objective_id, a.days_nr, a.phase_start, a.phase_end, a.cva_code from sapprd.ztbl_obj_ph_cva a " +
+                                " where a.cva_code =:codAgent and objective_id=:phaseId";
 
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandText = sqlString;
                     cmd.Parameters.Clear();
 
-                    cmd.Parameters.Add(":oraId", OracleType.Number, 11).Direction = ParameterDirection.Input;
-                    cmd.Parameters[0].Value = Int32.Parse(unObiectiv.oraid);
+                    cmd.Parameters.Add(":codAgent", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
+                    cmd.Parameters[0].Value = unObiectiv.cvaCode;
 
-
+                    cmd.Parameters.Add(":phaseId", OracleType.Number, 11).Direction = ParameterDirection.Input;
+                    cmd.Parameters[1].Value = Int32.Parse(unObiectiv.id);
 
                     oReader = cmd.ExecuteReader();
 
@@ -516,9 +518,6 @@ namespace LiteSFATestWebService
                 }
 
                 strPhases = serializer.Serialize(listPhases);
-
-
-
 
                 transaction.Commit();
 

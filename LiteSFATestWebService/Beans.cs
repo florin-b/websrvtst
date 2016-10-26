@@ -576,6 +576,7 @@ namespace LiteSFATestWebService
         public string observatii;
         public string dataCreare;
         public string status;
+        public string transpBack;
     }
 
     public class ArticolRetur

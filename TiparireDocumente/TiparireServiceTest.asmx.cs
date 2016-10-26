@@ -137,6 +137,11 @@ namespace TiparireDocumenteTest
                         unDocument.um = oReader.GetString(6);
                         unDocument.pozitieArticol = oReader.GetString(7);
                         unDocument.isPregatit = oReader.GetString(7);
+
+                        string numeClient = getNumeClient(connection, unDocument.id);
+                        if (!unDocument.client.Equals(numeClient))
+                            unDocument.client = unDocument.client + " " + numeClient;
+
                         listaDocumente.Add(unDocument);
 
 
@@ -229,6 +234,60 @@ namespace TiparireDocumenteTest
             return isOpen;
 
         }
+
+
+        private string getNumeClient(OracleConnection connection, string nrDocument)
+        {
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            string numeClient = "";
+
+            try
+            {
+                string sqlString = "  select b.name1 from sapprd.vbpa a, sapprd.adrc b  Where A.Mandt = '900' and a.vbeln =:nrDocument " +
+                                   "  and a.parvw = 'WE' And A.Adrnr = B.Addrnumber And B.Client = '900'  ";
+
+                cmd = connection.CreateCommand();
+                cmd.CommandText = sqlString;
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":nrDocument", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = nrDocument;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    numeClient = oReader.GetString(0);
+                }
+
+
+
+            }
+            catch (Exception ex)
+            {
+                sendErrorToMail(ex.ToString() + " , " + nrDocument);
+            }
+            finally
+            {
+                if (oReader != null)
+                {
+                    oReader.Close();
+                    oReader.Dispose();
+                }
+
+                cmd.Dispose();
+
+
+            }
+
+            return numeClient;
+        }
+
 
 
         private string getIntervalCautare()

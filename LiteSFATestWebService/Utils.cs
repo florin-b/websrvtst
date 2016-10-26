@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.OracleClient;
 using System.Linq;
 using System.Web;
 
@@ -51,6 +53,92 @@ namespace LiteSFATestWebService
             string year = cDate.Year.ToString();
             return year;
         }
+
+
+
+        public static string getDescTipTransport(string codTransport)
+        {
+            
+            string tipTransport = "";
+
+            if (codTransport.Equals("TCLI"))
+            {
+                tipTransport = "client";
+            }
+            if (codTransport.Equals("TRAP"))
+            {
+                tipTransport = "Arabesque";
+            }
+            if (codTransport.Equals("TERT"))
+            {
+                tipTransport = "terti";
+            }
+
+            return tipTransport;
+
+        }
+
+
+        public static List<string> getMail(Sms.TipUser[] tipUser, String filiala)
+        {
+
+            OracleConnection connection = new OracleConnection();
+            OracleDataReader oReader = null;
+            List<String> listMails = new List<string>();
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+                OracleCommand cmd = connection.CreateCommand();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+
+                foreach (Sms.TipUser tip in tipUser)
+                {
+                    cmd.CommandText = " select email from agenti where tip=:tipUser and filiala =:filiala and activ = 1 ";
+                    cmd.CommandType = CommandType.Text;
+                    cmd.Parameters.Clear();
+
+                    cmd.Parameters.Add(":tipUser", OracleType.VarChar, 36).Direction = ParameterDirection.Input;
+                    cmd.Parameters[0].Value = tip;
+
+                    cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                    cmd.Parameters[1].Value = filiala;
+
+                    oReader = cmd.ExecuteReader();
+
+                    if (oReader.HasRows)
+                    {
+                        while (oReader.Read())
+                        {
+                            if (oReader.GetString(0).Trim().Length > 0)
+                                listMails.Add(oReader.GetString(0));
+                        }
+                    }
+                }
+
+                oReader.Close();
+                oReader.Dispose();
+
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                connection.Close();
+                connection.Dispose();
+            }
+
+            return listMails;
+        }
+
+
 
 
     }

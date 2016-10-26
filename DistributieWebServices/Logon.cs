@@ -127,8 +127,6 @@ namespace DistributieTESTWebServices
                                   " and a.codsofer = b.cod ";
 
 
-                
-
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add(":codTableta", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
                 cmd.Parameters[0].Value = codTableta;

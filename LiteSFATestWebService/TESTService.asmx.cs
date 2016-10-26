@@ -1336,10 +1336,10 @@ namespace LiteSFATestWebService
 
 
         [WebMethod]
-        public string getDocumenteRetur(string codClient, string codDepartament, string unitLog)
+        public string getDocumenteRetur(string codClient, string codDepartament, string unitLog, string tipDocument, string interval)
         {
             OperatiiRetur opRetur = new OperatiiRetur();
-            return opRetur.getDocumenteRetur(codClient, codDepartament, unitLog);
+            return opRetur.getDocumenteRetur(codClient, codDepartament, unitLog, tipDocument, interval);
         }
 
 
@@ -1352,17 +1352,17 @@ namespace LiteSFATestWebService
 
 
         [WebMethod]
-        public string getArticoleRetur(string nrDocument)
+        public string getArticoleRetur(string nrDocument, string tipDocument)
         {
             OperatiiRetur opRetur = new OperatiiRetur();
-            return opRetur.getArticoleRetur(nrDocument);
+            return opRetur.getArticoleRetur(nrDocument, tipDocument);
         }
 
         [WebMethod]
-        public string saveComandaRetur(string dateRetur)
+        public string saveComandaRetur(string dateRetur, string tipRetur)
         {
             OperatiiRetur opRetur = new OperatiiRetur();
-            return opRetur.saveComandaRetur(dateRetur);
+            return opRetur.saveComandaRetur(dateRetur, tipRetur);
         }
 
 
@@ -3925,7 +3925,7 @@ namespace LiteSFATestWebService
                         string localFilGed = filiala.Substring(0, 2) + "2" + filiala.Substring(3, 1);  //cu 20
 
                         tipAprov = " and a.ul in ('" + filiala + "','" + localFilGed + "') and (a.accept1 = 'X' or a.accept2 = 'X') and ora_accept1 = '000000' " +
-                                   " and a.status_aprov in ('1','6')  and " +
+                                   " and a.status_aprov in ('1','6','21')  and " +
                                    " (substr(ag.divizie,0,2) ='" + localDepart + "' or a.depart ='" + localDepart + "') ";
                     }
 
@@ -4616,7 +4616,7 @@ namespace LiteSFATestWebService
 
                 cmd.CommandText = " select a.accept1, a.accept2, a.ora_accept1, a.ora_accept2, a.ul, a.valoare, b.nume nume_ag,a.depart, " +
                                   " nvl(c.nume,'-') nume_cl from sapprd.zcomhead_tableta a, agenti b, clienti c  where a.id =:idCmd " +
-                                  " and a.status = '2' and a.status_aprov = '1'  and b.cod = a.cod_agent and c.cod(+) = a.cod_client";
+                                  " and a.status = '2' and a.status_aprov in ('1','21')  and b.cod = a.cod_agent and c.cod(+) = a.cod_client";
 
 
                 cmd.Parameters.Clear();
@@ -5074,6 +5074,11 @@ namespace LiteSFATestWebService
         [WebMethod]
         public string operatiiComenzi(string nrCmd, string nrCmdSAP, string tipOp, string codUser, string codRespingere, string divizieAgent, string elimTransp, string filiala, string codStare)
         {
+
+
+            
+
+
             string retVal = "-1";
 
             try
@@ -6576,7 +6581,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -6671,8 +6676,6 @@ namespace LiteSFATestWebService
                             tipComanda = condUser + " and a.status in ('2','6','9','11','16','99') ";
                             condRestr = " and a.status_aprov in ('3','5','8','9','20','21') ";
 
-
-
                         }
 
                     }
@@ -6697,7 +6700,7 @@ namespace LiteSFATestWebService
                         selCmd = " and (a.accept1 = 'X' or a.accept2 = 'X') and ora_accept1 = '000000' and " +
                                  " (substr(ag.divizie,0,2) = '" + depart + "' or a.depart = '" + depart + "') and a.ul in ('" + filiala + "','" + localFilGed + "')";
 
-                        tipComanda = " and a.status_aprov in ('1','6') and a.status in ('2','11') " + selCmd;
+                        tipComanda = " and a.status_aprov in ('1','6','21') and a.status in ('2','11') " + selCmd;
 
                     }
 
@@ -7089,7 +7092,7 @@ namespace LiteSFATestWebService
                                " where a.cod_client=b.cod and ag.cod = a.cod_agent and a.tip_pers = 'CV' " +
                                " and a.status_aprov in ('1','4','6','21') and a.status in ('2','11') " +
                                " and v.pernr = '" + codUser + "' and v.spart = '" + localDepart + "' and substr(v.prctr,0,2) = substr(a.ul,0,2) and a.depart='11' " +
-                               " and decode(a.accept1,'X',a.ora_accept1,'1') != '000000' " + 
+                               " and decode(a.accept1,'X',a.ora_accept1,'1') != '000000' and decode(a.status_aprov,'21',decode(a.accept2,'X',a.ora_accept2,'000000'),'000000') = '000000' " + 
                                " and ((a.aprob_cv_necesar like '%" + localDepart + "%' and a.aprob_cv_realiz not like '%" + localDepart + "%') or (v.spart = substr(ag.divizie, 0, 2))) " +
                                " and a.cond_cv not like '%" + localDepart + "%' " +
                                " order by id ";
@@ -11372,10 +11375,10 @@ namespace LiteSFATestWebService
 
 
         [WebMethod]
-        public string saveNewClp(string comanda, string codAgent, string filiala, string depart, bool alertSD)
+        public string saveNewClp(string comanda, string codAgent, string filiala, string depart, bool alertSD, string serData)
         {
             OperatiiCLP operatiiClp = new OperatiiCLP();
-            return operatiiClp.saveNewClp(comanda, codAgent, filiala, depart, alertSD);
+            return operatiiClp.saveNewClp(comanda, codAgent, filiala, depart, alertSD, serData);
         }
 
 
@@ -11682,6 +11685,7 @@ namespace LiteSFATestWebService
         {
 
 
+
             string retVal = "-1";
 
             var serializer = new JavaScriptSerializer();
@@ -11799,6 +11803,8 @@ namespace LiteSFATestWebService
                 //sf. departament
 
 
+
+               
 
                 unitLogAlt = comandaVanzare.filialaAlternativa;
 
@@ -11954,7 +11960,7 @@ namespace LiteSFATestWebService
                         valSD = "X";
                 }
 
-                if (tipUser == "CV")
+                if (tipUser == "CV" && !tempDepart.Equals("11"))
                 {
                     if (alertSD)
                         valSD = "X";
@@ -12251,6 +12257,8 @@ namespace LiteSFATestWebService
                     }
 
 
+                   
+
                     webService = new ZTBL_WEBSERVICE();
 
                     SAPWebServices.ZcreazaComanda inParam = new SAPWebServices.ZcreazaComanda();
@@ -12337,11 +12345,17 @@ namespace LiteSFATestWebService
                 if (retVal.Equals("0") || retVal.Contains("#"))
                 {
                     string filialaUser = dateLivrare.unitLog.Substring(0, 2) + "1" + dateLivrare.unitLog.Substring(3, 1);
+
+                    /*
                     Sms sms = new Sms();
                     sms.setNumeClient(comandaVanzare.numeClient);
                     sms.setCodClient(comandaVanzare.codClient);
                     sms.sendSMS(Sms.TipUser.SM, filialaUser);
                     sms.sendSMS(Sms.TipUser.CVS, filialaUser);
+                    */
+
+                    Sms.TipUser[] useri = { Sms.TipUser.SM, Sms.TipUser.CVS };
+                    new Mail().sendComandaMail(idComanda, useri, filialaUser);
 
                 }
             }
@@ -12355,6 +12369,9 @@ namespace LiteSFATestWebService
 
         }
 
+
+
+       
 
         private void savePrelucrare04(OracleConnection conn, String idComanda, String prelucrare)
         {
@@ -12378,7 +12395,7 @@ namespace LiteSFATestWebService
             try
             {
 
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToProdEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -12386,7 +12403,7 @@ namespace LiteSFATestWebService
                 cmd = connection.CreateCommand();
 
 
-                cmd.CommandText = " select divizie from agenti where cod =:codAgent and activ = 1";
+                cmd.CommandText = " select divizie from agenti where cod =:codAgent ";
 
 
                 cmd.CommandType = CommandType.Text;
@@ -13842,6 +13859,11 @@ namespace LiteSFATestWebService
             ExpediereMail mail = new ExpediereMail();
             return mail.sendOfertaGedMail(nrComanda, adresaMail);
         }
+
+
+
+
+
 
 
         [WebMethod]

@@ -77,13 +77,14 @@ namespace DistributieTESTWebServices
         public string data;
         public string ora;
         public string bordParent;
+        public string evBord;
 
 
 
         public override string ToString()
         {
             return "EvenimentNou: codSofer" + codSofer + ", document " + document + ", client " + client + ", codAdresa " + codAdresa + ", eveniment " + eveniment +
-                    ", truckData " + truckData + ", tipEveniment " + tipEveniment + ", data " + data + ", ora " + ora + ", bordParent " + bordParent;
+                    ", truckData " + truckData + ", tipEveniment " + tipEveniment + ", data " + data + ", ora " + ora + ", bordParent " + bordParent + ", evBord " + evBord;
         }
 
     }

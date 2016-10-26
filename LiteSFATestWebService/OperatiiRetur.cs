@@ -629,9 +629,10 @@ namespace LiteSFATestWebService
 
 
 
-        public string getDocumenteRetur(string codClient, string codDepartament, string unitLog)
+        public string getDocumenteRetur(string codClient, string codDepartament, string unitLog, string tipDocument, string interval)
         {
             string serializedResult = "";
+
 
 
             OracleConnection connection = new OracleConnection();
@@ -644,6 +645,15 @@ namespace LiteSFATestWebService
 
             OracleCommand cmd = connection.CreateCommand();
 
+            string condPaleti = "";
+            string condData = "";
+
+            if (tipDocument == null || (tipDocument != null && tipDocument.Equals("PAL")))
+                condPaleti = "and p.matkl in ('433', '433_1', '716', '626', '929_2', '515')";
+
+            if (interval != null)
+                condData = " and substr(k.fkdat,0,6) = '" + interval + "' ";
+
             try
             {
 
@@ -653,9 +663,10 @@ namespace LiteSFATestWebService
                                       " from sapprd.vbrk k, sapprd.vbrp p, sapprd.vbpa a, sapprd.adrc c where k.mandt = p.mandt " +
                                       " and k.vbeln = p.vbeln  and k.mandt = '900'  and k.fkart in ('ZFM','ZFMC','ZFS','ZFSC','ZFPA') " +
                                       " and k.fksto <> 'X'  and k.fkdat >= to_char(sysdate-345,'yyyymmdd') " +
-                                      " and p.matkl in ('433', '433_1', '716', '626', '929_2','515') " +
+                                      condPaleti +
                                       " and k.mandt = a.mandt  and k.vbeln = a.vbeln  and a.parvw = 'WE' " +
                                       " and p.prctr =:unitLog  and a.mandt = c.client and a.adrnr = c.addrnumber " +
+                                      condData +
                                       " and lower(c.name1) like lower('%" + codClient + "%')  order by fkdat ";
 
 
@@ -665,9 +676,8 @@ namespace LiteSFATestWebService
                     cmd.CommandText = " select distinct k.vbeln, to_date(k.fkdat,'yyyymmdd') " +
                                       " from sapprd.vbrk k, sapprd.vbrp p where k.mandt = p.mandt and k.vbeln = p.vbeln and p.spart =:depart " +
                                       " and k.mandt = '900' and k.fkdat >= to_char(sysdate-145,'yyyymmdd') and k.fkart = 'ZFI' and k.fksto <> 'X' " +
-                                      " and k.kunag =:codClient and p.matkl in ('433', '433_1', '716', '626', '929_2', '515') order by to_date(k.fkdat,'yyyymmdd') ";
+                                      " and k.kunag =:codClient " + condPaleti + condData + " order by to_date(k.fkdat,'yyyymmdd') ";
                 }
-
 
 
 
@@ -733,8 +743,11 @@ namespace LiteSFATestWebService
         }
 
 
-        public string getArticoleRetur(string nrDocument)
+        public string getArticoleRetur(string nrDocument, string tipDocument)
         {
+
+
+
             string serializedResult = "";
 
             OracleConnection connection = new OracleConnection();
@@ -747,6 +760,11 @@ namespace LiteSFATestWebService
 
             OracleCommand cmd = connection.CreateCommand();
 
+            string condPaleti = "";
+
+            if (tipDocument == null || (tipDocument != null && tipDocument.Equals("PAL")))
+                condPaleti = "and p.matkl in ('433', '433_1', '716', '626', '929_2', '515')";
+
             try
             {
 
@@ -756,7 +774,9 @@ namespace LiteSFATestWebService
                                   " where a.mandt = '900' and a.vbelv = p.vbeln and a.posnv = p.posnr and a.vbtyp_v = 'M' " +
                                   " and a.vbtyp_n = 'H' and a.mandt = vk.mandt and a.vbeln = vk.vbeln and vk.auart = 'ZRI' " +
                                   " and a.mandt = cp.mandt and a.vbeln = cp.vbeln and a.posnn = cp.posnr and cp.abgru = ' ') returnate " +
-                                  " from sapprd.vbrp p where p.mandt = '900' and p.vbeln =:nrDoc and p.matkl in ('433', '433_1', '716', '626', '929_2', '515')  )";
+                                  " from sapprd.vbrp p where p.mandt = '900' and p.vbeln =:nrDoc " + condPaleti + "  )";
+
+
 
 
                 cmd.CommandType = CommandType.Text;
@@ -825,9 +845,9 @@ namespace LiteSFATestWebService
                 OracleCommand cmd = connection.CreateCommand();
 
                 string query = " insert into sapprd.zreturhead(mandt, id, nrdocument, statuscmd, statusaprob, datacreare, datalivrare, tiptransport, codagent, tipagent, motivretur, " +
-                               " numeperscontact, telperscontact, codadresa, codjudet, localitate, strada, codclient, numeclient) " +
+                               " numeperscontact, telperscontact, codadresa, codjudet, localitate, strada, codclient, numeclient, acelasi_transp) " +
                                " values ('900', pk_clp.nextval, :nrdocument, :statuscmd, :statusaprob, :datacreare, :datalivrare, :tiptransport, :codagent, :tipagent, :motivretur, " +
-                               " :numeperscontact, :telperscontact, :codadresa, :codjudet, :localitate, :strada, :codclient, :numeclient) returning id into :id ";
+                               " :numeperscontact, :telperscontact, :codadresa, :codjudet, :localitate, :strada, :codclient, :numeclient, :acelasi_transp) returning id into :id ";
 
                 transaction = connection.BeginTransaction();
                 cmd.Transaction = transaction;
@@ -886,6 +906,13 @@ namespace LiteSFATestWebService
 
                 cmd.Parameters.Add(":numeclient", OracleType.NVarChar, 75).Direction = ParameterDirection.Input;
                 cmd.Parameters[16].Value = comanda.numeClient;
+
+                string obsTransp = " ";
+                if (comanda.transpBack != null && Boolean.Parse(comanda.transpBack))
+                    obsTransp = "X";
+
+                cmd.Parameters.Add(":acelasi_transp", OracleType.NVarChar, 9).Direction = ParameterDirection.Input;
+                cmd.Parameters[17].Value = obsTransp;
 
                 OracleParameter idCmd = new OracleParameter("id", OracleType.Number);
                 idCmd.Direction = ParameterDirection.Output;
@@ -1015,19 +1042,48 @@ namespace LiteSFATestWebService
 
 
 
-        public string saveComandaRetur(String dateRetur)
+        public string saveComandaRetur(string dateRetur, string tipRetur)
         {
+
+            string retVal = "";
+
+            if (tipRetur == null || (tipRetur != null && tipRetur.Equals("PAL")))
+                retVal = saveReturPaleti(dateRetur);
+            else if (tipRetur.Equals("CMD"))
+                retVal = saveReturComanda(dateRetur);
+
+            return retVal;
+
+        }
+
+        private string saveReturComanda(string dateRetur)
+        {
+
+            string retVal = "";
+
+            retVal = saveComandaReturToDB(dateRetur);
+
+            if (retVal.Equals("0"))
+                retVal = saveComandaReturToWS(dateRetur);
+
+            return retVal;
+        }
+
+        private string saveReturPaleti(string dateRetur)
+        {
+
+            string retVal = "";
+
             var serializer = new JavaScriptSerializer();
             ComandaRetur comanda = serializer.Deserialize<ComandaRetur>(dateRetur);
 
             if (comanda.tipAgent.Contains("AV"))
-                return saveComandaReturToDB(dateRetur);
+                retVal = saveComandaReturToDB(dateRetur);
             else
-                return saveComandaReturToWS(dateRetur);
+                retVal = saveComandaReturToWS(dateRetur);
 
+            return retVal;
         }
-
-
 
 
         private string getAdreseLivrareClient(string codClient)

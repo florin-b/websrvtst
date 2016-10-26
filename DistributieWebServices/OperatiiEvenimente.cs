@@ -14,7 +14,7 @@ namespace DistributieTESTWebServices
     {
         public string saveNewEvent(string serializedEvent)
         {
-
+           
 
             string retVal = "";
 
@@ -75,7 +75,7 @@ namespace DistributieTESTWebServices
 
                     if (newEvent.tipEveniment == null || newEvent.tipEveniment.Equals("NOU", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        query = " select d.latitude, d.longitude, nvl(d.mileage,0) from gps_index d where d.device_id = (select distinct g.id from sapprd.zdocumentesms a, " +
+                        query = " select d.latitude, d.longitude, nvl(d.mileage,0) from gps_index d where d.device_id = (select distinct g.id from sapprd.zdocumentebord a, " +
                                 " borderouri b, gps_masini g where  " +
                                 " a.nr_bord = b.numarb and REPLACE(b.masina, '-') = g.nr_masina " +
                                 " and a.nr_bord = :nrBord)  ";
@@ -163,9 +163,18 @@ namespace DistributieTESTWebServices
                     retVal = nowDate + "#" + nowTime;
 
 
-                    if (!newEvent.bordParent.Equals("-1"))
-                        saveBordParentSfCursa(connection, newEvent, latit, longit, mileage);
 
+                    if (!newEvent.bordParent.Equals("-1"))
+                    {
+                        addBordStartCursa(connection, newEvent, latit, longit, mileage);
+                        updateBordParentSfCursa(connection, newEvent, latit, longit, mileage);
+                    }
+
+
+                    if (newEvent.evBord != null && newEvent.evBord.Equals("STOP") && newEvent.client.Length > 4)
+                    {
+                        addStopBord(connection, newEvent, latit, longit, mileage);
+                    }
 
                     if (cmd != null)
                         cmd.Dispose();
@@ -266,11 +275,73 @@ namespace DistributieTESTWebServices
         }
 
 
-
-
-        private void saveBordParentSfCursa(OracleConnection connection, EvenimentNou newEvent, String latit, String longit, String mileage)
+        private void addStopBord(OracleConnection connection, EvenimentNou newEvent, String latit, String longit, String mileage)
         {
 
+
+            try
+            {
+
+                OracleCommand cmd = connection.CreateCommand();
+
+                String query = " insert into sapprd.zevenimentsofer(mandt,codsofer,data,ora,document,client,eveniment,gps,fms,codadresa) " +
+                               " values ('900',:codsofer,:data,:ora,:document,:client,:eveniment,:gps,:fms,:codadresa) ";
+
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codsofer", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = newEvent.codSofer;
+
+                cmd.Parameters.Add(":data", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = getDate();
+
+                cmd.Parameters.Add(":ora", OracleType.VarChar, 18).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = getTimeAddSec();
+
+                cmd.Parameters.Add(":document", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[3].Value = newEvent.document;
+
+                cmd.Parameters.Add(":client", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[4].Value = newEvent.document;
+
+                cmd.Parameters.Add(":eveniment", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[5].Value = "S";
+
+                cmd.Parameters.Add(":gps", OracleType.VarChar, 150).Direction = ParameterDirection.Input;
+                cmd.Parameters[6].Value = latit + "," + longit;
+
+                cmd.Parameters.Add(":fms", OracleType.VarChar, 600).Direction = ParameterDirection.Input;
+                cmd.Parameters[7].Value = mileage;
+
+                cmd.Parameters.Add(":codadresa", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[8].Value = " ";
+
+
+                cmd.ExecuteNonQuery();
+
+                if (cmd != null)
+                    cmd.Dispose();
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString() + " , " + newEvent);
+            }
+            finally
+            {
+
+            }
+
+
+
+        }
+
+
+        private void addBordStartCursa(OracleConnection connection, EvenimentNou newEvent, String latit, String longit, String mileage)
+        {
 
 
             try
@@ -302,7 +373,7 @@ namespace DistributieTESTWebServices
                 cmd.Parameters[4].Value = newEvent.document;
 
                 cmd.Parameters.Add(":eveniment", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[5].Value = "S";
+                cmd.Parameters[5].Value = "P";
 
                 cmd.Parameters.Add(":gps", OracleType.VarChar, 150).Direction = ParameterDirection.Input;
                 cmd.Parameters[6].Value = latit + "," + longit;
@@ -323,6 +394,61 @@ namespace DistributieTESTWebServices
             catch (Exception ex)
             {
                 ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+
+            }
+
+
+        }
+
+        private void updateBordParentSfCursa(OracleConnection connection, EvenimentNou newEvent, String latit, String longit, String mileage)
+        {
+
+
+            try
+            {
+
+                OracleCommand cmd = connection.CreateCommand();
+
+
+                string query = " update sapprd.zevenimentsofer set data=:data, ora=:ora, gps=:gps, fms=:fms " +
+                               " where codsofer=:codSofer and document=:document and client = document  and eveniment='S'  ";
+
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":data", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = getDate();
+
+                cmd.Parameters.Add(":ora", OracleType.VarChar, 18).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = getTime();
+
+                cmd.Parameters.Add(":gps", OracleType.VarChar, 150).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = latit + "," + longit;
+
+                cmd.Parameters.Add(":fms", OracleType.VarChar, 600).Direction = ParameterDirection.Input;
+                cmd.Parameters[3].Value = mileage;
+
+                cmd.Parameters.Add(":codsofer", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[4].Value = newEvent.codSofer;
+
+                cmd.Parameters.Add(":document", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[5].Value = newEvent.bordParent;
+
+
+                cmd.ExecuteNonQuery();
+
+                if (cmd != null)
+                    cmd.Dispose();
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString() + " , " + newEvent.ToString());
             }
             finally
             {
@@ -415,8 +541,8 @@ namespace DistributieTESTWebServices
 
                 foreach (Etapa etapa in listEtape)
                 {
-                    String query = " insert into sapprd.zordinelivrari(mandt, borderou, client, codadresa, pozitie, document) " +
-                                   " values ('900', :boderou, :client, :codAdresa, :pozitie, :document) ";
+                    String query = " insert into sapprd.zordinelivrari(mandt, borderou, client, codadresa, pozitie) " +
+                                   " values ('900', :boderou, :client, :codAdresa, :pozitie) ";
 
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandText = query;
@@ -434,8 +560,7 @@ namespace DistributieTESTWebServices
                     cmd.Parameters.Add(":pozitie", OracleType.Int32, 10).Direction = ParameterDirection.Input;
                     cmd.Parameters[3].Value = etapa.pozitie;
 
-                    cmd.Parameters.Add(":document", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
-                    cmd.Parameters[4].Value = etapa.document;
+                   
 
                     cmd.ExecuteNonQuery();
                 }
@@ -674,8 +799,8 @@ namespace DistributieTESTWebServices
                                   " c.eveniment = 'S' and c.codadresa = a.adresa_client),0) sosire, nvl((select c.ora from sapprd.zevenimentsofer c where c.document = a.nr_bord and c.client = a.cod_client " +
                                   " and c.eveniment = 'P' and c.codadresa = a.adresa_client),0) plecare, a.adresa_client cod_adresa, " +
                                   " (select ad.city1||', '||ad.street||', '||ad.house_num1 from sapprd.adrc ad where ad.client = '900' and ad.addrnumber = a.adresa_client) adresa_client " +
-                                  " from sapprd.zdocumentesms a, clienti b  where a.nr_bord =:nrbord " +
-                                  " and a.cod_client = b.cod and tip = 2 order by a.poz ";
+                                  " from sapprd.zdocumentebord a, clienti b  where a.nr_bord =:nrbord " +
+                                  " and a.cod = b.cod and tip = 2 order by a.poz ";
 
 
 
@@ -794,7 +919,7 @@ namespace DistributieTESTWebServices
                 cmd.CommandText = " select distinct b.document,  to_char(to_date(s.data_e,'yyyyMMdd')),  nvl((select nvl(ev.eveniment,'0') eveniment " +
                                   " from sapprd.zevenimentsofer ev where ev.document = b.document and ev.data = (select max(data) from sapprd.zevenimentsofer where document = ev.document and client = ev.document) " +
                                   " and ev.ora = (select max(ora) from sapprd.zevenimentsofer where document = ev.document and client = ev.document and data = ev.data)),0) eveniment " +
-                                  " from  sapprd.zevenimentsofer b, sapprd.zdocumentesms s where b.codsofer=:codSofer and s.nr_bord = b.document " + condData + " order by b.document ";
+                                  " from  sapprd.zevenimentsofer b, sapprd.zdocumentebord s where b.codsofer=:codSofer and s.nr_bord = b.document " + condData + " order by b.document ";
 
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add(":codSofer", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
@@ -912,11 +1037,11 @@ namespace DistributieTESTWebServices
             string retVal = "";
 
 
-            if (tipEveniment.Equals("SFARSIT_INCARCARE"))
+            if (tipEveniment.Equals("SF_INC"))
             {
                 retVal = cancelSfarsitIncarcare(nrDocument, codSofer);
             }
-            else if (tipEveniment.Equals("START_BORD") || tipEveniment.Equals("STOP_BORD"))
+            else if (tipEveniment.Equals("START") || tipEveniment.Equals("STOP"))
             {
                 retVal = cancelStartBord(nrDocument, codSofer, tipEveniment);
             }
@@ -1046,9 +1171,9 @@ namespace DistributieTESTWebServices
 
 
             string strEveniment = "X";
-            if (tipEveniment.Equals("START_BORD"))
+            if (tipEveniment.Equals("START"))
                 strEveniment = "P";
-            else if (tipEveniment.Equals("STOP_BORD"))
+            else if (tipEveniment.Equals("STOP"))
                 strEveniment = "S";
 
 
@@ -1167,6 +1292,17 @@ namespace DistributieTESTWebServices
         private static String getTime()
         {
             DateTime cDate = DateTime.Now;
+            string hour = cDate.Hour.ToString("00");
+            string minute = cDate.Minute.ToString("00");
+            string sec = cDate.Second.ToString("00");
+            return hour + minute + sec;
+        }
+
+
+
+        private static String getTimeAddSec()
+        {
+            DateTime cDate = DateTime.Now.AddSeconds(1);
             string hour = cDate.Hour.ToString("00");
             string minute = cDate.Minute.ToString("00");
             string sec = cDate.Second.ToString("00");

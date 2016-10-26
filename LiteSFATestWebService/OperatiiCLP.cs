@@ -6,17 +6,288 @@ using System.Data;
 using System.Data.OracleClient;
 using System.Web.Script.Serialization;
 using LiteSFATestWebService.General;
+using System.Globalization;
 
 namespace LiteSFATestWebService
 {
     public class OperatiiCLP
     {
-        public string saveNewClp(string comanda, string codAgent, string filiala, string depart, bool alertSD)
+
+
+
+        private string saveCmdClp(OracleConnection connection, AntetComandaCLP antetComanda, List<ArticolComandaCLP> articole, string filiala,string codAgent, bool alertSD)
         {
+
+
+            OracleCommand cmd = connection.CreateCommand();
+            OracleTransaction transaction = null;
+
+            string query = " insert into sapprd.zclphead(mandt, id, cod_client, cod_agent, ul, ul_dest, depart, status, nrcmdsap, datac, accept1, status_aprov, " +
+                           " pers_contact, telefon, adr_livrare, city, region, ketdat, dl, tip_plata, mt, depoz_dest, val_comanda, obs, furn_prod, cod_agent2, " +
+                           " fasonate, name1, felmarfa, masa, tipcamion, tipinc) values ('900', pk_clp.nextval, :codCl, :codAg, :ul, :ulDest, :depart, :status, :nrcmdsap , " +
+                           " :datac, :accept1, :status_aprov, :perscont, :tel, :adr, :city, :region, :ketdat, ' ', :tipPlata, :tipTransport, :depozDest, 0, " +
+                           " :obs ,' ', :codAgent2,:fasonate, :nume, :felmarfa, :masa, :tipcamion, :tipinc) " +
+                           " returning id into :id ";
+
+            transaction = connection.BeginTransaction();
+            cmd.Transaction = transaction;
+
+            cmd.CommandText = query;
+            cmd.CommandType = CommandType.Text;
+
+            cmd.Parameters.Clear();
+
+            cmd.Parameters.Add(":codCl", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+            cmd.Parameters[0].Value = antetComanda.codClient;
+
+            cmd.Parameters.Add(":codAg", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+            cmd.Parameters[1].Value = codAgent;
+
+            cmd.Parameters.Add(":ul", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+            cmd.Parameters[2].Value = filiala;
+
+            cmd.Parameters.Add(":ulDest", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+            cmd.Parameters[3].Value = antetComanda.codFilialaDest;
+
+            cmd.Parameters.Add(":depart", OracleType.VarChar, 6).Direction = ParameterDirection.Input;
+            cmd.Parameters[4].Value = articole[0].depart;
+
+            cmd.Parameters.Add(":status", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+            cmd.Parameters[5].Value = "0";
+
+            cmd.Parameters.Add(":nrcmdsap", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+            cmd.Parameters[6].Value = " ";
+
+            cmd.Parameters.Add(":datac", OracleType.VarChar, 18).Direction = ParameterDirection.Input;
+            cmd.Parameters[7].Value = getCurrentDate();
+
+            cmd.Parameters.Add(":accept1", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+            string valSD = "1";
+            if (alertSD)
+                valSD = "X";
+            cmd.Parameters[8].Value = valSD;
+
+            string status_aprov = "0";
+            if (alertSD || antetComanda.tipTransport.Equals("TERT") || antetComanda.cmdFasonate.Equals("false"))
+                status_aprov = "1";
+
+            cmd.Parameters.Add(":status_aprov", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+            cmd.Parameters[9].Value = status_aprov;
+
+            cmd.Parameters.Add(":perscont", OracleType.VarChar, 150).Direction = ParameterDirection.Input;
+            cmd.Parameters[10].Value = antetComanda.persCont;
+
+            cmd.Parameters.Add(":tel", OracleType.VarChar, 150).Direction = ParameterDirection.Input;
+            cmd.Parameters[11].Value = antetComanda.telefon;
+
+            cmd.Parameters.Add(":adr", OracleType.VarChar, 150).Direction = ParameterDirection.Input;
+            cmd.Parameters[12].Value = antetComanda.strada;
+
+            cmd.Parameters.Add(":city", OracleType.VarChar, 75).Direction = ParameterDirection.Input;
+            cmd.Parameters[13].Value = antetComanda.localitate;
+
+            string varRegion = antetComanda.codJudet;
+            if (varRegion.Trim().Equals(""))
+                varRegion = " ";
+            cmd.Parameters.Add(":region", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
+            cmd.Parameters[14].Value = varRegion;
+
+            cmd.Parameters.Add(":ketdat", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+            string[] dataLivareClp = antetComanda.dataLivrare.Split('.');
+
+            cmd.Parameters[15].Value = dataLivareClp[2] + dataLivareClp[1] + dataLivareClp[0];
+
+            cmd.Parameters.Add(":tipPlata", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+            cmd.Parameters[16].Value = antetComanda.tipPlata;
+
+            cmd.Parameters.Add(":tipTransport", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+            cmd.Parameters[17].Value = antetComanda.tipTransport;
+
+            cmd.Parameters.Add(":depozDest", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+            cmd.Parameters[18].Value = articole[0].depozit;
+
+            cmd.Parameters.Add(":codAgent2", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+            cmd.Parameters[19].Value = antetComanda.selectedAgent;
+
+            cmd.Parameters.Add(":fasonate", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+            string paramFasonate = " ";
+            if (antetComanda.cmdFasonate.Equals("true"))
+            {
+                paramFasonate = "X";
+            }
+            cmd.Parameters[20].Value = paramFasonate;
+
+            cmd.Parameters.Add(":nume", OracleType.VarChar, 90).Direction = ParameterDirection.Input;
+            cmd.Parameters[21].Value = antetComanda.numeClientCV;
+
+            cmd.Parameters.Add(":obs", OracleType.VarChar, 150).Direction = ParameterDirection.Input;
+            cmd.Parameters[22].Value = antetComanda.observatiiCLP != null? antetComanda.observatiiCLP : " ";
+
+            cmd.Parameters.Add(":felmarfa", OracleType.VarChar, 180).Direction = ParameterDirection.Input;
+            cmd.Parameters[23].Value = antetComanda.tipMarfa;
+
+            cmd.Parameters.Add(":masa", OracleType.VarChar, 180).Direction = ParameterDirection.Input;
+            cmd.Parameters[24].Value = antetComanda.masaMarfa;
+
+            cmd.Parameters.Add(":tipcamion", OracleType.VarChar, 45).Direction = ParameterDirection.Input;
+            cmd.Parameters[25].Value = antetComanda.tipCamion;
+
+            cmd.Parameters.Add(":tipinc", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+            cmd.Parameters[26].Value = antetComanda.tipIncarcare;
+
+
+            OracleParameter idCmd = new OracleParameter("id", OracleType.Number);
+            idCmd.Direction = ParameterDirection.Output;
+            cmd.Parameters.Add(idCmd);
+
+            cmd.ExecuteNonQuery();
+
+
+            int pozArt = 0;
+            
+            for (int i = 0; i < articole.Count; i++)
+            {
+
+                pozArt = (i + 1) * 10;
+
+
+                string codArtClp = articole[i].cod;
+                if (codArtClp.Length == 8)
+                    codArtClp = "0000000000" + codArtClp;
+
+
+                query = " insert into sapprd.zclpdet(mandt,id,poz,status,cod,cantitate,umb,depoz) " +
+                        " values ('900'," + idCmd.Value + ",'" + pozArt + "','0','" + codArtClp + "',:cantArt, " +
+                        "'" + articole[i].umBaza + "','" + articole[i].depozit + "' ) ";
+
+
+                cmd.CommandText = query;
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":cantArt", OracleType.Number, 13).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = Double.Parse(articole[i].cantitate, CultureInfo.InvariantCulture);
+
+                cmd.ExecuteNonQuery();
+
+
+            }
+
+            transaction.Commit();
+
+
+            SapWsClp.ZCLP_WEBSERVICE webServiceClp = null;
+
+            webServiceClp = new SapWsClp.ZCLP_WEBSERVICE();
+
+            System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Service1.getUser(), Service1.getPass());
+            webServiceClp.Credentials = nc;
+            webServiceClp.Timeout = 1200000;
+
+            SapWsClp.ZcreazaSto inParam = new SapWsClp.ZcreazaSto();
+            inParam.VId = Convert.ToDecimal(idCmd.Value);
+
+            SapWsClp.ZcreazaStoResponse outParam = webServiceClp.ZcreazaSto(inParam);
+
+            string retVal = outParam.VOk.ToString() + " , " + outParam.VMess.ToString();
+
+            webServiceClp.Dispose();
+
+
+            //nu este nevoie de aprobare, se trimite mail de instiintare
+            if (status_aprov.Equals("0"))
+            {
+                if (!Service1.isClpTransferIntreFiliale(idCmd.Value.ToString()))
+                    Service1.sendAlertMailCreareClp(idCmd.Value.ToString());
+            }
+            //sf. alert
+
+
+            OperatiiSuplimentare.saveTonajComanda(connection, idCmd.Value.ToString(), antetComanda.tonaj);
+
+            return retVal;
+
+
+        }
+
+
+
+        public string saveNewClp(string comanda, string codAgent, string filiala, string depart, bool alertSD, string serData)
+        {
+            if (serData == null)
+                return saveNewClp_oldversion(comanda, codAgent, filiala, depart, alertSD);
+            else
+                return saveNewClp_newversion(comanda, codAgent, filiala, depart, alertSD, serData);
+        }
+
+
+
+        public string saveNewClp_newversion(string comanda, string codAgent, string filiala, string depart, bool alertSD, string serData)
+        {
+
+
+
             string retVal = "-1";
 
+            OracleConnection connection = new OracleConnection();
+
+            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+            connection.ConnectionString = connectionString;
+            connection.Open();
+
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+
+            ComandaCreataCLP comandaCLP = serializer.Deserialize<ComandaCreataCLP>(serData);
+            List<ArticolComandaCLP> listArticole = serializer.Deserialize<List<ArticolComandaCLP>>(comandaCLP.listArticole);
+            AntetComandaCLP antetComanda = serializer.Deserialize<AntetComandaCLP>(comandaCLP.antetComanda);
             
-            
+
+            string tempDepart = "";
+
+            List<ArticolComandaCLP> tempList = new List<ArticolComandaCLP>();
+
+            for (int i=0; i<listArticole.Count; i++)
+            {
+
+                if (!tempDepart.Equals(listArticole[i].depart) && !tempDepart.Equals(""))
+                {
+                    retVal =  saveCmdClp(connection, antetComanda, tempList,  filiala,codAgent, alertSD);
+                    tempList.Clear();
+                }
+
+
+                ArticolComandaCLP articol = new ArticolComandaCLP();
+                articol.cod = listArticole[i].cod;
+                articol.cantitate = listArticole[i].cantitate;
+                articol.umBaza = listArticole[i].umBaza;
+                articol.depozit = listArticole[i].depozit;
+                articol.depart = listArticole[i].depart;
+                tempList.Add(articol);
+
+
+                tempDepart = listArticole[i].depart;
+
+
+            }
+
+
+
+           retVal = saveCmdClp(connection, antetComanda, tempList, filiala, codAgent, alertSD);
+               
+           connection.Close();
+           connection.Dispose();
+
+
+            return retVal;
+        }
+
+
+
+        public string saveNewClp_oldversion(string comanda, string codAgent, string filiala, string depart, bool alertSD)
+        {
+
+            string retVal = "-1";
+
 
             OracleConnection connection = new OracleConnection();
             OracleTransaction transaction = null;
@@ -196,7 +467,7 @@ namespace LiteSFATestWebService
 
                 transaction.Commit();
 
-               
+
 
                 SapWsClp.ZCLP_WEBSERVICE webServiceClp = null;
 
@@ -214,7 +485,7 @@ namespace LiteSFATestWebService
                 retVal = outParam.VOk.ToString() + " , " + outParam.VMess.ToString();
 
                 webServiceClp.Dispose();
-               
+
 
                 //nu este nevoie de aprobare, se trimite mail de instiintare
                 if (status_aprov.Equals("0"))
@@ -243,6 +514,9 @@ namespace LiteSFATestWebService
 
 
             return retVal;
+
+
+
         }
 
 
@@ -339,7 +613,7 @@ namespace LiteSFATestWebService
                 ArticolCLP articol;
                 List<ArticolCLP> listArticole = new List<ArticolCLP>();
 
-            
+
                 if (oReader.HasRows)
                 {
                     while (oReader.Read())
@@ -353,10 +627,10 @@ namespace LiteSFATestWebService
                         articol.depozit = oReader.GetString(4);
                         articol.status = oReader.GetString(5);
                         listArticole.Add(articol);
-                       
+
                     }
                 }
-              
+
 
                 comandaCLP.dateLivrare = dateLivrare;
                 comandaCLP.articole = listArticole;
@@ -372,7 +646,7 @@ namespace LiteSFATestWebService
             }
 
             return GeneralUtils.serializeObject(comandaCLP);
-            
+
         }
 
 

@@ -55,7 +55,7 @@ namespace LiteSFATestWebService
                 {
                     DateTime dateTime = new DateTime();
                     SMSService.SMSServiceService smsService = new SMSServiceService();
-                    string sessionId = smsService.openSession("arabesque", "arbsq123");
+                    string sessionId = smsService.openSession("arabesque2", "arbsq123");
 
                     for (int i = 0; i < listTelefoane.Count; i++)
                     {
