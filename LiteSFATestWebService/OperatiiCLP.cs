@@ -15,8 +15,9 @@ namespace LiteSFATestWebService
 
 
 
-        private string saveCmdClp(OracleConnection connection, AntetComandaCLP antetComanda, List<ArticolComandaCLP> articole, string filiala,string codAgent, bool alertSD)
+        private string saveCmdClp(OracleConnection connection, AntetComandaCLP antetComanda, List<ArticolComandaCLP> articole, string filiala, string codAgent, bool alertSD)
         {
+
 
 
             OracleCommand cmd = connection.CreateCommand();
@@ -67,9 +68,10 @@ namespace LiteSFATestWebService
                 valSD = "X";
             cmd.Parameters[8].Value = valSD;
 
-            string status_aprov = "0";
-            if (alertSD || antetComanda.tipTransport.Equals("TERT") || antetComanda.cmdFasonate.Equals("false"))
+            string status_aprov = "1";
+            if (alertSD || antetComanda.tipTransport == "TERT" || !Boolean.Parse(antetComanda.cmdFasonate))
                 status_aprov = "1";
+
 
             cmd.Parameters.Add(":status_aprov", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
             cmd.Parameters[9].Value = status_aprov;
@@ -120,8 +122,8 @@ namespace LiteSFATestWebService
             cmd.Parameters.Add(":nume", OracleType.VarChar, 90).Direction = ParameterDirection.Input;
             cmd.Parameters[21].Value = antetComanda.numeClientCV;
 
-            cmd.Parameters.Add(":obs", OracleType.VarChar, 150).Direction = ParameterDirection.Input;
-            cmd.Parameters[22].Value = antetComanda.observatiiCLP != null? antetComanda.observatiiCLP : " ";
+            cmd.Parameters.Add(":obs", OracleType.VarChar, 300).Direction = ParameterDirection.Input;
+            cmd.Parameters[22].Value = antetComanda.observatiiCLP != null ? antetComanda.observatiiCLP : " ";
 
             cmd.Parameters.Add(":felmarfa", OracleType.VarChar, 180).Direction = ParameterDirection.Input;
             cmd.Parameters[23].Value = antetComanda.tipMarfa;
@@ -144,7 +146,7 @@ namespace LiteSFATestWebService
 
 
             int pozArt = 0;
-            
+
             for (int i = 0; i < articole.Count; i++)
             {
 
@@ -214,6 +216,9 @@ namespace LiteSFATestWebService
 
         public string saveNewClp(string comanda, string codAgent, string filiala, string depart, bool alertSD, string serData)
         {
+
+
+
             if (serData == null)
                 return saveNewClp_oldversion(comanda, codAgent, filiala, depart, alertSD);
             else
@@ -240,18 +245,18 @@ namespace LiteSFATestWebService
             ComandaCreataCLP comandaCLP = serializer.Deserialize<ComandaCreataCLP>(serData);
             List<ArticolComandaCLP> listArticole = serializer.Deserialize<List<ArticolComandaCLP>>(comandaCLP.listArticole);
             AntetComandaCLP antetComanda = serializer.Deserialize<AntetComandaCLP>(comandaCLP.antetComanda);
-            
+
 
             string tempDepart = "";
 
             List<ArticolComandaCLP> tempList = new List<ArticolComandaCLP>();
 
-            for (int i=0; i<listArticole.Count; i++)
+            for (int i = 0; i < listArticole.Count; i++)
             {
 
                 if (!tempDepart.Equals(listArticole[i].depart) && !tempDepart.Equals(""))
                 {
-                    retVal =  saveCmdClp(connection, antetComanda, tempList,  filiala,codAgent, alertSD);
+                    retVal = saveCmdClp(connection, antetComanda, tempList, filiala, codAgent, alertSD);
                     tempList.Clear();
                 }
 
@@ -272,10 +277,10 @@ namespace LiteSFATestWebService
 
 
 
-           retVal = saveCmdClp(connection, antetComanda, tempList, filiala, codAgent, alertSD);
-               
-           connection.Close();
-           connection.Dispose();
+            retVal = saveCmdClp(connection, antetComanda, tempList, filiala, codAgent, alertSD);
+
+            connection.Close();
+            connection.Dispose();
 
 
             return retVal;
@@ -349,7 +354,7 @@ namespace LiteSFATestWebService
                     valSD = "X";
                 cmd.Parameters[8].Value = valSD;
 
-                string status_aprov = "0";
+                string status_aprov = "1";
                 if (alertSD || antetClpToken[9] == "TERT" || antetClpToken[12] == "false")
                     status_aprov = "1";
 

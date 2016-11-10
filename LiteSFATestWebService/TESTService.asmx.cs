@@ -2419,13 +2419,12 @@ namespace LiteSFATestWebService
                 connection.ConnectionString = connectionString;
                 connection.Open();
 
+
                 cmd.CommandText = " select nvl(a.city1,' ') city1 , nvl(a.street,' ') street, " +
-                                  " nvl(a.house_num1,' ') house_num, nvl(region,' '), a.addrnumber from sapprd.adrc a " +
-                                  " where a.client = '900' and a.addrnumber =  " +
-                                  " (select k.adrnr from sapprd.kna1 k where k.mandt = '900' and k.kunnr =:codClient) " +
-                                  " union " +
-                                  " select nvl(z.localitate,' '), nvl(z.adr_livrare,' ') , ' ', nvl(z.regio,' '), z.nr_crt from sapprd.zclient_adrese z " +
-                                  " where z.kunnr =:codClient   ";
+                                  " nvl(a.house_num1,' ') house_num, nvl(region,' '), a.addrnumber, c.latitude, c.longitude from sapprd.adrc a, sapprd.zadreseclienti c " +
+                                  " where a.client = '900' " +
+                                  " and c.codclient =:codClient and c.codadresa = a.addrnumber  order by region, city1 ";
+
 
 
 
@@ -2455,6 +2454,8 @@ namespace LiteSFATestWebService
                         oAdresa.codJudet = oReader.GetString(3);
                         oAdresa.codAdresa = oReader.GetString(4);
                         oAdresa.tonaj = "-1";
+                        oAdresa.coords = oReader.GetString(5) + "," + oReader.GetString(6);
+
                         listaAdreseLivrare.Add(oAdresa);
 
                     }
@@ -9148,9 +9149,7 @@ namespace LiteSFATestWebService
             try
             {
 
-                string connectionString = "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
-                             " (HOST = 10.1.3.95)(PORT = 1521)))(CONNECT_DATA = (SERVICE_NAME = TABLET))); " +
-                             " User Id = WEBSAP; Password = 2INTER7;";
+                string connectionString = DatabaseConnections.ConnectToProdEnvironment();
 
 
                 if (tipComanda.Equals("E")) //comenzi emise
@@ -9742,7 +9741,7 @@ namespace LiteSFATestWebService
                         cmd.Parameters[10].Value = dateLivrare.nrTel;
 
                         cmd.Parameters.Add(":adr", OracleType.VarChar, 150).Direction = ParameterDirection.Input;
-                        cmd.Parameters[11].Value = dateLivrare.Strada;
+                        cmd.Parameters[11].Value = dateLivrare.Strada + " " ;
 
                         cmd.Parameters.Add(":valoare", OracleType.Number, 15).Direction = ParameterDirection.Input;
                         cmd.Parameters[12].Value = dateLivrare.totalComanda;
@@ -10092,6 +10091,10 @@ namespace LiteSFATestWebService
                 retVal = outParam.VOk.ToString();
 
                 webService.Dispose();
+
+
+                OperatiiAdresa.adaugaAdresaClient(connection, idCmd.Value.ToString(), dateLivrare.coordonateGps);
+
 
 
             }
@@ -11686,6 +11689,8 @@ namespace LiteSFATestWebService
 
 
 
+            
+
             string retVal = "-1";
 
             var serializer = new JavaScriptSerializer();
@@ -11920,7 +11925,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters[10].Value = dateLivrare.nrTel;
 
                 cmd.Parameters.Add(":adr", OracleType.VarChar, 150).Direction = ParameterDirection.Input;
-                cmd.Parameters[11].Value = dateLivrare.Strada;
+                cmd.Parameters[11].Value = dateLivrare.Strada + " ";
 
                 cmd.Parameters.Add(":valoare", OracleType.Number, 15).Direction = ParameterDirection.Input;
                 string strValoareComanda = dateLivrare.totalComanda;
@@ -12058,7 +12063,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters[36].Value = comandaVanzare.codJ.Length > 0 ? comandaVanzare.codJ : " ";
 
                 cmd.Parameters.Add(":adr_livrare_d", OracleType.VarChar, 150).Direction = ParameterDirection.Input;
-                cmd.Parameters[37].Value = stradaLivrare;
+                cmd.Parameters[37].Value = stradaLivrare + " ";
 
                 cmd.Parameters.Add(":city_d", OracleType.VarChar, 75).Direction = ParameterDirection.Input;
                 cmd.Parameters[38].Value = orasLivrare;
@@ -12221,6 +12226,8 @@ namespace LiteSFATestWebService
 
                 idComanda = idCmd.Value.ToString();
 
+                
+
                 OperatiiAdresa.insereazaCoordonateAdresa(connection, idCmd.Value.ToString(), dateLivrare.coordonateGps);
                 OperatiiSuplimentare.saveTonajComanda(connection, idCmd.Value.ToString(), dateLivrare.tonaj);
 
@@ -12256,7 +12263,7 @@ namespace LiteSFATestWebService
                         paramCmd = "C";
                     }
 
-
+                    
                    
 
                     webService = new ZTBL_WEBSERVICE();
@@ -12291,7 +12298,7 @@ namespace LiteSFATestWebService
                         retVal = outParam.VOk.ToString();
                     }
 
-
+                    
 
                     webService.Dispose();
 
@@ -12322,7 +12329,7 @@ namespace LiteSFATestWebService
                 cmd.Dispose();
 
 
-
+                OperatiiAdresa.adaugaAdresaClient(connection, idCmd.Value.ToString(), dateLivrare.coordonateGps);
 
 
 
@@ -12369,9 +12376,8 @@ namespace LiteSFATestWebService
 
         }
 
+        
 
-
-       
 
         private void savePrelucrare04(OracleConnection conn, String idComanda, String prelucrare)
         {
@@ -13854,10 +13860,10 @@ namespace LiteSFATestWebService
 
 
         [WebMethod]
-        public string sendMailOfertaGed(string nrComanda, string adresaMail)
+        public string sendMailOfertaGed(string nrComanda, string mailAddress)
         {
             ExpediereMail mail = new ExpediereMail();
-            return mail.sendOfertaGedMail(nrComanda, adresaMail);
+            return mail.sendOfertaGedMail(nrComanda, mailAddress);
         }
 
 

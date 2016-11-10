@@ -81,6 +81,7 @@ namespace LiteSFATestWebService
         public string codJudet;
         public string codAdresa;
         public string tonaj;
+        public string coords;
     }
 
 

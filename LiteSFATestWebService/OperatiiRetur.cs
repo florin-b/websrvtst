@@ -662,7 +662,7 @@ namespace LiteSFATestWebService
                     cmd.CommandText = " select k.vbeln, to_date(k.fkdat,'yyyymmdd') " +
                                       " from sapprd.vbrk k, sapprd.vbrp p, sapprd.vbpa a, sapprd.adrc c where k.mandt = p.mandt " +
                                       " and k.vbeln = p.vbeln  and k.mandt = '900'  and k.fkart in ('ZFM','ZFMC','ZFS','ZFSC','ZFPA') " +
-                                      " and k.fksto <> 'X'  and k.fkdat >= to_char(sysdate-345,'yyyymmdd') " +
+                                      " and k.fksto <> 'X'  and k.fkdat >= to_char(sysdate-45,'yyyymmdd') " +
                                       condPaleti +
                                       " and k.mandt = a.mandt  and k.vbeln = a.vbeln  and a.parvw = 'WE' " +
                                       " and p.prctr =:unitLog  and a.mandt = c.client and a.adrnr = c.addrnumber " +
@@ -899,7 +899,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters[13].Value = comanda.adresaOras;
 
                 cmd.Parameters.Add(":strada", OracleType.NVarChar, 75).Direction = ParameterDirection.Input;
-                cmd.Parameters[14].Value = comanda.adresaStrada;
+                cmd.Parameters[14].Value = comanda.adresaStrada + " " ;
 
                 cmd.Parameters.Add(":codclient", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
                 cmd.Parameters[15].Value = comanda.codClient;

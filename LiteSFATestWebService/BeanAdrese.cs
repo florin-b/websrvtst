@@ -17,6 +17,13 @@ namespace LiteSFATestWebService
         public string codJudet;
         public string localitate;
         public string strada;
+        public string latitude;
+        public string longitude;
+
+        public override string ToString()
+        {
+            return "Adresa [codJudet=" + codJudet + ", localitate=" + localitate +  ", strada=" + strada + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+        }
 
     }
 

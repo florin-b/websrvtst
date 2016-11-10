@@ -30,4 +30,17 @@ namespace LiteSFATestWebService
         public string dataEveniment;
     }
 
+
+    public class ClientComanda
+    {
+        public string codClient;
+        public string idComandaSap;
+        public string codAdresa;
+
+        public override string ToString()
+        {
+            return "ClientComanda [codClient=" + codClient + ", idComandaSap=" + idComandaSap + ", codAdresa=" + codAdresa + "]";
+        }
+    }
+
 }

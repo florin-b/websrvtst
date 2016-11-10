@@ -38,7 +38,7 @@ namespace LiteSFATestWebService
         {
             return "AntetComandaCLP [codClient=" + codClient + ", codJudet=" + codJudet + ", localitate=" + localitate
                     + ", strada=" + strada + ", persCont=" + persCont + ", telefon=" + telefon + ", codFilialaDest=" + codFilialaDest + ", dataLivrare=" + dataLivrare + ", tipPlata=" + tipPlata
-                    + ", tipTransport=" + tipTransport + ", depozDest=" + depozDest + ", selectedAgent=" + selectedAgent + "]";
+                    + ", tipTransport=" + tipTransport + ", depozDest=" + depozDest + ", selectedAgent=" + selectedAgent + ", observatii=" + observatiiCLP + "]";
         }
 
 

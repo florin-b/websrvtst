@@ -13,6 +13,8 @@ namespace LiteSFATestWebService
     public class OperatiiAdresa
     {
 
+        private const double DIST_MIN_ADRESA = 0.2;
+
         public String getLocalitatiJudet(String codJudet)
         {
 
@@ -166,6 +168,8 @@ namespace LiteSFATestWebService
         public static void insereazaCoordonateAdresa(OracleConnection connection, String idComanda, String coordonate)
         {
 
+
+
             String[] coords = coordonate.Split('#');
 
             if (coords[0].Equals("0") || coords[0].Equals("0.0"))
@@ -174,6 +178,7 @@ namespace LiteSFATestWebService
 
 
             OracleCommand cmd = connection.CreateCommand();
+
 
             try
             {
@@ -208,11 +213,203 @@ namespace LiteSFATestWebService
                     cmd.Dispose();
             }
 
+
+
+
+
             return;
 
 
 
         }
+
+
+
+
+        public static void adaugaAdresaClient(OracleConnection connection, String idComanda, String coords)
+        {
+
+            Adresa adresaComanda = new Adresa();
+
+            try
+            {
+
+                ClientComanda clientComanda = OperatiiComenzi.getClientComanda(connection, idComanda);
+
+
+
+                if (clientComanda.codClient != null)
+                {
+                    adresaComanda = OperatiiComenzi.getAdresaComanda(connection, idComanda, clientComanda.codAdresa);
+
+                    List<Adresa> adreseClient = getAdreseClient(connection, clientComanda);
+
+                    if (adresaComanda.latitude != null && !adresaExista(adresaComanda, adreseClient))
+                        adaugaCodAdresa(connection, clientComanda, coords);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+
+
+
+
+        }
+
+
+
+        private static bool adresaExista(Adresa adresaComanda, List<Adresa> adreseClient)
+        {
+
+
+            foreach (Adresa adresa in adreseClient)
+            {
+                double distAdrese = distanceXtoY(Double.Parse(adresaComanda.latitude), Double.Parse(adresaComanda.longitude), Double.Parse(adresa.latitude), Double.Parse(adresa.longitude), "K");
+
+                if (distAdrese < DIST_MIN_ADRESA)
+                    return true;
+
+            }
+
+            return false;
+        }
+
+
+
+        private static List<Adresa> getAdreseClient(OracleConnection connection, ClientComanda clientComanda)
+        {
+
+            List<Adresa> adreseClient = new List<Adresa>();
+
+            OracleCommand cmd = null;
+            OracleDataReader oReader = null;
+
+            try
+            {
+                cmd = connection.CreateCommand();
+
+                string sqlString = " select  a.latitude, a.longitude  from sapprd.zadreseclienti a, sapprd.adrc b " +
+                                   " where a.mandt = '900' and b.client = '900' and a.codadresa = b.addrnumber and a.codclient =:codClient ";
+
+                cmd.CommandText = sqlString;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = clientComanda.codClient;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        Adresa adresa = new Adresa();
+                        adresa.latitude = oReader.GetString(0);
+                        adresa.longitude = oReader.GetString(1);
+                        adreseClient.Add(adresa);
+
+                    }
+
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+            return adreseClient;
+        }
+
+
+        private static double distanceXtoY(double lat1, double lon1, double lat2, double lon2, string unit)
+        {
+            double theta = lon1 - lon2;
+            double dist = Math.Sin(deg2rad(lat1)) * Math.Sin(deg2rad(lat2)) + Math.Cos(deg2rad(lat1)) * Math.Cos(deg2rad(lat2)) * Math.Cos(deg2rad(theta));
+            dist = Math.Acos(dist);
+            dist = rad2deg(dist);
+            dist = dist * 60 * 1.1515;
+            if (unit == "K")
+            {
+                dist = dist * 1.609344;
+            }
+            else if (unit == "N")
+            {
+                dist = dist * 0.8684;
+            }
+            return (dist);
+        }
+
+
+        private static double deg2rad(double deg)
+        {
+            return (deg * Math.PI / 180.0);
+        }
+
+        private static double rad2deg(double rad)
+        {
+            return (rad * 180 / Math.PI);
+        }
+
+
+        private static void adaugaCodAdresa(OracleConnection connection, ClientComanda clientComanda, String coordonate)
+        {
+
+            String[] coords = coordonate.Split('#');
+
+            if (coords[0].Equals("0") || coords[0].Equals("0.0"))
+                return;
+
+            OracleCommand cmd = null;
+            try
+            {
+                cmd = connection.CreateCommand();
+
+
+                cmd.CommandText = " insert into sapprd.zadreseclienti(mandt, codclient, codadresa, latitude, longitude ) values ('900', :codClient, :codAdresa, :latitude, :longitude) ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = clientComanda.codClient;
+
+                cmd.Parameters.Add(":codAdresa", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = clientComanda.codAdresa;
+
+                cmd.Parameters.Add(":latitude", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = coords[0];
+
+                cmd.Parameters.Add(":longitude", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[3].Value = coords[1];
+
+                cmd.ExecuteNonQuery();
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                if (cmd != null)
+                    cmd.Dispose();
+            }
+
+
+        }
+
+
 
         public bool isAdresaValida(string codJudet, string localitate)
         {

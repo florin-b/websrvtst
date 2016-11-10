@@ -372,7 +372,7 @@ namespace LiteSFATestWebService
             OracleCommand cmd = new OracleCommand();
             OracleDataReader oReader = null;
 
-          
+
 
             try
             {
@@ -386,7 +386,7 @@ namespace LiteSFATestWebService
                 cmd = connection.CreateCommand();
 
                 cmd.CommandText = " select b.name1, c.valoare, c.city, nvl(c.adr_livrare,' '),  c.nrcmdsap, c.cod_client, b.nr_bord, a.masina, c.region, d.nume, " +
-                                  " nvl(d.telefon,'-') telefon, a.sttrg  " + 
+                                  " nvl(d.telefon,'-') telefon, a.sttrg  " +
                                   " from borderouri a, sapprd.zdocumentesms b, sapprd.zcomhead_tableta c, soferi d" +
                                   "  where a.sttrg in ( 1, 2, 3, 4, 6, 7) and b.cod_av=:codAgent and a.numarb = b.nr_bord and c.id = b.idcomanda and d.cod = a.cod_sofer " +
                                   "  order by b.name1 ";
@@ -532,7 +532,7 @@ namespace LiteSFATestWebService
         public string getPozitieMasina(string nrMasina)
         {
 
-          
+
 
             string coords = "0#0";
 
@@ -544,7 +544,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                // string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
 
                 string connectionString = conectToProd();
 
@@ -593,6 +593,104 @@ namespace LiteSFATestWebService
             return coords;
         }
 
+
+
+
+        public static ClientComanda getClientComanda(OracleConnection connection, string idComanda)
+        {
+            OracleCommand cmd = null;
+            OracleDataReader oReader = null;
+
+            ClientComanda clientComanda = new ClientComanda();
+
+            try
+            {
+                cmd = connection.CreateCommand();
+
+                string sqlString = " select a.cod_client, a.nrcmdsap, b.adrnr from sapprd.zcomhead_tableta a, sapprd.vbpa b, clienti c " + 
+                                   " where a.id=:idComanda and b.vbeln = a.nrcmdsap and b.parvw = 'WE' and b.mandt = '900' and c.cod = a.cod_client and c.tip_pers = 'PJ' ";
+
+                cmd.CommandText = sqlString;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":idComanda", OracleType.Number, 11).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = idComanda;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    clientComanda.codClient = oReader.GetString(0);
+                    clientComanda.idComandaSap = oReader.GetString(1);
+                    clientComanda.codAdresa = oReader.GetString(2);
+
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+            return clientComanda;
+        }
+
+
+
+        public static Adresa getAdresaComanda(OracleConnection connection, string idComanda, string codAdresa)
+        {
+
+            Adresa adresa = new Adresa();
+
+            OracleCommand cmd = null;
+            OracleDataReader oReader = null;
+
+            try
+            {
+                cmd = connection.CreateCommand();
+
+                string sqlString = " select latitude, longitude from sapprd.zcoordcomenzi where idcomanda =:idComanda ";
+
+
+                cmd.CommandText = sqlString;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":idComanda", OracleType.Number, 11).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = idComanda;
+
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+
+                    adresa.latitude = oReader.GetString(0);
+                    adresa.longitude = oReader.GetString(1);
+
+                }
+
+
+
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+            return adresa;
+
+        }
 
 
         private static string conectToProd()

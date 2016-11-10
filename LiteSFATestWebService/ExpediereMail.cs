@@ -13,8 +13,11 @@ namespace LiteSFATestWebService
     public class ExpediereMail : System.Web.Services.WebService
     {
 
-        public string sendOfertaGedMail(string nrComanda, string adresaMail)
+        public string sendOfertaGedMail(string nrComanda, string mailAddress)
         {
+
+
+            
 
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand();
@@ -173,7 +176,7 @@ namespace LiteSFATestWebService
 
                     MailMessage message = new MailMessage();
                     message.From = new MailAddress("Oferta.materiale@arabesque.ro");
-                    message.To.Add(new MailAddress(adresaMail));
+                    message.To.Add(new MailAddress(mailAddress));
 
 
                     message.Subject = "Oferta materiale si servicii SC Arabesque SRL";
