@@ -11,6 +11,7 @@ using System.Net;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
+using System.Globalization;
 
 namespace DistributieTESTWebServices
 {
@@ -79,6 +80,18 @@ namespace DistributieTESTWebServices
                 eveniment.saveOrdineEtape(serializedEtape);
 
             return eveniment.saveNewEvent(serializedEvent);
+        }
+
+        
+
+
+
+        [WebMethod]
+        public string getRoDate()
+        {
+            CultureInfo ci = new CultureInfo("ro-RO");
+            return DateTime.Now.ToString("M", ci).ToLower();
+           
         }
 
 

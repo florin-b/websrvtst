@@ -53,7 +53,7 @@ namespace LiteSFATestWebService
 
                 try
                 {
-                    DateTime dateTime = new DateTime();
+                   
                     SMSService.SMSServiceService smsService = new SMSServiceService();
                     string sessionId = smsService.openSession("arabesque2", "arbsq123");
 

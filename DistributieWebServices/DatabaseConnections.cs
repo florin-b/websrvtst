@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.OracleClient;
 using System.Linq;
 using System.Web;
 
@@ -32,5 +33,35 @@ namespace DistributieTESTWebServices
                    " User Id = WEBSAP; Password = 2INTER7;";
 
         }
+
+
+        public static void CloseConnections(OracleDataReader reader, OracleCommand command)
+        {
+
+            try
+            {
+
+                if (reader != null)
+                {
+                    reader.Close();
+                    reader.Dispose();
+                }
+
+                if (command != null)
+                {
+                    command.Dispose();
+                }
+
+
+            }
+            catch (Exception)
+            {
+
+            }
+
+
+        }
+
+
     }
 }

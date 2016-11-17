@@ -7,6 +7,7 @@ using System.Data.Common;
 using System.Data;
 using System.Web.Script.Serialization;
 using System.Globalization;
+using DistributieTESTWebServices.SMSService;
 
 namespace DistributieTESTWebServices
 {
@@ -44,14 +45,19 @@ namespace DistributieTESTWebServices
 
                 string strLocalEveniment = "0";
 
+              
+
                 //eveniment document
                 if (newEvent.document.Equals(newEvent.client))
                 {
                     if (newEvent.eveniment.Equals("0"))
+                    {
                         strLocalEveniment = "P";
+                    }
 
                     if (newEvent.eveniment.Equals("P"))
                         strLocalEveniment = "S";
+
                 }
                 else //eveniment client
                 {
@@ -180,6 +186,12 @@ namespace DistributieTESTWebServices
                         cmd.Dispose();
 
 
+
+                    if (newEvent.document.Equals(newEvent.client) && newEvent.eveniment.Equals("0"))
+                    {
+                        sendSmsAlerts(connection, newEvent.document);
+                    }
+
                 }
                 catch (Exception ex)
                 {
@@ -198,6 +210,171 @@ namespace DistributieTESTWebServices
         }
 
 
+        static public string ConnectToProdEnvironment()
+        {
+
+            //PRD
+            return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
+                   " (HOST = 10.1.3.95)(PORT = 1521)))(CONNECT_DATA = (SERVICE_NAME = TABLET) )); " +
+                   " User Id = WEBSAP; Password = 2INTER7;";
+
+
+
+        }
+
+
+        private void sendSmsAlerts(OracleConnection connection, String nrDocument)
+        {
+
+            try
+            {
+                new Sms().sendSMS(getClientsPhoneNumber(connection, nrDocument));
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString() + " con = " + connection.ToString() + " , doc = " + nrDocument);
+            }
+            finally
+            {
+
+            }
+
+            return;
+
+        }
+
+
+        private List<NotificareClient> getClientsPhoneNumber(OracleConnection connection, string nrDocument)
+        {
+
+
+            OracleCommand cmd = null;
+            OracleDataReader oReader = null;
+            List<NotificareClient> notificariList = new List<NotificareClient>();
+
+            try
+            {
+
+                cmd = connection.CreateCommand();
+
+
+                string sqlString = " select distinct k.kunnr,  tel_number from sapprd.kna1 k, sapprd.adr2 a, sapprd.adrt t" +
+                            " where k.mandt = '900' and k.kunnr in (select distinct a.cod from sapprd.zdocumentebord a, borderouri b, soferi c where " +
+                            " a.nr_bord = b.numarb and b.cod_sofer = c.cod and b.numarb =:borderou and upper(b.fili) like 'GL%') and k.mandt = a.client " +
+                            " and k.adrnr = a.addrnumber  and a.client = t.client  and a.addrnumber = t.addrnumber  and a.consnumber = t.consnumber " +
+                            " and t.comm_type = 'TEL' " +
+                            " and t.remark = 'LIVRARI' order by k.kunnr ";
+
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = sqlString;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":borderou", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = nrDocument;
+
+                oReader = cmd.ExecuteReader();
+
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+
+                        NotificareClient notificare = new NotificareClient();
+                        notificare.codClient = oReader.GetString(0);
+                        notificare.nrTelefon = oReader.GetString(1);
+
+                        notificare.dateComanda = getDateComanda(connection, nrDocument, notificare.codClient);
+                        notificariList.Add(notificare);
+
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString() + " nrdoc = " + nrDocument);
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+            return notificariList;
+
+        }
+
+
+        private DateComanda getDateComanda(OracleConnection connection, string nrBorderou, string codClient)
+        {
+
+            OracleCommand cmd = null;
+            OracleDataReader oReader = null;
+
+            DateComanda dateComanda = new DateComanda();
+
+
+            try
+            {
+
+                cmd = connection.CreateCommand();
+
+
+                string sqlString = " select distinct f.vbelv , to_char(to_date( t.datac, 'yyyymmdd'), 'dd MONTH', 'NLS_DATE_LANGUAGE = Romanian') emitere , " +
+                            " t.depart from sapprd.zdocumentebord a, sapprd.vttp p, sapprd.vbfa f, sapprd.zcomhead_tableta t " +
+                            " where a.nr_bord =:nrBorderou and a.cod =:codClient and a.mandt = '900' and t.nrcmdsap = f.vbelv and t.mandt = '900' and " +
+                            " f.mandt = '900' and f.vbeln = p.vbeln and f.vbtyp_v = 'C' and a.nr_bord = p.tknum and a.poz = p.tpnum and p.mandt = a.mandt order by emitere";
+
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = sqlString;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":nrBorderou", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = nrBorderou;
+
+                cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = codClient;
+
+                oReader = cmd.ExecuteReader();
+                string emitere = "", departament = "";
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        if (emitere.Equals(""))
+                            emitere = oReader.GetString(1);
+                        else
+                            emitere += ", " + oReader.GetString(1);
+
+
+                        if (departament.Equals(""))
+                            departament = Utils.getDepartName(oReader.GetString(2));
+                        else
+                            departament += ", " + Utils.getDepartName(oReader.GetString(2));
+                    }
+                }
+
+
+                dateComanda.emitere = emitere;
+                dateComanda.departament = departament;
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString() + nrBorderou + " , " + codClient);
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+
+            return dateComanda;
+
+        }
 
 
         private bool recordExist(OracleConnection connection, string codSofer, string document, string codClient, string eveniment, string codAdresa)

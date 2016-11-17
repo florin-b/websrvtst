@@ -149,4 +149,33 @@ namespace DistributieTESTWebServices
 
 
 
+
+    public class NotificareClient
+    {
+
+        public string codClient;
+        public string nrTelefon;
+        public DateComanda dateComanda;
+
+        public override string ToString()
+        {
+            return "NotificareClient: [ codClient " + codClient + ", nrTelefon " + nrTelefon + ", dateComanda " + dateComanda.ToString() + " ]";
+        }
+    }
+
+
+
+    public class DateComanda
+    {
+
+        public string emitere;
+        public string departament;
+
+        public override string ToString()
+        {
+            return "DateComanda: [ emitere " + emitere + ", departament " + departament + " ]";
+        }
+
+    }
+
 }

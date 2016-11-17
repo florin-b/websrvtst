@@ -27,5 +27,28 @@ namespace DistributieTESTWebServices
             }
 
         }
+
+
+        public static void sendErrorToMail(string errMsg, string subject)
+        {
+
+            try
+            {
+                MailMessage message = new MailMessage();
+                message.From = new MailAddress("Android.WebService@arabesque.ro");
+                message.To.Add(new MailAddress("florin.brasoveanu@arabesque.ro"));
+                message.Subject = subject;
+                message.Body = errMsg;
+                SmtpClient client = new SmtpClient("mail.arabesque.ro");
+                client.Send(message);
+            }
+            catch (Exception)
+            {
+
+            }
+
+        }
+
+
     }
 }
