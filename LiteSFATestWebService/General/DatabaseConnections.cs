@@ -15,15 +15,21 @@ namespace LiteSFATestWebService
 
 
             //TES
-            return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
-                    " (HOST = 10.1.3.89)(PORT = 1527)))(CONNECT_DATA = (SERVICE_NAME = TES))); " +
-                    " User Id = WEBSAP; Password = 2INTER7; ";
+            //return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
+            //        " (HOST = 10.1.3.89)(PORT = 1527)))(CONNECT_DATA = (SERVICE_NAME = TES))); " +
+            //        " User Id = WEBSAP; Password = 2INTER7; ";
 
 
             //QAS
+            return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
+                    " (HOST = 10.1.3.88)(PORT = 1527)))(CONNECT_DATA = (SERVICE_NAME = QAS))); " +
+                    " User Id = WEBSAP; Password = 2INTER7; ";
+
+
+            //DR
             //return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
-            //        " (HOST = 10.1.3.88)(PORT = 1527)))(CONNECT_DATA = (SERVICE_NAME = QAS))); " +
-            //        " User Id = WEBSAP; Password = 2INTER7; ";
+            //        " (HOST = 172.17.18.34)(PORT = 1521)))(CONNECT_DATA = (SERVICE_NAME = dr_site) )); " +
+            //        " User Id = WEBSAP; Password = 2INTER7;";
 
         }
 
@@ -34,8 +40,17 @@ namespace LiteSFATestWebService
             return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
                     " (HOST = 10.1.3.95)(PORT = 1521)))(CONNECT_DATA = (SERVICE_NAME = TABLET) )); " +
                     " User Id = WEBSAP; Password = 2INTER7;";
+
+
+
+            //DR
+            //return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
+            //        " (HOST = 172.17.18.34)(PORT = 1521)))(CONNECT_DATA = (SERVICE_NAME = dr_site) )); " +
+            //        " User Id = WEBSAP; Password = 2INTER7;";
         }
 
+
+       
 
         public static void CloseConnections(OracleDataReader reader, OracleCommand command, OracleConnection connection)
         {
@@ -101,6 +116,46 @@ namespace LiteSFATestWebService
         }
 
 
+        public static void CloseConnections(OracleCommand command, OracleConnection connection)
+        {
+
+            try
+            {
+
+                if (command != null)
+                {
+                    command.Dispose();
+                }
+
+
+                if (connection != null)
+                {
+                    connection.Close();
+                    connection.Dispose();
+                }
+
+
+            }
+            catch (Exception)
+            {
+
+            }
+
+
+        }
+
+
+
+        public static OracleConnection createTESTConnection()
+        {
+            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+            OracleConnection connection = new OracleConnection();
+            connection.ConnectionString = connectionString;
+            connection.Open();
+
+            return connection;
+        }
 
         static public string getUser()
         {

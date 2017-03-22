@@ -79,6 +79,25 @@ namespace LiteSFATestWebService
         }
 
 
+        public static string getYearFromStrDate(string strDate)
+        {
+            if (strDate == null || strDate.Trim().Length == 0)
+                return getCurrentYear();
+
+            return strDate.Substring(0, 4);
+
+        }
+
+
+        public static string getMonthFromStrDate(string strDate)
+        {
+            if (strDate == null || strDate.Trim().Length == 0)
+                return getCurrentMonth();
+
+            return strDate.Substring(4, 2);
+        }
+
+
         public static List<string> getMail(Sms.TipUser[] tipUser, String filiala)
         {
 
@@ -97,7 +116,9 @@ namespace LiteSFATestWebService
 
                 foreach (Sms.TipUser tip in tipUser)
                 {
-                    cmd.CommandText = " select email from agenti where tip=:tipUser and filiala =:filiala and activ = 1 ";
+
+                    cmd.CommandText = " select mail from sapprd.zdest_mail where funct=:tipUser and prctr =:filiala ";
+
                     cmd.CommandType = CommandType.Text;
                     cmd.Parameters.Clear();
 
@@ -123,7 +144,6 @@ namespace LiteSFATestWebService
                 oReader.Dispose();
 
 
-
             }
             catch (Exception ex)
             {
@@ -138,7 +158,19 @@ namespace LiteSFATestWebService
             return listMails;
         }
 
+        public static string checkROCnpClient(string cnpClient)
+        {
 
+            if (cnpClient == null)
+                return " ";
+
+            string localCnp = cnpClient;
+
+            if (cnpClient.ToUpper().StartsWith("RORO"))
+                localCnp = cnpClient.ToUpper().Replace("RORO", "RO");
+
+            return localCnp;
+        }
 
 
     }

@@ -86,7 +86,7 @@ namespace LiteSFATestWebService
 
                     int nrArt = 1;
                     string oLinie = "", altColor = "";
-                    decimal tva = 0.20M;
+                    decimal tva = 0.19M;
                     decimal totalVal = 0, totalTVA = 0, totalGen = 0, valArt = 0, valTVA = 0;
 
 
@@ -148,7 +148,7 @@ namespace LiteSFATestWebService
                     "<tr><td><table class='customText2'><tr><td>Sediu</td><td>" + adresaUnitLog + "</td>" +
                     "</tr><tr><td>Telefon</td><td>" + telUnitLog + "</td></tr>" +
                     "<tr><td>Fax</td><td>" + faxUnitLog + "</td></tr><tr><td>Contul</td><td>" + contUnitLog + "</td></tr><tr><td>" +
-                    "Banca</td><td>" + bancaUnitLog + "</td></tr><tr><td>Cota TVA</td><td>20%</td></tr>" +
+                    "Banca</td><td>" + bancaUnitLog + "</td></tr><tr><td>Cota TVA</td><td>19%</td></tr>" +
                     " </table>" +
                     " </td> " +
                     " <td align = 'left' valign='top'><table class='customText' ><tr><td align='center' class='customText3' colspan='2'>" +

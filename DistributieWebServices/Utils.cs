@@ -39,7 +39,7 @@ namespace DistributieTESTWebServices
             if (departCode.Equals("09"))
                 retVal = "hidroizolatii";
 
-            if (departCode.Equals("1"))
+            if (departCode.Equals("11"))
                 retVal = "magazin";
 
             return retVal;

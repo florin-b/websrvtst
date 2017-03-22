@@ -99,6 +99,7 @@ namespace DistributieTESTWebServices
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand();
             OracleDataReader oReader = null;
+            List<Borderouri> listaBorderouri = new List<Borderouri>();
 
             try
             {
@@ -147,8 +148,8 @@ namespace DistributieTESTWebServices
                                   " nvl((select distinct nr_bord from sapprd.zdocumentebord where nr_bord_urm =b.numarb),'-1') bordParent " +
                                   " from  borderouri b, sapprd.zdocumentebord c  where  c.nr_bord = b.numarb and b.cod_sofer=:codSofer " + condData + " order by trunc(c.data_e), c.ora_e) x " + condTip;
 
-
                 
+               
 
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add(":codSofer", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
@@ -156,7 +157,7 @@ namespace DistributieTESTWebServices
 
                 oReader = cmd.ExecuteReader();
 
-                List<Borderouri> listaBorderouri = new List<Borderouri>();
+               
                 Borderouri unBorderou = null;
 
                 if (oReader.HasRows)
@@ -176,8 +177,7 @@ namespace DistributieTESTWebServices
 
                 }
 
-                JavaScriptSerializer serializer = new JavaScriptSerializer();
-                serializedResult = serializer.Serialize(listaBorderouri);
+              
 
                 oReader.Close();
                 oReader.Dispose();
@@ -195,7 +195,8 @@ namespace DistributieTESTWebServices
             }
 
 
-            
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            serializedResult = serializer.Serialize(listaBorderouri);
 
             return serializedResult;
         }
@@ -346,7 +347,7 @@ namespace DistributieTESTWebServices
                                       " a.adresa, " +
                                       " nvl((select pozitie from sapprd.zordinelivrari where borderou = a.nr_bord and client = a.cod and codadresa = a.adresa ),'-1') pozitie, a.nr_bord" + 
                                       " from sapprd.zdocumentebord a, clienti b  where a.nr_bord =:nrbord " +
-                                      " and a.cod = b.cod  order by a.poz ";
+                                      " and a.cod = b.cod order by a.poz ";
                 }
 
                 if (tipBorderou.ToLower().Equals("aprovizionare") || tipBorderou.ToLower().Equals("inchiriere") || tipBorderou.ToLower().Equals("service"))
@@ -363,7 +364,8 @@ namespace DistributieTESTWebServices
                                       "  order by a.poz";
                 }
 
-                
+
+               
                 
 
                 cmd.Parameters.Clear();
@@ -433,7 +435,7 @@ namespace DistributieTESTWebServices
                 }
 
 
-                if (listaFacturi[listaFacturi.Count-1].codClient.Length == 4 || listaFacturi[listaFacturi.Count-1].codFurnizor.Length == 4)
+                if (listaFacturi.Count > 1 &&  (listaFacturi[listaFacturi.Count-1].codClient.Length == 4 || listaFacturi[listaFacturi.Count-1].codFurnizor.Length == 4))
                 {
                     listaFacturi.RemoveAt(listaFacturi.Count-1);
                 }

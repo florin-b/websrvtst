@@ -33,6 +33,7 @@ namespace LiteSFATestWebService
         public string inchis;
         public string evenimente;
 
+
     }
 
 

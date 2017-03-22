@@ -205,6 +205,8 @@ namespace LiteSFATestWebService
             VRANCEA = 37
         }
 
+
+
         public static string getEnumDescription(Enum en)
         {
             Type type = en.GetType();
@@ -223,6 +225,13 @@ namespace LiteSFATestWebService
 
             return en.ToString();
         }
+
+
+
+       
+
+
+
 
     }
 }

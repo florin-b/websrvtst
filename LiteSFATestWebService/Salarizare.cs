@@ -11,7 +11,7 @@ namespace LiteSFATestWebService
     {
         
 
-        public String getSalarizareAV(string codAgent, string departament, string filiala)
+        public String getSalarizareAV(string codAgent, string departament, string filiala, string dataRap)
         {
             string serResult = "";
             string localDep = departament.Equals("04") ? Service1.getDepartAgent(codAgent) : departament;
@@ -37,9 +37,10 @@ namespace LiteSFATestWebService
             codAgenti[0] = new Zpernr();
             codAgenti[0].Pernr = codAgent;
 
-            inParam.An = Utils.getCurrentYear();
+
+            inParam.An = Utils.getYearFromStrDate(dataRap);
             inParam.Divizie = localDep;
-            inParam.Luna = Utils.getCurrentMonth();
+            inParam.Luna = Utils.getMonthFromStrDate(dataRap);
             inParam.Ul = filiala;
             inParam.ItPernr = codAgenti;
 

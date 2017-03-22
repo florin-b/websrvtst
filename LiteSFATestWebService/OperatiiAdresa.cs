@@ -236,11 +236,12 @@ namespace LiteSFATestWebService
 
                 ClientComanda clientComanda = OperatiiComenzi.getClientComanda(connection, idComanda);
 
-
-
                 if (clientComanda.codClient != null)
                 {
                     adresaComanda = OperatiiComenzi.getAdresaComanda(connection, idComanda, clientComanda.codAdresa);
+
+                    if (adresaComanda.strada == null || adresaComanda.strada.Trim().Length == 0)
+                        return;
 
                     List<Adresa> adreseClient = getAdreseClient(connection, clientComanda);
 

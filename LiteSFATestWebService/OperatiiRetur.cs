@@ -7,7 +7,7 @@ using System.Data.OracleClient;
 using System.Data;
 using LiteSFATestWebService.SAPWebServices;
 using System.Globalization;
-
+using LiteSFATestWebService.General;
 
 namespace LiteSFATestWebService
 {
@@ -121,7 +121,7 @@ namespace LiteSFATestWebService
                     while (oReader.Read())
                     {
                         retur = new ComandaReturAfis();
-                        retur.id = oReader.GetInt32(0).ToString();
+                        retur.id = oReader.GetInt64(0).ToString();
                         retur.nrDocument = oReader.GetString(1);
                         retur.numeClient = oReader.GetString(2);
                         retur.dataCreare = oReader.GetString(3);
@@ -232,6 +232,8 @@ namespace LiteSFATestWebService
         {
             string retVal = "";
 
+           
+
             //aprobare
             if (tipOperatie.Equals("2"))
             {
@@ -279,7 +281,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Clear();
 
                 cmd.Parameters.Add(":idcmd", OracleType.Number, 11).Direction = ParameterDirection.Input;
-                cmd.Parameters[0].Value = Int32.Parse(idComanda);
+                cmd.Parameters[0].Value = Int64.Parse(idComanda);
 
                 cmd.Parameters.Add(":stare", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
                 cmd.Parameters[1].Value = tipOperatie;
@@ -634,7 +636,6 @@ namespace LiteSFATestWebService
             string serializedResult = "";
 
 
-
             OracleConnection connection = new OracleConnection();
             OracleDataReader oReader = null;
 
@@ -670,6 +671,8 @@ namespace LiteSFATestWebService
                                       " and lower(c.name1) like lower('%" + codClient + "%')  order by fkdat ";
 
 
+
+
                 }
                 else
                 {
@@ -679,7 +682,7 @@ namespace LiteSFATestWebService
                                       " and k.kunag =:codClient " + condPaleti + condData + " order by to_date(k.fkdat,'yyyymmdd') ";
                 }
 
-
+                
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -768,13 +771,14 @@ namespace LiteSFATestWebService
             try
             {
 
-                cmd.CommandText = " select decode(length(matnr),18,substr(matnr,-8),matnr) , arktx,  fkimg - returnate cant, vrkme from " +
+                cmd.CommandText = " select decode(length(matnr),18,substr(matnr,-8),matnr) codart, arktx,  sum(fkimg - returnate) cant, vrkme from " +
                                   " (select p.matnr, p.fkimg, p.arktx,p.vrkme, p.posnr, p.vbeln, ( select " +
                                   " nvl(sum(cp.KWMENG),0) from sapprd.vbap cp, sapprd.vbfa a, sapprd.vbak vk " +
                                   " where a.mandt = '900' and a.vbelv = p.vbeln and a.posnv = p.posnr and a.vbtyp_v = 'M' " +
                                   " and a.vbtyp_n = 'H' and a.mandt = vk.mandt and a.vbeln = vk.vbeln and vk.auart = 'ZRI' " +
                                   " and a.mandt = cp.mandt and a.vbeln = cp.vbeln and a.posnn = cp.posnr and cp.abgru = ' ') returnate " +
-                                  " from sapprd.vbrp p where p.mandt = '900' and p.vbeln =:nrDoc " + condPaleti + "  )";
+                                  " from sapprd.vbrp p where p.mandt = '900' and p.vbeln =:nrDoc " + condPaleti + "  ) where fkimg - returnate > 0 " +
+                                  " group by matnr, arktx, vrkme order by codart ";
 
 
 
@@ -828,13 +832,14 @@ namespace LiteSFATestWebService
         public string saveComandaReturToDB(String dateRetur)
         {
 
-
             OracleConnection connection = new OracleConnection();
             string connectionString = DatabaseConnections.ConnectToTestEnvironment();
             var serializer = new JavaScriptSerializer();
 
             OracleTransaction transaction = null;
 
+
+            long idCmd = Convert.ToInt64(GeneralUtils.getCurrentMillis().ToString().Substring(0, 11));
             try
             {
                 ComandaRetur comanda = serializer.Deserialize<ComandaRetur>(dateRetur);
@@ -846,7 +851,7 @@ namespace LiteSFATestWebService
 
                 string query = " insert into sapprd.zreturhead(mandt, id, nrdocument, statuscmd, statusaprob, datacreare, datalivrare, tiptransport, codagent, tipagent, motivretur, " +
                                " numeperscontact, telperscontact, codadresa, codjudet, localitate, strada, codclient, numeclient, acelasi_transp) " +
-                               " values ('900', pk_clp.nextval, :nrdocument, :statuscmd, :statusaprob, :datacreare, :datalivrare, :tiptransport, :codagent, :tipagent, :motivretur, " +
+                               " values ('900', :id, :nrdocument, :statuscmd, :statusaprob, :datacreare, :datalivrare, :tiptransport, :codagent, :tipagent, :motivretur, " +
                                " :numeperscontact, :telperscontact, :codadresa, :codjudet, :localitate, :strada, :codclient, :numeclient, :acelasi_transp) returning id into :id ";
 
                 transaction = connection.BeginTransaction();
@@ -856,67 +861,73 @@ namespace LiteSFATestWebService
                 cmd.CommandText = query;
                 cmd.Parameters.Clear();
 
+                cmd.Parameters.Add(":id", OracleType.Number, 11).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = idCmd;
+
                 cmd.Parameters.Add(":nrdocument", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
-                cmd.Parameters[0].Value = comanda.nrDocument;
+                cmd.Parameters[1].Value = comanda.nrDocument;
 
                 cmd.Parameters.Add(":statuscmd", OracleType.NVarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[1].Value = "0";
+                cmd.Parameters[2].Value = "0";
 
                 cmd.Parameters.Add(":statusaprob", OracleType.NVarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[2].Value = "1";
+                cmd.Parameters[3].Value = "1";
 
                 cmd.Parameters.Add(":datacreare", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
-                cmd.Parameters[3].Value = Utils.getCurrentDate();
+                cmd.Parameters[4].Value = Utils.getCurrentDate();
 
                 cmd.Parameters.Add(":datalivrare", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
-                cmd.Parameters[4].Value = comanda.dataLivrare;
+                cmd.Parameters[5].Value = comanda.dataLivrare;
 
                 cmd.Parameters.Add(":tiptransport", OracleType.NVarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[5].Value = comanda.tipTransport;
+                cmd.Parameters[6].Value = comanda.tipTransport;
 
                 cmd.Parameters.Add(":codagent", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
-                cmd.Parameters[6].Value = comanda.codAgent;
+                cmd.Parameters[7].Value = comanda.codAgent;
 
                 cmd.Parameters.Add(":tipagent", OracleType.NVarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[7].Value = comanda.tipAgent;
+                cmd.Parameters[8].Value = comanda.tipAgent;
 
                 cmd.Parameters.Add(":motivretur", OracleType.NVarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[8].Value = comanda.motivRetur;
+                cmd.Parameters[9].Value = comanda.motivRetur;
 
                 cmd.Parameters.Add(":numeperscontact", OracleType.NVarChar, 90).Direction = ParameterDirection.Input;
-                cmd.Parameters[9].Value = comanda.numePersContact;
+                cmd.Parameters[10].Value = comanda.numePersContact == null ? " " : comanda.numePersContact + " ";
 
                 cmd.Parameters.Add(":telperscontact", OracleType.NVarChar, 75).Direction = ParameterDirection.Input;
-                cmd.Parameters[10].Value = comanda.telPersContact;
+                cmd.Parameters[11].Value = comanda.telPersContact == null ? " " : comanda.telPersContact + " " ;
 
                 cmd.Parameters.Add(":codadresa", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
-                cmd.Parameters[11].Value = comanda.adresaCodAdresa;
+                cmd.Parameters[12].Value = comanda.adresaCodAdresa;
 
                 cmd.Parameters.Add(":codjudet", OracleType.NVarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[12].Value = comanda.adresaCodJudet;
+                cmd.Parameters[13].Value = comanda.adresaCodJudet;
 
                 cmd.Parameters.Add(":localitate", OracleType.NVarChar, 75).Direction = ParameterDirection.Input;
-                cmd.Parameters[13].Value = comanda.adresaOras;
+                cmd.Parameters[14].Value = comanda.adresaOras;
 
                 cmd.Parameters.Add(":strada", OracleType.NVarChar, 75).Direction = ParameterDirection.Input;
-                cmd.Parameters[14].Value = comanda.adresaStrada + " " ;
+                cmd.Parameters[15].Value = comanda.adresaStrada + " " ;
 
                 cmd.Parameters.Add(":codclient", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
-                cmd.Parameters[15].Value = comanda.codClient;
+                cmd.Parameters[16].Value = comanda.codClient;
 
                 cmd.Parameters.Add(":numeclient", OracleType.NVarChar, 75).Direction = ParameterDirection.Input;
-                cmd.Parameters[16].Value = comanda.numeClient;
+                cmd.Parameters[17].Value = comanda.numeClient;
 
                 string obsTransp = " ";
                 if (comanda.transpBack != null && Boolean.Parse(comanda.transpBack))
                     obsTransp = "X";
 
                 cmd.Parameters.Add(":acelasi_transp", OracleType.NVarChar, 9).Direction = ParameterDirection.Input;
-                cmd.Parameters[17].Value = obsTransp;
+                cmd.Parameters[18].Value = obsTransp;
 
-                OracleParameter idCmd = new OracleParameter("id", OracleType.Number);
-                idCmd.Direction = ParameterDirection.Output;
-                cmd.Parameters.Add(idCmd);
+               // OracleParameter idCmd = new OracleParameter("id", OracleType.Number);
+               // idCmd.Direction = ParameterDirection.Output;
+               // cmd.Parameters.Add(idCmd);
+
+
+
 
                 cmd.ExecuteNonQuery();
 
@@ -939,7 +950,7 @@ namespace LiteSFATestWebService
                     cmd.Parameters.Clear();
 
                     cmd.Parameters.Add(":idcmd", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
-                    cmd.Parameters[0].Value = idCmd.Value;
+                    cmd.Parameters[0].Value = idCmd;
 
                     cmd.Parameters.Add(":codarticol", OracleType.NVarChar, 54).Direction = ParameterDirection.Input;
                     cmd.Parameters[1].Value = fullCodeArticol;
@@ -1028,8 +1039,6 @@ namespace LiteSFATestWebService
                 responseRetur = webService.ZretMarfa(inParam);
                 response = responseRetur.VOk.Equals("0") ? "0" : responseRetur.VMessage;
 
-
-
             }
             catch (Exception ex)
             {
@@ -1061,9 +1070,12 @@ namespace LiteSFATestWebService
 
             string retVal = "";
 
-            retVal = saveComandaReturToDB(dateRetur);
+            var serializer = new JavaScriptSerializer();
+            ComandaRetur comanda = serializer.Deserialize<ComandaRetur>(dateRetur);
 
-            if (retVal.Equals("0"))
+            if (comanda.tipAgent.Contains("AV"))
+                retVal = saveComandaReturToDB(dateRetur);
+            else
                 retVal = saveComandaReturToWS(dateRetur);
 
             return retVal;
@@ -1244,11 +1256,17 @@ namespace LiteSFATestWebService
                 connection.ConnectionString = connectionString;
                 connection.Open();
 
+
+                //de modificat intervalul!!!
                 cmd.CommandText = " select  c.name1 from sapprd.vbrk k, sapprd.vbrp p, sapprd.vbpa a, sapprd.adrc c " +
                                   " where k.mandt = p.mandt and k.vbeln = p.vbeln and k.mandt = '900' and k.fkart in ('ZFM','ZFMC','ZFS','ZFSC','ZFPA') " +
                                   " and k.fksto <> 'X' and k.fkdat >= to_char(sysdate-45,'yyyymmdd') and p.matkl in ('433', '433_1', '716', '626', '929_2','515') " +
                                   " and k.mandt = a.mandt and k.vbeln = a.vbeln and a.parvw = 'WE' " +
                                   " and p.prctr =:unitLog and a.mandt = c.client and a.adrnr = c.addrnumber  and lower(c.name1) like lower('%" + numeClient.ToLower() + "%') order by fkdat";
+
+
+                
+
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();

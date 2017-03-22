@@ -177,7 +177,7 @@ namespace DistributieTESTWebServices
                     }
 
 
-                    if (newEvent.evBord != null && newEvent.evBord.Equals("STOP") && newEvent.client.Length > 4)
+                    if (newEvent.evBord != null && newEvent.evBord.Equals("STOP"))
                     {
                         addStopBord(connection, newEvent, latit, longit, mileage);
                     }
@@ -223,7 +223,7 @@ namespace DistributieTESTWebServices
         }
 
 
-        private void sendSmsAlerts(OracleConnection connection, String nrDocument)
+        public void sendSmsAlerts(OracleConnection connection, String nrDocument)
         {
 
             try
@@ -247,7 +247,6 @@ namespace DistributieTESTWebServices
         private List<NotificareClient> getClientsPhoneNumber(OracleConnection connection, string nrDocument)
         {
 
-
             OracleCommand cmd = null;
             OracleDataReader oReader = null;
             List<NotificareClient> notificariList = new List<NotificareClient>();
@@ -256,7 +255,6 @@ namespace DistributieTESTWebServices
             {
 
                 cmd = connection.CreateCommand();
-
 
                 string sqlString = " select distinct k.kunnr,  tel_number from sapprd.kna1 k, sapprd.adr2 a, sapprd.adrt t" +
                             " where k.mandt = '900' and k.kunnr in (select distinct a.cod from sapprd.zdocumentebord a, borderouri b, soferi c where " +
@@ -315,17 +313,18 @@ namespace DistributieTESTWebServices
 
             DateComanda dateComanda = new DateComanda();
 
-
             try
             {
 
                 cmd = connection.CreateCommand();
 
 
-                string sqlString = " select distinct f.vbelv , to_char(to_date( t.datac, 'yyyymmdd'), 'dd MONTH', 'NLS_DATE_LANGUAGE = Romanian') emitere , " +
-                            " t.depart from sapprd.zdocumentebord a, sapprd.vttp p, sapprd.vbfa f, sapprd.zcomhead_tableta t " +
-                            " where a.nr_bord =:nrBorderou and a.cod =:codClient and a.mandt = '900' and t.nrcmdsap = f.vbelv and t.mandt = '900' and " +
-                            " f.mandt = '900' and f.vbeln = p.vbeln and f.vbtyp_v = 'C' and a.nr_bord = p.tknum and a.poz = p.tpnum and p.mandt = a.mandt order by emitere";
+                string sqlString = " select distinct f.vbelv , to_char(to_date(t.datac, 'yyyymmdd'), 'dd MONTH', 'NLS_DATE_LANGUAGE = Romanian') emitere , " +
+                            "  t.depart from sapprd.zdocumentebord a, sapprd.vttp p, sapprd.vbfa f, sapprd.zcomhead_tableta t, sapprd.likp l " +
+                            "  where a.nr_bord =:nrBorderou and a.cod =:codClient and a.mandt = '900' and t.nrcmdsap = f.vbelv and t.mandt = '900' and " +
+                            "  f.mandt = '900' and f.vbeln = p.vbeln and f.vbtyp_v = 'C' and a.nr_bord = p.tknum and p.mandt = a.mandt " +
+                            "  and p.mandt = l.mandt and p.vbeln = l.vbeln and l.kunnr =:codClient " +
+                            "  order by emitere ";
 
 
                 cmd.CommandType = CommandType.Text;
@@ -356,7 +355,6 @@ namespace DistributieTESTWebServices
                             departament += ", " + Utils.getDepartName(oReader.GetString(2));
                     }
                 }
-
 
                 dateComanda.emitere = emitere;
                 dateComanda.departament = departament;

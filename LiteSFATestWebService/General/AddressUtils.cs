@@ -92,6 +92,40 @@ namespace LiteSFATestWebService.General
 
 
 
+        public static string getCurrentDate_YY_MM_DD()
+        {
+            string mDate = "";
+            DateTime cDate = DateTime.Now;
+            string year = cDate.Year.ToString();
+            string day = cDate.Day.ToString("00");
+            string month = cDate.Month.ToString("00");
+            mDate = year + "-" + month + "-" + day;
+            return mDate;
+        }
+
+        public static string getCurrentDate_YYDDMM()
+        {
+            string mDate = "";
+            DateTime cDate = DateTime.Now;
+            string year = cDate.Year.ToString();
+            string day = cDate.Day.ToString("00");
+            string month = cDate.Month.ToString("00");
+            mDate = year + day + month;
+            return mDate;
+        }
+
+        public static string getCurrentDate_YYMMDD()
+        {
+            string mDate = "";
+            DateTime cDate = DateTime.Now;
+            string year = cDate.Year.ToString();
+            string day = cDate.Day.ToString("00");
+            string month = cDate.Month.ToString("00");
+            mDate = year + month + day;
+            return mDate;
+        }
+
+
         public static string getMonthDate(int months)
         {
             string mDate = "";
@@ -102,6 +136,33 @@ namespace LiteSFATestWebService.General
             mDate = year + month + day;
             return mDate;
         }
+
+
+        public static string getStartMonthDate(int months)
+        {
+            string mDate = "";
+            DateTime cDate = DateTime.Now.AddMonths(months);
+            string year = cDate.Year.ToString();
+            string day = "01";
+            string month = cDate.Month.ToString("00");
+            mDate = year + month + day;
+            return mDate;
+        }
+
+        public static string getMonth(int months)
+        {
+            string mDate = "";
+            DateTime cDate = DateTime.Now.AddMonths(months);
+            string year = cDate.Year.ToString();
+            string month = cDate.Month.ToString("00");
+            mDate = year + month;
+            return mDate;
+        }
+
+
+
+
+
 
 
     }

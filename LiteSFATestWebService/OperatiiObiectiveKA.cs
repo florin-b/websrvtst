@@ -556,7 +556,8 @@ namespace LiteSFATestWebService
         public string getListObiectiveAgenti(string codAgent, string filiala, string depart, string tipUser)
         {
 
-           
+
+
 
             OracleConnection connection = new OracleConnection();
             OracleDataReader oReader = null;
@@ -579,6 +580,9 @@ namespace LiteSFATestWebService
                                " a.status <> '20' and " + 
                                " (b.codclient in (select distinct p.kunnr from sapprd.knvp p where p.mandt = '900' and p.parvw in ('VE', 'ZC') " + condAg + ") ) " + 
                                " and b.coddepart = '" + depart +"' and b.id = a.id) x  order by x.numeobiectiv ";
+
+
+           
 
 
             try
@@ -750,9 +754,6 @@ namespace LiteSFATestWebService
         public string getListObiective(string codAgent, string filiala, string tip, string interval, string depart)
         {
 
-           
-
-
 
             OracleConnection connection = new OracleConnection();
             OracleDataReader oReader = null;
@@ -784,9 +785,11 @@ namespace LiteSFATestWebService
                 condInterval = " and a.datacreare <:dataSelectie ";
             }
 
-
+           // string condAgent = "";
             if (!codAgent.Equals("-1") && !codAgent.Equals("00"))
+            {
                 condAgent = " and a.codagent = :codAgent ";
+            }
 
 
             string condTip = "";
@@ -800,22 +803,29 @@ namespace LiteSFATestWebService
                 condTip = "  a.status = '0' and ";
 
             string sqlString = "";
-            if (depart == null || depart.Equals("00"))
+
+            if (!codAgent.Equals("-1") && !codAgent.Equals("00"))
             {
-                sqlString = " select a.numeobiectiv, a.beneficiar, to_char(to_date(a.datacreare,'yyyymmdd')), id, status from sapprd.zobiect_ka a where " + condTip + "  " +
-                            " a.antreprenor in (select distinct kunnr from sapprd.knvp where mandt = '900' and parvw in ('VE', 'ZC') and pernr =:codAgent ) " + condInterval +
-                            " order by a.datacreare desc ";
+                sqlString = " select a.numeobiectiv, a.beneficiar, to_char(to_date(a.datacreare,'yyyymmdd')), id, status, c.nume from sapprd.zobiect_ka a, agenti c where " +
+                             condTip +
+                             "  c.cod = a.codagent and " +
+                             " a.antreprenor in (select distinct kunnr from sapprd.knvp where mandt = '900' and parvw in ('VE', 'ZC') and pernr =:codAgent ) " + condInterval +
+                             " order by c.nume, a.datacreare desc ";
 
             }
             else
             {
-                sqlString = " select a.numeobiectiv, a.beneficiar, to_char(to_date(a.datacreare,'yyyymmdd')), a.id, a.status from sapprd.zobiect_ka a, sapprd.zobiect_stadii b where " + condTip + "  " +
-                            " substr(a.ul,0,2)=:filiala and a.id = b.id and b.coddepart=:codDepart and b.codstare <> 0 " + condInterval + " order by a.datacreare desc ";
+                sqlString = " select a.numeobiectiv, a.beneficiar, to_char(to_date(a.datacreare,'yyyymmdd')), a.id, a.status, c.nume from sapprd.zobiect_ka a, sapprd.zobiect_stadii b, " +
+                            " agenti c where " + condTip + "  c.cod = a.codagent and " +
+                            " substr(a.ul,0,2)=:filiala and a.id = b.id and b.coddepart=:codDepart and b.codstare <> 0 " + condInterval + " order by c.nume, a.datacreare desc ";
 
 
             }
 
+
            
+
+
 
             try
             {
@@ -834,24 +844,28 @@ namespace LiteSFATestWebService
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
 
+                int paramOrd = 0;
 
-                cmd.Parameters.Add(":dataSelectie", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
-                cmd.Parameters[0].Value = dataInterval;
+                if (!interval.Equals("-1"))
+                {
+                    cmd.Parameters.Add(":dataSelectie", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                    cmd.Parameters[paramOrd++].Value = dataInterval;
+                }
 
 
 
-                if (depart == null || depart.Equals("00"))
+                if (!codAgent.Equals("-1") && !codAgent.Equals("00"))
                 {
                     cmd.Parameters.Add(":codAgent", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
-                    cmd.Parameters[1].Value = codAgent;
+                    cmd.Parameters[paramOrd++].Value = codAgent;
                 }
                 else
                 {
                     cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
-                    cmd.Parameters[1].Value = filiala.Substring(0, 2);
+                    cmd.Parameters[paramOrd++].Value = filiala.Substring(0, 2);
 
                     cmd.Parameters.Add(":codDepart", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
-                    cmd.Parameters[2].Value = depart;
+                    cmd.Parameters[paramOrd].Value = depart;
                 }
 
 
@@ -873,6 +887,8 @@ namespace LiteSFATestWebService
                         obiectiv.data = oReader.GetString(2);
                         obiectiv.id = oReader.GetInt32(3).ToString();
                         obiectiv.codStatus = oReader.GetString(4);
+                        obiectiv.numeAgent = oReader.GetString(5);
+                        
                         listaObiective.Add(obiectiv);
                     }
                 }
@@ -1386,6 +1402,10 @@ namespace LiteSFATestWebService
 
             return serializedResult;
         }
+
+
+
+ 
 
 
         private static string formatData(string dataToFormat)

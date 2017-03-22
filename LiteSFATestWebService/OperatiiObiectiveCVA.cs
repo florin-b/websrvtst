@@ -561,5 +561,85 @@ namespace LiteSFATestWebService
         }
 
 
+        public bool schimbaAgentObiecticeCVA(string codAgentVechi, string codAgentNou)
+        {
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = null;
+
+            bool success = true;
+
+            try
+            {
+
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                string query = " update sapprd.ztbl_objectives set cva_code=:agentNou where cva_code=:agentVechi ";
+
+                cmd.CommandText = query;
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":agentNou", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codAgentNou;
+
+                cmd.Parameters.Add(":agentVechi", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = codAgentVechi;
+
+                cmd.ExecuteNonQuery();
+
+
+
+                query = " update sapprd.ztbl_beneficiari set cva_code=:agentNou where cva_code=:agentVechi ";
+
+                cmd.CommandText = query;
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":agentNou", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codAgentNou;
+
+                cmd.Parameters.Add(":agentVechi", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = codAgentVechi;
+
+                cmd.ExecuteNonQuery();
+
+                query = " update sapprd.ztbl_obj_ph_cva set cva_code=:agentNou where cva_code=:agentVechi ";
+
+                cmd.CommandText = query;
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":agentNou", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codAgentNou;
+
+                cmd.Parameters.Add(":agentVechi", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = codAgentVechi;
+
+                cmd.ExecuteNonQuery();
+
+
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+                success = false;
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(cmd, connection);
+            }
+
+            return success;
+        }
+
+
+
     }
 }

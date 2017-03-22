@@ -292,7 +292,7 @@ namespace LiteSFATestWebService
 
 
 
-        public string getListArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament, string afisStoc)
+        public string getListArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament, string afisStoc, string tipUser)
         {
 
 
@@ -649,9 +649,11 @@ namespace LiteSFATestWebService
         {
 
 
+
+            
+
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             ParametruPretGed paramPret = serializer.Deserialize<ParametruPretGed>(parametruPret);
-
 
             string serializedResult = "";
             
@@ -663,7 +665,7 @@ namespace LiteSFATestWebService
             try
             {
 
-                webService = new ZTBL_WEBSERVICE();
+                webService = new SAPWebServices.ZTBL_WEBSERVICE();
                 SAPWebServices.ZgetPrice inParam = new SAPWebServices.ZgetPrice();
 
                 System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Service1.getUser(), Service1.getPass());
@@ -692,6 +694,10 @@ namespace LiteSFATestWebService
                 inParam.Dzterm = paramPret.termenPlata;
                 inParam.Regio = paramPret.codJudet;
                 inParam.City = paramPret.localitate;
+                inParam.UlStoc = paramPret.filialaAlternativa;
+
+                
+
 
 
                 SAPWebServices.ZgetPriceResponse outParam = webService.ZgetPrice(inParam);
@@ -727,7 +733,7 @@ namespace LiteSFATestWebService
                 string Umb = outParam.OutUmb.ToString() != "" ? outParam.OutUmb.ToString() : "-1";
                 string procentTransport = outParam.ProcTrap.ToString();
                 string impachetare = outParam.Impachet.ToString() != "" ? outParam.Impachet.ToString() : " ";
-
+                
 
                 pretArticolGed.pret = pretOut;
                 pretArticolGed.um = umOut;
@@ -744,6 +750,9 @@ namespace LiteSFATestWebService
                 pretArticolGed.umBaza = Umb;
                 pretArticolGed.procTransport = procentTransport;
                 pretArticolGed.impachetare = impachetare;
+                pretArticolGed.valTrap = outParam.ValTrap.ToString();
+                pretArticolGed.errMsg = outParam.VMess;
+                
 
 
                 //---verificare cmp
@@ -903,9 +912,9 @@ namespace LiteSFATestWebService
 
 
 
-                    double dMarjaBruta = (Double.Parse(pretArticolGed.pret) / Double.Parse(pretArticolGed.cantitate)) - Double.Parse(pretArticolGed.cmp) * 1.20;
-                    double dPretMediu = (Double.Parse(pretArticolGed.pret) / Double.Parse(pretArticolGed.cantitate)) - dMarjaBruta * 0.2;
-                    double dMarjaMedie = dPretMediu - Double.Parse(pretArticolGed.cmp) * 1.20;
+                    double dMarjaBruta = (Double.Parse(pretArticolGed.pret) / Double.Parse(pretArticolGed.cantitate)) - Double.Parse(pretArticolGed.cmp) * 1.19;
+                    double dPretMediu = (Double.Parse(pretArticolGed.pret) / Double.Parse(pretArticolGed.cantitate)) - dMarjaBruta * 0.19;
+                    double dMarjaMedie = dPretMediu - Double.Parse(pretArticolGed.cmp) * 1.19;
 
 
                     pretMediu = dPretMediu.ToString();
@@ -920,7 +929,7 @@ namespace LiteSFATestWebService
                 {
 
 
-                    pretMediu = ((Double.Parse(pretOut) / 1.20) / Double.Parse(cantOut)).ToString();
+                    pretMediu = ((Double.Parse(pretOut) / 1.19) / Double.Parse(cantOut)).ToString();
 
 
                     cmd = connection.CreateCommand();
@@ -948,18 +957,19 @@ namespace LiteSFATestWebService
 
                 }
 
-                oReader.Close();
-                oReader.Dispose();
-                cmd.Dispose();
-                connection.Close();
-                connection.Dispose();
 
-                //sf. prt si adaos mediu
+                string istoricPret = " ";
+                if (paramPret.codClientParavan != null && paramPret.codClientParavan.Trim().Length > 0 )
+                    istoricPret = new Preturi().getIstoricPret(connection,  paramPret.articol, paramPret.codClientParavan);
+
+
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
 
 
                 pretArticolGed.pretMediu = pretMediu;
                 pretArticolGed.adaosMediu = adaosMediu;
                 pretArticolGed.umPretMediu = unitMasPretMediu;
+                pretArticolGed.istoricPret = istoricPret;
 
 
             }
@@ -974,9 +984,6 @@ namespace LiteSFATestWebService
             }
 
             serializedResult = serializer.Serialize(pretArticolGed);
-
-
-
 
             return serializedResult;
 

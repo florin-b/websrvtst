@@ -6,6 +6,7 @@ using System.Data.OracleClient;
 using System.Data;
 using LiteSFATestWebService.SAPWebServices;
 using LiteSFATestWebService.General;
+using System.Globalization;
 
 namespace LiteSFATestWebService
 {
@@ -306,7 +307,7 @@ namespace LiteSFATestWebService
 
 
 
-        private string getIstoricPret(OracleConnection connection, String codArticol, String codClient)
+        public string getIstoricPret(OracleConnection connection, String codArticol, String codClient)
         {
 
             OracleCommand cmd = null;
@@ -317,17 +318,18 @@ namespace LiteSFATestWebService
             {
                 cmd = connection.CreateCommand();
 
-                cmd.CommandText = " select x.valoare, x.multiplu, x.um, x.data " + 
-                                  " from (select b.valoare, ' ' multiplu, b.um, to_char(to_date(a.datac,'yyyymmdd')) data from sapprd.zcomhead_tableta a, sapprd.zcomdet_tableta b where " + 
+                cmd.CommandText = " select distinct x.valoare, x.multiplu, x.um, x.data, x.cantitate " +
+                                  " from (select b.valoare, ' ' multiplu, b.um, to_char(to_date(a.datac,'yyyymmdd')) data, b.cantitate " +
+                                  " from sapprd.zcomhead_tableta a, sapprd.zcomdet_tableta b where " + 
                                   " a.cod_client =:codClient and a.status_aprov in (0,2,15) and a.datac >=:dataStart " +
-                                  " and b.id = a.id and b.cod =:codArticol order by datac desc) x where rownum<=3 ";
+                                  " and b.id = a.id and b.cod =:codArticol order by datac desc) x where rownum<3 ";
 
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
                 cmd.Parameters[0].Value = codClient;
 
                 cmd.Parameters.Add(":dataStart", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
-                cmd.Parameters[1].Value = AddressUtils.getMonthDate(-3);
+                cmd.Parameters[1].Value = AddressUtils.getMonthDate(-2);
 
                 cmd.Parameters.Add(":codArticol", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
                 cmd.Parameters[2].Value = codArticol;
@@ -339,7 +341,7 @@ namespace LiteSFATestWebService
 
                     while (oReader.Read())
                     {
-                        istoric += oReader.GetDouble(0).ToString() + "@ @" + oReader.GetString(2).ToString() + "@"+ oReader.GetString(3) + ":";
+                        istoric += oReader.GetDouble(0).ToString("#.##") + "@ @" + oReader.GetDouble(4) + " " + oReader.GetString(2).ToString() + "@"+ oReader.GetString(3) + ":";
                     }
 
                 }
@@ -354,11 +356,134 @@ namespace LiteSFATestWebService
                 DatabaseConnections.CloseConnections(oReader, cmd);
             }
 
-            
 
             return istoric;
         }
 
+
+
+        private static string getFilialaCmpBV90(OracleConnection conn, string codArticol, string filialaAgent)
+        {
+            OracleCommand cmd = null;
+            OracleDataReader oReader = null;
+            string filialaCmp = filialaAgent;
+
+            try
+            {
+                cmd = conn.CreateCommand();
+
+                cmd.CommandText = " select lbkum from sapprd.mbew where mandt = '900' and bwkey =:ul and matnr =:codArt ";
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":ul", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = filialaAgent;
+
+                cmd.Parameters.Add(":codArt", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = formatFullCodArticol(codArticol);
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+
+                    oReader.Read();
+                    if (oReader.GetDouble(0) == 0)
+                        filialaCmp = "BV90";
+
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+            return filialaCmp;
+
+        }
+
+
+        private static double calculeazaCmp(OracleConnection conn, string filiala, string codArticol, string filialaAgent)
+        {
+            OracleCommand cmd = null;
+            OracleDataReader oReader = null;
+            double valoareCmp = 0;
+
+
+            string filialaCmp;
+
+            if (filiala.Equals("BV90") && codArticol.StartsWith("105"))
+                filialaCmp = getFilialaCmpBV90(conn, codArticol, filialaAgent);
+            else
+                filialaCmp = filiala;
+
+
+            try
+            {
+                cmd = conn.CreateCommand();
+
+                cmd.CommandText = " select nvl(to_char(decode(y.lbkum,0,y.verpr,y.salk3/y.lbkum),'99999.9999'),'0') from sapprd.mbew y where " +
+                                  " y.mandt='900' and y.matnr=:codArticol  and y.bwkey =:filiala ";
+                                 
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":codArticol", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = formatFullCodArticol(codArticol);
+
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = filialaCmp;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+
+                    oReader.Read();
+                    valoareCmp = Double.Parse(oReader.GetString(0).Trim(), CultureInfo.InvariantCulture);
+
+                }
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+
+            return valoareCmp;
+        }
+
+
+
+        public static double getCmp(OracleConnection conn, string tipAfis, string filiala, string articol, string filialaAgent)
+        {
+            double cmp = 0;
+
+            if (tipAfis == "3" || tipAfis == "1")
+                cmp = calculeazaCmp(conn, filiala, articol, filialaAgent);
+            else
+                cmp = -1;
+
+            return cmp;
+
+        }
+
+
+
+
+        private static string formatFullCodArticol(string codArticol)
+        {
+            string codArt = codArticol;
+
+            if (codArt.Length == 8)
+                codArt = "0000000000" + codArt;
+
+            return codArt;
+        }
 
 
     }

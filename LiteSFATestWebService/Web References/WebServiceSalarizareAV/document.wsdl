@@ -1,54 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="urn:sap-com:document:sap:soap:functions:mc-style" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:n1="urn:sap-com:document:sap:rfc:functions" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" targetNamespace="urn:sap-com:document:sap:soap:functions:mc-style" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsoap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:tns="urn:sap-com:document:sap:soap:functions:mc-style" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:n1="urn:sap-com:document:sap:rfc:functions" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" targetNamespace="urn:sap-com:document:sap:soap:functions:mc-style" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:documentation>
     <sidl:sidl xmlns:sidl="http://www.sap.com/2007/03/sidl" />
   </wsdl:documentation>
   <wsp:UsingPolicy wsdl:required="true" />
-  <wsp:Policy wsu:Id="BN_ZWBS_SAL_AV">
-    <wsaw:UsingAddressing xmlns:wsaw="http://schemas.xmlsoap.org/ws/2004/08/addressing" />
-    <saptrnbnd:OptimizedXMLTransfer uri="http://xml.sap.com/2006/11/esi/esp/binxml" xmlns:saptrnbnd="http://www.sap.com/webas/710/soap/features/transportbinding/" wsp:Optional="true" />
-    <sapattahnd:Enabled xmlns:sapattahnd="http://www.sap.com/710/features/attachment/">false</sapattahnd:Enabled>
-    <wsp:ExactlyOne xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:sapsp="http://www.sap.com/webas/630/soap/features/security/policy" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:wsu="http://schemas.xmlsoap.org/ws/2002/07/utility">
+  <wsp:Policy wsu:Id="BN__ZWBS_SAL_AV">
+    <wsp:ExactlyOne>
       <wsp:All>
-        <sp:TransportBinding>
-          <wsp:Policy>
-            <sp:TransportToken>
-              <wsp:Policy>
-                <sp:HttpsToken>
-                  <wsp:Policy>
-                    <sp:HttpBasicAuthentication />
-                  </wsp:Policy>
-                </sp:HttpsToken>
-              </wsp:Policy>
-            </sp:TransportToken>
-            <sp:AlgorithmSuite>
-              <wsp:Policy>
-                <sp:TripleDesRsa15 />
-              </wsp:Policy>
-            </sp:AlgorithmSuite>
-            <sp:Layout>
-              <wsp:Policy>
-                <sp:Strict />
-              </wsp:Policy>
-            </sp:Layout>
-          </wsp:Policy>
-        </sp:TransportBinding>
+        <sapattahnd:Enabled xmlns:sapattahnd="http://www.sap.com/710/features/attachment/">false</sapattahnd:Enabled>
+        <saptrnbnd:OptimizedMimeSerialization xmlns:saptrnbnd="http://schemas.xmlsoap.org/ws/2004/09/policy/optimizedmimeserialization" wsp:Optional="true" />
+        <wsaw:UsingAddressing xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" wsp:Optional="true" />
+        <wsp:All xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy">
+          <sp:TransportBinding xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" xmlns:sapsp="http://www.sap.com/webas/630/soap/features/security/policy" xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:wst="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:wsu="http://schemas.xmlsoap.org/ws/2002/07/utility" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex">
+            <wsp:Policy>
+              <sp:TransportToken>
+                <wsp:Policy>
+                  <sp:HttpsToken>
+                    <wsp:Policy>
+                      <sp:HttpBasicAuthentication />
+                    </wsp:Policy>
+                  </sp:HttpsToken>
+                </wsp:Policy>
+              </sp:TransportToken>
+              <sp:AlgorithmSuite>
+                <wsp:Policy>
+                  <sp:Basic128Rsa15 />
+                </wsp:Policy>
+              </sp:AlgorithmSuite>
+              <sp:Layout>
+                <wsp:Policy>
+                  <sp:Strict />
+                </wsp:Policy>
+              </sp:Layout>
+            </wsp:Policy>
+          </sp:TransportBinding>
+        </wsp:All>
+      </wsp:All>
+      <wsp:All>
+        <sapattahnd:Enabled xmlns:sapattahnd="http://www.sap.com/710/features/attachment/">false</sapattahnd:Enabled>
+        <saptrnbnd:OptimizedXMLTransfer uri="http://xml.sap.com/2006/11/esi/esp/binxml" xmlns:saptrnbnd="http://www.sap.com/webas/710/soap/features/transportbinding/" wsp:Optional="true" />
+        <wsaw:UsingAddressing xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" wsp:Optional="true" />
+        <wsp:All xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy">
+          <sp:TransportBinding xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" xmlns:sapsp="http://www.sap.com/webas/630/soap/features/security/policy" xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:wst="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:wsu="http://schemas.xmlsoap.org/ws/2002/07/utility" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex">
+            <wsp:Policy>
+              <sp:TransportToken>
+                <wsp:Policy>
+                  <sp:HttpsToken>
+                    <wsp:Policy>
+                      <sp:HttpBasicAuthentication />
+                    </wsp:Policy>
+                  </sp:HttpsToken>
+                </wsp:Policy>
+              </sp:TransportToken>
+              <sp:AlgorithmSuite>
+                <wsp:Policy>
+                  <sp:Basic128Rsa15 />
+                </wsp:Policy>
+              </sp:AlgorithmSuite>
+              <sp:Layout>
+                <wsp:Policy>
+                  <sp:Strict />
+                </wsp:Policy>
+              </sp:Layout>
+            </wsp:Policy>
+          </sp:TransportBinding>
+        </wsp:All>
       </wsp:All>
     </wsp:ExactlyOne>
   </wsp:Policy>
-  <wsp:Policy wsu:Id="IF_ZWBS_SAL_AV">
-    <sapsession:Session xmlns:sapsession="http://www.sap.com/webas/630/soap/features/session/">
-      <sapsession:enableSession>false</sapsession:enableSession>
-    </sapsession:Session>
-    <sapcentraladmin:CentralAdministration xmlns:sapcentraladmin="http://www.sap.com/webas/700/soap/features/CentralAdministration/" wsp:Optional="true">
-      <sapcentraladmin:BusinessApplicationID>5BDF274EA49D2253E10000000A010348</sapcentraladmin:BusinessApplicationID>
-    </sapcentraladmin:CentralAdministration>
+  <wsp:Policy wsu:Id="IF__ZWBS_SAL_AV">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sapsession:Session xmlns:sapsession="http://www.sap.com/webas/630/soap/features/session/">
+          <sapsession:enableSession>false</sapsession:enableSession>
+        </sapsession:Session>
+        <sapcentraladmin:CentralAdministration xmlns:sapcentraladmin="http://www.sap.com/webas/700/soap/features/CentralAdministration/" wsp:Optional="true">
+          <sapcentraladmin:BusinessApplicationID>5BDF274EA49D2253E10000000A010348</sapcentraladmin:BusinessApplicationID>
+        </sapcentraladmin:CentralAdministration>
+      </wsp:All>
+    </wsp:ExactlyOne>
   </wsp:Policy>
-  <wsp:Policy wsu:Id="OP_ZgetSalav">
-    <sapcomhnd:enableCommit xmlns:sapcomhnd="http://www.sap.com/NW05/soap/features/commit/">false</sapcomhnd:enableCommit>
-    <sapblock:enableBlocking xmlns:sapblock="http://www.sap.com/NW05/soap/features/blocking/">true</sapblock:enableBlocking>
-    <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
-    <saprmnw05:enableWSRM xmlns:saprmnw05="http://www.sap.com/NW05/soap/features/wsrm/">false</saprmnw05:enableWSRM>
+  <wsp:Policy wsu:Id="OP__ZgetSalav">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
+        <sapcomhnd:enableCommit xmlns:sapcomhnd="http://www.sap.com/NW05/soap/features/commit/">false</sapcomhnd:enableCommit>
+        <sapblock:enableBlocking xmlns:sapblock="http://www.sap.com/NW05/soap/features/blocking/">true</sapblock:enableBlocking>
+        <saprmnw05:enableWSRM xmlns:saprmnw05="http://www.sap.com/NW05/soap/features/wsrm/">false</saprmnw05:enableWSRM>
+      </wsp:All>
+    </wsp:ExactlyOne>
   </wsp:Policy>
   <wsdl:types>
     <xsd:schema attributeFormDefault="qualified" targetNamespace="urn:sap-com:document:sap:rfc:functions">
@@ -389,11 +429,11 @@
   </wsdl:message>
   <wsdl:portType name="ZWBS_SAL_AV">
     <wsp:Policy>
-      <wsp:PolicyReference URI="#IF_ZWBS_SAL_AV" />
+      <wsp:PolicyReference URI="#IF__ZWBS_SAL_AV" />
     </wsp:Policy>
     <wsdl:operation name="ZgetSalav">
       <wsp:Policy>
-        <wsp:PolicyReference URI="#OP_ZgetSalav" />
+        <wsp:PolicyReference URI="#OP__ZgetSalav" />
       </wsp:Policy>
       <wsdl:input message="tns:ZgetSalav" />
       <wsdl:output message="tns:ZgetSalavResponse" />
@@ -401,14 +441,11 @@
   </wsdl:portType>
   <wsdl:binding name="ZWBS_SAL_AV" type="tns:ZWBS_SAL_AV">
     <wsp:Policy>
-      <wsp:PolicyReference URI="#BN_ZWBS_SAL_AV" />
+      <wsp:PolicyReference URI="#BN__ZWBS_SAL_AV" />
     </wsp:Policy>
-    <wsa:EndpointReference xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing">
-      <wsa:ReferenceParameters />
-    </wsa:EndpointReference>
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="ZgetSalav">
-      <soap:operation soapAction="" style="document" />
+      <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZWBS_SAL_AV:ZgetSalavRequest" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -419,7 +456,7 @@
   </wsdl:binding>
   <wsdl:service name="ZWBS_SAL_AV">
     <wsdl:port name="ZWBS_SAL_AV" binding="tns:ZWBS_SAL_AV">
-      <soap:address location="http://sap-prd3a.arabesque.ro:8033/sap/bc/srt/rfc/sap/zwbs_sal_av/900/zwbs_sal_av/zwbs_sal_av" />
+      <soap:address location="http://sap-prd5a.arabesque.ro:8035/sap/bc/srt/rfc/sap/zwbs_sal_av/900/zwbs_sal_av/zwbs_sal_av" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

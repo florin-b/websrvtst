@@ -82,8 +82,6 @@ namespace LiteSFATestWebService
             string condClient = "";
 
 
-
-
             try
             {
                 string connectionString = DatabaseConnections.ConnectToTestEnvironment();

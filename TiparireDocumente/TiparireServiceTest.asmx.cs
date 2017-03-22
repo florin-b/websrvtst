@@ -53,7 +53,6 @@ namespace TiparireDocumenteTest
         {
             string serializedResult = "";
 
-            sendErrorToMail(filiala);
 
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand();
@@ -82,7 +81,7 @@ namespace TiparireDocumenteTest
                                    " art.nume numeart, s.spart, s.werks, s.lfimg, s.meins, k.datbg, h.wadat, " +
                                    " nvl( (select '1' from sapprd.zpregmarfagest g where g.document=h.vbeln),'-1')  pregatire" +
                                    " from sapprd.likp h, sapprd.lips s, sapprd.vttp p, sapprd.vttk k, clienti c, articole art " +
-                                   " where h.mandt = '900'  and s.lgort <> 'DESC' and c.cod = h.kunnr  and h.mandt = s.mandt  and h.vbeln = s.vbeln " +
+                                   " where h.mandt = '900'  and s.lgort not in ('DESC','PRT1','PRT2','GAR1','GAR2') and c.cod = h.kunnr  and h.mandt = s.mandt  and h.vbeln = s.vbeln " +
                                    " and art.cod = s.matnr and h.wadat between :dataStart and :dataStop and art.spart =:depart " +
                                      condFiliala + " and nvl(k.datbg, '00000000') = '00000000' and s.lfimg > 0 " +
                                    " and h.mandt = p.mandt(+) and substr(s.matnr,11,1) != '3' " +

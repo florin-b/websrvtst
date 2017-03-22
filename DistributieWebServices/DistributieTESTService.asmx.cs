@@ -82,8 +82,14 @@ namespace DistributieTESTWebServices
             return eveniment.saveNewEvent(serializedEvent);
         }
 
-        
+        [WebMethod]
+        public void sendSmsAlerts(string nrDocument)
+        {
 
+
+
+            new OperatiiEvenimente().sendSmsAlerts(null, nrDocument);
+        }
 
 
         [WebMethod]

@@ -29,10 +29,7 @@ using LiteSFATestWebService.ClientiSemiactivi;
 
 using System.Drawing;
 using System.Text;
-
-
-
-
+using LiteSFATestWebService.General;
 
 namespace LiteSFATestWebService
 {
@@ -48,6 +45,13 @@ namespace LiteSFATestWebService
 
         Random randNum = new Random();
 
+
+        [WebMethod]
+        public string testMils()
+        {
+            return ComenziSite.CurrentMillis.Millis.ToString();
+        }
+
         [WebMethod]
         public string HelloWorld(string message)
         {
@@ -60,6 +64,12 @@ namespace LiteSFATestWebService
         {
             OperatiiDocumente opDocumente = new OperatiiDocumente();
             return opDocumente.getDocumente(departament);
+        }
+
+        [WebMethod]
+        public string getStareTVA(string cuiClient)
+        {
+            return new VerificaTva().isPlatitorTva(cuiClient).ToString();
         }
 
 
@@ -104,10 +114,10 @@ namespace LiteSFATestWebService
 
 
         [WebMethod]
-        public String salarizareAV(string codAgent, string departament, string filiala)
+        public String salarizareAV(string codAgent, string departament, string filiala, string dataRap)
         {
             Salarizare salarizare = new Salarizare();
-            return salarizare.getSalarizareAV(codAgent, departament, filiala);
+            return salarizare.getSalarizareAV(codAgent, departament, filiala, dataRap);
 
         }
 
@@ -368,7 +378,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
                 OracleCommand cmd = connection.CreateCommand();
 
                 connection.ConnectionString = connectionString;
@@ -465,7 +475,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
                 OracleCommand cmd = connection.CreateCommand();
 
                 connection.ConnectionString = connectionString;
@@ -621,7 +631,7 @@ namespace LiteSFATestWebService
                         connection = new OracleConnection();
 
                         oReader = null;
-                        connectionString = GetConnectionString_android();
+                        connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                         connection.ConnectionString = connectionString;
                         connection.Open();
@@ -679,7 +689,7 @@ namespace LiteSFATestWebService
                         //peroana de contact
                         connection = new OracleConnection();
                         oReader = null;
-                        connectionString = GetConnectionString_android();
+                        connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                         connection.ConnectionString = connectionString;
                         connection.Open();
@@ -739,7 +749,7 @@ namespace LiteSFATestWebService
                         connection = new OracleConnection();
 
                         oReader = null;
-                        connectionString = GetConnectionString_android();
+                        connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                         connection.ConnectionString = connectionString;
                         connection.Open();
@@ -1277,7 +1287,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -1420,7 +1430,11 @@ namespace LiteSFATestWebService
             return operatiiObiective.getObiective(tipUser, codUser, filiala);
         }
 
-
+        [WebMethod]
+        public bool schimbaAgentObiecticeCVA(string codAgentVechi, string codAgentNou)
+        {
+            return new OperatiiObiectiveCVA().schimbaAgentObiecticeCVA(codAgentVechi, codAgentNou);
+        }
 
 
 
@@ -1434,7 +1448,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -1446,7 +1460,7 @@ namespace LiteSFATestWebService
                                   " docin, decode(trim(adr_noua),'',' ',adr_noua), decode(trim(obsplata),'',' ',obsplata), decode(trim(addrnumber),'',' ',addrnumber), " +
                                   " val_incasata, decode(trim(mod_av),'',' ',mod_av), " +
                                   " nvl((select p.prelucrare from sapprd.zprelucrare04 p where p.idcomanda = nrcmdsap ),'-1') prelucrare, " +
-                                  " nvl((select t.greutate from sapprd.ztonajcomanda t where t.idcomanda = id ),'-1') tonaj " +
+                                  " nvl((select t.greutate from sapprd.ztonajcomanda t where t.idcomanda = id ),'-1') tonaj, nvl(client_raft,' ') " +
                                   " from sapprd.zcomhead_tableta where id = :idCmd ";
 
 
@@ -1469,7 +1483,7 @@ namespace LiteSFATestWebService
                              + oReader.GetString(8) + "#" + oReader.GetString(9) + "#" + Regex.Replace(oReader.GetString(10), @"[!]|[#]|[@@]|[,]", " ").Trim() + "#"
                              + oReader.GetString(11) + "#" + oReader.GetString(12) + "#" + oReader.GetString(13) + "#"
                              + Regex.Replace(oReader.GetString(14), @"[!]|[#]|[@@]|[,]", " ") + "#" + oReader.GetString(15) + "#" + oReader.GetDecimal(16) + "#"
-                             + oReader.GetString(17) + "#" + oReader.GetString(18) + "#" + oReader.GetDouble(19).ToString() + "#";
+                             + oReader.GetString(17) + "#" + oReader.GetString(18) + "#" + oReader.GetDouble(19).ToString() + "#" + oReader.GetString(20).ToString() + "#";
 
                 }
 
@@ -1494,7 +1508,7 @@ namespace LiteSFATestWebService
 
 
 
-
+        #region Operatii articole
 
 
         [WebMethod]
@@ -1509,11 +1523,11 @@ namespace LiteSFATestWebService
 
 
         [WebMethod]
-        public string getArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament, string afisStoc)
+        public string getArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament, string afisStoc, string tipUser)
         {
 
             OperatiiArticole articole = new OperatiiArticole();
-            return articole.getListArticoleDistributie(searchString, tipArticol, tipCautare, filiala, departament, afisStoc);
+            return articole.getListArticoleDistributie(searchString, tipArticol, tipCautare, filiala, departament, afisStoc, tipUser);
 
         }
 
@@ -1535,6 +1549,8 @@ namespace LiteSFATestWebService
             return articole.getListNivel1Distributie(searchString, tipArticol, tipCautare, filiala, departament);
 
         }
+
+        #endregion
 
         #region Preturi Concurenta
 
@@ -1583,6 +1599,15 @@ namespace LiteSFATestWebService
 
         #endregion
 
+
+
+        [WebMethod]
+        public string getAprobariNecesare(string nrComanda)
+        {
+            return new Aprobari().getAprobariNecesare(nrComanda);
+        }
+
+
         [WebMethod]
         public string syncArtAndroid(string depart, string codDepart, string filiala)
         {
@@ -1600,7 +1625,7 @@ namespace LiteSFATestWebService
                 {
 
 
-                    string connectionString = GetConnectionString_android();
+                    string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                     connection.ConnectionString = connectionString;
                     connection.Open();
@@ -1883,7 +1908,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 DateTime cDate = DateTime.Now;
                 string year = cDate.Year.ToString();
@@ -2039,7 +2064,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -2426,8 +2451,6 @@ namespace LiteSFATestWebService
                                   " and c.codclient =:codClient and c.codadresa = a.addrnumber  order by region, city1 ";
 
 
-
-
                 cmd.CommandType = CommandType.Text;
 
                 cmd.Parameters.Clear();
@@ -2447,6 +2470,7 @@ namespace LiteSFATestWebService
                 {
                     while (oReader.Read())
                     {
+
                         oAdresa = new AdresaLivrareClient();
                         oAdresa.oras = oReader.GetString(0);
                         oAdresa.strada = oReader.GetString(1);
@@ -2456,15 +2480,14 @@ namespace LiteSFATestWebService
                         oAdresa.tonaj = "-1";
                         oAdresa.coords = oReader.GetString(5) + "," + oReader.GetString(6);
 
-                        listaAdreseLivrare.Add(oAdresa);
+                        if (oAdresa.strada.Trim().Length > 0)
+                            listaAdreseLivrare.Add(oAdresa);
 
                     }
 
                 }
 
-                oReader.Close();
-                oReader.Dispose();
-                cmd.Dispose();
+                DatabaseConnections.CloseConnections(oReader, cmd);
 
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 serializedResult = serializer.Serialize(listaAdreseLivrare);
@@ -2510,7 +2533,7 @@ namespace LiteSFATestWebService
 
 
 
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -2856,7 +2879,7 @@ namespace LiteSFATestWebService
             try
             {
                 //antet comanda
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
                 string cant_r = "", um_r = "", val_r = "", mon_r = "";
 
                 connection.ConnectionString = connectionString;
@@ -3072,7 +3095,7 @@ namespace LiteSFATestWebService
             try
             {
                 //antet comanda
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -3345,7 +3368,8 @@ namespace LiteSFATestWebService
                 condBlocAprov = " ,nvl((select '1' from sapprd.mara m where m.mandt = '900' and m.matnr = a.cod and m.mstae = 'Z1'),'-1') blocAprov ";
             }
 
-
+            
+            string istoricPret = " ,a.istoric_pret istoricPret ";
 
             //
             //afisCond:
@@ -3371,7 +3395,7 @@ namespace LiteSFATestWebService
             try
             {
                 //antet comanda
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -3383,7 +3407,7 @@ namespace LiteSFATestWebService
                                   " decode(a.pmnttrms,'',' ',a.pmnttrms) pmnttrms, decode(a.obstra,'',' ',a.obstra) obstra, b.tip_pers, a.email, a.obsplata, a.ketdat, " +
                                   " a.adr_livrare_d, a.city_d, a.region_d, a.macara, a.nume_client, a.stceg, a.id_obiectiv, a.adresa_obiectiv, " +
                                   " nvl((select latitude||','||longitude from sapprd.zcoordcomenzi where idcomanda = a.id),'0,0') coord, " +
-                                  " nvl((select t.greutate from sapprd.ztonajcomanda t where t.idcomanda = id ),'-1') tonaj " +
+                                  " nvl((select t.greutate from sapprd.ztonajcomanda t where t.idcomanda = id ),'-1') tonaj, nvl(client_raft,' ') " +
                                   " from sapprd.zcomhead_tableta a, clienti b " +
                                   " where a.id=:idcmd and a.cod_client = b.cod ";
 
@@ -3430,6 +3454,7 @@ namespace LiteSFATestWebService
                     dateLivrare.isAdresaObiectiv = oReader.GetString(23).Equals("X") ? true : false;
                     dateLivrare.coordonateGps = oReader.GetString(24);
                     dateLivrare.tonaj = oReader.GetDouble(25).ToString();
+                    dateLivrare.clientRaft = oReader.GetString(26).ToString();
 
 
                 }
@@ -3445,11 +3470,15 @@ namespace LiteSFATestWebService
                     cmp = " , nvl(( select nvl(to_char(decode(y.lbkum,0,y.verpr,y.salk3/y.lbkum),'99999.9999'),0) from sapprd.mbew y where " +
                                  " y.mandt='900' and y.matnr=a.cod  and y.bwkey = '" + unitLog1 + "'" +
                                  " ),0) cmp  ";
+
+                    cmp = ", '-1' cmp ";
                 }
                 else
                 {
                     cmp = ", '-1' cmp ";
                 }
+
+
 
                 string condTabKA = " , sapprd.zcomhead_tableta z ", condIdKA = " and a.id=:idcmd and z.id = a.id ", condOrderKA = " trim(poz) ";
                 if (tipUser == "KA")
@@ -3476,7 +3505,7 @@ namespace LiteSFATestWebService
                                   " and werks ='" + unitLog1 + "' and inactiv <> 'X' and matkl = c.cod),0) dv, nvl(a.procent_aprob,0) procent_aprob, " +
                                   " decode(s.matkl,'','0','1') permitsubcmp, nvl(a.multiplu,1) multiplu, nvl(a.val_poz,0) " + infoPret +
                                   " ,nvl(a.cant_umb,0) cant_umb , nvl(a.umb,' ') umb, a.ul_stoc, z.depart, nvl(b.tip_mat,' '), nvl(a.ponderat,'-1'), nvl(b.spart,' '), " +
-                                  " decode(trim(b.dep_aprobare),'','00', b.dep_aprobare)  dep_aprobare " + condBlocAprov +
+                                  " decode(trim(b.dep_aprobare),'','00', b.dep_aprobare)  dep_aprobare " + condBlocAprov + istoricPret +
                                   " from sapprd.zcomdet_tableta a, sapprd.zdisc_pers_sint a1,  sintetice c," +
                                   " articole b, sapprd.zpretsubcmp s " + condTabKA + " where a.cod = b.cod(+) " + condIdKA + " and " +
                                   " a1.inactiv(+) <> 'X' and a1.functie(+)='AV' and a1.spart(+)=substr(c.COD_NIVEL1,2,2) and a1.werks(+) ='" + unitLog1 + "' " +
@@ -3507,18 +3536,6 @@ namespace LiteSFATestWebService
                         lnumeArt = oReader1.GetString(2).Replace("#", "");
                         lDepoz = oReader1.GetString(4);
 
-                        if (oReader1.GetString(22).Equals("BV90") && depart.Equals("02"))
-                        {
-                            // lDepoz = "02T1";
-                        }
-
-                        if (oReader1.GetString(22).Equals("BV90") && depart.Equals("05"))
-                        {
-                            //lDepoz = "BV90";
-                        }
-
-
-
                         if (tipMat.Trim() != "")
                             lnumeArt += " (" + tipMat + ")";
 
@@ -3541,7 +3558,13 @@ namespace LiteSFATestWebService
                         articol.procent = oReader1.GetDouble(7);
                         articol.procentFact = oReader1.GetDouble(8);
                         articol.conditie = false;
-                        articol.cmp = oReader1.GetString(10).Trim().Equals(".0000") ? 0.0 : getTipValoare(Double.Parse(oReader1.GetString(10)), dateLivrare.unitLog, tipUser);
+
+                        double valCmp = Preturi.getCmp(connection, afisCond, unitLogAlt, articol.codArticol, unitLog1);
+
+                        //articol.cmp = oReader1.GetString(10).Trim().Equals(".0000") ? 0.0 : getTipValoare(Double.Parse(oReader1.GetString(10)), dateLivrare.unitLog, tipUser);
+
+                        articol.cmp = getTipValoare(valCmp, dateLivrare.unitLog, tipUser);
+
                         articol.discClient = oReader1.GetDouble(11);
                         articol.discountAg = oReader1.GetDouble(12);
                         articol.discountSd = oReader1.GetDouble(13);
@@ -3559,6 +3582,8 @@ namespace LiteSFATestWebService
                         articol.ponderare = Int32.Parse(oReader1.GetString(25).Trim().Equals("") ? "-1" : oReader1.GetString(25));
                         articol.departSintetic = oReader1.GetString(26);
                         articol.departAprob = oReader1.GetString(27);
+                        articol.istoricPret = GeneralUtils.formatIstoricPret(oReader1.GetString(29));
+                        
 
 
                         //verificare factori conversie
@@ -3790,6 +3815,7 @@ namespace LiteSFATestWebService
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             serializedResult = serializer.Serialize(articoleComanda);
 
+            
 
             return serializedResult;
 
@@ -3804,10 +3830,12 @@ namespace LiteSFATestWebService
             bool canalDistrib40 = unitLog.Substring(2, 1).Equals("4") ? true : false;
 
             if (tipUser.Equals("DV") && (canalDistrib20 || canalDistrib40))
-                return valoare * 1.20;
+                return valoare * 1.19;
             else
                 return valoare;
         }
+
+
 
 
         private static bool isDV_WOOD(string codUser)
@@ -3836,7 +3864,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
 
@@ -3957,7 +3985,7 @@ namespace LiteSFATestWebService
                         }
                         else
                         {
-                            tipAprov = " and decode(a.accept1,'X',a.ora_accept1,'1') != '000000' and ((a.accept2 = 'X' and ora_accept2 = '000000'  and a.status_aprov in ('1','6') " +
+                            tipAprov = " and decode(decode(a.accept1,'X',a.ora_accept1,'1'),'000000',1,0)=0 and ((a.accept2 = 'X' and ora_accept2 = '000000'  and a.status_aprov in ('1','6') " +
                                        " and a.aprob_cv_necesar=' ')  ";
 
                             tipAprov += " or (a.tip_pers = 'CV' and a.aprob_cv_necesar like '%" + localDepart + "%' and " +
@@ -3986,9 +4014,9 @@ namespace LiteSFATestWebService
                                       " and a.cod_agent = ag.cod ";
 
 
-                    
+                   
 
-                    cmd.Parameters.Clear();
+                        cmd.Parameters.Clear();
 
 
                     oReader = cmd.ExecuteReader();
@@ -4309,7 +4337,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -4484,7 +4512,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -4608,7 +4636,7 @@ namespace LiteSFATestWebService
             try
             {
 
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -4790,7 +4818,7 @@ namespace LiteSFATestWebService
             {
                 //departament comanda
 
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -4862,7 +4890,7 @@ namespace LiteSFATestWebService
             try
             {
 
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -5031,7 +5059,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -5222,7 +5250,7 @@ namespace LiteSFATestWebService
                         string response = outParam.VOk;
 
                         //---motiv respingere
-                        string connectionString = GetConnectionString_android();
+                        string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                         connection.ConnectionString = connectionString;
                         connection.Open();
@@ -5280,7 +5308,7 @@ namespace LiteSFATestWebService
                     {
 
 
-                        string connectionString = GetConnectionString_android();
+                        string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                         connection.ConnectionString = connectionString;
                         connection.Open();
@@ -5379,7 +5407,7 @@ namespace LiteSFATestWebService
 
                     try
                     {
-                        string connectionString = GetConnectionString_android();
+                        string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                         connection.ConnectionString = connectionString;
                         connection.Open();
@@ -5498,7 +5526,7 @@ namespace LiteSFATestWebService
 
                     try
                     {
-                        string connectionString = GetConnectionString_android();
+                        string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                         connection.ConnectionString = connectionString;
                         connection.Open();
@@ -5538,7 +5566,7 @@ namespace LiteSFATestWebService
 
                     try
                     {
-                        string connectionString = GetConnectionString_android();
+                        string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                         connection.ConnectionString = connectionString;
                         connection.Open();
@@ -5715,7 +5743,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -5933,7 +5961,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -6027,7 +6055,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -6074,7 +6102,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -6160,7 +6188,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -6231,7 +6259,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -6314,7 +6342,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -6398,7 +6426,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -6480,7 +6508,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -6734,7 +6762,7 @@ namespace LiteSFATestWebService
                         }
                         else
                         {
-                            selCmd = " and a.accept2 = 'X' and a.ora_accept2 = '000000' and decode(a.accept1,'X',a.ora_accept1,'1') != '000000'  ";
+                            selCmd = " and a.accept2 = 'X' and a.ora_accept2 = '000000' and decode(decode(a.accept1,'X',a.ora_accept1,'1'),'000000',1,0)=0  ";
 
                             condDV = " and v.pernr = '" + codUser + "' and v.spart = '" + localDepart + "' and substr(v.prctr,0,2) = substr(a.ul,0,2) and substr(a.ul,3,1) != 4 and " +
                                      " v.spart = a.depart  ";
@@ -6826,9 +6854,9 @@ namespace LiteSFATestWebService
                                 " a.cod_client, decode(a.nrcmdsap,' ','-1',a.nrcmdsap) cmdsap, nvl(a.status_aprov,-1) status_aprov, fact_red, " +
                                 " a.ul, a.accept1, a.accept2, '0' tip , ag.nume, decode(a.pmnttrms,'',' ',a.pmnttrms) pmnttrms, a.datac, nvl(a.docin,-1), " +
                                 " nvl(a.adr_noua,-1), a.city ||', '|| a.adr_livrare, '11' divizie,'-1' nume_client, a.depart, " +
-                                " a.aprob_cv_necesar, a.aprob_cv_realiz, a.cod_client cod_client_generic_ged, cond_cv conditii, nvl(ag.nrtel,'-1') telAgent " +
+                                " a.aprob_cv_necesar, a.aprob_cv_realiz, a.cod_client cod_client_generic_ged, cond_cv conditii, nvl(ag.nrtel,'-1') telAgent, a.client_raft " +
                                 sqlAvans +
-                                " from sapprd.zcomhead_tableta a, " +
+                                "  from sapprd.zcomhead_tableta a, " +
                                 " agenti ag " +
                                 " where ag.cod = a.cod_agent " + tipComanda + condData + condClient + condRestr +
                                 " order by id desc ) ";
@@ -6853,20 +6881,20 @@ namespace LiteSFATestWebService
                                 " nvl((select  cl.tip from clie_tip cl where cl.depart = a.depart  " + condCanal + "   and cl.cod_cli = a.cod_client),' ') tip" +
                                 " , ag.nume, decode(a.pmnttrms,'',' ',a.pmnttrms) pmnttrms, a.datac, nvl(a.docin,-1) docin1, " +
                                 " nvl(a.adr_noua,-1) adr_noua1, a.city ||', '|| a.adr_livrare adr_livrare1, ag.divizie, a.nume_client, a.depart, " +
-                                " a.aprob_cv_necesar , a.aprob_cv_realiz, ' ' cod_client_generic_ged, ' ' conditii, nvl(ag.nrtel,'-1') telAgent " +
+                                " a.aprob_cv_necesar , a.aprob_cv_realiz, ' ' cod_client_generic_ged, ' ' conditii, nvl(ag.nrtel,'-1') telAgent, a.client_raft " +
                                 " from sapprd.zcomhead_tableta a, " +
                                 " clienti b, agenti ag, clie_tip cl " + tabelaHome + tabDV +
                                 " where a.cod_client=b.cod and ag.cod = a.cod_agent " + tipComanda + condDV + condData + condRestr + condClient + condDepart + condHome +
                                 "  and cl.cod_cli = a.cod_client order by id ";
 
-
+                    
 
 
                     //pentru aprobare se afiseaza doar ultimile 10 comenzi
                     if (tipCmd.Equals("2") && !depart.Equals("04"))
                     {
                         sqlString = " select x.id, x.nume1, to_char(to_date(x.datac,'yyyymmdd')), x.valoare, x.status, x.cod_client, x.cmdsap, x.status_aprov, x.fact_red, x.ul, x.accept1, x.accept2, x.tip, x.nume, x.pmnttrms, x.datac, x.docin1, " +
-                                    " x.adr_noua1, x.adr_livrare1, x.divizie, x.nume_client, x.depart, x.aprob_cv_necesar, x.aprob_cv_realiz,x.cod_client_generic_ged,x.conditii, x.telAgent " +
+                                    " x.adr_noua1, x.adr_livrare1, x.divizie, x.nume_client, x.depart, x.aprob_cv_necesar, x.aprob_cv_realiz,x.cod_client_generic_ged,x.conditii, x.telAgent, x.client_raft " +
                                     " from ( " + sqlString + " ) x where rownum<=15 ";
                     }
 
@@ -6940,7 +6968,7 @@ namespace LiteSFATestWebService
                         comanda.monedaTVA = "RON";
 
                         if (tipCmd.Equals("4"))
-                            //comanda.avans = oReader.GetDouble(27).ToString();
+                            //comanda.avans = oReader.GetDouble(28).ToString();
                             comanda.avans = "25";
 
                         else
@@ -6950,12 +6978,13 @@ namespace LiteSFATestWebService
                         string canalDistrib = "20";
                         if (oReader.GetString(9).Substring(2, 1).Equals("1"))
                         {
-                            comandaCuTva = oReader.GetFloat(3) * 1.20;
+                            comandaCuTva = oReader.GetFloat(3) * 1.19;
                             canalDistrib = "10";
                         }
 
                         comanda.sumaTVA = comandaCuTva.ToString();
                         comanda.canalDistrib = canalDistrib;
+                        comanda.clientRaft = oReader.GetString(27) == null ? " " : oReader.GetString(27);
 
                         if (tipUser == "DV")
                         {
@@ -7075,11 +7104,13 @@ namespace LiteSFATestWebService
                 {
 
                     string localDepart = depart;
+                    string condSuplGed = " or (v.spart = substr(ag.divizie, 0, 2)) ";
 
                     //CMATEI
                     if (codUser == "00010281")
                     {
                         localDepart = "11";
+                        condSuplGed = "";
                     }
 
 
@@ -7087,25 +7118,27 @@ namespace LiteSFATestWebService
                                " decode(a.nrcmdsap,' ','-1',a.nrcmdsap) cmdsap, nvl(a.status_aprov,-1) status_aprov, a.fact_red,  a.ul, a.accept1, a.accept2, " +
                                " ' ' cl_tip, ag.nume, decode(a.pmnttrms,'',' ',a.pmnttrms) pmnttrms, a.datac, nvl(a.docin,-1) docin1, " +
                                " nvl(a.adr_noua,-1) adr_noua1, a.city ||', '|| a.adr_livrare adr_livrare1, ag.divizie, a.nume_client, a.depart, " +
-                               " a.aprob_cv_necesar, nvl(a.aprob_cv_realiz,' ') aprob_cv_realiz, nvl(ag.nrtel,'-1') telAgent " +
+                               " a.aprob_cv_necesar, nvl(a.aprob_cv_realiz,' ') aprob_cv_realiz, nvl(ag.nrtel,'-1') telAgent, a.client_raft " +
                                " from sapprd.zcomhead_tableta a, " +
                                " clienti b, agenti ag " + tabDV +
-                               " where a.cod_client=b.cod and ag.cod = a.cod_agent and a.tip_pers = 'CV' " +
+                               " where a.cod_client=b.cod and ag.cod = a.cod_agent and a.tip_pers in ('CV','CVS') " +
                                " and a.status_aprov in ('1','4','6','21') and a.status in ('2','11') " +
                                " and v.pernr = '" + codUser + "' and v.spart = '" + localDepart + "' and substr(v.prctr,0,2) = substr(a.ul,0,2) and a.depart='11' " +
-                               " and decode(a.accept1,'X',a.ora_accept1,'1') != '000000' and decode(a.status_aprov,'21',decode(a.accept2,'X',a.ora_accept2,'000000'),'000000') = '000000' " + 
-                               " and ((a.aprob_cv_necesar like '%" + localDepart + "%' and a.aprob_cv_realiz not like '%" + localDepart + "%') or (v.spart = substr(ag.divizie, 0, 2))) " +
+                               " and decode(decode(a.accept1,'X',a.ora_accept1,'1'),'000000',1,0)=0 and decode(a.status_aprov,'21',decode(a.accept2,'X',a.ora_accept2,'000000'),'000000') = '000000' " + 
+                               " and ((a.aprob_cv_necesar like '%" + localDepart + "%' and a.aprob_cv_realiz not like '%" + localDepart + "%') " + condSuplGed + "  ) " +
                                " and a.cond_cv not like '%" + localDepart + "%' " +
                                " order by id ";
 
 
+
+                   
 
                     //pentru aprobare se afiseaza doar ultimele x comenzi
                     if (tipCmd.Equals("2") && !depart.Equals("04"))
                     {
                         sqlString = " select x.id, x.nume1, to_char(to_date(x.datac,'yyyymmdd')), x.valoare, x.status, x.cod_client, x.cmdsap, x.status_aprov, " +
                                     " x.fact_red, x.ul, x.accept1, x.accept2, ' ' x_tip, x.nume, x.pmnttrms, x.datac, x.docin1, " +
-                                    " x.adr_noua1, x.adr_livrare1, x.divizie, x.nume_client, x.depart, x.aprob_cv_necesar, x.aprob_cv_realiz, x.telAgent  from ( " + sqlString + " ) x where rownum<=15 ";
+                                    " x.adr_noua1, x.adr_livrare1, x.divizie, x.nume_client, x.depart, x.aprob_cv_necesar, x.aprob_cv_realiz, x.telAgent, x.client_raft  from ( " + sqlString + " ) x where rownum<=100 ";
                     }
 
 
@@ -7167,7 +7200,12 @@ namespace LiteSFATestWebService
                             comanda.adresaNoua = "-1";
                             comanda.pondere30 = "0";
 
-                            listComenzi.Add(comanda);
+                            comanda.clientRaft = oReader.GetString(25) == null ? " " : oReader.GetString(25);
+
+                            bool alreadyExists = listComenzi.Any(x => x.idComanda == comanda.idComanda);
+
+                            if (!alreadyExists)
+                                listComenzi.Add(comanda);
 
 
                         }
@@ -7209,6 +7247,7 @@ namespace LiteSFATestWebService
             }
 
 
+           
 
 
             return serializedResult;
@@ -7269,7 +7308,7 @@ namespace LiteSFATestWebService
 
 
 
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -7351,7 +7390,7 @@ namespace LiteSFATestWebService
                             unVenit.mP041 = "0";
                             listaVenituri.Add(unVenit);
                         }
-                        //retVal += oReader.GetInt32(0).ToString() + "#" + oReader.GetDouble(1).ToString() + "#" + oReader.GetDouble(2).ToString() + "@@";
+                      
                     }
 
                 }
@@ -7399,7 +7438,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -7571,7 +7610,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -7761,7 +7800,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -7848,7 +7887,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -8099,7 +8138,7 @@ namespace LiteSFATestWebService
                     OracleCommand cmd = new OracleCommand();
                     OracleDataReader oReader = null;
 
-                    string connectionString = GetConnectionString_android();
+                    string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                     connection.ConnectionString = connectionString;
                     connection.Open();
@@ -8309,7 +8348,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -8387,6 +8426,26 @@ namespace LiteSFATestWebService
         }
 
         [WebMethod]
+        public string getDepoziteUL(string ul)
+        {
+            return new ComenziSiteHelper().getDepoziteUL(ul);
+        }
+
+
+        [WebMethod]
+        public string getClientiFacturatiKA(string codAgent)
+        {
+            return new ClientiFacturati().getClientiFacturatiKA(codAgent);
+        }
+
+        [WebMethod]
+        public string getDetaliiClFacturatiKA(string codAgent, string codClient, string data)
+        {
+            return new ClientiFacturati().getDetaliiClFacturatiKA(codAgent, codClient, data);
+        }
+
+
+        [WebMethod]
         public string getClientJud(string filiala)
         {
             string retVal = "";
@@ -8398,7 +8457,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
 
                 connection.ConnectionString = connectionString;
@@ -8474,7 +8533,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
 
                 connection.ConnectionString = connectionString;
@@ -8693,7 +8752,7 @@ namespace LiteSFATestWebService
                 OracleCommand cmd = new OracleCommand();
                 OracleDataReader oReader = null;
 
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -8784,7 +8843,7 @@ namespace LiteSFATestWebService
                 //sf. disc
 
                 //pret si adaos mediu
-                string pretMediu = ((Double.Parse(pretOut) / 1.20) / Double.Parse(cantOut) * Double.Parse(multiplu)).ToString(), adaosMediu = "0", unitMasPretMediu = "0";
+                string pretMediu = ((Double.Parse(pretOut) / 1.19) / Double.Parse(cantOut) * Double.Parse(multiplu)).ToString(), adaosMediu = "0", unitMasPretMediu = "0";
                 cmd = connection.CreateCommand();
                 cmd.CommandText = " select to_char(pret_med/cant, '99990.999')  , to_char(adaos_med/cant,'99990.999')  , um from sapprd.zpret_mediu r where mandt = '900' and pdl =:unitLog " +
                                   " and matnr=:articol ";
@@ -9023,17 +9082,12 @@ namespace LiteSFATestWebService
             try
             {
 
-                string connectionString = "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
-                            " (HOST = 10.1.3.95)(PORT = 1521)))(CONNECT_DATA = (SERVICE_NAME = TABLET))); " +
-                            " User Id = WEBSAP; Password = 2INTER7;";
-
+                string connectionString = DatabaseConnections.ConnectToProdEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
 
                 cmd = connection.CreateCommand();
-
-
 
                 sqlString = " select r.name1,r.kunnr,r.pernr,r.rosu, c.tip, c.tip_041, ag.divizie from sapprd.zclienti_rosii r, agenti ag, clie_tip c " +
                             " where r.pernr=:codAgent and ag.cod = r.pernr and c.canal ='10' and c.cod_cli = r.kunnr " +
@@ -9072,7 +9126,6 @@ namespace LiteSFATestWebService
                             unClient.tipClient = oReader.GetString(4);
                         }
 
-
                         listaClienti.Add(unClient);
 
                     }
@@ -9089,12 +9142,7 @@ namespace LiteSFATestWebService
             }
             finally
             {
-                oReader.Close();
-                oReader.Dispose();
-
-                cmd.Dispose();
-                connection.Close();
-                connection.Dispose();
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
             }
 
             return serializedResult;
@@ -9427,8 +9475,6 @@ namespace LiteSFATestWebService
             string retVal = "-1";
 
 
-
-
             OracleConnection connection = new OracleConnection();
             OracleParameter idCmd = null;
 
@@ -9693,10 +9739,10 @@ namespace LiteSFATestWebService
                         //inserare antet comanda
                         query = " insert into sapprd.zcomhead_tableta(mandt,id,cod_client,ul,status,status_aprov ,datac,cantar,cod_agent,cod_init,tip_plata,pers_contact,telefon,adr_livrare, " +
                                 " valoare,mt,com_referinta,accept1,accept2,fact_red, city, region, pmnttrms , obstra, timpc, ketdat, docin, adr_noua, depart, obsplata, addrnumber, nume_client, " +
-                                " stceg, tip_pers, val_incasata, site, email, mod_av, cod_j, adr_livrare_d, city_d, region_d, macara, id_obiectiv, adresa_obiectiv) " +
+                                " stceg, tip_pers, val_incasata, site, email, mod_av, cod_j, adr_livrare_d, city_d, region_d, macara, id_obiectiv, adresa_obiectiv, client_raft) " +
                                 " values ('900',pk_key.nextval, :codCl,:ul,:status,:status_aprov, " +
                                 " :datac,:cantar,:agent,:codinit,:plata,:perscont,:tel,:adr,:valoare,:transp,:comsap,:accept1,:accept2,:factred,:city,:region,:termplt,:obslivr,:timpc,:datalivrare, " +
-                                " :tipDocIn, :adrNoua, :depart, :obsplata, :adrnumber, :numeClient, :cnpClient, :tipPers, :valIncasata, :cmdSite, :email, :mod_av, :codJ, :adr_livrare_d, :city_d, :region_d,:macara, :idObiectiv, :adresaObiectiv  ) " +
+                                " :tipDocIn, :adrNoua, :depart, :obsplata, :adrnumber, :numeClient, :cnpClient, :tipPers, :valIncasata, :cmdSite, :email, :mod_av, :codJ, :adr_livrare_d, :city_d, :region_d,:macara, :idObiectiv, :adresaObiectiv, :client_raft  ) " +
                                 " returning id into :id ";
 
                         cmd.CommandText = query;
@@ -9876,6 +9922,13 @@ namespace LiteSFATestWebService
                         cmd.Parameters.Add(":adresaObiectiv", OracleType.VarChar, 3).Direction = ParameterDirection.Input;
                         cmd.Parameters[42].Value = dateLivrare.isAdresaObiectiv ? "X" : " ";
 
+                        cmd.Parameters.Add(":client_raft", OracleType.VarChar, 3).Direction = ParameterDirection.Input;
+
+                        string clientRaft = " ";
+                        if (dateLivrare.clientRaft != null)
+                            clientRaft = Boolean.Parse(dateLivrare.clientRaft) ? "X" : " ";
+
+                        cmd.Parameters[43].Value = clientRaft;
 
 
                         idCmd = new OracleParameter("id", OracleType.Number);
@@ -9936,13 +9989,13 @@ namespace LiteSFATestWebService
 
                     query = " insert into sapprd.zcomdet_tableta(mandt,id,poz,status,cod,cantitate,valoare,depoz, " +
                             " transfer,valoaresap,ppoz,procent,um,procent_fc,conditie,disclient,procent_aprob,multiplu, " +
-                            " val_poz,inf_pret,cant_umb,umb,ul_stoc) " +
+                            " val_poz,inf_pret,cant_umb,umb,ul_stoc, istoric_pret) " +
                             " values ('900'," + idCmd.Value + ",'" + pozArt + "','" + cmdStatus + "','" + codArticol + "'," + articolComanda[i].cantitate.ToString(nfi) + ", " +
                             "" + pretUnitarArt.ToString(nfi) + ",'" + articolComanda[i].depozit + "','0',0,'0'," + articolComanda[i].procent.ToString(nfi) + ",'" +
                             articolComanda[i].um + "'," + articolComanda[i].procentFact.ToString(nfi) + ",' '," +
                             articolComanda[i].discClient.ToString(nfi) + "," + articolComanda[i].procAprob.ToString(nfi) + "," + articolComanda[i].multiplu.ToString(nfi) + "," +
                             valPoz.ToString(nfi) + ",'" + articolComanda[i].infoArticol + "'," + articolComanda[i].cantUmb + ",'" +
-                            articolComanda[i].Umb + "', '" + ulStoc + "' ) ";
+                            articolComanda[i].Umb + "', '" + ulStoc + "', '" + articolComanda[i].istoricPret + "' ) ";
 
 
                     cmd.CommandText = query;
@@ -10218,7 +10271,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -10345,7 +10398,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -10552,7 +10605,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -10663,7 +10716,7 @@ namespace LiteSFATestWebService
             {
 
 
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
                 connection.ConnectionString = connectionString;
                 connection.Open();
 
@@ -10754,8 +10807,6 @@ namespace LiteSFATestWebService
         public string salveazaObiectiv(string dateObiective)
         {
 
-            ErrorHandling.sendErrorToMail("obiective = " + dateObiective);
-
             OperatiiObiectiveKA operatiiObiective = new OperatiiObiectiveKA();
             return operatiiObiective.adaugaObiectiv(dateObiective);
         }
@@ -10764,8 +10815,6 @@ namespace LiteSFATestWebService
         [WebMethod]
         public string getListObiectiveKA(string codAgent, string filiala, string tip, string interval, string depart)
         {
-
-
 
             OperatiiObiectiveKA operatiiObiective = new OperatiiObiectiveKA();
             return operatiiObiective.getListObiective(codAgent, filiala, tip, interval, depart);
@@ -10844,7 +10893,7 @@ namespace LiteSFATestWebService
             {
                 string[] tokenObiective = obiective.Split('#');
 
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
                 connection.ConnectionString = connectionString;
                 connection.Open();
 
@@ -11085,7 +11134,7 @@ namespace LiteSFATestWebService
                 string[] mainTokenClp = comanda.Split('@');
                 string[] antetClpToken = mainTokenClp[0].Split('#');
 
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
                 connection.ConnectionString = connectionString;
                 connection.Open();
 
@@ -11330,7 +11379,7 @@ namespace LiteSFATestWebService
             try
             {
 
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -11390,6 +11439,8 @@ namespace LiteSFATestWebService
         public string saveNewCmdAndroid(string comanda, bool alertSD, bool alertDV, bool cmdAngajament, string tipUser, string JSONArt, string JSONComanda, string JSONDateLivrare)
         {
 
+           
+           
 
             string retVal = "-1";
 
@@ -11399,9 +11450,13 @@ namespace LiteSFATestWebService
             }
             else
             {
-                if (tipUser.Equals("CV") || tipUser.Equals("KA3"))
+                if (tipUser.Equals("CV"))
                 {
                     retVal = saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, tipUser, JSONArt, JSONComanda, JSONDateLivrare, true);
+                }
+                else if (tipUser.Equals("SITE"))
+                {
+                    retVal = new ComenziSite().salveazaComanda( comanda,  alertSD,  alertDV,  cmdAngajament,  tipUser,  JSONArt,  JSONComanda,  JSONDateLivrare);
                 }
                 else
                 {
@@ -11410,14 +11465,16 @@ namespace LiteSFATestWebService
 
             }
 
-
-
             return retVal;
         }
 
 
 
-
+        [WebMethod]
+        public String getMils()
+        {
+            return GeneralUtils.getCurrentMillis().ToString();
+        }
 
 
         private string getCnpFromComanda(string comanda)
@@ -11684,12 +11741,23 @@ namespace LiteSFATestWebService
 
 
 
-        private string saveAVNewCmd(string comanda, bool alertSD, bool alertDV, bool cmdAngajament, string tipUser, string JSONArt, string JSONComanda, string JSONDateLivrare, bool calcTransport)
+
+        [WebMethod]
+        public void saveSite(string comanda, bool alertSD, bool alertDV, bool cmdAngajament, string tipUser, string JSONArt, string JSONComanda, string JSONDateLivrare, bool calcTransport)
         {
+            new ComenziSite().salveazaComanda( comanda,  alertSD,  alertDV,  cmdAngajament,  tipUser,  JSONArt,  JSONComanda,  JSONDateLivrare);
+        }
+
+        [WebMethod]
+        public string getDepoz(string ul)
+        {
+            return new ComenziSiteHelper().getDepoziteUL(ul);
+        }
+       
 
 
-
-            
+        public string saveAVNewCmd(string comanda, bool alertSD, bool alertDV, bool cmdAngajament, string tipUser, string JSONArt, string JSONComanda, string JSONDateLivrare, bool calcTransport)
+        {
 
             string retVal = "-1";
 
@@ -11711,7 +11779,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 DateTime cDate = DateTime.Now;
                 string year = cDate.Year.ToString();
@@ -11734,6 +11802,8 @@ namespace LiteSFATestWebService
 
                 cmdStatus = comandaVanzare.comandaBlocata;
 
+
+               
 
                 if (cmdAngajament)
                 {
@@ -11868,11 +11938,11 @@ namespace LiteSFATestWebService
                 //inserare antet comanda
                 query = " insert into sapprd.zcomhead_tableta(mandt,id,cod_client,ul,status,status_aprov ,datac,cantar,cod_agent,cod_init,tip_plata,pers_contact,telefon,adr_livrare, " +
                         " valoare,mt,com_referinta,accept1,accept2,fact_red, city, region, pmnttrms , obstra, timpc, ketdat, docin, adr_noua, depart, obsplata, addrnumber, nume_client, " +
-                        " stceg, tip_pers, val_incasata, site, email, mod_av, cod_j, adr_livrare_d, city_d, region_d, aprob_cv_necesar, macara, val_min_tr, id_obiectiv, adresa_obiectiv) " +
+                        " stceg, tip_pers, val_incasata, site, email, mod_av, cod_j, adr_livrare_d, city_d, region_d, aprob_cv_necesar, macara, val_min_tr, id_obiectiv, adresa_obiectiv, parent_id, client_raft) " +
                         " values ('900',pk_key.nextval, :codCl,:ul,:status,:status_aprov, " +
                         " :datac,:cantar,:agent,:codinit,:plata,:perscont,:tel,:adr,:valoare,:transp,:comsap,:accept1,:accept2,:factred,:city,:region,:termplt,:obslivr,:timpc,:datalivrare, " +
                         " :tipDocIn, :adrNoua, :depart, :obsplata, :adrnumber, :numeClient, :cnpClient, :tipPers, :valIncasata, :cmdSite, :email, :mod_av, :codJ, :adr_livrare_d, :city_d, :region_d, " +
-                        " :necesarCVAprob, :macara, :val_min_tr, :idObiectiv, :adresaObiectiv  ) " +
+                        " :necesarCVAprob, :macara, :val_min_tr, :idObiectiv, :adresaObiectiv, :parent_id, :client_raft  ) " +
                         " returning id into :id ";
 
                 cmd.CommandText = query;
@@ -12036,7 +12106,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters[29].Value = comandaVanzare.numeClient == null ? "-1" : comandaVanzare.numeClient;
 
                 cmd.Parameters.Add(":cnpClient", OracleType.VarChar, 60).Direction = ParameterDirection.Input;
-                cmd.Parameters[30].Value = cnpClient.Equals("-1") ? " " : cnpClient;
+                cmd.Parameters[30].Value = cnpClient.Equals("-1") ? " " : Utils.checkROCnpClient(cnpClient);
 
                 cmd.Parameters.Add(":tipPers", OracleType.VarChar, 6).Direction = ParameterDirection.Input;
 
@@ -12096,8 +12166,17 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Add(":adresaObiectiv", OracleType.VarChar, 3).Direction = ParameterDirection.Input;
                 cmd.Parameters[45].Value = dateLivrare.isAdresaObiectiv ? "X" : " ";
 
+                cmd.Parameters.Add(":parent_id", OracleType.Number, 11).Direction = ParameterDirection.Input;
+                cmd.Parameters[46].Value = comandaVanzare.parrentId != null ? long.Parse(comandaVanzare.parrentId) : -1;
 
 
+                cmd.Parameters.Add(":client_raft", OracleType.VarChar, 3).Direction = ParameterDirection.Input;
+
+                string clientRaft = " ";
+                if (dateLivrare.clientRaft != null)
+                    clientRaft = Boolean.Parse(dateLivrare.clientRaft) ? "X" : " ";
+
+                cmd.Parameters[47].Value = clientRaft;
 
                 OracleParameter idCmd = new OracleParameter("id", OracleType.Number);
                 idCmd.Direction = ParameterDirection.Output;
@@ -12154,7 +12233,7 @@ namespace LiteSFATestWebService
 
                     String ulStoc = "";
 
-                    if (tipUser.Equals("CV") || tipUser.Equals("KA3"))
+                    if (tipUser.Equals("CV"))
                     {
 
                         pretUnit = articolComanda[i].pretUnit;
@@ -12162,13 +12241,13 @@ namespace LiteSFATestWebService
 
                         query = " insert into sapprd.zcomdet_tableta(mandt,id,poz,status,cod,cantitate,valoare,depoz, " +
                                 " transfer,valoaresap,ppoz,procent,um,pret_cl,conditie,disclient,procent_aprob,multiplu, " +
-                                " val_poz,inf_pret,cant_umb,umb, ul_stoc, fake, ponderat) " +
+                                " val_poz,inf_pret,cant_umb,umb, ul_stoc, fake, ponderat, istoric_pret) " +
                                 " values ('900'," + idCmd.Value + ",'" + pozArt + "','" + cmdStatus + "','" + codArt + "'," + articolComanda[i].cantitate.ToString(nfi) + ", " +
                                 "" + pretUnit.ToString(nfi) + ",'" + articolComanda[i].depozit + "','0',0,'0'," + articolComanda[i].procent.ToString(nfi) + ",'" +
                                 articolComanda[i].um + "'," + articolComanda[i].pretUnitarClient.ToString(nfi) + ",' '," +
                                 articolComanda[i].discClient.ToString(nfi) + "," + articolComanda[i].procAprob.ToString(nfi) + "," + articolComanda[i].multiplu.ToString(nfi) + "," +
                                 valPoz.ToString(nfi) + ",'" + articolComanda[i].infoArticol + "'," + articolComanda[i].cantUmb + ",'" +
-                                articolComanda[i].Umb + "','" + unitLogAlt + "', '" + fakeArt + "','" + articolComanda[i].ponderare + "' ) ";
+                                articolComanda[i].Umb + "','" + unitLogAlt + "', '" + fakeArt + "','" + articolComanda[i].ponderare + "','" + articolComanda[i].istoricPret + "' ) ";
 
 
                     }
@@ -12193,13 +12272,13 @@ namespace LiteSFATestWebService
 
                         query = " insert into sapprd.zcomdet_tableta(mandt,id,poz,status,cod,cantitate,valoare,depoz, " +
                                 " transfer,valoaresap,ppoz,procent,um,procent_fc,conditie,disclient,procent_aprob,multiplu, " +
-                                " val_poz,inf_pret,cant_umb,umb, ul_stoc, fake) " +
+                                " val_poz,inf_pret,cant_umb,umb, ul_stoc, fake,istoric_pret) " +
                                 " values ('900'," + idCmd.Value + ",'" + pozArt + "','" + cmdStatus + "','" + codArt + "'," + articolComanda[i].cantitate.ToString(nfi) + ", " +
                                 "" + pretUnit.ToString(nfi) + ",'" + articolComanda[i].depozit + "','0',0,'0'," + articolComanda[i].procent.ToString(nfi) + ",'" +
                                 articolComanda[i].um + "'," + articolComanda[i].procentFact.ToString(nfi) + ",' '," +
                                 articolComanda[i].discClient.ToString(nfi) + "," + articolComanda[i].procAprob.ToString(nfi) + "," + articolComanda[i].multiplu.ToString(nfi) + "," +
                                 valPoz.ToString(nfi) + ",'" + articolComanda[i].infoArticol + "'," + articolComanda[i].cantUmb + ",'" +
-                                articolComanda[i].Umb + "','" + ulStoc + "', '" + fakeArt + "' ) ";
+                                articolComanda[i].Umb + "','" + ulStoc + "', '" + fakeArt + "','" + articolComanda[i].istoricPret + "' ) ";
 
 
 
@@ -12263,9 +12342,6 @@ namespace LiteSFATestWebService
                         paramCmd = "C";
                     }
 
-                    
-                   
-
                     webService = new ZTBL_WEBSERVICE();
 
                     SAPWebServices.ZcreazaComanda inParam = new SAPWebServices.ZcreazaComanda();
@@ -12281,7 +12357,6 @@ namespace LiteSFATestWebService
 
                     SAPWebServices.ZcreazaComandaResponse outParam = webService.ZcreazaComanda(inParam);
                     //sf. scriere comanda
-
 
 
                     if ((uLog.Substring(2, 1).Equals("2") && transp.Equals("TRAP") && refSAP.Equals("-1")) || (isComandaWood(uLog) && refSAP.Equals("-1") && transp.Equals("TRAP")))
@@ -12521,20 +12596,32 @@ namespace LiteSFATestWebService
             try
             {
 
-                SAPWebServices.ZTBL_WEBSERVICE webService = null;
+                
 
+                List<string> listComenzi = new List<string>();
+
+                if (comanda.Contains(","))
+                    listComenzi = new List<String>(comanda.Split(','));
+                else
+                    listComenzi.Add(comanda);
+
+                SAPWebServices.ZTBL_WEBSERVICE webService = null;
+                SAPWebServices.ZcreazaComanda inParam = new SAPWebServices.ZcreazaComanda();
+
+                SAPWebServices.ZcreazaComandaResponse outParam = new ZcreazaComandaResponse();
                 webService = new ZTBL_WEBSERVICE();
 
-                SAPWebServices.ZcreazaComanda inParam = new SAPWebServices.ZcreazaComanda();
-                System.Net.NetworkCredential nc = new System.Net.NetworkCredential(getUser(), getPass());
-                webService.Credentials = nc;
-                webService.Timeout = 300000;
-                inParam.FaraTransp = " ";
-                inParam.Id = comanda;
-                inParam.GvEvent = "C";  //C - creaza comanda, S - simulare pret transport
-                inParam.Canal = canal == null ? "20" : canal;
-
-                SAPWebServices.ZcreazaComandaResponse outParam = webService.ZcreazaComanda(inParam);
+                foreach (string cmd in listComenzi)
+                {
+                    System.Net.NetworkCredential nc = new System.Net.NetworkCredential(getUser(), getPass());
+                    webService.Credentials = nc;
+                    webService.Timeout = 300000;
+                    inParam.FaraTransp = " ";
+                    inParam.Id = cmd;
+                    inParam.GvEvent = "C";  //C - creaza comanda, S - simulare pret transport
+                    inParam.Canal = canal == null ? "20" : canal;
+                    outParam = webService.ZcreazaComanda(inParam);
+                }
 
                 retVal = outParam.VOk.ToString();
 
@@ -12575,7 +12662,7 @@ namespace LiteSFATestWebService
             string conditie = "";
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -12656,7 +12743,7 @@ namespace LiteSFATestWebService
             string conditie = "";
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -12764,7 +12851,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -12888,7 +12975,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -12963,7 +13050,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -13037,7 +13124,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android_prd();
+                string connectionString = DatabaseConnections.ConnectToProdEnvironment();
 
                 connection = new OracleConnection();
 
@@ -13217,10 +13304,13 @@ namespace LiteSFATestWebService
                 }
 
 
+
                 if (tipAgent.Equals("KA3"))
                     tipAgent = "KA";
 
-                retVal += "#" + filiale + "#" + tipAgent + "#" + getExtraFiliale(idAg.Value.ToString()) + "#" + filialaHome + "#";
+                retVal += "#" + filiale + "#" + tipAgent + "#" + getExtraFiliale(idAg.Value.ToString()) + "#" + filialaHome + "#" + FtpHelper.getLocalFtpIp(localComp) + "#";
+
+                
 
 
 
@@ -13244,6 +13334,11 @@ namespace LiteSFATestWebService
         }
 
 
+        [WebMethod]
+        public string checkCNP(string cnp)
+        {
+            return Utils.checkROCnpClient(cnp);
+        }
 
 
         private string getExtraFiliale(string codAgent)
@@ -13672,7 +13767,7 @@ namespace LiteSFATestWebService
             {
 
 
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -13771,7 +13866,7 @@ namespace LiteSFATestWebService
             {
 
 
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -13891,7 +13986,7 @@ namespace LiteSFATestWebService
 
 
                     //antet oferta
-                    string connectionString = GetConnectionString_android();
+                    string connectionString = DatabaseConnections.ConnectToTestEnvironment();
                     connection.ConnectionString = connectionString;
                     connection.Open();
                     cmd = connection.CreateCommand();
@@ -13943,7 +14038,7 @@ namespace LiteSFATestWebService
 
                     int nrArt = 1;
                     string oLinie = "", altColor = "";
-                    decimal tva = 0.20M;
+                    decimal tva = 0.19M;
                     decimal totalVal = 0, totalTVA = 0, totalGen = 0, valArt = 0, valTVA = 0;
 
 
@@ -14176,7 +14271,7 @@ namespace LiteSFATestWebService
             OracleDataReader oReader = null;
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -14347,7 +14442,7 @@ namespace LiteSFATestWebService
 
             try
             {
-                string connectionString = GetConnectionString_android();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -14376,9 +14471,6 @@ namespace LiteSFATestWebService
 
                 cmd.Parameters.Add(":dep", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
                 cmd.Parameters[2].Value = depozit;
-
-
-
 
                 oReader = cmd.ExecuteReader();
 
@@ -14554,37 +14646,9 @@ namespace LiteSFATestWebService
 
         }
 
-        static private string GetConnectionString_android_tes()
-        {
+       
 
-            return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
-                    " (HOST = 10.1.3.89)(PORT = 1527)))(CONNECT_DATA = (SERVICE_NAME = TES.WORLD))); " +
-                    " User Id = WEBSAP; Password = 2INTER7;";
-
-        }
-
-        static public string GetConnectionString_android()
-        {
-
-            //QAS
-            //return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
-            //        " (HOST = 10.1.3.88)(PORT = 1527)))(CONNECT_DATA = (SERVICE_NAME = QAS))); " +
-            //        " User Id = WEBSAP; Password = 2INTER7; ";
-
-            //TES
-            return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
-                    " (HOST = 10.1.3.89)(PORT = 1527)))(CONNECT_DATA = (SERVICE_NAME = TES)));" +
-                    " User Id = WEBSAP; Password = 2INTER7; ";
-
-
-            //DEV
-            //return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
-            //        " (HOST = 10.1.3.90)(PORT = 1527)))(CONNECT_DATA = (SERVICE_NAME = DEV))); " +
-            //        " User Id = WEBSAP; Password = 2INTER7; ";
-
-
-
-        }
+       
 
 
         static private string GetConnectionString_android_prd()
@@ -14671,7 +14735,7 @@ namespace LiteSFATestWebService
 
                 try
                 {
-                    string connectionString = GetConnectionString_android();
+                    string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                     connectionString = DatabaseConnections.ConnectToProdEnvironment();
 

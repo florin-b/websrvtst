@@ -24,6 +24,7 @@ namespace LiteSFATestWebService
         public string codJudet;
         public string localitate;
         public string filialaAlternativa;
+        public string codClientParavan;
     }
 
     public class ArticolPretTransportGed

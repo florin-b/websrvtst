@@ -125,6 +125,8 @@ namespace LiteSFATestWebService
         public double pretUnitarClient;
         public int ponderare;
         public string departAprob;
+        public string filialaSite;
+        public string istoricPret;
 
         public override string ToString()
         {
@@ -136,7 +138,7 @@ namespace LiteSFATestWebService
                     + ", infoArticol=" + infoArticol + ", cantUmb=" + cantUmb + ", Umb=" + Umb + ", alteValori="
                     + alteValori + ", depart=" + depart + ", tipArt=" + tipArt + ", taxaVerde=" + taxaVerde
                     + ", pretUnitarPonderat=" + pretUnitarPonderat + ", pretUnitarClient=" + pretUnitarClient
-                    + ", ponderare=" + ponderare + "]";
+                    + ", ponderare=" + ponderare + ", filialaSite=" + filialaSite + "]";
         }
 
 
@@ -189,6 +191,7 @@ namespace LiteSFATestWebService
         public string canalDistrib;
         public string necesarAprobariCV;
         public string valTransportSap;
+        public string parrentId;
 
     }
 
@@ -226,6 +229,7 @@ namespace LiteSFATestWebService
         public string coordonateGps;
         public string tonaj;
         public string prelucrare;
+        public string clientRaft;
         
 
 
@@ -328,6 +332,7 @@ namespace LiteSFATestWebService
         public string conditiiImpuse;
         public string telAgent;
         public string avans;
+        public string clientRaft;
 
     }
 
@@ -639,6 +644,9 @@ namespace LiteSFATestWebService
         public string discMaxDV;
         public string discMaxKA;
         public string impachetare;
+        public string istoricPret;
+        public string valTrap;
+        public string errMsg;
 
     }
 

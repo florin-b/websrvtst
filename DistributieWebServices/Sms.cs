@@ -58,6 +58,8 @@ namespace DistributieTESTWebServices
 
                         //smsService.sendSession(sessionId, notificare.nrTelefon, mesaj, dateTime, "", 0);
 
+                        ErrorHandling.sendErrorToMail(mesaj + " , date comanda: " + notificare, "SMS Soferi");
+
 
                     }
 
