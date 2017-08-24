@@ -17,6 +17,17 @@ namespace LiteSFATestWebService.General
         }
 
 
+        public static DateTime getDateFromString(string strDate)
+        {
+            return DateTime.ParseExact(strDate, "dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        public static string formatStrDate(string strDate)
+        {
+            DateTime dt = DateTime.ParseExact(strDate, "yyyymmdd", System.Globalization.CultureInfo.InvariantCulture);
+            return dt.ToString("dd.mm.yyyy");
+
+        }
 
 
         public static string  addDays(string date, int nrDays)
@@ -50,6 +61,30 @@ namespace LiteSFATestWebService.General
 
             return istoricPret;
         }
+
+
+
+        public static string getCurrentDate()
+        {
+            DateTime cDate = DateTime.Now;
+            string year = cDate.Year.ToString();
+            string day = cDate.Day.ToString("00");
+            string month = cDate.Month.ToString("00");
+            string nowDate = year + month + day;
+            return nowDate;
+        }
+
+
+        public static string getCurrentTime()
+        {
+            DateTime cDate = DateTime.Now;
+            string hour = cDate.Hour.ToString("00");
+            string minute = cDate.Minute.ToString("00");
+            string sec = cDate.Second.ToString("00");
+            string nowTime = hour + minute + sec;
+            return nowTime;
+        }
+
 
 
     }

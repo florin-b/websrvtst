@@ -11,37 +11,29 @@ namespace LiteSFATestWebService
     public class OperatiiSuplimentare
     {
 
-        public void saveTonaj(string JSONComanda, string JSONDateLivrare)
+       
+        public static void saveTonajAdresa(OracleConnection connection, string codClient, string codAdresa, string tonaj)
         {
             JavaScriptSerializer serializer = new JavaScriptSerializer();
 
-            ComandaVanzare comandaVanzare = serializer.Deserialize<ComandaVanzare>(JSONComanda);
-            DateLivrare dateLivrare = serializer.Deserialize<DateLivrare>(JSONDateLivrare);
 
-
-            if (dateLivrare.addrNumber.Length < 5 || dateLivrare.tonaj == null || dateLivrare.tonaj.Equals("-1"))
+            if (codAdresa.Length < 5 || tonaj == null || tonaj.Equals("-1"))
                 return;
 
             string query;
 
-            OracleConnection connection = new OracleConnection();
-
-
-            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
             string nowDate = Utils.getCurrentDate();
             string nowTime = Utils.getCurrentTime();
 
-            connection.ConnectionString = connectionString;
-            connection.Open();
-
+            OracleCommand cmd = null;
 
             try
             {
 
-                OracleCommand cmd = connection.CreateCommand();
+                 cmd = connection.CreateCommand();
 
-                if (!recordTonajExists(connection, comandaVanzare.codClient, dateLivrare.addrNumber))
+                if (!recordTonajExists(connection, codClient, codAdresa))
                 {
                     query = " insert into sapprd.ztonajclient(mandt,kunnr,adrnr,greutate,gewei) " +
                             " values ('900', :kunnr, :adrnr, :greutate, 'TO')";
@@ -52,13 +44,13 @@ namespace LiteSFATestWebService
                     cmd.Parameters.Clear();
 
                     cmd.Parameters.Add(":kunnr", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
-                    cmd.Parameters[0].Value = comandaVanzare.codClient;
+                    cmd.Parameters[0].Value = codClient;
 
                     cmd.Parameters.Add(":adrnr", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
-                    cmd.Parameters[1].Value = dateLivrare.addrNumber;
+                    cmd.Parameters[1].Value = codAdresa;
 
                     cmd.Parameters.Add(":greutate", OracleType.Number, 13).Direction = ParameterDirection.Input;
-                    cmd.Parameters[2].Value = dateLivrare.tonaj;
+                    cmd.Parameters[2].Value = tonaj;
 
                     cmd.ExecuteNonQuery();
 
@@ -76,8 +68,8 @@ namespace LiteSFATestWebService
             }
             finally
             {
-                connection.Close();
-                connection.Dispose();
+                if (cmd != null)
+                    cmd.Dispose();
             }
 
             return;
@@ -136,7 +128,7 @@ namespace LiteSFATestWebService
 
 
 
-        private bool recordTonajExists(OracleConnection connection, string codClient, string addrNumber)
+        private static bool recordTonajExists(OracleConnection connection, string codClient, string addrNumber)
         {
 
             bool exists = false;
@@ -219,7 +211,7 @@ namespace LiteSFATestWebService
                 cmd.ExecuteNonQuery();
 
 
-
+                
 
 
             }
@@ -233,7 +225,109 @@ namespace LiteSFATestWebService
 
 
 
+        public static void saveClpComanda(OracleConnection connection, string idComanda, string nrDocumentClp)
+        {
 
+            
+
+            OracleDataReader oReader = null;
+            OracleCommand cmd = null;
+
+            try
+            {
+
+                cmd = connection.CreateCommand();
+
+                string query = " select nrcmdsap, cod_agent, com_referinta from sapprd.zcomhead_tableta where mandt = '900' and id=:idComanda ";
+
+                cmd.CommandText = query;
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":idComanda", OracleType.Number, 11).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = idComanda;
+
+                oReader = cmd.ExecuteReader();
+
+                List<string> listStrazi = new List<string>();
+                string nrCmdSap = "", codAgent = "", cmdReferinta = "";
+                if (oReader.HasRows)
+                {
+
+                    oReader.Read();
+                    nrCmdSap = oReader.GetString(0);
+                    codAgent = oReader.GetString(1);
+                    cmdReferinta = oReader.GetString(2);
+
+
+                    cmd.CommandText = " update sapprd.zclp_inchise set vbeln =:comandaSap, erdat=:data, erzet=:ora where mandt='900' and ebeln =:documentClp and vbeln =:comReferinta ";
+                                  
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add(":comandaSap", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
+                    cmd.Parameters[0].Value = nrCmdSap;
+
+                    cmd.Parameters.Add(":documentClp", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
+                    cmd.Parameters[1].Value = nrDocumentClp;
+
+                    cmd.Parameters.Add(":data", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
+                    cmd.Parameters[2].Value = General.GeneralUtils.getCurrentDate();
+
+                    cmd.Parameters.Add(":ora", OracleType.NVarChar, 18).Direction = ParameterDirection.Input;
+                    cmd.Parameters[3].Value = General.GeneralUtils.getCurrentTime();
+
+                    cmd.Parameters.Add(":comReferinta", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
+                    cmd.Parameters[4].Value = cmdReferinta;
+
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    if (rowsAffected == 0)
+                    {
+                        query = " insert into sapprd.zclp_inchise(mandt, ebeln, vbeln, erdat, erzet, uname) values " +
+                                " ('900', :documentClp , :comandaSap, :data, :ora, :codAgent)";
+
+
+                        
+
+                        cmd.CommandText = query;
+                        cmd.CommandType = CommandType.Text;
+
+                        cmd.Parameters.Clear();
+
+                        cmd.Parameters.Add(":documentClp", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
+                        cmd.Parameters[0].Value = nrDocumentClp;
+
+                        cmd.Parameters.Add(":comandaSap", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
+                        cmd.Parameters[1].Value = nrCmdSap;
+
+                        cmd.Parameters.Add(":data", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
+                        cmd.Parameters[2].Value = General.GeneralUtils.getCurrentDate();
+
+                        cmd.Parameters.Add(":ora", OracleType.NVarChar, 18).Direction = ParameterDirection.Input;
+                        cmd.Parameters[3].Value = General.GeneralUtils.getCurrentTime();
+
+                        cmd.Parameters.Add(":codAgent", OracleType.NVarChar, 36).Direction = ParameterDirection.Input;
+                        cmd.Parameters[4].Value = codAgent;
+
+                        cmd.ExecuteNonQuery();
+                    }
+
+                }
+
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+
+
+        }
 
 
 

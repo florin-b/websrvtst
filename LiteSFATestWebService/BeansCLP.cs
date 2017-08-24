@@ -62,4 +62,24 @@ namespace LiteSFATestWebService
         }
 
     }
+
+
+    public class DateComanda
+    {
+        public string codAgent;
+        public string codClient;
+        public string filiala;
+        public string listArticole;
+    }
+
+    public class ClpComanda
+    {
+        public string nrDocument;
+        public string data;
+        public string tip;
+    }
+
+
+
+
 }

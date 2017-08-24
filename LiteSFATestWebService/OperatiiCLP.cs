@@ -558,10 +558,14 @@ namespace LiteSFATestWebService
                                   " nvl((select  k.acc_dz from sapprd.ekko k where k.mandt = '900' and k.ebeln = nrcmdsap ),' ') acc_dz, " +
                                   " nvl((select i.dincarc from sapprd.zcom m, sapprd.zcomdti i where m.mandt = '900' and m.docn = nrcmdsap " +
                                   " and m.mandt = i.mandt and m.nrcom = i.nr  and rownum = 1),' ') data_inc, " +
-                                  " (select to_date(o.aedat,'yyyymmdd') || ',' || max(p.plifz) zile_livr from sapprd.ekko o, sapprd.ekpo p where o.ebeln = nrcmdsap " +
-                                  " and o.mandt = '900' and o.mandt = p.mandt and o.ebeln = p.ebeln and p.loekz <> 'L' group by o.aedat ) max_livrare " +
+                                  " nvl((select to_date(o.aedat,'yyyymmdd') || ',' || max(p.plifz) zile_livr " +
+                                  " from sapprd.ekko o, sapprd.ekpo p where o.ebeln = nrcmdsap " +
+                                  " and o.mandt = '900' and o.mandt = p.mandt and o.ebeln = p.ebeln and p.loekz <> 'L' group by o.aedat ),'-1') max_livrare, " +
+                                  " nvl((select z.nrcom nr_ct from sapprd.zcom z where z.mandt = '900' and z.docn = nrcmdsap and rownum = 1),'-1') nrct " +
                                   " from sapprd.zclphead where id=:idcmd ";
 
+                
+               
 
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add(":idcmd", OracleType.Int32, 20).Direction = ParameterDirection.Input;
@@ -580,7 +584,12 @@ namespace LiteSFATestWebService
                     dateLivrare.adrLivrare = oReader.GetString(2);
                     dateLivrare.oras = oReader.GetString(3);
                     dateLivrare.codJudet = oReader.GetString(4);
-                    dateLivrare.data = GeneralUtils.addDays(oReader.GetString(21).Split(',')[0], Int32.Parse(oReader.GetString(21).Split(',')[1]));
+
+                    if (!oReader.GetString(21).Equals("-1"))
+                        dateLivrare.data = GeneralUtils.addDays(oReader.GetString(21).Split(',')[0], Int32.Parse(oReader.GetString(21).Split(',')[1]));
+                    else
+                        dateLivrare.data = " ";
+
                     dateLivrare.tipMarfa = oReader.GetString(6);
                     dateLivrare.masa = oReader.GetString(7);
                     dateLivrare.tipCamion = oReader.GetString(8);
@@ -596,6 +605,8 @@ namespace LiteSFATestWebService
                     dateLivrare.procTransp = oReader.GetDouble(18).ToString();
                     dateLivrare.acceptDV = oReader.GetString(19);
                     dateLivrare.dataIncarcare = oReader.GetString(20).Trim();
+                    dateLivrare.nrCT = oReader.GetString(22).Equals("-1") ? " " : oReader.GetString(22);
+                   
 
 
                 }
@@ -655,7 +666,114 @@ namespace LiteSFATestWebService
         }
 
 
+       
 
+        public string getCLPComanda(string dateComanda)
+        {
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = null;
+            OracleDataReader oReader = null;
+            List<ClpComanda> listClp = new List<ClpComanda>();
+
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+
+            DateComanda comanda = serializer.Deserialize<DateComanda>(dateComanda);
+
+            List<string> listArticole = serializer.Deserialize<List<string>>(comanda.listArticole.ToString());
+
+            string strArticole= "";
+
+            foreach (string art in listArticole)
+            {
+                string lart = art;
+                if (art.Length == 8)
+                    lart = "0000000000" + art;
+
+                if (strArticole.Length == 0)
+                    strArticole = "'" + lart + "'";
+                else
+                    strArticole += ",'" + lart + "'";
+
+            }
+
+            strArticole = "(" + strArticole + ")";
+
+
+            
+
+            try
+            {
+               
+
+                string connectionString = DatabaseConnections.ConnectToProdEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                string sqlString = " select distinct o.ebeln, to_char(to_date(o.aedat,'yyyymmdd'),'DD-MON-YYYY'), decode(o.bsart, 'UB',o.reswk,(select name1 from sapprd.lfa1 l where l.mandt = '900' and l.lifnr = o.lifnr)) Furnizor " + 
+                                   " from sapprd.ekko o, sapprd.ekpo p, sapprd.ekbe e where o.mandt = '900' and o.ebeln = p.ebeln " + 
+                                   " and p.mandt = e.mandt and p.ebeln = e.ebeln and p.ebelp = e.ebelp and e.bwart = '101' " +
+                                   " and o.aedat >=:dataStart and o.COD_CLIENT =:codClient " + 
+                                   " and p.matnr in " + strArticole +
+                                   " and p.lgort = 'DESC' and p.werks =:filiala " +
+                                   " and o.cod_av =:codAgent " +
+                                   " and not exists(select * from sapprd.ekbe b where b.mandt = '900' and b.ebeln = p.ebeln and b.ebelp = p.ebelp and b.bwart = '102' " + 
+                                   " and b.lfbnr = e.belnr and b.lfpos = e.buzei and b.lfgja = e.gjahr) ";
+
+
+                string dateInterval = DateTime.Today.AddDays(-30).ToString("yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+
+                cmd.CommandText = sqlString;
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+
+                cmd.Parameters.Add(":dataStart", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = dateInterval;
+
+                cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = comanda.codClient;
+
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = comanda.filiala;
+
+                cmd.Parameters.Add(":codAgent", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[3].Value = comanda.codAgent;
+
+                oReader = cmd.ExecuteReader();
+               
+
+                if (oReader.HasRows)
+                {
+
+                    while (oReader.Read())
+                    {
+                        ClpComanda clp = new ClpComanda();
+                        clp.nrDocument = oReader.GetString(0);
+                        clp.data = oReader.GetString(1);
+                        clp.tip = oReader.GetString(2);
+                        listClp.Add(clp);
+                    }
+
+
+                }
+
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return GeneralUtils.serializeObject(listClp);
+
+        }
 
 
 

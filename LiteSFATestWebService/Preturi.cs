@@ -15,6 +15,10 @@ namespace LiteSFATestWebService
 
         public string getPret(string client, string articol, string cantitate, string depart, string um, string ul, string tipUser, string depoz, string codUser, string canalDistrib, string filialaAlternativa)
         {
+
+
+ 
+
             string retVal = "";
             SAPWebServices.ZTBL_WEBSERVICE webService = null;
 
@@ -129,10 +133,16 @@ namespace LiteSFATestWebService
 
                 oReader = cmd.ExecuteReader();
                 double cmpArticol = 0;
+                double procRedCmp = 0;
                 if (oReader.HasRows)
                 {
                     oReader.Read();
                     cmpArticol = Convert.ToDouble(oReader.GetString(0));
+
+                    procRedCmp = getProcReducereCmp(connection, articol);
+
+                    cmpArticol = cmpArticol * (100 - procRedCmp) / 100;
+
                 }
 
                 //---sf. verificare cmp
@@ -277,7 +287,7 @@ namespace LiteSFATestWebService
 
                 retVal += discMaxAV + "#" + discMaxSD + "#" + discMaxDV + "#" +
                          Convert.ToInt32(Double.Parse(multiplu)).ToString() + "#" +
-                         cantUmb + "#" + Umb + "#" + discMaxKA + "#" + cmpArticol.ToString() + "#" + pretMediu + "#" + impachetare + "#" + istoricPret + "#";
+                         cantUmb + "#" + Umb + "#" + discMaxKA + "#" + cmpArticol.ToString() + "#" + pretMediu + "#" + impachetare + "#" + istoricPret + "#" + procRedCmp + "#";
 
 
                 if (pretOut.Equals("0.0"))
@@ -341,7 +351,7 @@ namespace LiteSFATestWebService
 
                     while (oReader.Read())
                     {
-                        istoric += oReader.GetDouble(0).ToString("#.##") + "@ @" + oReader.GetDouble(4) + " " + oReader.GetString(2).ToString() + "@"+ oReader.GetString(3) + ":";
+                        istoric += oReader.GetDouble(0).ToString("#.###") + "@ @" + oReader.GetDouble(4) + " " + oReader.GetString(2).ToString() + "@"+ oReader.GetString(3) + ":";
                     }
 
                 }
@@ -414,6 +424,8 @@ namespace LiteSFATestWebService
             OracleDataReader oReader = null;
             double valoareCmp = 0;
 
+            if (codArticol.Length == 8)
+                codArticol = "0000000000" + codArticol;
 
             string filialaCmp;
 
@@ -445,6 +457,15 @@ namespace LiteSFATestWebService
 
                     oReader.Read();
                     valoareCmp = Double.Parse(oReader.GetString(0).Trim(), CultureInfo.InvariantCulture);
+
+                   
+
+                    double procRedCmp = getProcReducereCmp(conn, codArticol);
+
+                    valoareCmp = valoareCmp * (100 - procRedCmp) / 100;
+
+                  
+
 
                 }
             }
@@ -484,6 +505,62 @@ namespace LiteSFATestWebService
 
             return codArt;
         }
+
+
+
+
+        public static double getProcReducereCmp(OracleConnection conn, string codArt)
+        {
+
+            OracleCommand cmd = null;
+            OracleDataReader oReader = null;
+
+            double procReducere = 0;
+
+            try
+            {
+
+                cmd = conn.CreateCommand();
+
+                string sqlString = " select nvl(sum(decode(art,'articol',procent)),0) proc_articol, nvl(sum(decode(art,'sintetic',procent)),0) proc_sintetic from ( " +
+                                   " select sum(procent)procent, 'articol' art from sapprd.ZSUBCMP p where p.mandt = '900'  and p.spart = (select spart from articole where cod =:articol) " +
+                                   " and p.datab <= to_char(sysdate, 'yyyymmdd') and p.datbi >= to_char(sysdate, 'yyyymmdd') " +
+                                   " and matnr =:articol group by 'articol' " +
+                                   " union " +
+                                   " select sum(procent) procent, 'sintetic' art from sapprd.ZSUBCMP p " +
+                                   " where p.mandt = '900' and p.spart =(select sintetic from articole where cod =:articol)  and p.datab <= to_char(sysdate, 'yyyymmdd') and p.datbi >= to_char(sysdate, 'yyyymmdd') " +
+                                   " and matkl = (select sintetic from articole where cod =:articol) group by 'sintetic') x group by 'articol'";
+
+                cmd.CommandText = sqlString;
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":articol", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codArt;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    procReducere = oReader.GetDouble(0) != 0 ? oReader.GetDouble(0) : oReader.GetDouble(1);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+           return procReducere;
+
+        }
+
 
 
     }

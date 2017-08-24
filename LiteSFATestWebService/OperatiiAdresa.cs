@@ -33,7 +33,7 @@ namespace LiteSFATestWebService
             try
             {
 
-                cmd.CommandText = " select upper(localitate) from sapprd.zlocalitati where bland=:codJudet order by localitate";
+                cmd.CommandText = " select upper(localitate) from sapprd.zlocalitati where bland=:codJudet order by localitate ";
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -226,10 +226,11 @@ namespace LiteSFATestWebService
 
 
 
-        public static void adaugaAdresaClient(OracleConnection connection, String idComanda, String coords)
+        public static void adaugaAdresaClient(OracleConnection connection, String idComanda, DateLivrare dateLivrare)
         {
 
             Adresa adresaComanda = new Adresa();
+
 
             try
             {
@@ -240,13 +241,14 @@ namespace LiteSFATestWebService
                 {
                     adresaComanda = OperatiiComenzi.getAdresaComanda(connection, idComanda, clientComanda.codAdresa);
 
-                    if (adresaComanda.strada == null || adresaComanda.strada.Trim().Length == 0)
+                    if (dateLivrare.Strada == null || dateLivrare.Strada.Trim().Length == 0)
                         return;
 
                     List<Adresa> adreseClient = getAdreseClient(connection, clientComanda);
 
-                    if (adresaComanda.latitude != null && !adresaExista(adresaComanda, adreseClient))
-                        adaugaCodAdresa(connection, clientComanda, coords);
+
+                    if (adresaComanda.latitude != null && !adresaInLista(clientComanda.codAdresa, adreseClient))
+                        adaugaCodAdresa(connection, clientComanda, dateLivrare.coordonateGps);
                 }
 
 
@@ -257,10 +259,20 @@ namespace LiteSFATestWebService
             }
 
 
-
-
         }
 
+
+        private static bool adresaInLista(String codAdresa, List<Adresa> adreseClient)
+        {
+            foreach (Adresa adresa in adreseClient)
+            {
+                if (adresa.codAdresa.Equals(codAdresa))
+                    return true;
+
+            }
+
+            return false;
+        }
 
 
         private static bool adresaExista(Adresa adresaComanda, List<Adresa> adreseClient)
@@ -293,7 +305,7 @@ namespace LiteSFATestWebService
             {
                 cmd = connection.CreateCommand();
 
-                string sqlString = " select  a.latitude, a.longitude  from sapprd.zadreseclienti a, sapprd.adrc b " +
+                string sqlString = " select  a.latitude, a.longitude, a.codadresa  from sapprd.zadreseclienti a, sapprd.adrc b " +
                                    " where a.mandt = '900' and b.client = '900' and a.codadresa = b.addrnumber and a.codclient =:codClient ";
 
                 cmd.CommandText = sqlString;
@@ -311,6 +323,7 @@ namespace LiteSFATestWebService
                         Adresa adresa = new Adresa();
                         adresa.latitude = oReader.GetString(0);
                         adresa.longitude = oReader.GetString(1);
+                        adresa.codAdresa = oReader.GetString(2);
                         adreseClient.Add(adresa);
 
                     }

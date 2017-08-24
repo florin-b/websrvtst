@@ -15,15 +15,15 @@ namespace LiteSFATestWebService
 
 
             //TES
-            //return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
-            //        " (HOST = 10.1.3.89)(PORT = 1527)))(CONNECT_DATA = (SERVICE_NAME = TES))); " +
-            //        " User Id = WEBSAP; Password = 2INTER7; ";
+            return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
+                    " (HOST = 10.1.3.89)(PORT = 1527)))(CONNECT_DATA = (SERVICE_NAME = TES))); " +
+                    " User Id = WEBSAP; Password = 2INTER7; ";
 
 
             //QAS
-            return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
-                    " (HOST = 10.1.3.88)(PORT = 1527)))(CONNECT_DATA = (SERVICE_NAME = QAS))); " +
-                    " User Id = WEBSAP; Password = 2INTER7; ";
+            //return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
+            //        " (HOST = 10.1.3.88)(PORT = 1527)))(CONNECT_DATA = (SERVICE_NAME = QAS))); " +
+            //        " User Id = WEBSAP; Password = 2INTER7; ";
 
 
             //DR

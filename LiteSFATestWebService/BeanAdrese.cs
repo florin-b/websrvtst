@@ -19,10 +19,11 @@ namespace LiteSFATestWebService
         public string strada;
         public string latitude;
         public string longitude;
+        public string codAdresa;
 
         public override string ToString()
         {
-            return "Adresa [codJudet=" + codJudet + ", localitate=" + localitate +  ", strada=" + strada + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+            return "Adresa [codJudet=" + codJudet + ", localitate=" + localitate +  ", strada=" + strada + ", latitude=" + latitude + ", longitude=" + longitude + ", codAdresa=" + codAdresa + "]";
         }
 
     }

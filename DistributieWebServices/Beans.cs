@@ -12,6 +12,7 @@ namespace DistributieTESTWebServices
         public string evenimentBorderou;
         public string tipBorderou;
         public string bordParent;
+        public string agentDTI;
 
     }
 
@@ -110,6 +111,7 @@ namespace DistributieTESTWebServices
         public string departament;
         public string tipAcces;
         public InitStatus initStatus;
+        public string dti;
 
     }
 
@@ -176,6 +178,14 @@ namespace DistributieTESTWebServices
             return "DateComanda: [ emitere " + emitere + ", departament " + departament + " ]";
         }
 
+    }
+
+
+    public class Sofer
+    {
+        public string nume;
+        public string filiala;
+        public string codTableta;
     }
 
 }

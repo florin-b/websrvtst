@@ -62,6 +62,40 @@ namespace DistributieTESTWebServices
 
         }
 
+        public static void CloseConnections(OracleDataReader reader, OracleCommand command, OracleConnection connection)
+        {
+
+            try
+            {
+
+                if (reader != null)
+                {
+                    reader.Close();
+                    reader.Dispose();
+                }
+
+                if (command != null)
+                {
+                    command.Dispose();
+                }
+
+
+                if (connection != null)
+                {
+                    connection.Close();
+                    connection.Dispose();
+                }
+
+
+            }
+            catch (Exception)
+            {
+
+            }
+
+
+        }
+
 
     }
 }

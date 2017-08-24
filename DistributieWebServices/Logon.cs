@@ -86,7 +86,7 @@ namespace DistributieTESTWebServices
                 userInfo.departament = depart.Value.ToString();
                 userInfo.tipAcces = tipAcces.Value.ToString();
                 userInfo.initStatus = OperatiiEvenimente.getInitStatus(userInfo.id.PadLeft(userInfo.id.Length + 8 - userInfo.id.Length, '0'));
-
+               
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 serializedResult = serializer.Serialize(userInfo);
 
@@ -141,6 +141,7 @@ namespace DistributieTESTWebServices
                     userInfo.id = oReader.GetString(0);
                     userInfo.filiala = oReader.GetString(2);
                     userInfo.initStatus = OperatiiEvenimente.getInitStatus(userInfo.id.PadLeft(userInfo.id.Length + 8 - userInfo.id.Length, '0'));
+                    userInfo.dti = OperatiiSoferi.isSoferDTI(connection, oReader.GetString(0)).ToString();
                 }
 
                 oReader.Close();
@@ -166,6 +167,9 @@ namespace DistributieTESTWebServices
             return serializedResult;
         }
 
+
+
+ 
 
 
     }

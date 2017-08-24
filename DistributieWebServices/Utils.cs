@@ -45,5 +45,22 @@ namespace DistributieTESTWebServices
             return retVal;
         }
 
+
+        public static bool isTimeToSendSmsAlert()
+        {
+
+            DateTime t1 = DateTime.Now;
+
+            DateTime t2 = Convert.ToDateTime("07:30:00 AM");
+
+            int i = DateTime.Compare(t1, t2);
+
+            if (i < 0)
+                return false;
+
+            return true;
+        }
+
+
     }
 }

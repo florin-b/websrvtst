@@ -101,12 +101,14 @@
     <Compile Include="ClientiFacturati.cs" />
     <Compile Include="ComenziSite.cs" />
     <Compile Include="ComenziSiteHelper.cs" />
+    <Compile Include="CostMacara.cs" />
     <Compile Include="Decident.cs" />
     <Compile Include="ExpediereMail.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="FtpHelper.cs" />
     <Compile Include="General\AddressUtils.cs" />
+    <Compile Include="General\ArticoleUtils.cs" />
     <Compile Include="General\BeansObiectiveCVA.cs" />
     <Compile Include="General\DatabaseConnections.cs" />
     <Compile Include="General\ErrorHandling.cs" />
@@ -117,6 +119,7 @@
     <Compile Include="Neincasate.cs" />
     <Compile Include="OperatiiCLP.cs" />
     <Compile Include="OperatiiDocumente.cs" />
+    <Compile Include="OperatiiMacara.cs" />
     <Compile Include="OperatiiObiectiveCVA.cs" />
     <Compile Include="OperatiiAdresa.cs" />
     <Compile Include="OperatiiArticole.cs" />
@@ -144,6 +147,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="Venituri.cs" />
     <Compile Include="VerificareTvaService.cs" />
     <Compile Include="VerificaTvaHelper.cs" />
     <Compile Include="Web References\ClientiSemiactivi\Reference.cs">
@@ -156,12 +160,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>
-    <Compile Include="Web References\SapWsClp\Reference.cs">
+    <Compile Include="Web References\SAPWebServices\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>
-    <Compile Include="Web References\SAPWebServices\Reference.cs">
+    <Compile Include="Web References\SapWsClp\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.map</DependentUpon>
@@ -224,16 +228,16 @@
       <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
       <CachedSettingsPropName>LiteSFATestWebService_SAPWebServiceCLP_ZCLP_WEBSERVICEService</CachedSettingsPropName>
     </WebReferenceUrl>
-    <WebReferenceUrl Include="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/wsdl/flv_10002A111AD1/bndg_url/sap/bc/srt/rfc/sap/ztbl_webservice/900/ztbl_webservice/ztbl_webservice%3fsap-client=900">
+    <WebReferenceUrl Include="http://sap-test1a.arabesque.ro:8081/sap/bc/srt/wsdl/flv_10002A111AD1/bndg_url/sap/bc/srt/rfc/sap/ztbl_webservice/900/ztbl_webservice/ztbl_webservice%3fsap-client=900">
       <UrlBehavior>Dynamic</UrlBehavior>
       <RelPath>Web References\SAPWebServices\</RelPath>
-      <UpdateFromURL>http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/wsdl/flv_10002A111AD1/bndg_url/sap/bc/srt/rfc/sap/ztbl_webservice/900/ztbl_webservice/ztbl_webservice%3fsap-client=900</UpdateFromURL>
+      <UpdateFromURL>http://sap-test1a.arabesque.ro:8081/sap/bc/srt/wsdl/flv_10002A111AD1/bndg_url/sap/bc/srt/rfc/sap/ztbl_webservice/900/ztbl_webservice/ztbl_webservice%3fsap-client=900</UpdateFromURL>
       <ServiceLocationURL>
       </ServiceLocationURL>
       <CachedDynamicPropName>
       </CachedDynamicPropName>
       <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
-      <CachedSettingsPropName>LiteSFATestWebService_SapWebServices_ZTBL_WEBSERVICE</CachedSettingsPropName>
+      <CachedSettingsPropName>LiteSFATestWebService_SAPWebServices_ZTBL_WEBSERVICE</CachedSettingsPropName>
     </WebReferenceUrl>
     <WebReferenceUrl Include="http://sap-test1a.arabesque.ro:8081/sap/bc/srt/wsdl/flv_10002A111AD1/bndg_url/sap/bc/srt/rfc/sap/zwbs_zintrarimarfa/900/zwbs_zintrarimarfa/zwbs_zintrarimarfa%3fsap-client=900">
       <UrlBehavior>Dynamic</UrlBehavior>
@@ -304,36 +308,43 @@
     <Content Include="Web References\SalarizareAG\ZgetSalavResponse.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </Content>
-    <None Include="Web References\SAPWebServices\ZactDiscMaximResponse.datasource">
+    <Content Include="Web References\SAPWebServices\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </Content>
+    <Content Include="Web References\SAPWebServices\ZactDiscMaximResponse.datasource">
       <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\SAPWebServices\ZcalcTrapResponse.datasource">
+    </Content>
+    <Content Include="Web References\SAPWebServices\ZcalcTrapResponse.datasource">
       <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\SAPWebServices\ZcalcTrapSiteResponse.datasource">
+    </Content>
+    <Content Include="Web References\SAPWebServices\ZcalcTrapSiteResponse.datasource">
       <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\SAPWebServices\ZcreazaComandaResponse.datasource">
+    </Content>
+    <Content Include="Web References\SAPWebServices\ZcreazaComandaResponse.datasource">
       <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\SAPWebServices\ZextindeClientResponse.datasource">
+    </Content>
+    <Content Include="Web References\SAPWebServices\ZextindeClientResponse.datasource">
       <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\SAPWebServices\ZgetPriceResponse.datasource">
+    </Content>
+    <Content Include="Web References\SAPWebServices\ZgetPriceResponse.datasource">
       <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\SAPWebServices\ZretMarfaResponse.datasource">
+    </Content>
+    <Content Include="Web References\SAPWebServices\ZNrPaletiResponse.datasource">
       <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\SAPWebServices\ZsablonReducereResponse.datasource">
+    </Content>
+    <Content Include="Web References\SAPWebServices\ZretMarfaResponse.datasource">
       <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\SAPWebServices\ZsdSalesdocumentCreateResponse.datasource">
+    </Content>
+    <Content Include="Web References\SAPWebServices\ZsablonReducereResponse.datasource">
       <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\SAPWebServices\ZstareComandaResponse.datasource">
+    </Content>
+    <Content Include="Web References\SAPWebServices\ZsdSalesdocumentCreateResponse.datasource">
       <DependentUpon>Reference.map</DependentUpon>
-    </None>
+    </Content>
+    <Content Include="Web References\SAPWebServices\ZstareComandaResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
     <None Include="Web References\SAPWebServices\ztbl_webservice.wsdl" />
     <None Include="Web References\SapWsClp\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
@@ -351,10 +362,6 @@
     </None>
     <None Include="Web References\SapWsClp\ZlivrareStoIesireResponse.datasource">
       <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\SAPWebServices\Reference.map">
-      <Generator>MSDiscoCodeGenerator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
     <None Include="Web References\SapWsClp\ZstergeStoResponse.datasource">
       <DependentUpon>Reference.map</DependentUpon>

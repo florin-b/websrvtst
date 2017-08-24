@@ -650,8 +650,6 @@ namespace LiteSFATestWebService
 
 
 
-            
-
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             ParametruPretGed paramPret = serializer.Deserialize<ParametruPretGed>(parametruPret);
 
@@ -696,7 +694,7 @@ namespace LiteSFATestWebService
                 inParam.City = paramPret.localitate;
                 inParam.UlStoc = paramPret.filialaAlternativa;
 
-                
+               
 
 
 
@@ -859,8 +857,7 @@ namespace LiteSFATestWebService
 
                 pretArticolGed.cmp = cmpArticol.ToString();
 
-
-               
+                pretArticolGed.procReducereCmp =  Preturi.getProcReducereCmp(connection, paramPret.articol).ToString();
 
 
                 //descriere conditii pret

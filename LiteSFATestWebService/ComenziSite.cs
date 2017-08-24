@@ -13,6 +13,7 @@ namespace LiteSFATestWebService
         public string salveazaComanda(string comanda, bool alertSD, bool alertDV, bool cmdAngajament, string tipUser, string JSONArt, string JSONComanda, string JSONDateLivrare)
         {
 
+
             JavaScriptSerializer serializer = new JavaScriptSerializer();
 
             ComandaVanzare comandaVanzare = serializer.Deserialize<ComandaVanzare>(JSONComanda);
@@ -29,6 +30,8 @@ namespace LiteSFATestWebService
             double pretTransp = 0.0;
             string idComanda = "";
 
+            double valoareIncasareBV = 0, valoareIncasareOrig = 0, valoareIncasareAlta =0;
+
             filialaOrig = ComenziSiteHelper.getUlDistrib(dateLivrare.unitLog);
 
             foreach (ArticolComanda articol in  listArticole)
@@ -39,18 +42,30 @@ namespace LiteSFATestWebService
                 if (articol.filialaSite.Equals("BV90"))
                 {
                     tempListBV90.Add(articol);
-                    totalCmdBV += articol.pretUnit * Double.Parse(articol.cantUmb);
+
+                    if (!articol.codArticol.Equals("000000000030101050"))
+                        totalCmdBV += articol.pretUnit * Double.Parse(articol.cantUmb);
+                    else
+                        valoareIncasareBV = articol.pretUnit * Double.Parse(articol.cantUmb);
                 }
                 else if (articol.filialaSite.Substring(0,2).Equals(dateLivrare.unitLog.Substring(0,2)))
                 {
                     tempListOrig.Add(articol);
-                    totalCmdOrig += articol.pretUnit * Double.Parse(articol.cantUmb);
+
+                    if (!articol.codArticol.Equals("000000000030101050"))
+                        totalCmdOrig += articol.pretUnit * Double.Parse(articol.cantUmb);
+                    else
+                        valoareIncasareOrig = articol.pretUnit* Double.Parse(articol.cantUmb);
                 }
                 else
                 {
                     tempListAlta.Add(articol);
                     altaFiliala = articol.filialaSite;
-                    totalCmdAlta += articol.pretUnit * Double.Parse(articol.cantUmb);
+
+                    if (!articol.codArticol.Equals("000000000030101050"))
+                        totalCmdAlta += articol.pretUnit * Double.Parse(articol.cantUmb);
+                    else
+                        valoareIncasareAlta = articol.pretUnit * Double.Parse(articol.cantUmb);
                 }
 
             }
@@ -62,11 +77,15 @@ namespace LiteSFATestWebService
             string JSONArtLocal = "";
             string retVal = "";
 
+           
+
+
             if (tempListOrig.Count > 0)
             {
 
                 comandaVanzare.filialaAlternativa  = filialaOrig;
                 dateLivrare.totalComanda = totalCmdOrig.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+                comandaVanzare.valoareIncasare = valoareIncasareOrig.ToString();
 
                 JSONArtLocal = serializer.Serialize(tempListOrig);
                 JSONComandaLocal = serializer.Serialize(comandaVanzare);
@@ -77,6 +96,9 @@ namespace LiteSFATestWebService
                 pretTransp += getPretTransport(retVal);
                 idComanda = getIdComanda(retVal);
 
+               
+
+
             }
             
             if (tempListAlta.Count > 0)
@@ -84,6 +106,7 @@ namespace LiteSFATestWebService
 
                 dateLivrare.unitLog = ComenziSiteHelper.getUlGed(altaFiliala);
                 dateLivrare.totalComanda = totalCmdAlta.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+                comandaVanzare.valoareIncasare = valoareIncasareAlta.ToString();
 
                 comandaVanzare.filialaAlternativa = altaFiliala;
 
@@ -98,6 +121,9 @@ namespace LiteSFATestWebService
                     idComanda = getIdComanda(retVal);
                 else
                     idComanda += "," + getIdComanda(retVal);
+
+                
+
             }
 
 
@@ -107,6 +133,9 @@ namespace LiteSFATestWebService
                 comandaVanzare.filialaAlternativa = "BV90";
                 dateLivrare.unitLog = ComenziSiteHelper.getUlGed(filialaOrig);
                 dateLivrare.totalComanda = totalCmdBV.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+                comandaVanzare.valoareIncasare = valoareIncasareBV.ToString();
+
+
                 JSONComandaLocal = serializer.Serialize(comandaVanzare);
                 JSONDateLivrareLocal = serializer.Serialize(dateLivrare);
 
@@ -122,7 +151,10 @@ namespace LiteSFATestWebService
 
             }
 
-            retVal = "100#" + pretTransp.ToString() + "#" + idComanda;
+            if (!dateLivrare.Transport.Equals("TCLI"))
+                retVal = "100#" + pretTransp.ToString() + "#" + idComanda;
+
+          
 
             return retVal;
         }

@@ -81,18 +81,18 @@ namespace TiparireDocumenteTest
                                    " art.nume numeart, s.spart, s.werks, s.lfimg, s.meins, k.datbg, h.wadat, " +
                                    " nvl( (select '1' from sapprd.zpregmarfagest g where g.document=h.vbeln),'-1')  pregatire" +
                                    " from sapprd.likp h, sapprd.lips s, sapprd.vttp p, sapprd.vttk k, clienti c, articole art " +
-                                   " where h.mandt = '900'  and s.lgort not in ('DESC','PRT1','PRT2','GAR1','GAR2') and c.cod = h.kunnr  and h.mandt = s.mandt  and h.vbeln = s.vbeln " +
+                                   " where h.mandt = '900'  and s.lgort not in ('DESC','PRT1','PRT2','GAR1','GAR2','02T1', '05T1', 'SRT1','MAV1', 'MAV2') and c.cod = h.kunnr  and h.mandt = s.mandt  and h.vbeln = s.vbeln " +
                                    " and art.cod = s.matnr and h.wadat between :dataStart and :dataStop and art.spart =:depart " +
                                      condFiliala + " and nvl(k.datbg, '00000000') = '00000000' and s.lfimg > 0 " +
                                    " and h.mandt = p.mandt(+) and substr(s.matnr,11,1) != '3' " +
                                    " and h.vbeln = p.vbeln(+) and h.lfart not in ('EL', 'ZUL', 'ZLR') and p.mandt = k.mandt(+) " +
                                    " and decode( substr(s.werks, 3, 1),4,(CASE WHEN art.spart = '02' then 'FALSE' else 'TRUE' end),'TRUE') = 'TRUE' " +
-                                   " and ( ( h.traty = 'TRAP' and nvl(k.dalen,'00000000') = '00000000') or h.traty = 'TCLI' ) " +
+                                   " and ( ( h.traty = 'TRAP' and nvl(k.dalen,'00000000') = '00000000') or h.traty = 'TCLI'  or h.traty = 'TERT' ) " +
                                    " and p.tknum = k.tknum(+) " +
                                    " and not exists " +
                                    " (select tp.ul_stoc from sapprd.vbfa a, sapprd.zcomhead_tableta t, sapprd.zcomdet_tableta tp " +
                                    " where a.mandt = h.mandt and a.vbeln = h.vbeln and a.posnn = s.posnr and a.vbtyp_n = 'J' and a.vbtyp_v = 'C' " +
-                                   " and a.mandt = t.mandt and a.vbelv = t.nrcmdsap and t.mandt = tp.mandt and t.id = tp.id and tp.ul_stoc = 'BV90' and rownum = 1) " +
+                                   " and a.mandt = t.mandt and a.vbelv = t.nrcmdsap and t.mandt = tp.mandt and t.id = tp.id and ( tp.ul_stoc = 'BV90' or tp.depoz = 'DESC') and rownum = 1) " +
                                    " ) x  where nvl(datbg, '00000000') = '00000000' " +
                                    " and not exists (select 1 from sapprd.ztipariredoc d  where x.vbeln = d.document) and x.lfimg > 0 order by livrare, x.kunnr, x.posnr ";
 

@@ -82,12 +82,14 @@
     <Compile Include="OperatiiAdresa.cs" />
     <Compile Include="OperatiiDocumente.cs" />
     <Compile Include="OperatiiEvenimente.cs" />
+    <Compile Include="OperatiiSoferi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="SerUtils.cs" />
     <Compile Include="Sms.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="UtilsAddresses.cs" />

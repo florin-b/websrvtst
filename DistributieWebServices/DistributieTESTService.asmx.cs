@@ -86,10 +86,10 @@ namespace DistributieTESTWebServices
         public void sendSmsAlerts(string nrDocument)
         {
 
-
-
             new OperatiiEvenimente().sendSmsAlerts(null, nrDocument);
         }
+
+       
 
 
         [WebMethod]
@@ -167,6 +167,14 @@ namespace DistributieTESTWebServices
             Logon logon = new Logon();
             return logon.getCodSofer(codTableta);
         }
+
+        [WebMethod]
+        public string getSoferi()
+        {
+            OperatiiSoferi opSoferi = new OperatiiSoferi();
+            return opSoferi.getSoferi();
+        }
+
 
 
         [WebMethod]

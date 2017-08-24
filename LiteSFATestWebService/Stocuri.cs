@@ -45,12 +45,12 @@ namespace LiteSFATestWebService
 
                 cmd.CommandText = " select lgort, nvl(sum(labst),0) stoc, meins,lgort, sintetic from " +
                                   " (select m.lgort,m.labst , mn.meins, mn.matnr  from sapprd.mard m, sapprd.mara mn " +
-                                  " where m.mandt = '900'  and m.mandt = mn.mandt and m.matnr = mn.matnr " +
+                                  " where m.mandt = '900'  and m.mandt = mn.mandt and m.matnr = mn.matnr and m.lgort != 'CUSF' " +
                                   " and m.matnr =:art " + condFil1 +
                                   " union all " +
                                   " select e.lgort,-1 * sum(e.omeng), e.meins, e.matnr  from sapprd.vbbe e " +
                                   " where e.mandt = '900' " +
-                                  " and e.matnr =:art " + condFil2 +
+                                  " and e.matnr =:art and e.lgort != 'CUSF' " + condFil2 +
                                   " group by e.meins,e.lgort, e.matnr), articole ar where ar.cod = matnr " +
                                   " group by meins,lgort, sintetic having sum(labst) > 0 ";
 
@@ -61,6 +61,9 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add(":art", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
                 cmd.Parameters[0].Value = codArt;
+
+
+                ErrorHandling.sendErrorToMail(cmd.CommandText);
 
                 oReader = cmd.ExecuteReader();
 

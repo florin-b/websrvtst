@@ -636,6 +636,8 @@ namespace LiteSFATestWebService
             string serializedResult = "";
 
 
+            ErrorHandling.sendErrorToMail("111");
+
             OracleConnection connection = new OracleConnection();
             OracleDataReader oReader = null;
 
@@ -662,7 +664,7 @@ namespace LiteSFATestWebService
                 {
                     cmd.CommandText = " select k.vbeln, to_date(k.fkdat,'yyyymmdd') " +
                                       " from sapprd.vbrk k, sapprd.vbrp p, sapprd.vbpa a, sapprd.adrc c where k.mandt = p.mandt " +
-                                      " and k.vbeln = p.vbeln  and k.mandt = '900'  and k.fkart in ('ZFM','ZFMC','ZFS','ZFSC','ZFPA') " +
+                                      " and k.vbeln = p.vbeln  and k.mandt = '900'  and k.fkart in ('ZFM','ZFMC','ZFS','ZFSC','ZFPA','ZFVS') " +
                                       " and k.fksto <> 'X'  and k.fkdat >= to_char(sysdate-45,'yyyymmdd') " +
                                       condPaleti +
                                       " and k.mandt = a.mandt  and k.vbeln = a.vbeln  and a.parvw = 'WE' " +
@@ -670,7 +672,7 @@ namespace LiteSFATestWebService
                                       condData +
                                       " and lower(c.name1) like lower('%" + codClient + "%')  order by fkdat ";
 
-
+                   
 
 
                 }
@@ -682,7 +684,7 @@ namespace LiteSFATestWebService
                                       " and k.kunag =:codClient " + condPaleti + condData + " order by to_date(k.fkdat,'yyyymmdd') ";
                 }
 
-                
+                ErrorHandling.sendErrorToMail(cmd.CommandText);
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -1240,9 +1242,6 @@ namespace LiteSFATestWebService
         public string getListClientiCV(string numeClient, string unitLog)
         {
             string serializedResult = "";
-
-
-
 
 
             OracleConnection connection = new OracleConnection();

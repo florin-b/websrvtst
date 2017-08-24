@@ -73,7 +73,7 @@ namespace LiteSFATestWebService
 
 
                     //articole oferta
-                    cmd.CommandText = "select decode(length(a.cod),18,substr(a.cod,-8),a.cod), b.nume, a.cantitate, a.valoare, a.um from sapprd.zcomdet_tableta a, articole b where " +
+                    cmd.CommandText = "select decode(length(a.cod),18,substr(a.cod,-8),a.cod), b.nume, a.cant_umb, a.valoare, a.umb from sapprd.zcomdet_tableta a, articole b where " +
                                       " a.id =:idCmd and a.cod = b.cod ";
 
                     cmd.CommandType = CommandType.Text;

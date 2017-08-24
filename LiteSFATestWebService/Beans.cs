@@ -192,6 +192,7 @@ namespace LiteSFATestWebService
         public string necesarAprobariCV;
         public string valTransportSap;
         public string parrentId;
+        public string nrDocumentClp;
 
     }
 
@@ -211,7 +212,7 @@ namespace LiteSFATestWebService
         public string dateLivrare = "";
         public string termenPlata = "";
         public string obsLivrare = "";
-        public int dataLivrare = 0;
+        public string dataLivrare = "";
         public bool adrLivrNoua = false;
         public string tipDocInsotitor = "1";
         public string obsPlata = " ";
@@ -333,6 +334,7 @@ namespace LiteSFATestWebService
         public string telAgent;
         public string avans;
         public string clientRaft;
+        
 
     }
 
@@ -460,6 +462,7 @@ namespace LiteSFATestWebService
         public string procTransp;
         public string acceptDV;
         public string dataIncarcare;
+        public string nrCT;
 
     }
 
@@ -647,6 +650,7 @@ namespace LiteSFATestWebService
         public string istoricPret;
         public string valTrap;
         public string errMsg;
+        public string procReducereCmp;
 
     }
 

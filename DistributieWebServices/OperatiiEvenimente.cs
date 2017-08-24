@@ -15,7 +15,7 @@ namespace DistributieTESTWebServices
     {
         public string saveNewEvent(string serializedEvent)
         {
-           
+
 
             string retVal = "";
 
@@ -28,6 +28,7 @@ namespace DistributieTESTWebServices
 
 
                 OracleConnection connection = new OracleConnection();
+                OracleCommand cmd = null;
                 OracleDataReader oReader = null;
                 string query = "";
 
@@ -45,8 +46,6 @@ namespace DistributieTESTWebServices
 
                 string strLocalEveniment = "0";
 
-              
-
                 //eveniment document
                 if (newEvent.document.Equals(newEvent.client))
                 {
@@ -57,7 +56,6 @@ namespace DistributieTESTWebServices
 
                     if (newEvent.eveniment.Equals("P"))
                         strLocalEveniment = "S";
-
                 }
                 else //eveniment client
                 {
@@ -72,12 +70,12 @@ namespace DistributieTESTWebServices
                 try
                 {
 
-                    string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+                    string connectionString = DatabaseConnections.ConnectToProdEnvironment();
 
                     connection.ConnectionString = connectionString;
                     connection.Open();
 
-                    OracleCommand cmd = connection.CreateCommand();
+                    cmd = connection.CreateCommand();
 
                     if (newEvent.tipEveniment == null || newEvent.tipEveniment.Equals("NOU", StringComparison.InvariantCultureIgnoreCase))
                     {
@@ -85,6 +83,8 @@ namespace DistributieTESTWebServices
                                 " borderouri b, gps_masini g where  " +
                                 " a.nr_bord = b.numarb and REPLACE(b.masina, '-') = g.nr_masina " +
                                 " and a.nr_bord = :nrBord)  ";
+
+
                     }
                     else if (newEvent.tipEveniment.Equals("ARHIVAT", StringComparison.InvariantCultureIgnoreCase))
                     {
@@ -170,11 +170,14 @@ namespace DistributieTESTWebServices
 
 
 
-                    if (!newEvent.bordParent.Equals("-1"))
+                    if (newEvent.bordParent != null && !newEvent.bordParent.Equals("-1"))
                     {
                         addBordStartCursa(connection, newEvent, latit, longit, mileage);
                         updateBordParentSfCursa(connection, newEvent, latit, longit, mileage);
                     }
+
+
+
 
 
                     if (newEvent.evBord != null && newEvent.evBord.Equals("STOP"))
@@ -187,26 +190,27 @@ namespace DistributieTESTWebServices
 
 
 
-                    if (newEvent.document.Equals(newEvent.client) && newEvent.eveniment.Equals("0"))
+                    if (newEvent.document.Equals(newEvent.client) && newEvent.eveniment.Equals("0") && Utils.isTimeToSendSmsAlert())
                     {
                         sendSmsAlerts(connection, newEvent.document);
                     }
+
 
                 }
                 catch (Exception ex)
                 {
                     retVal = nowDate + "#" + nowTime;
-                    ErrorHandling.sendErrorToMail(ex.ToString() + " data = " + newEvent.truckData);
+                    ErrorHandling.sendErrorToMail(ex.StackTrace + "Ser: " + serializedEvent);
                 }
                 finally
                 {
-                    connection.Close();
-                    connection.Dispose();
+                    DatabaseConnections.CloseConnections(oReader, cmd, connection);
                 }
             }
 
 
             return retVal;
+
         }
 
 

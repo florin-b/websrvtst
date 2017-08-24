@@ -144,16 +144,6 @@
       </wsp:All>
     </wsp:ExactlyOne>
   </wsp:Policy>
-  <wsp:Policy wsu:Id="OP__ZcalcTrapSite">
-    <wsp:ExactlyOne>
-      <wsp:All>
-        <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
-        <sapcomhnd:enableCommit xmlns:sapcomhnd="http://www.sap.com/NW05/soap/features/commit/">false</sapcomhnd:enableCommit>
-        <sapblock:enableBlocking xmlns:sapblock="http://www.sap.com/NW05/soap/features/blocking/">true</sapblock:enableBlocking>
-        <saprmnw05:enableWSRM xmlns:saprmnw05="http://www.sap.com/NW05/soap/features/wsrm/">false</saprmnw05:enableWSRM>
-      </wsp:All>
-    </wsp:ExactlyOne>
-  </wsp:Policy>
   <wsp:Policy wsu:Id="OP__ZcreazaComanda">
     <wsp:ExactlyOne>
       <wsp:All>
@@ -164,7 +154,27 @@
       </wsp:All>
     </wsp:ExactlyOne>
   </wsp:Policy>
+  <wsp:Policy wsu:Id="OP__ZcalcTrapSite">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
+        <sapcomhnd:enableCommit xmlns:sapcomhnd="http://www.sap.com/NW05/soap/features/commit/">false</sapcomhnd:enableCommit>
+        <sapblock:enableBlocking xmlns:sapblock="http://www.sap.com/NW05/soap/features/blocking/">true</sapblock:enableBlocking>
+        <saprmnw05:enableWSRM xmlns:saprmnw05="http://www.sap.com/NW05/soap/features/wsrm/">false</saprmnw05:enableWSRM>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
   <wsp:Policy wsu:Id="OP__ZcalcTrap">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
+        <sapcomhnd:enableCommit xmlns:sapcomhnd="http://www.sap.com/NW05/soap/features/commit/">false</sapcomhnd:enableCommit>
+        <sapblock:enableBlocking xmlns:sapblock="http://www.sap.com/NW05/soap/features/blocking/">true</sapblock:enableBlocking>
+        <saprmnw05:enableWSRM xmlns:saprmnw05="http://www.sap.com/NW05/soap/features/wsrm/">false</saprmnw05:enableWSRM>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsp:Policy wsu:Id="OP__ZNrPaleti">
     <wsp:ExactlyOne>
       <wsp:All>
         <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
@@ -506,12 +516,6 @@
           <xsd:fractionDigits value="2" />
         </xsd:restriction>
       </xsd:simpleType>
-      <xsd:simpleType name="decimal5.3">
-        <xsd:restriction base="xsd:decimal">
-          <xsd:totalDigits value="5" />
-          <xsd:fractionDigits value="3" />
-        </xsd:restriction>
-      </xsd:simpleType>
       <xsd:simpleType name="decimal7.2">
         <xsd:restriction base="xsd:decimal">
           <xsd:totalDigits value="7" />
@@ -623,6 +627,20 @@
           <xsd:element name="Netwr" type="n0:curr15.2" />
           <xsd:element name="Menge" type="n0:quantum13.3" />
           <xsd:element name="Meins" type="n0:unit3" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ZstNrPaleti">
+        <xsd:sequence>
+          <xsd:element name="Matnr" type="n0:char18" />
+          <xsd:element name="Menge" type="n0:quantum13.3" />
+          <xsd:element name="Meins" type="n0:unit3" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ZstEtPaleti">
+        <xsd:sequence>
+          <xsd:element name="Spart" type="n0:char2" />
+          <xsd:element name="Matnr" type="n0:char18" />
+          <xsd:element name="Valpal" type="n0:char8" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="ZsdRuBParame">
@@ -2604,6 +2622,16 @@
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZtrapSite" />
         </xsd:sequence>
       </xsd:complexType>
+      <xsd:complexType name="ZttNrPaleti">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZstNrPaleti" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ZttEtPaleti">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZstEtPaleti" />
+        </xsd:sequence>
+      </xsd:complexType>
       <xsd:complexType name="TableOfZsdRuBParame">
         <xsd:sequence>
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZsdRuBParame" />
@@ -2813,6 +2841,7 @@
       <xsd:element name="ZcreazaComandaResponse">
         <xsd:complexType>
           <xsd:sequence>
+            <xsd:element name="VMesaj" type="n0:char100" />
             <xsd:element name="VOk" type="n0:char2" />
             <xsd:element name="VTrans" type="n0:curr15.2" />
           </xsd:sequence>
@@ -2833,6 +2862,22 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="VTrap" type="n0:curr15.2" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ZNrPaleti">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="IpWerks" type="n0:char4" />
+            <xsd:element name="ItTable" type="tns:ZttNrPaleti" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ZNrPaletiResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="EpMacara" type="n0:char1" />
+            <xsd:element name="EtValpal" type="tns:ZttEtPaleti" />
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -2945,7 +2990,7 @@
             <xsd:element name="Multiplu" type="n0:quantum13.3" />
             <xsd:element name="OutCantUmb" type="n0:quantum13.3" />
             <xsd:element name="OutUmb" type="n0:unit3" />
-            <xsd:element name="ProcTrap" type="n0:decimal5.3" />
+            <xsd:element name="ProcTrap" type="n0:decimal5.2" />
             <xsd:element name="VMess" type="n0:char100" />
             <xsd:element name="ValTrap" type="n0:curr15.2" />
           </xsd:sequence>
@@ -3108,6 +3153,12 @@
   <wsdl:message name="ZcalcTrapResponse">
     <wsdl:part name="parameter" element="tns:ZcalcTrapResponse" />
   </wsdl:message>
+  <wsdl:message name="ZNrPaleti">
+    <wsdl:part name="parameters" element="tns:ZNrPaleti" />
+  </wsdl:message>
+  <wsdl:message name="ZNrPaletiResponse">
+    <wsdl:part name="parameter" element="tns:ZNrPaletiResponse" />
+  </wsdl:message>
   <wsdl:message name="ZsablonReducere">
     <wsdl:part name="parameters" element="tns:ZsablonReducere" />
   </wsdl:message>
@@ -3174,6 +3225,13 @@
       </wsp:Policy>
       <wsdl:input message="tns:ZcalcTrap" />
       <wsdl:output message="tns:ZcalcTrapResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="ZNrPaleti">
+      <wsp:Policy>
+        <wsp:PolicyReference URI="#OP__ZNrPaleti" />
+      </wsp:Policy>
+      <wsdl:input message="tns:ZNrPaleti" />
+      <wsdl:output message="tns:ZNrPaletiResponse" />
     </wsdl:operation>
     <wsdl:operation name="ZsablonReducere">
       <wsp:Policy>
@@ -3250,6 +3308,15 @@
     </wsdl:operation>
     <wsdl:operation name="ZcalcTrap">
       <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZcalcTrapRequest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ZNrPaleti">
+      <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZNrPaletiRequest" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -3353,6 +3420,15 @@
         <wsoap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="ZNrPaleti">
+      <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZNrPaletiRequest" style="document" />
+      <wsdl:input>
+        <wsoap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <wsoap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="ZsablonReducere">
       <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZsablonReducereRequest" style="document" />
       <wsdl:input>
@@ -3419,10 +3495,10 @@
   </wsdl:binding>
   <wsdl:service name="ZTBL_WEBSERVICE">
     <wsdl:port name="ZTBL_WEBSERVICE" binding="tns:ZTBL_WEBSERVICE">
-      <soap:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/ztbl_webservice/900/ztbl_webservice/ztbl_webservice" />
+      <soap:address location="http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/ztbl_webservice/900/ztbl_webservice/ztbl_webservice" />
     </wsdl:port>
     <wsdl:port name="ZTBL_WEBSERVICE_soap12" binding="tns:ZTBL_WEBSERVICE_soap12">
-      <wsoap12:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/ztbl_webservice/900/ztbl_webservice/ztbl_webservice" />
+      <wsoap12:address location="http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/ztbl_webservice/900/ztbl_webservice/ztbl_webservice" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

@@ -138,25 +138,20 @@ namespace DistributieTESTWebServices
 
                 cmd = connection.CreateCommand();
 
-              
-
-
 
                 cmd.CommandText = " select x.* from (select b.numarb,  to_char(b.data_e),  nvl((select nvl(ev.eveniment,'0') eveniment " +
                                   " from sapprd.zevenimentsofer ev where ev.document = b.numarb and ev.data = (select max(data) from sapprd.zevenimentsofer where document = ev.document and client = ev.document) " +
                                   " and ev.ora = (select max(ora) from sapprd.zevenimentsofer where document = ev.document and client = ev.document and data = ev.data)),0) eveniment, b.shtyp, " +
-                                  " nvl((select distinct nr_bord from sapprd.zdocumentebord where nr_bord_urm =b.numarb),'-1') bordParent " +
+                                  " nvl((select distinct nr_bord from sapprd.zdocumentebord where nr_bord_urm =b.numarb and rownum=1),'-1') bordParent " +
                                   " from  borderouri b, sapprd.zdocumentebord c  where  c.nr_bord = b.numarb and b.cod_sofer=:codSofer " + condData + " order by trunc(c.data_e), c.ora_e) x " + condTip;
 
-                
-               
+
 
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add(":codSofer", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
                 cmd.Parameters[0].Value = codSofer;
 
                 oReader = cmd.ExecuteReader();
-
                
                 Borderouri unBorderou = null;
 
@@ -171,13 +166,21 @@ namespace DistributieTESTWebServices
                         unBorderou.evenimentBorderou = oReader.GetString(2);
                         unBorderou.tipBorderou = oReader.GetString(3);
                         unBorderou.bordParent = oReader.GetString(4);
+                        unBorderou.agentDTI = isAgentDTI(connection, unBorderou.numarBorderou).ToString();
                         listaBorderouri.Add(unBorderou);
 
                     }
 
                 }
-
-              
+                else
+                {
+                    if (OperatiiSoferi.isSoferDTI(connection, codSofer))
+                    {
+                        unBorderou = new Borderouri();
+                        unBorderou.agentDTI = isBorderouDTI(connection, codSofer).ToString();
+                        listaBorderouri.Add(unBorderou);
+                    }
+                }
 
                 oReader.Close();
                 oReader.Dispose();
@@ -203,12 +206,10 @@ namespace DistributieTESTWebServices
 
 
 
-
         public string getArticoleBorderou(string nrBorderou, string codClient, string codAdresa)
         {
 
-            string serializedResult = "";
-
+            List<ArticoleFactura> listArticole = new List<ArticoleFactura>();
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand();
             OracleDataReader oReader = null;
@@ -216,33 +217,36 @@ namespace DistributieTESTWebServices
             try
             {
 
+                string sqlString = " select a.textmat, a.cantitate, a.umcant, a.spart, a.greutbruta, a.umgreut, 'des' tip from sapprd.zcom a, sapprd.zcomm ad, " +
+                                   " sapprd.zdl_inc c, sapprd.zdocumentebord b where a.nrcom = ad.nrcom and a.docn = ad.docn and a.docp = ad.docp and a.etenr = ad.etenr " +
+                                   " and b.adresa = ad.adrnz and b.nr_bord =:nrBord  and c.nrcom = b.nrct and c.nrcominc = a.nrcom  and a.primitor =:codClient " +
+                                   " and b.adresa =:codAdresa " +
+                                   " union " +
+                                   " select a.textmat, a.cantitate, a.umcant, a.spart, a.greutbruta, a.umgreut, 'des' tip from sapprd.zcom a, sapprd.zcomm ad, " +
+                                   " sapprd.zcomdti c, sapprd.zdocumentebord b where a.nrcom = ad.nrcom and a.docn = ad.docn and a.docp = ad.docp and a.etenr = ad.etenr " +
+                                   " and b.adresa = ad.adrnz and b.nr_bord =:nrBord  and c.nr = b.nrct and c.nr = a.nrcom and a.primitor =:codClient " +
+                                   " and b.adresa =:codAdresa " +
+                                   " union " +
+                                   " select a.textmat, a.cantitate, a.umcant, a.spart, a.greutbruta, a.umgreut, 'inc' tip from sapprd.zcom a, sapprd.zcomm ad, " +
+                                   " sapprd.zdl_inc c, sapprd.zdocumentebord b where a.nrcom = ad.nrcom and a.docn = ad.docn and a.docp = ad.docp and a.etenr = ad.etenr " +
+                                   " and b.adresa = ad.adrna and b.nr_bord =:nrBord  and c.nrcom = b.nrct and c.nrcominc = a.nrcom  and a.predator =:codClient " +
+                                   " and b.adresa =:codAdresa " +
+                                   " union " +
+                                   " select a.textmat, a.cantitate, a.umcant, a.spart, a.greutbruta, a.umgreut, 'inc' tip from sapprd.zcom a, sapprd.zcomm ad, " +
+                                   " sapprd.zcomdti c, sapprd.zdocumentebord b where a.nrcom = ad.nrcom and a.docn = ad.docn and a.docp = ad.docp and a.etenr = ad.etenr " +
+                                   " and b.adresa = ad.adrna and b.nr_bord =:nrBord  and c.nr = b.nrct and c.nr = a.nrcom and a.predator =:codClient " +
+                                   " and b.adresa =:codAdresa ";
+
+
+               
+
                 string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
 
                 cmd = connection.CreateCommand();
-
-                cmd.CommandText = " select a.textmat, a.cantitate, a.umcant, 'descarcare' tipOp, a.spart, a.greutbruta, a.umgreut from sapprd.zcom a, sapprd.zcomm ad, " +
-                                  " sapprd.zdl_inc c, sapprd.zdocumentesms b where a.nrcom = ad.nrcom and a.docn = ad.docn and a.docp = ad.docp and a.etenr = ad.etenr " +
-                                  " and b.adresa_client = ad.adrnz and b.nr_bord =:nrbord  and c.nrcom  = b.nrct and c.nrcominc = a.nrcom  and a.primitor =:codclient " +
-                                  " and b.adresa_client =:codadresa " +
-                                  " union " +
-                                  " select a.textmat,a.cantitate, a.umcant, 'incarcare' tipOp, a.spart, a.greutbruta, a.umgreut from sapprd.zcom a, sapprd.zcomm ad, " +
-                                  " sapprd.zdl_inc c, sapprd.zdocumentesms b where a.nrcom = ad.nrcom and a.docn = ad.docn and a.docp = ad.docp and a.etenr = ad.etenr " +
-                                  " and b.adresa_furnizor = ad.adrna and b.nr_bord =:nrbord and c.nrcom  = b.nrct and c.nrcominc = a.nrcom  and predator =:codclient " +
-                                  " and b.adresa_furnizor =:codadresa " +
-                                  " union " +
-                                  " select a.textmat, a.cantitate, a.umcant,'descarcare' tipOp, a.spart, a.greutbruta, a.umgreut from sapprd.zcom a, sapprd.zcomm ad, " +
-                                  " sapprd.zdocumentesms b where a.nrcom = ad.nrcom and a.docn = ad.docn and a.docp = ad.docp and a.etenr = ad.etenr and " +
-                                  " b.adresa_client = ad.adrnz and b.nr_bord =:nrbord  and b.nrct  = a.nrcom and a.primitor =:codclient and b.adresa_client =:codadresa " +
-                                  " union " +
-                                  " select a.textmat, a.cantitate, a.umcant, 'incarcare' tipOp, a.spart, a.greutbruta, a.umgreut from sapprd.zcom a,sapprd.zcomm ad, " +
-                                  " sapprd.zdocumentesms b where a.nrcom = ad.nrcom and a.docn = ad.docn and a.docp = ad.docp and a.etenr = ad.etenr and " +
-                                  " b.adresa_furnizor = ad.adrna and b.nr_bord =:nrbord and b.nrct = a.nrcom  and predator =:codclient and " +
-                                  " b.adresa_furnizor =:codadresa order by tipOp, textmat ";
-
-
+                cmd.CommandText = sqlString;
 
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add(":nrbord", OracleType.VarChar, 36).Direction = ParameterDirection.Input;
@@ -256,49 +260,38 @@ namespace DistributieTESTWebServices
 
                 oReader = cmd.ExecuteReader();
 
-                List<ArticoleFactura> listArticole = new List<ArticoleFactura>();
-                ArticoleFactura unArticol = null;
 
                 if (oReader.HasRows)
                 {
                     while (oReader.Read())
                     {
-                        unArticol = new ArticoleFactura();
+                        ArticoleFactura unArticol = new ArticoleFactura();
                         unArticol.nume = Regex.Replace(oReader.GetString(0), @"[!]|[#]|[@@]|[,]", " ");
                         unArticol.cantitate = oReader.GetDouble(1).ToString();
                         unArticol.umCant = oReader.GetString(2);
-                        unArticol.tipOperatiune = oReader.GetString(3);
-                        unArticol.departament = oReader.GetString(4);
-                        unArticol.greutate = oReader.GetDouble(5).ToString();
-                        unArticol.umGreutate = oReader.GetString(6);
+                        unArticol.departament = oReader.GetString(3);
+                        unArticol.greutate = oReader.GetDouble(4).ToString();
+                        unArticol.umGreutate = oReader.GetString(5);
+                        unArticol.tipOperatiune = oReader.GetString(6);
                         listArticole.Add(unArticol);
                     }
 
                 }
 
-                oReader.Close();
-                oReader.Dispose();
-
-                JavaScriptSerializer serializer = new JavaScriptSerializer();
-                serializedResult = serializer.Serialize(listArticole);
-
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 ErrorHandling.sendErrorToMail(ex.ToString());
             }
             finally
             {
-                cmd.Dispose();
-                connection.Close();
-                connection.Dispose();
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
             }
 
-
-
-            return serializedResult;
+            return SerUtils.serializeObject(listArticole);
 
         }
+
 
 
 
@@ -434,10 +427,13 @@ namespace DistributieTESTWebServices
 
                 }
 
-
-                if (listaFacturi.Count > 1 &&  (listaFacturi[listaFacturi.Count-1].codClient.Length == 4 || listaFacturi[listaFacturi.Count-1].codFurnizor.Length == 4))
+                if (tipBorderou.ToLower().Equals("distributie"))
                 {
-                    listaFacturi.RemoveAt(listaFacturi.Count-1);
+                    //eliminare etapa sosire filiala
+                    if (listaFacturi.Count > 1 && (listaFacturi[listaFacturi.Count - 1].codClient.Length == 4 || listaFacturi[listaFacturi.Count - 1].codFurnizor.Length == 4))
+                    {
+                        listaFacturi.RemoveAt(listaFacturi.Count - 1);
+                    }
                 }
 
                 oReader.Close();
@@ -460,11 +456,77 @@ namespace DistributieTESTWebServices
             }
 
 
+            
+           
+
             return serializedResult;
+        }
+
+        private bool isAgentDTI(OracleConnection conn, string codBorderou)
+        {
+
+            bool isDTI = false;
+
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            cmd = conn.CreateCommand();
+
+            cmd.CommandText = " select tplst from sapprd.vttk where tknum =:codBorderou ";
+
+            cmd.Parameters.Clear();
+            cmd.Parameters.Add(":codBorderou", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+            cmd.Parameters[0].Value = codBorderou;
+
+            oReader = cmd.ExecuteReader();
+
+            oReader.Read();
+
+            if (oReader.GetString(0).Equals("ARBS"))
+                isDTI = true;
+
+            DatabaseConnections.CloseConnections(oReader, cmd);
+
+            return isDTI;
+
+
         }
 
 
 
+
+        private bool isBorderouDTI(OracleConnection conn, string codSofer)
+        {
+
+            bool isDTI = false;
+
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            cmd = conn.CreateCommand();
+
+            cmd.CommandText = " select tplst  from( select v.tplst, p.pernr as cod_sofer, d.data_e || d.ora_e " + 
+                              " from sapprd.vttk v join sapprd.vtpa p on v.mandt = p.mandt and v.tknum = p.vbeln " + 
+                              " join sapprd.zdocumentebord d on d.nr_bord = v.tknum and d.mandt = v.mandt " + 
+                              " where v.mandt = '900' and p.parvw = 'ZF' and p.pernr =:codSofer " + 
+                              " order by d.data_e || d.ora_e desc) where rownum = 1 ";
+
+            cmd.Parameters.Clear();
+            cmd.Parameters.Add(":codSofer", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+            cmd.Parameters[0].Value = codSofer;
+
+            oReader = cmd.ExecuteReader();
+
+            oReader.Read();
+
+            if (oReader.GetString(0).Equals("ARBS"))
+                isDTI = true;
+
+            DatabaseConnections.CloseConnections(oReader, cmd);
+
+            return isDTI;
+        }
+       
 
     }
 }
