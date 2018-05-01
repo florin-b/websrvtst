@@ -525,10 +525,8 @@ namespace TiparireDocumenteTest
         {
             string retVal = "0", query = "";
 
-
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = null;
-
 
             string connectionString = testConnectionString();
 
@@ -537,6 +535,15 @@ namespace TiparireDocumenteTest
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
+
+
+                if (isDocumentTiparit(connection, nrDocument, gestionar))
+                {
+                    connection.Close();
+                    connection.Dispose();
+                    return "0";
+                }
+
 
                 DateTime cDate = DateTime.Now;
                 string year = cDate.Year.ToString();
@@ -550,37 +557,37 @@ namespace TiparireDocumenteTest
 
                 cmd = connection.CreateCommand();
 
-            
-                    query = " insert into sapprd.ztipariredoc(mandt,codgestionar, document, datac, orac) " +
-                            " values ('900', :codGest, :document, :datac, :orac) ";
+
+                query = " insert into sapprd.ztipariredoc(mandt,codgestionar, document, datac, orac) " +
+                        " values ('900', :codGest, :document, :datac, :orac) ";
 
 
-                    cmd.CommandType = CommandType.Text;
-                    cmd.CommandText = query;
-                    cmd.Parameters.Clear();
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
 
 
-                    cmd.Parameters.Add(":codGest", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
-                    cmd.Parameters[0].Value = gestionar;
+                cmd.Parameters.Add(":codGest", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = gestionar;
 
 
-                    cmd.Parameters.Add(":document", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
-                    cmd.Parameters[1].Value = nrDocument;
+                cmd.Parameters.Add(":document", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = nrDocument;
 
-                   
 
-                    cmd.Parameters.Add(":datac", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
-                    cmd.Parameters[2].Value = nowDate;
 
-                    cmd.Parameters.Add(":orac", OracleType.NVarChar, 18).Direction = ParameterDirection.Input;
-                    cmd.Parameters[3].Value = nowTime;
+                cmd.Parameters.Add(":datac", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = nowDate;
 
-                    
+                cmd.Parameters.Add(":orac", OracleType.NVarChar, 18).Direction = ParameterDirection.Input;
+                cmd.Parameters[3].Value = nowTime;
 
-                    cmd.ExecuteNonQuery();
 
-               
-                
+
+                cmd.ExecuteNonQuery();
+
+
+
 
             }
             catch (Exception ex)
@@ -604,7 +611,52 @@ namespace TiparireDocumenteTest
         }
 
 
+        private bool isDocumentTiparit(OracleConnection connection, string nrDocument, string codGest)
+        {
+            OracleCommand cmd = connection.CreateCommand();
+            OracleDataReader oReader = null;
 
+            bool documentExist = false;
+            try
+            {
+
+                cmd = connection.CreateCommand();
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = " select 1 from sapprd.ztipariredoc where document=:document and codgestionar=:codGest ";
+              
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":document", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = nrDocument;
+
+                cmd.Parameters.Add(":codGest", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = codGest;
+
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                    documentExist = true;
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+
+                if (oReader != null)
+                    oReader.Close();
+
+                if (cmd != null)
+                    cmd.Dispose();
+
+            }
+
+            return documentExist;
+
+        }
 
         [WebMethod]
         public string userLogon(string userId, string userPass, string ipAdr)
