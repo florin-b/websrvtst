@@ -1,100 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.OracleClient;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.Script.Serialization;
 
 namespace DistributieTESTWebServices
 {
-    public class OperatiiSoferi
+    public class OperatiiMasina
     {
-
         private static readonly int MEDIA_KM_ZI = 750;
-
-        public string getSoferi()
-        {
-
-            OracleConnection connection = new OracleConnection();
-            OracleCommand cmd = new OracleCommand();
-            OracleDataReader oReader = null;
-            List<Sofer> listSoferi = new List<Sofer>();
-            try
-            {
-                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
-
-                connection.ConnectionString = connectionString;
-                connection.Open();
-
-                cmd = connection.CreateCommand();
-
-                cmd.CommandText = " select a.fili, upper(a.nume), b.codTableta  from soferi a, sapprd.ztabletesoferi b where a.cod = b.codsofer " +
-                                  " and b.stare = 1 order by a.fili,a.nume ";
-
-                cmd.Parameters.Clear();
-
-                oReader = cmd.ExecuteReader();
-
-                if (oReader.HasRows)
-                {
-                    while (oReader.Read())
-                    {
-                        Sofer sofer = new Sofer();
-                        sofer.filiala = oReader.GetString(0);
-                        sofer.nume = oReader.GetString(1);
-                        sofer.codTableta = oReader.GetString(2);
-                        listSoferi.Add(sofer);
-
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                ErrorHandling.sendErrorToMail(ex.ToString());
-            }
-            finally
-            {
-                DatabaseConnections.CloseConnections(oReader, cmd, connection);
-            }
-
-            return new JavaScriptSerializer().Serialize(listSoferi);
-
-        }
-
-
-
-        public static bool isSoferDTI(OracleConnection conn, String codSofer)
-        {
-
-            bool isDTI = false;
-
-            OracleCommand cmd = new OracleCommand();
-            OracleDataReader oReader = null;
-
-            cmd = conn.CreateCommand();
-
-            cmd.CommandText = " select fili from soferi where cod =:codSofer ";
-
-            cmd.Parameters.Clear();
-            cmd.Parameters.Add(":codSofer", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
-            cmd.Parameters[0].Value = codSofer;
-
-            oReader = cmd.ExecuteReader();
-
-            oReader.Read();
-
-            if (oReader.GetString(0).Equals("GL90"))
-                isDTI = true;
-
-            DatabaseConnections.CloseConnections(oReader, cmd);
-
-            return isDTI;
-        }
-
-
-
 
         public string verificaKmSalvati(string nrAuto, string kmNoi)
         {
@@ -138,9 +54,9 @@ namespace DistributieTESTWebServices
                     dataKmSalvati = oReader.GetString(0);
                     numeSofer = oReader.GetString(2);
 
-                    if (Int32.Parse(kmNoi) <= kmSalvati)
+                    if (Int32.Parse(kmNoi) < kmSalvati)
                     {
-                        msgStatus = "Acest index este mai mic decat cel salvat anterior. In data de " + formatDate(dataKmSalvati) + ", " + numeSofer + " a introdus indexul " +kmSalvati + ".";
+                        msgStatus = "Acest index este mai mic decat cel salvat anterior. In data de " + formatDate(dataKmSalvati) + ", " + numeSofer + " a introdus indexul " + kmSalvati + ".";
                         isKmSalvatiValid = false;
                         msgId = 1;
                     }
@@ -161,7 +77,7 @@ namespace DistributieTESTWebServices
 
                         if (mediaKm > MEDIA_KM_ZI)
                         {
-                            msgStatus = "Au fost parcursi mai mult de " + MEDIA_KM_ZI + " km/zi.";
+                            msgStatus = "Conform acestui index au fost parcursi mai mult de " + MEDIA_KM_ZI + " km/zi.";
                             isKmSalvatiValid = false;
                             msgId = 2;
                         }
@@ -172,16 +88,16 @@ namespace DistributieTESTWebServices
                     if (isKmSalvatiValid)
                     {
 
-                        cmd.CommandText = " select min(mileage) km, 'astazi' timp from gps_date where " +
+                        cmd.CommandText = " select nvl(min(mileage),0) km, 'astazi' timp from gps_date where " +
                                           " device_id = (select id from gps_masini where nr_masina =:nrAuto) and trunc(record_time) = trunc(sysdate) " +
                                           " union " +
-                                          " select min(mileage) km, 'trecut' timp from gps_date where " +
+                                          " select nvl(min(mileage),0) km, 'trecut' timp from gps_date where " +
                                           " device_id = (select id from gps_masini where nr_masina =:nrAuto)  and trunc(record_time) =:dataSalvare  ";
 
                         cmd.Parameters.Clear();
 
                         cmd.Parameters.Add(":nrAuto", OracleType.VarChar, 10).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters[0].Value = nrAuto.Replace("-", "").Replace(" ", ""); 
+                        cmd.Parameters[0].Value = nrAuto.Replace("-", "").Replace(" ", "");
 
                         cmd.Parameters.Add(":dataSalvare", OracleType.VarChar, 10).Direction = System.Data.ParameterDirection.Input;
                         cmd.Parameters[1].Value = dataKmSalvati;
@@ -213,7 +129,7 @@ namespace DistributieTESTWebServices
 
                         if (difKmDistanta > 10 || isDifProcent)
                         {
-                            msgStatus = "De la ultima salvare, conform GPS, masina a parcurs " + distEfectuataGps + " km, dar conform km bord introdusi sunt " + distEfectuataDeclarat + " km. Confirmati km din bord?";
+                            msgStatus = "De la ultima salvare, facuta in data de " + formatDate(dataKmSalvati) + ", conform GPS, masina a parcurs " + distEfectuataGps + " km, dar conform km bord introdusi sunt " + distEfectuataDeclarat + " km. Confirmati km din bord?";
                             isKmSalvatiValid = false;
                             msgId = 3;
                         }
@@ -229,7 +145,7 @@ namespace DistributieTESTWebServices
             }
             catch (Exception ex)
             {
-                ErrorHandling.sendErrorToMail(ex.ToString());
+                ErrorHandling.sendErrorToMail(ex.ToString() + " , nrauto " + nrAuto + " , kmNoi " + kmNoi);
             }
             finally
             {
@@ -244,6 +160,19 @@ namespace DistributieTESTWebServices
         }
 
 
+
+        private string getCurrentDate()
+        {
+            string mDate = "";
+            DateTime cDate = DateTime.Now;
+            string year = cDate.Year.ToString();
+            string day = cDate.Day.ToString("00");
+            string month = cDate.Month.ToString("00");
+            mDate = year + month + day;
+            return mDate;
+        }
+
+
         private string getCurrentDateFormatted()
         {
             string mDate = "";
@@ -255,8 +184,6 @@ namespace DistributieTESTWebServices
             return mDate;
         }
 
-
-
         private string formatDate(string strDate)
         {
             string[] tokDate = strDate.Split('-');
@@ -264,6 +191,7 @@ namespace DistributieTESTWebServices
 
 
         }
+
 
     }
 }

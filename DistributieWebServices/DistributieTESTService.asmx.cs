@@ -23,6 +23,7 @@ namespace DistributieTESTWebServices
     public class Service1 : System.Web.Services.WebService
     {
 
+
         [WebMethod]
         public string HelloWorld()
         {
@@ -70,6 +71,11 @@ namespace DistributieTESTWebServices
             return eveniment.getEvenimenteBorderou(nrBorderou);
         }
 
+        [WebMethod]
+        public string verificaKmSalvati(string nrAuto, string kmNoi)
+        {
+            return new OperatiiMasina().verificaKmSalvati(nrAuto, kmNoi);
+        }
 
         [WebMethod]
         public string saveNewEvent(string serializedEvent, string serializedEtape)
@@ -89,7 +95,43 @@ namespace DistributieTESTWebServices
             new OperatiiEvenimente().sendSmsAlerts(null, nrDocument);
         }
 
-       
+
+        [WebMethod]
+        public string testAlert()
+        {
+            return new Sms().getStatusLink("0001778148", "4110001075");
+        }
+
+        [WebMethod]
+        public string sendSmsCustom(string nrTel)
+        {
+
+            return new Sms().sendSMS(nrTel);
+        }
+
+        [WebMethod]
+        public void logSms()
+        {
+            NotificareClient notificare = new NotificareClient();
+            notificare.codClient = "cod client 1234";
+            notificare.nrTelefon = "0742290177";
+
+            // string status = new Sms().sendSMS(notificare.nrTelefon);
+
+            string status = "1233 status";
+
+            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+            OracleConnection connection = new OracleConnection();
+            connection.ConnectionString = connectionString;
+            connection.Open();
+
+            new Sms().logSmsStatus(connection, notificare, status);
+
+
+            connection.Close();
+            connection.Dispose();
+        }
 
 
         [WebMethod]
@@ -97,7 +139,7 @@ namespace DistributieTESTWebServices
         {
             CultureInfo ci = new CultureInfo("ro-RO");
             return DateTime.Now.ToString("M", ci).ToLower();
-           
+
         }
 
 
@@ -176,6 +218,8 @@ namespace DistributieTESTWebServices
         }
 
 
+        
+
 
         [WebMethod]
         public string getRouteBounds(string codAdresa, string nrDocument)
@@ -192,6 +236,19 @@ namespace DistributieTESTWebServices
             string day = cDate.Day.ToString("00");
             string month = cDate.Month.ToString("00");
             mDate = year + month + day;
+            return mDate;
+        }
+
+
+
+        private string getCurrentDateFormatted()
+        {
+            string mDate = "";
+            DateTime cDate = DateTime.Now;
+            string year = cDate.Year.ToString();
+            string day = cDate.Day.ToString("00");
+            string month = cDate.Month.ToString("00");
+            mDate = day + "-" + month + "-" + year;
             return mDate;
         }
 

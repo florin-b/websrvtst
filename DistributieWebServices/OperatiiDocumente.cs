@@ -131,6 +131,8 @@ namespace DistributieTESTWebServices
                 }
 
 
+                // string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
                 string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
@@ -240,7 +242,7 @@ namespace DistributieTESTWebServices
 
                
 
-                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+                string connectionString = DatabaseConnections.ConnectToProdEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();

@@ -125,7 +125,13 @@ namespace DistributieTESTWebServices
                     if (recordExist(connection, newEvent.codSofer, newEvent.document, newEvent.client, strLocalEveniment, newEvent.codAdresa))
                     {
                         retVal = nowDate + "#" + nowTime;
-                        return retVal;
+
+                        if (newEvent.evBord != null && newEvent.evBord.Equals("STOP"))
+                        {
+                            addStopBord(connection, newEvent, latit, longit, mileage);
+                        }
+
+                        //return retVal;
                     }
 
 
@@ -164,7 +170,7 @@ namespace DistributieTESTWebServices
                     cmd.Parameters.Add(":codadresa", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
                     cmd.Parameters[8].Value = newEvent.codAdresa;
 
-                    cmd.ExecuteNonQuery();
+                   // cmd.ExecuteNonQuery();
 
                     retVal = nowDate + "#" + nowTime;
 
@@ -172,8 +178,8 @@ namespace DistributieTESTWebServices
 
                     if (newEvent.bordParent != null && !newEvent.bordParent.Equals("-1"))
                     {
-                        addBordStartCursa(connection, newEvent, latit, longit, mileage);
-                        updateBordParentSfCursa(connection, newEvent, latit, longit, mileage);
+                       // addBordStartCursa(connection, newEvent, latit, longit, mileage);
+                       // updateBordParentSfCursa(connection, newEvent, latit, longit, mileage);
                     }
 
 
@@ -182,7 +188,7 @@ namespace DistributieTESTWebServices
 
                     if (newEvent.evBord != null && newEvent.evBord.Equals("STOP"))
                     {
-                        addStopBord(connection, newEvent, latit, longit, mileage);
+                       // addStopBord(connection, newEvent, latit, longit, mileage);
                     }
 
                     if (cmd != null)
@@ -232,7 +238,7 @@ namespace DistributieTESTWebServices
 
             try
             {
-                new Sms().sendSMS(getClientsPhoneNumber(connection, nrDocument));
+                new Sms().sendSMS(getClientsPhoneNumber(connection, nrDocument), nrDocument);
             }
             catch (Exception ex)
             {
@@ -261,11 +267,12 @@ namespace DistributieTESTWebServices
                 cmd = connection.CreateCommand();
 
                 string sqlString = " select distinct k.kunnr,  tel_number from sapprd.kna1 k, sapprd.adr2 a, sapprd.adrt t" +
-                            " where k.mandt = '900' and k.kunnr in (select distinct a.cod from sapprd.zdocumentebord a, borderouri b, soferi c where " +
-                            " a.nr_bord = b.numarb and b.cod_sofer = c.cod and b.numarb =:borderou and upper(b.fili) like 'GL%') and k.mandt = a.client " +
-                            " and k.adrnr = a.addrnumber  and a.client = t.client  and a.addrnumber = t.addrnumber  and a.consnumber = t.consnumber " +
-                            " and t.comm_type = 'TEL' " +
-                            " and t.remark = 'LIVRARI' order by k.kunnr ";
+                                   " where k.mandt = '900' and k.kunnr in (select distinct a.cod from sapprd.zdocumentebord a, borderouri b, soferi c where " +
+                                   " a.nr_bord = b.numarb and b.cod_sofer = c.cod and b.numarb =:borderou ) and k.mandt = a.client " +
+                                   " and k.adrnr = a.addrnumber  and a.client = t.client  and a.addrnumber = t.addrnumber  and a.consnumber = t.consnumber " +
+                                   " and t.comm_type = 'TEL' " +
+                                   " and t.remark = 'LIVRARI' order by k.kunnr ";
+
 
 
                 cmd.CommandType = CommandType.Text;

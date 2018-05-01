@@ -188,4 +188,13 @@ namespace DistributieTESTWebServices
         public string codTableta;
     }
 
+
+    public class StareValidareKm
+    {
+        public bool isKmValid;
+        public string statusMsg;
+        public int statusId;
+    }
+
+
 }
