@@ -181,8 +181,7 @@ namespace LiteSFATestWebService
         {
 
 
-
-            if (tipPrelucrare == null || tipPrelucrare.Equals("-1"))
+            if (tipPrelucrare == null || tipPrelucrare.Equals("-1") || tipPrelucrare.Trim().Equals(""))
                 return;
 
             string query = "";
@@ -329,6 +328,173 @@ namespace LiteSFATestWebService
 
         }
 
+
+        public static void saveTonajAdresa(OracleConnection connection, string idComanda,  string tonaj)
+        {
+
+
+            if (tonaj == null || tonaj.Equals("-1"))
+                return;
+
+            ClientComanda clientComanda = OperatiiComenzi.getClientComanda(connection, idComanda);
+
+            saveTonajAdresa(connection, clientComanda.codClient, clientComanda.codAdresa, tonaj);
+
+        }
+
+
+
+
+
+        public static void saveDatePersonale(OracleConnection connection, DateLivrare dateLivrare, ComandaVanzare comandaVanzare)
+        {
+
+            OracleCommand cmd = null;
+
+            try
+            {
+
+                if (comandaVanzare.cnpClient.Length == 0)
+                    return;
+
+                if (existaDatePersonale(connection, dateLivrare, comandaVanzare))
+                {
+                    return;
+                }
+
+
+                cmd = connection.CreateCommand();
+
+
+                string query = " insert into sapprd.zinformclmag(mandt, cod_cl, stceg, name1, street, city1, country, regio, tip_cl) " +
+                               " values ('900', '0000000000', :stceg, :name1, :street, :city1, 'RO',:regio, :tip_cl) ";
+
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":stceg", OracleType.NVarChar, 60).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = comandaVanzare.cnpClient;
+
+                cmd.Parameters.Add(":name1", OracleType.NVarChar, 90).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = comandaVanzare.numeClient;
+
+                cmd.Parameters.Add(":street", OracleType.NVarChar, 180).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = dateLivrare.Strada;
+
+                cmd.Parameters.Add(":city1", OracleType.NVarChar, 120).Direction = ParameterDirection.Input;
+                cmd.Parameters[3].Value = dateLivrare.Oras;
+
+                cmd.Parameters.Add(":regio", OracleType.NVarChar, 9).Direction = ParameterDirection.Input;
+                cmd.Parameters[4].Value = dateLivrare.codJudet;
+
+                string tipClient;
+
+                if (comandaVanzare.cnpClient.Trim().Length == 13)
+                    tipClient = "PF";
+                else
+                    tipClient = "PJ";
+
+                cmd.Parameters.Add(":tip_cl", OracleType.NVarChar, 6).Direction = ParameterDirection.Input;
+                cmd.Parameters[5].Value = tipClient;
+
+                cmd.ExecuteNonQuery();
+
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                if (cmd != null)
+                    cmd.Dispose();
+            }
+
+
+        }
+
+
+
+        public static bool existaDatePersonale(OracleConnection connection, DateLivrare dateLivrare, ComandaVanzare comandaVanzare)
+        {
+            bool existaDatePers = false;
+
+            OracleDataReader oReader = null;
+
+            try
+            {
+                OracleCommand cmd = connection.CreateCommand();
+
+                string query = " select count(*) from sapprd.zinformclmag where mandt='900' and  stceg = :cnp ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":cnp", OracleType.NVarChar, 60).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = comandaVanzare.cnpClient;
+
+                oReader = cmd.ExecuteReader();
+                oReader.Read();
+
+                if (oReader.GetInt32(0) == 0)
+                    existaDatePers = false;
+                else
+                {
+                    query = " select upper(name1), regio, upper(city1), upper(street) from sapprd.zinformclmag where mandt='900' and  stceg =:cnp  ";
+
+                    cmd.CommandType = CommandType.Text;
+                    cmd.CommandText = query;
+                    cmd.Parameters.Clear();
+
+                    cmd.Parameters.Add(":cnp", OracleType.NVarChar, 60).Direction = ParameterDirection.Input;
+                    cmd.Parameters[0].Value = comandaVanzare.cnpClient;
+
+                    oReader = cmd.ExecuteReader();
+
+
+                    if (oReader.HasRows)
+                    {
+                        while (oReader.Read())
+                        {
+                            if (!oReader.GetString(0).Equals(comandaVanzare.numeClient.ToUpper()))
+                            {
+                                existaDatePers = true;
+                                break;
+                            }
+                            else
+                            {
+                                if (oReader.GetString(1).Equals(dateLivrare.codJudet) && oReader.GetString(2).Equals(dateLivrare.Oras.ToUpper()) && oReader.GetString(3).Equals(dateLivrare.Strada.ToUpper()))
+                                {
+                                    existaDatePers = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+                oReader.Close();
+                oReader.Dispose();
+
+                cmd.Dispose();
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+                existaDatePers = false;
+            }
+
+
+
+            return existaDatePers;
+        }
 
 
 

@@ -168,7 +168,7 @@ namespace LiteSFATestWebService
 
                     cmd = connection.CreateCommand();
 
-                    //stoc la zi
+                   
                     cmd.CommandText = " SELECT vtext FROM SAPPRD.T685t r where mandt = '900' and spras = '4' " +
                                       " and r.kvewe = 'A' and r.kappl = 'V' and KSCHL=:codRed ";
 
@@ -556,6 +556,7 @@ namespace LiteSFATestWebService
             {
                 DatabaseConnections.CloseConnections(oReader, cmd);
             }
+
 
            return procReducere;
 

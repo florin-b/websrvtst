@@ -15,15 +15,15 @@ namespace LiteSFATestWebService
 
 
             //TES
-            return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
-                    " (HOST = 10.1.3.89)(PORT = 1527)))(CONNECT_DATA = (SERVICE_NAME = TES))); " +
-                    " User Id = WEBSAP; Password = 2INTER7; ";
+            //return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
+            //       " (HOST = 10.1.3.89)(PORT = 1527)))(CONNECT_DATA = (SERVICE_NAME = TES))); " +
+            //        " User Id = WEBSAP; Password = 2INTER7; ";
 
 
             //QAS
-            //return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
-            //        " (HOST = 10.1.3.88)(PORT = 1527)))(CONNECT_DATA = (SERVICE_NAME = QAS))); " +
-            //        " User Id = WEBSAP; Password = 2INTER7; ";
+            return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
+                   " (HOST = 10.1.3.88)(PORT = 1527)))(CONNECT_DATA = (SERVICE_NAME = QAS))); " +
+                    " User Id = WEBSAP; Password = 2INTER7; ";
 
 
             //DR
@@ -50,7 +50,19 @@ namespace LiteSFATestWebService
         }
 
 
-       
+
+
+        static public string ConnectToBGTest()
+        {
+
+            //TES
+            return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
+                   " (HOST = 10.1.4.14)(PORT = 1521)))(CONNECT_DATA = (SERVICE_NAME = bgt))); " +
+                   " User Id = WEBSAP; Password = 2INTER7; ";
+
+        }
+
+
 
         public static void CloseConnections(OracleDataReader reader, OracleCommand command, OracleConnection connection)
         {

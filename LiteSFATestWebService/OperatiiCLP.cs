@@ -206,6 +206,7 @@ namespace LiteSFATestWebService
 
 
             OperatiiSuplimentare.saveTonajComanda(connection, idCmd.Value.ToString(), antetComanda.tonaj);
+            new OperatiiSuplimentare().savePrelucrare04(connection, idCmd.Value.ToString(), antetComanda.prelucrare);
 
             return retVal;
 

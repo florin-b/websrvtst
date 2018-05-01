@@ -680,7 +680,7 @@ namespace LiteSFATestWebService
                 {
                     cmd.CommandText = " select distinct k.vbeln, to_date(k.fkdat,'yyyymmdd') " +
                                       " from sapprd.vbrk k, sapprd.vbrp p where k.mandt = p.mandt and k.vbeln = p.vbeln and p.spart =:depart " +
-                                      " and k.mandt = '900' and k.fkdat >= to_char(sysdate-145,'yyyymmdd') and k.fkart = 'ZFI' and k.fksto <> 'X' " +
+                                      " and k.mandt = '900' and k.fkdat >= to_char(sysdate-45,'yyyymmdd') and k.fkart = 'ZFI' and k.fksto <> 'X' " +
                                       " and k.kunag =:codClient " + condPaleti + condData + " order by to_date(k.fkdat,'yyyymmdd') ";
                 }
 

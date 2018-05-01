@@ -56,6 +56,8 @@ namespace LiteSFATestWebService
         public string cursValutar;
         public string termenPlata;
         public string tipClient;
+        public string isFurnizor;
+        public string divizii;
     }
 
 
@@ -127,6 +129,9 @@ namespace LiteSFATestWebService
         public string departAprob;
         public string filialaSite;
         public string istoricPret;
+        public string valTransport;
+        public string procTransport;
+       
 
         public override string ToString()
         {
@@ -160,6 +165,7 @@ namespace LiteSFATestWebService
         public string unitMasPretMediu;
         public string departSintetic;
         public string coefCorectie;
+        public string vechime;
     }
 
 
@@ -231,7 +237,13 @@ namespace LiteSFATestWebService
         public string tonaj;
         public string prelucrare;
         public string clientRaft;
-        
+        public string meserias = "";
+        public bool factPaletiSeparat;
+        public string furnizorMarfa;
+        public string furnizorProduse;
+        public bool isCamionDescoperit;
+        public string diviziiClient;
+
 
 
     }
@@ -409,6 +421,8 @@ namespace LiteSFATestWebService
         public string departAprob;
         public string umPalet;
         public string stoc;
+        public string categorie;
+        public string lungime;
 
     }
 
@@ -652,6 +666,17 @@ namespace LiteSFATestWebService
         public string errMsg;
         public string procReducereCmp;
 
+    }
+
+
+
+    public class FacturaNeincasataLite
+    {
+        public string nrFactura;
+        public string dataEmitere;
+        public string anDocument;
+        public string restPlata;
+        public string nrDocument;
     }
 
 

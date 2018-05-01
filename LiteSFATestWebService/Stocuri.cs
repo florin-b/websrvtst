@@ -63,7 +63,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters[0].Value = codArt;
 
 
-                ErrorHandling.sendErrorToMail(cmd.CommandText);
+                
 
                 oReader = cmd.ExecuteReader();
 

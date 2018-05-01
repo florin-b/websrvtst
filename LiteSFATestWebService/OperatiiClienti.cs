@@ -72,8 +72,10 @@ namespace LiteSFATestWebService
 
 
 
-        public string getListClienti(string numeClient, string depart, string departAg, string unitLog)
+        public string getListClienti(string numeClient, string depart, string departAg, string unitLog, string codUser)
         {
+
+           
 
             string serializedResult = "";
             OracleConnection connection = new OracleConnection();
@@ -127,7 +129,9 @@ namespace LiteSFATestWebService
                                  " and t.cod_cli=c.cod " + condDepart1 + " ) " +
                                  " and exists (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.cod " +
                                  " and p.vtweg = '10' " + condDepart2 + " and p.parvw in ('ZA','ZS') " +
-                                   exceptieClient + " )";
+                                   exceptieClient + " ) " +
+                                 " and exists (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.cod  and p.vtweg = '10' " +
+                                 " and p.spart = '" + departAg + "' and p.parvw in ('VE', 'ZC')  and p.pernr = '" + codUser + "' ) ";
                 }
 
 
@@ -136,6 +140,8 @@ namespace LiteSFATestWebService
                                   "  ) x " +
                                   " where rownum<=50 order by x.nume ";
 
+
+               
 
 
                 cmd.CommandType = CommandType.Text;
@@ -258,7 +264,7 @@ namespace LiteSFATestWebService
 
          }
 
-        public string getDetaliiClient(string codClient, string depart)
+        public string getDetaliiClient(string codClient, string depart, string codUser)
         {
 
             string retVal = "-1";
@@ -389,7 +395,9 @@ namespace LiteSFATestWebService
                     cmd.CommandText = " select distinct k.kunnr,k.klimk lcredit, " +
                       " k.skfor,k.ssobl, nvl((select s2.olikw+s2.ofakw from sapprd.s067 s2 where s2.mandt='900' and " +
                       " s2.kkber='1000' and s2.knkli=k.kunnr),0) olikw, nvl((select sum(s1.oeikw) from sapprd.s066 s1 " +
-                      " where s1.mandt='900' and s1.kkber='1000' and spmon=:l  and s1.knkli=k.kunnr),0) oeikw,  k.crblb  from sapprd.knkk k " +
+                      " where s1.mandt='900' and s1.kkber='1000' and spmon=:l  and s1.knkli=k.kunnr),0) oeikw,  k.crblb, " +
+                      " nvl((select '1' from sapprd.lfa1 l where l.mandt = '900' and l.kunnr = k.kunnr),'-1') isFurnizor " +
+                      " from sapprd.knkk k " +
                       " where k.mandt='900' and k.kkber='1000' and k.kunnr=:k ";
 
 
@@ -410,6 +418,7 @@ namespace LiteSFATestWebService
                         limCredit = oReader.GetFloat(1);
                         restCredit = oReader.GetFloat(1) - (oReader.GetFloat(2) + oReader.GetFloat(3)) - (oReader.GetFloat(4) + oReader.GetFloat(5));
                         clBlocat = oReader.GetString(6);
+                        detaliiClient.isFurnizor = oReader.GetString(7).Equals("-1") ? false.ToString() : true.ToString();
 
                         oReader.Close();
                         oReader.Dispose();
@@ -605,6 +614,7 @@ namespace LiteSFATestWebService
 
                     retVal += termPlata + "#";
 
+                    detaliiClient.divizii = getDiviziiClient(connection, codClient, codUser);
                     oReader.Close();
                     oReader.Dispose();
 
@@ -632,8 +642,267 @@ namespace LiteSFATestWebService
 
         }
 
+        public static string getDiviziiClient(OracleConnection connection, string codClient, string codAgent)
+        {
+
+            string diviziiClient = "";
+
+            OracleDataReader oReader = null;
+
+            try
+            {
+                OracleCommand cmd = null;
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select distinct spart from sapprd.knvp p where p.mandt = '900' and p.kunnr =:codClient " +
+                                  " and p.pernr =:codAgent and p.vtweg = '10' and p.parvw in ('VE','ZC') ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
 
 
+                cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codClient;
+
+                cmd.Parameters.Add(":codAgent", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = codAgent;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        diviziiClient += oReader.GetString(0).ToString() + ";";
+                    }
+                }
+
+                oReader.Close();
+                oReader.Dispose();
+
+                cmd.Dispose();
+
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+
+            return diviziiClient;
+
+
+        }
+
+
+        public static string getDiviziiClient(OracleConnection connection, string idComanda)
+        {
+
+            string diviziiClient = "";
+
+            OracleDataReader oReader = null;
+
+            try
+            {
+                OracleCommand cmd = null;
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select distinct spart from sapprd.knvp p, sapprd.zcomhead_tableta t where p.mandt = '900' and t.mandt = '900' " +
+                                  " and t.id =:idComanda and p.kunnr = t.cod_client " +
+                                  " and p.pernr = t.cod_agent and p.vtweg = '10' and p.parvw in ('VE','ZC') ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+
+                cmd.Parameters.Add(":idComanda", OracleType.Int32, 20).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = Int32.Parse(idComanda);
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        diviziiClient += oReader.GetString(0).ToString() + ";";
+                    }
+                }
+
+                oReader.Close();
+                oReader.Dispose();
+
+                cmd.Dispose();
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+
+            return diviziiClient;
+
+
+        }
+
+
+
+        public string getMeseriasi(string codFiliala, string tipUser, string codUser, string codDepart)
+        {
+            string serializedResult = "";
+
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            List<Client> listaClienti = new List<Client>();
+
+            if (tipUser.Equals("AV") && !codDepart.Equals("08") && !codDepart.Equals("09"))
+            {
+                return serializer.Serialize(listaClienti);
+            }
+
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                string sqlString;
+
+                if (tipUser.Equals("AV"))
+                    sqlString = " select c.name1 nume, c.kunnr cod  from sapprd.kna1 c " +
+                                " where c.ktokd = '1180' " +
+                                " and exists(select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.kunnr  and p.vtweg = '20' and " +
+                                " p.parvw in ('ZA', 'ZS') and p.kunn2 =:filiala ) " +
+                                " and exists (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.kunnr " +
+                                " and p.vtweg = '20' and p.parvw in ('ZC') and p.pernr =:codAgent ) order by c.name1 ";
+                else
+                    sqlString = " select c.name1 nume, c.kunnr cod from sapprd.kna1 c where  c.ktokd = '1180'  and exists " +
+                               " (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.kunnr  and p.vtweg = '20' and p.parvw in ('ZA', 'ZS') and p.kunn2 =:filiala )  " +
+                               " order by c.name1 ";
+
+
+                cmd.CommandText = sqlString;
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codFiliala;
+
+                if (tipUser.Equals("AV"))
+                {
+                    cmd.Parameters.Add(":codAgent", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                    cmd.Parameters[1].Value = codUser;
+                }
+
+
+                oReader = cmd.ExecuteReader();
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        Client unClient = new Client();
+                        unClient.numeClient = oReader.GetString(0);
+                        unClient.codClient = oReader.GetString(1);
+                        unClient.tipClient = " ";
+
+                        listaClienti.Add(unClient);
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+
+           
+            serializedResult = serializer.Serialize(listaClienti);
+
+            return serializedResult;
+        }
+
+
+
+
+
+        public string getDatePersonaleClient(string numeClient, string tipClient)
+        {
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            List<BeanDatePersonale> listDatePersonale = new List<BeanDatePersonale>();
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+               
+
+                string sqlString = " select name1, stceg, regio, city1, street from sapprd.zinformclmag where mandt='900' " +
+                                   " and lower(name1) like lower('" + numeClient + "%') and tip_cl =:tipClient order by name1 ";
+
+
+                cmd.CommandText = sqlString;
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":tipClient", OracleType.VarChar, 6).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = tipClient;
+
+
+                oReader = cmd.ExecuteReader();
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+
+                        BeanDatePersonale datePersonale = new BeanDatePersonale();
+
+                        datePersonale.nume = oReader.GetString(0);
+                        datePersonale.cnp = oReader.GetString(1);
+                        datePersonale.codjudet = oReader.GetString(2);
+                        datePersonale.localitate = oReader.GetString(3);
+                        datePersonale.strada = oReader.GetString(4);
+
+                        listDatePersonale.Add(datePersonale);
+
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return new JavaScriptSerializer().Serialize(listDatePersonale);
+
+        }
 
     }
 }

@@ -25,4 +25,18 @@ namespace LiteSFATestWebService
 
 
     }
+
+
+    public class BeanDatePersonale
+    {
+        public string cnp;
+        public string nume;
+        public string codjudet;
+        public string localitate;
+        public string strada;
+    }
+
+
+   
+
 }

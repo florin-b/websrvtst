@@ -19,6 +19,8 @@ namespace LiteSFATestWebService
         public string cod;
         public string depart;
         public string valoare;
+        public string cantitate;
+        public string valoareMin;
     }
 
 
@@ -27,6 +29,7 @@ namespace LiteSFATestWebService
         public string cod;
         public double cant;
         public string um;
+        public string depoz;
     }
 
 

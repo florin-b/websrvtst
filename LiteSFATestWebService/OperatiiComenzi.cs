@@ -7,6 +7,7 @@ using System.Data.Common;
 using System.Data;
 using System.Web.Script.Serialization;
 using System.Globalization;
+using LiteSFATestWebService.SAPWebServices;
 
 namespace LiteSFATestWebService
 {
@@ -386,10 +387,23 @@ namespace LiteSFATestWebService
                 cmd = connection.CreateCommand();
 
                 cmd.CommandText = " select b.name1, c.valoare, c.city, nvl(c.adr_livrare,' '),  c.nrcmdsap, c.cod_client, b.nr_bord, a.masina, c.region, d.nume, " +
-                                  " nvl(d.telefon,'-') telefon, a.sttrg  " +
-                                  " from borderouri a, sapprd.zdocumentesms b, sapprd.zcomhead_tableta c, soferi d" +
-                                  "  where a.sttrg in ( 1, 2, 3, 4, 6, 7) and b.cod_av=:codAgent and a.numarb = b.nr_bord and c.id = b.idcomanda and d.cod = a.cod_sofer " +
-                                  "  order by b.name1 ";
+                                 " nvl(d.telefon,'-') telefon, a.sttrg  " +
+                                 " from borderouri a, sapprd.zdocumentesms b, sapprd.zcomhead_tableta c, soferi d" +
+                                 "  where a.sttrg in ( 2, 3, 4, 6, 7) and b.cod_av=:codAgent and a.numarb = b.nr_bord and c.id = b.idcomanda and d.cod = a.cod_sofer " +
+                                 " union " +
+                                 " select b.name1 ||' (CLP)' name1, 0 valoare, c.city, nvl(c.adr_livrare, ' '),  c.nrcmdsap, c.cod_client, b.nr_bord, a.masina, c.region, d.nume, " +
+                                 " nvl(d.telefon, '-') telefon, a.sttrg " +
+                                 " from borderouri a, sapprd.zdocumentesms b, sapprd.zclphead c, soferi d " +
+                                 " where a.sttrg in (2, 3, 4, 6, 7) and b.cod_av = :codAgent and a.numarb = b.nr_bord and c.id = b.iddlclp and d.cod = a.cod_sofer " +
+                                 " union " +
+                                 " select distinct b.name1 ||' (ONLINE)' name1, k.netwr valoare, a.city1, nvl(a.street,' '), " +
+                                 " k.vbeln nrcmdsap, k.kunnr cod_client, b.nr_bord, a.masina, a.region, d.nume, " + 
+                                 " nvl(d.telefon, '-') telefon, a.sttrg " + 
+                                 " from borderouri a, sapprd.zdocumentesms b, sapprd.vbak k, soferi d, sapprd.vbfa f, sapprd.vbpa p, sapprd.adrc a " +
+                                 " where a.sttrg in (2, 3, 4, 6, 7) and b.cod_av =:codAgent and a.numarb = b.nr_bord and f.mandt = '900' and f.vbeln = b.nr_doc and d.cod = a.cod_sofer " + 
+                                 " and k.mandt = '900' and k.vbeln = f.vbelv and f.vbtyp_v = 'C' and f.vbtyp_n = 'J' " + 
+                                 " and k.auart in ('ZTAH','ZEPH') and k.mandt = p.mandt and k.vbeln = p.vbeln and p.parvw = 'WE' and p.mandt = a.client and p.adrnr = a.addrnumber" +
+                                 " order by name1 ";
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -691,6 +705,65 @@ namespace LiteSFATestWebService
             return adresa;
 
         }
+
+
+
+
+        public static string respingeComanda(OracleConnection connection, String nrCmd, String codUser, String codRespingere)
+        {
+
+            string retVal = " ";
+            
+            SAPWebServices.ZTBL_WEBSERVICE webService = null;
+            webService = new ZTBL_WEBSERVICE();
+
+            SAPWebServices.ZstareComanda inParam = new SAPWebServices.ZstareComanda();
+            inParam.NrCom = nrCmd;
+            inParam.Stare = "3";
+            inParam.PernrCh = codUser;
+
+            System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Service1.getUser(), Service1.getPass());
+            webService.Credentials = nc;
+            webService.Timeout = 300000;
+
+            SAPWebServices.ZstareComandaResponse outParam = webService.ZstareComanda(inParam);
+
+            string response = outParam.VOk;
+
+            OracleCommand cmd = new OracleCommand();
+
+            cmd = connection.CreateCommand();
+
+            cmd.CommandText = " update sapprd.zcomhead_tableta set abgru = '" + codRespingere + "' where id=:cmd ";
+
+            cmd.CommandType = CommandType.Text;
+
+            cmd.Parameters.Clear();
+            cmd.Parameters.Add(":cmd", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
+            cmd.Parameters[0].Value = nrCmd;
+
+            cmd.ExecuteNonQuery();
+
+            cmd.Dispose();
+          
+
+
+            if (response.Equals("0"))
+            {
+                retVal = "Comanda respinsa.";
+            }
+            else
+            {
+                retVal = outParam.VMess;
+            }
+
+            webService.Dispose();
+
+
+            return retVal;
+
+        }
+
 
 
         private static string conectToProd()

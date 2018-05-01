@@ -497,5 +497,20 @@ namespace LiteSFATestWebService
 
 
 
+        public string getLocalitatiLivrareRapida()
+        {
+
+            string localitati = "Alba Iulia, Alexandria, Bacau, Bistrita, Botosani, Braila, Brasov, Bucuresti, Buzau, Calarasi, Cluj-Napoca, Constanta, Deva, " +
+                    "Drobeta Turnu Severin, Focsani, Galati, Gheorghieni, Giurgiu, Iasi, Medias, Miercurea Ciuc, Odorheiu Secuiesc, Onesti, Petrosani, Piatra-Neamt, " +
+                    "Pitesti, Ploiesti, Ramnicu-Sarat, Ramnicu-Valcea, Resita, Roman, Satu-Mare, Sfantu Gheorghe, Sibiu, Slobozia, Slatina, Suceava, Targoviste, " +
+                    "Targu-Jiu, Targu-Mures, Tulcea, Zalau";
+
+
+
+            return localitati;
+
+        }
+
+
     }
 }

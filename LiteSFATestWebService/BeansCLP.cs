@@ -33,6 +33,7 @@ namespace LiteSFATestWebService
         public string tipCamion;
         public string tipIncarcare;
         public string tonaj;
+        public string prelucrare;
 
         public override string ToString()
         {

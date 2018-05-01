@@ -11,12 +11,26 @@ namespace LiteSFATestWebService
     {
 
 
-        public String getCostMacara(String unitLog, String listArt)
+        public String getCostMacara(String unitLog, String codAgent, String codClient, String listArt)
         {
 
 
-
             JavaScriptSerializer serializer = new JavaScriptSerializer();
+
+            /*
+            if (!unitLog.Contains("IS") && !unitLog.Contains("CJ") && !unitLog.Contains("BV"))
+            {
+                CostDescarcare costDescarcareEmpty = new CostDescarcare();
+                costDescarcareEmpty.sePermite = false;
+
+                List<ArticolDescarcare> listArticoleEmpty = new List<ArticolDescarcare>();
+
+                costDescarcareEmpty.articoleDescarcare = listArticoleEmpty;
+
+                return new JavaScriptSerializer().Serialize(costDescarcareEmpty);
+
+            }
+            */
 
             List<ArticolCalculDesc> listArtCmd = serializer.Deserialize<List<ArticolCalculDesc>>(listArt);
 
@@ -43,12 +57,15 @@ namespace LiteSFATestWebService
                 nrpal[i].Matnr = codArt;
                 nrpal[i].Meins = listArtCmd[i].um;
                 nrpal[i].Menge = Convert.ToDecimal(listArtCmd[i].cant);
+                nrpal[i].Lgort = listArtCmd[i].depoz;
 
             }
 
 
             inParam.ItTable = nrpal;
             inParam.IpWerks = unitLog;
+            inParam.IpPernr = codAgent;
+            inParam.IpKunnr = codClient;
 
 
             SAPWebServices.ZNrPaletiResponse resp = webService.ZNrPaleti(inParam);
@@ -69,6 +86,8 @@ namespace LiteSFATestWebService
                 articol.cod = valPaleti[i].Matnr;
                 articol.depart = valPaleti[i].Spart;
                 articol.valoare = valPaleti[i].Valpal.Trim();
+                articol.cantitate = valPaleti[i].Nrpal.ToString();
+                articol.valoareMin = valPaleti[i].Valmin.Trim();
                 listArticole.Add(articol);
             }
 

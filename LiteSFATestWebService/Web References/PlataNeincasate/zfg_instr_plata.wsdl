@@ -4,7 +4,7 @@
     <sidl:sidl xmlns:sidl="http://www.sap.com/2007/03/sidl" />
   </wsdl:documentation>
   <wsp:UsingPolicy wsdl:required="true" />
-  <wsp:Policy wsu:Id="BN__ZCLP_WEBSERVICE">
+  <wsp:Policy wsu:Id="BN__ZFG_INSTR_PLATA">
     <wsp:ExactlyOne>
       <wsp:All>
         <sapattahnd:Enabled xmlns:sapattahnd="http://www.sap.com/710/features/attachment/">false</sapattahnd:Enabled>
@@ -68,7 +68,7 @@
       </wsp:All>
     </wsp:ExactlyOne>
   </wsp:Policy>
-  <wsp:Policy wsu:Id="BN__ZCLP_WEBSERVICE_soap12">
+  <wsp:Policy wsu:Id="BN__ZFG_INSTR_PLATA_soap12">
     <wsp:ExactlyOne>
       <wsp:All>
         <sapattahnd:Enabled xmlns:sapattahnd="http://www.sap.com/710/features/attachment/">false</sapattahnd:Enabled>
@@ -132,7 +132,7 @@
       </wsp:All>
     </wsp:ExactlyOne>
   </wsp:Policy>
-  <wsp:Policy wsu:Id="IF__ZCLP_WEBSERVICE">
+  <wsp:Policy wsu:Id="IF__ZFG_INSTR_PLATA">
     <wsp:ExactlyOne>
       <wsp:All>
         <sapsession:Session xmlns:sapsession="http://www.sap.com/webas/630/soap/features/session/">
@@ -144,7 +144,7 @@
       </wsp:All>
     </wsp:ExactlyOne>
   </wsp:Policy>
-  <wsp:Policy wsu:Id="OP__ZcreazaCaDl">
+  <wsp:Policy wsu:Id="OP__ZtbSaveDocCliring">
     <wsp:ExactlyOne>
       <wsp:All>
         <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
@@ -154,37 +154,7 @@
       </wsp:All>
     </wsp:ExactlyOne>
   </wsp:Policy>
-  <wsp:Policy wsu:Id="OP__ZcreazaSto">
-    <wsp:ExactlyOne>
-      <wsp:All>
-        <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
-        <sapcomhnd:enableCommit xmlns:sapcomhnd="http://www.sap.com/NW05/soap/features/commit/">false</sapcomhnd:enableCommit>
-        <sapblock:enableBlocking xmlns:sapblock="http://www.sap.com/NW05/soap/features/blocking/">true</sapblock:enableBlocking>
-        <saprmnw05:enableWSRM xmlns:saprmnw05="http://www.sap.com/NW05/soap/features/wsrm/">false</saprmnw05:enableWSRM>
-      </wsp:All>
-    </wsp:ExactlyOne>
-  </wsp:Policy>
-  <wsp:Policy wsu:Id="OP__ZaprobaComanda">
-    <wsp:ExactlyOne>
-      <wsp:All>
-        <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
-        <sapcomhnd:enableCommit xmlns:sapcomhnd="http://www.sap.com/NW05/soap/features/commit/">false</sapcomhnd:enableCommit>
-        <sapblock:enableBlocking xmlns:sapblock="http://www.sap.com/NW05/soap/features/blocking/">true</sapblock:enableBlocking>
-        <saprmnw05:enableWSRM xmlns:saprmnw05="http://www.sap.com/NW05/soap/features/wsrm/">false</saprmnw05:enableWSRM>
-      </wsp:All>
-    </wsp:ExactlyOne>
-  </wsp:Policy>
-  <wsp:Policy wsu:Id="OP__ZlivrareStoIesire">
-    <wsp:ExactlyOne>
-      <wsp:All>
-        <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
-        <sapcomhnd:enableCommit xmlns:sapcomhnd="http://www.sap.com/NW05/soap/features/commit/">false</sapcomhnd:enableCommit>
-        <sapblock:enableBlocking xmlns:sapblock="http://www.sap.com/NW05/soap/features/blocking/">true</sapblock:enableBlocking>
-        <saprmnw05:enableWSRM xmlns:saprmnw05="http://www.sap.com/NW05/soap/features/wsrm/">false</saprmnw05:enableWSRM>
-      </wsp:All>
-    </wsp:ExactlyOne>
-  </wsp:Policy>
-  <wsp:Policy wsu:Id="OP__ZstergeSto">
+  <wsp:Policy wsu:Id="OP__ZlistaFacturi">
     <wsp:ExactlyOne>
       <wsp:All>
         <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
@@ -206,30 +176,43 @@
           <xsd:maxLength value="10" />
         </xsd:restriction>
       </xsd:simpleType>
-      <xsd:simpleType name="char100">
+      <xsd:simpleType name="char14">
         <xsd:restriction base="xsd:string">
-          <xsd:maxLength value="100" />
+          <xsd:maxLength value="14" />
         </xsd:restriction>
       </xsd:simpleType>
-      <xsd:simpleType name="char2">
+      <xsd:simpleType name="char16">
         <xsd:restriction base="xsd:string">
-          <xsd:maxLength value="2" />
+          <xsd:maxLength value="16" />
         </xsd:restriction>
       </xsd:simpleType>
-      <xsd:simpleType name="char220">
+      <xsd:simpleType name="char255">
         <xsd:restriction base="xsd:string">
-          <xsd:maxLength value="220" />
+          <xsd:maxLength value="255" />
         </xsd:restriction>
       </xsd:simpleType>
-      <xsd:simpleType name="char73">
-        <xsd:restriction base="xsd:string">
-          <xsd:maxLength value="73" />
-        </xsd:restriction>
-      </xsd:simpleType>
-      <xsd:simpleType name="decimal11.0">
+      <xsd:simpleType name="curr13.2">
         <xsd:restriction base="xsd:decimal">
-          <xsd:totalDigits value="11" />
-          <xsd:fractionDigits value="0" />
+          <xsd:totalDigits value="13" />
+          <xsd:fractionDigits value="2" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="date10">
+        <xsd:restriction base="xsd:string">
+          <xsd:maxLength value="10" />
+          <xsd:pattern value="\d\d\d\d-\d\d-\d\d" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="decimal23.4">
+        <xsd:restriction base="xsd:decimal">
+          <xsd:totalDigits value="23" />
+          <xsd:fractionDigits value="4" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="numeric4">
+        <xsd:restriction base="xsd:string">
+          <xsd:maxLength value="4" />
+          <xsd:pattern value="\d*" />
         </xsd:restriction>
       </xsd:simpleType>
       <xsd:simpleType name="numeric8">
@@ -241,162 +224,121 @@
     </xsd:schema>
     <xsd:schema xmlns:n0="urn:sap-com:document:sap:rfc:functions" attributeFormDefault="qualified" targetNamespace="urn:sap-com:document:sap:soap:functions:mc-style">
       <xsd:import namespace="urn:sap-com:document:sap:rfc:functions" />
-      <xsd:element name="ZcreazaCaDl">
+      <xsd:simpleType name="char50">
+        <xsd:restriction base="xsd:string">
+          <xsd:maxLength value="50" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="Zsneincasate">
+        <xsd:sequence>
+          <xsd:element name="Xblnr" type="n0:char16" />
+          <xsd:element name="Belnr" type="n0:char10" />
+          <xsd:element name="Gjahr" type="n0:numeric4" />
+          <xsd:element name="Amount" type="n0:decimal23.4" />
+          <xsd:element name="Docdate" type="n0:date10" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ZfiBoCec">
+        <xsd:sequence>
+          <xsd:element name="StareCambie" type="n0:char1" />
+          <xsd:element name="Client" type="n0:char10" />
+          <xsd:element name="Suma" type="n0:curr13.2" />
+          <xsd:element name="SerieNumar" type="n0:char14" />
+          <xsd:element name="DataScadenta" type="n0:char10" />
+          <xsd:element name="DataEmitere" type="n0:char10" />
+          <xsd:element name="CodAgent" type="n0:numeric8" />
+          <xsd:element name="Sgtxt" type="tns:char50" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ZstDocsClearing">
+        <xsd:sequence>
+          <xsd:element name="NrDocument" type="n0:char10" />
+          <xsd:element name="AnDocument" type="n0:numeric4" />
+          <xsd:element name="SumaDocument" type="n0:curr13.2" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="Ztneincasate">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Zsneincasate" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ZttDocsClearing">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZstDocsClearing" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="ZlistaFacturi">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="VId" type="n0:decimal11.0" />
+            <xsd:element minOccurs="0" name="ItDocs" type="tns:Ztneincasate" />
+            <xsd:element minOccurs="0" name="PiKunnr" type="n0:char10" />
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="ZcreazaCaDlResponse">
+      <xsd:element name="ZlistaFacturiResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="VOk" type="n0:char2" />
+            <xsd:element minOccurs="0" name="ItDocs" type="tns:Ztneincasate" />
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="ZcreazaSto">
+      <xsd:element name="ZtbSaveDocCliring">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="VId" type="n0:decimal11.0" />
+            <xsd:element name="IsBoCec" type="tns:ZfiBoCec" />
+            <xsd:element name="ItDocsClearing" type="tns:ZttDocsClearing" />
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="ZcreazaStoResponse">
+      <xsd:element name="ZtbSaveDocCliringResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="VMess" type="n0:char100" />
-            <xsd:element name="VOk" type="n0:char2" />
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="ZaprobaComanda">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="PernrCh" type="n0:numeric8" />
-            <xsd:element name="VId" type="n0:decimal11.0" />
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="ZaprobaComandaResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="VMess" type="n0:char220" />
-            <xsd:element name="VOk" type="n0:char2" />
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="ZlivrareStoIesire">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="VEbeln" type="n0:char10" />
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="ZlivrareStoIesireResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="VOk" type="n0:char2" />
-            <xsd:element name="VVbeln" type="n0:char10" />
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="ZstergeSto">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="PernrCh" type="n0:numeric8" />
-            <xsd:element name="Stare" type="n0:char1" />
-            <xsd:element name="VId" type="n0:decimal11.0" />
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="ZstergeStoResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="VErr" type="n0:char73" />
-            <xsd:element name="VOk" type="n0:char2" />
+            <xsd:element name="EpMessage" type="n0:char255" />
+            <xsd:element name="EpSucces" type="n0:char1" />
+            <xsd:element name="EtDocsPlata" type="tns:ZttDocsClearing" />
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
     </xsd:schema>
   </wsdl:types>
-  <wsdl:message name="ZcreazaCaDl">
-    <wsdl:part name="parameters" element="tns:ZcreazaCaDl" />
+  <wsdl:message name="ZlistaFacturi">
+    <wsdl:part name="parameters" element="tns:ZlistaFacturi" />
   </wsdl:message>
-  <wsdl:message name="ZcreazaCaDlResponse">
-    <wsdl:part name="parameter" element="tns:ZcreazaCaDlResponse" />
+  <wsdl:message name="ZlistaFacturiResponse">
+    <wsdl:part name="parameter" element="tns:ZlistaFacturiResponse" />
   </wsdl:message>
-  <wsdl:message name="ZcreazaSto">
-    <wsdl:part name="parameters" element="tns:ZcreazaSto" />
+  <wsdl:message name="ZtbSaveDocCliring">
+    <wsdl:part name="parameters" element="tns:ZtbSaveDocCliring" />
   </wsdl:message>
-  <wsdl:message name="ZcreazaStoResponse">
-    <wsdl:part name="parameter" element="tns:ZcreazaStoResponse" />
+  <wsdl:message name="ZtbSaveDocCliringResponse">
+    <wsdl:part name="parameter" element="tns:ZtbSaveDocCliringResponse" />
   </wsdl:message>
-  <wsdl:message name="ZaprobaComanda">
-    <wsdl:part name="parameters" element="tns:ZaprobaComanda" />
-  </wsdl:message>
-  <wsdl:message name="ZaprobaComandaResponse">
-    <wsdl:part name="parameter" element="tns:ZaprobaComandaResponse" />
-  </wsdl:message>
-  <wsdl:message name="ZlivrareStoIesire">
-    <wsdl:part name="parameters" element="tns:ZlivrareStoIesire" />
-  </wsdl:message>
-  <wsdl:message name="ZlivrareStoIesireResponse">
-    <wsdl:part name="parameter" element="tns:ZlivrareStoIesireResponse" />
-  </wsdl:message>
-  <wsdl:message name="ZstergeSto">
-    <wsdl:part name="parameters" element="tns:ZstergeSto" />
-  </wsdl:message>
-  <wsdl:message name="ZstergeStoResponse">
-    <wsdl:part name="parameter" element="tns:ZstergeStoResponse" />
-  </wsdl:message>
-  <wsdl:portType name="ZCLP_WEBSERVICE">
+  <wsdl:portType name="ZFG_INSTR_PLATA">
     <wsp:Policy>
-      <wsp:PolicyReference URI="#IF__ZCLP_WEBSERVICE" />
+      <wsp:PolicyReference URI="#IF__ZFG_INSTR_PLATA" />
     </wsp:Policy>
-    <wsdl:operation name="ZcreazaCaDl">
+    <wsdl:operation name="ZlistaFacturi">
       <wsp:Policy>
-        <wsp:PolicyReference URI="#OP__ZcreazaCaDl" />
+        <wsp:PolicyReference URI="#OP__ZlistaFacturi" />
       </wsp:Policy>
-      <wsdl:input message="tns:ZcreazaCaDl" />
-      <wsdl:output message="tns:ZcreazaCaDlResponse" />
+      <wsdl:input message="tns:ZlistaFacturi" />
+      <wsdl:output message="tns:ZlistaFacturiResponse" />
     </wsdl:operation>
-    <wsdl:operation name="ZcreazaSto">
+    <wsdl:operation name="ZtbSaveDocCliring">
       <wsp:Policy>
-        <wsp:PolicyReference URI="#OP__ZcreazaSto" />
+        <wsp:PolicyReference URI="#OP__ZtbSaveDocCliring" />
       </wsp:Policy>
-      <wsdl:input message="tns:ZcreazaSto" />
-      <wsdl:output message="tns:ZcreazaStoResponse" />
-    </wsdl:operation>
-    <wsdl:operation name="ZaprobaComanda">
-      <wsp:Policy>
-        <wsp:PolicyReference URI="#OP__ZaprobaComanda" />
-      </wsp:Policy>
-      <wsdl:input message="tns:ZaprobaComanda" />
-      <wsdl:output message="tns:ZaprobaComandaResponse" />
-    </wsdl:operation>
-    <wsdl:operation name="ZlivrareStoIesire">
-      <wsp:Policy>
-        <wsp:PolicyReference URI="#OP__ZlivrareStoIesire" />
-      </wsp:Policy>
-      <wsdl:input message="tns:ZlivrareStoIesire" />
-      <wsdl:output message="tns:ZlivrareStoIesireResponse" />
-    </wsdl:operation>
-    <wsdl:operation name="ZstergeSto">
-      <wsp:Policy>
-        <wsp:PolicyReference URI="#OP__ZstergeSto" />
-      </wsp:Policy>
-      <wsdl:input message="tns:ZstergeSto" />
-      <wsdl:output message="tns:ZstergeStoResponse" />
+      <wsdl:input message="tns:ZtbSaveDocCliring" />
+      <wsdl:output message="tns:ZtbSaveDocCliringResponse" />
     </wsdl:operation>
   </wsdl:portType>
-  <wsdl:binding name="ZCLP_WEBSERVICE" type="tns:ZCLP_WEBSERVICE">
+  <wsdl:binding name="ZFG_INSTR_PLATA" type="tns:ZFG_INSTR_PLATA">
     <wsp:Policy>
-      <wsp:PolicyReference URI="#BN__ZCLP_WEBSERVICE" />
+      <wsp:PolicyReference URI="#BN__ZFG_INSTR_PLATA" />
     </wsp:Policy>
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
-    <wsdl:operation name="ZcreazaCaDl">
-      <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZCLP_WEBSERVICE:ZcreazaCaDlRequest" style="document" />
+    <wsdl:operation name="ZlistaFacturi">
+      <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZFG_INSTR_PLATA:ZlistaFacturiRequest" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -404,35 +346,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="ZcreazaSto">
-      <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZCLP_WEBSERVICE:ZcreazaStoRequest" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="ZaprobaComanda">
-      <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZCLP_WEBSERVICE:ZaprobaComandaRequest" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="ZlivrareStoIesire">
-      <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZCLP_WEBSERVICE:ZlivrareStoIesireRequest" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="ZstergeSto">
-      <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZCLP_WEBSERVICE:ZstergeStoRequest" style="document" />
+    <wsdl:operation name="ZtbSaveDocCliring">
+      <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZFG_INSTR_PLATA:ZtbSaveDocCliringRequest" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -441,13 +356,13 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
-  <wsdl:binding name="ZCLP_WEBSERVICE_soap12" type="tns:ZCLP_WEBSERVICE">
+  <wsdl:binding name="ZFG_INSTR_PLATA_soap12" type="tns:ZFG_INSTR_PLATA">
     <wsp:Policy>
-      <wsp:PolicyReference URI="#BN__ZCLP_WEBSERVICE_soap12" />
+      <wsp:PolicyReference URI="#BN__ZFG_INSTR_PLATA_soap12" />
     </wsp:Policy>
     <wsoap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
-    <wsdl:operation name="ZcreazaCaDl">
-      <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZCLP_WEBSERVICE:ZcreazaCaDlRequest" style="document" />
+    <wsdl:operation name="ZlistaFacturi">
+      <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZFG_INSTR_PLATA:ZlistaFacturiRequest" style="document" />
       <wsdl:input>
         <wsoap12:body use="literal" />
       </wsdl:input>
@@ -455,35 +370,8 @@
         <wsoap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="ZcreazaSto">
-      <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZCLP_WEBSERVICE:ZcreazaStoRequest" style="document" />
-      <wsdl:input>
-        <wsoap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <wsoap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="ZaprobaComanda">
-      <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZCLP_WEBSERVICE:ZaprobaComandaRequest" style="document" />
-      <wsdl:input>
-        <wsoap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <wsoap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="ZlivrareStoIesire">
-      <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZCLP_WEBSERVICE:ZlivrareStoIesireRequest" style="document" />
-      <wsdl:input>
-        <wsoap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <wsoap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="ZstergeSto">
-      <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZCLP_WEBSERVICE:ZstergeStoRequest" style="document" />
+    <wsdl:operation name="ZtbSaveDocCliring">
+      <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZFG_INSTR_PLATA:ZtbSaveDocCliringRequest" style="document" />
       <wsdl:input>
         <wsoap12:body use="literal" />
       </wsdl:input>
@@ -492,12 +380,12 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
-  <wsdl:service name="ZCLP_WEBSERVICE">
-    <wsdl:port name="ZCLP_WEBSERVICE" binding="tns:ZCLP_WEBSERVICE">
-      <soap:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zclp_webservice/900/zclp_webservice/zclp_webservice" />
+  <wsdl:service name="ZFG_INSTR_PLATA">
+    <wsdl:port name="ZFG_INSTR_PLATA" binding="tns:ZFG_INSTR_PLATA">
+      <soap:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zfg_instr_plata/900/zfg_instr_plata/zfg_instr_plata" />
     </wsdl:port>
-    <wsdl:port name="ZCLP_WEBSERVICE_soap12" binding="tns:ZCLP_WEBSERVICE_soap12">
-      <wsoap12:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zclp_webservice/900/zclp_webservice/zclp_webservice" />
+    <wsdl:port name="ZFG_INSTR_PLATA_soap12" binding="tns:ZFG_INSTR_PLATA_soap12">
+      <wsoap12:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zfg_instr_plata/900/zfg_instr_plata/zfg_instr_plata" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
