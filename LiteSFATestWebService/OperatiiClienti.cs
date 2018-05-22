@@ -75,14 +75,17 @@ namespace LiteSFATestWebService
         public string getListClienti(string numeClient, string depart, string departAg, string unitLog, string codUser)
         {
 
-           
-
             string serializedResult = "";
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand();
             OracleDataReader oReader = null;
             string condClient = "";
 
+            if (depart.Equals("040") || depart.Equals("041"))
+                depart = "04";
+
+            if (departAg.Equals("040") || departAg.Equals("041"))
+                departAg = "04";
 
             try
             {
@@ -126,12 +129,25 @@ namespace LiteSFATestWebService
                 else
                 {
                     condClient = " and exists (select 1 from clie_tip t where t.canal = '10' " +
-                                 " and t.cod_cli=c.cod " + condDepart1 + " ) " +
-                                 " and exists (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.cod " +
-                                 " and p.vtweg = '10' " + condDepart2 + " and p.parvw in ('ZA','ZS') " +
-                                   exceptieClient + " ) " +
-                                 " and exists (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.cod  and p.vtweg = '10' " +
-                                 " and p.spart = '" + departAg + "' and p.parvw in ('VE', 'ZC')  and p.pernr = '" + codUser + "' ) ";
+                                " and t.cod_cli=c.cod " + condDepart1 + " ) " +
+                                " and exists (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.cod " +
+                                " and p.vtweg = '10' " + condDepart2 + " and p.parvw in ('ZA','ZS') " +
+                                  exceptieClient + " ) ";
+
+
+                    string condExtraClient = " and exists (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.cod  and p.vtweg = '10' " +
+                                             " and p.spart = '" + departAg+ "' and p.parvw in ('VE', 'ZC')  and p.pernr = '" + codUser + "' ) ";
+
+                    if (codUser != null)
+                    {
+                        string tipUser = getTipUser(connection, codUser);
+
+                        if (tipUser != "SD" && !tipUser.StartsWith("KA"))
+                            condClient += condExtraClient;
+
+                    }
+
+                   
                 }
 
 
@@ -139,9 +155,6 @@ namespace LiteSFATestWebService
                                   " where upper(c.nume) like upper('" + numeClient.Replace("'", "") + "%')  " + condClient +
                                   "  ) x " +
                                   " where rownum<=50 order by x.nume ";
-
-
-               
 
 
                 cmd.CommandType = CommandType.Text;
@@ -279,6 +292,11 @@ namespace LiteSFATestWebService
             float limCredit = 0;
             float restCredit = 0;
             string condClient = "", condClient1 = "", condClient2 = "";
+
+            if (depart.Equals("040") || depart.Equals("041"))
+                depart = "04";
+
+
             try
             {
 
@@ -903,6 +921,54 @@ namespace LiteSFATestWebService
             return new JavaScriptSerializer().Serialize(listDatePersonale);
 
         }
+
+
+        public static string getTipUser(OracleConnection connection, string codAgent)
+        {
+            string tipAgent = "NN";
+
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select upper(substr(tip,0,2)) from agenti where cod =:codAgent ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codAgent", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codAgent.Trim();
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    tipAgent = oReader.GetString(0);
+
+                    if (tipAgent.Substring(0, 1).ToUpper().Equals("C"))
+                        tipAgent = "CV";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+
+            return tipAgent;
+        }
+
+
 
     }
 }

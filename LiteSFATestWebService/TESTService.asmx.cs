@@ -31,6 +31,7 @@ using System.Drawing;
 using System.Text;
 using LiteSFATestWebService.General;
 using System.Diagnostics;
+using System.Security.Cryptography;
 
 namespace LiteSFATestWebService
 {
@@ -48,6 +49,9 @@ namespace LiteSFATestWebService
         public static string[] agentiExtra03 = { "83309","83409","83444","83297","83431","83356","83051","83407","83309","83409" };
         public static string[] agentiExtra06 = { "83436","83090","83409","83444","83311","83436","83435","83431","83356","83051","83090","83409","83311" };
         public static string[] agentiExtra07 = { "83436", "83090","83311","83436","83297","83435","83309","83090","83311" };
+        public static string[] agentiExtra040 = { "83415" ,"83449","83456","83427"};
+        public static string[] agentiExtra041 = { "83002","83434","15673","83357" };
+
         public static string[] agentiExtra08 = { "83402" };
 
         Random randNum = new Random();
@@ -4033,9 +4037,23 @@ namespace LiteSFATestWebService
                     {
                         string localFilGed = filiala.Substring(0, 2) + "2" + filiala.Substring(3, 1);  //cu 20
 
-                        tipAprov = " and a.ul in ('" + filiala + "','" + localFilGed + "') and (a.accept1 = 'X' or a.accept2 = 'X') and ora_accept1 = '000000' " +
+
+                        if (depart.StartsWith("04") && (filiala.Equals("HD10") || filiala.Equals("VN10") || filiala.Equals("BU12") || filiala.Equals("BZ10") || filiala.Equals("MS10") || filiala.Equals("BC10")))
+                        {
+                            tipAprov = " and a.ul in ('" + filiala + "','" + localFilGed + "') and (a.accept1 = 'X' or a.accept2 = 'X') and ora_accept1 = '000000' " +
+                                  " and a.status_aprov in ('1','6','21')  and " +
+                                  " ( ( substr(ag.divizie,0,2) = '" + localDepart.Substring(0,2) + "'  and a.depart = '11') or substr(a.depart,0,2) ='" + localDepart.Substring(0,2) + "') ";
+                        }
+                        else {
+                            tipAprov = " and a.ul in ('" + filiala + "','" + localFilGed + "') and (a.accept1 = 'X' or a.accept2 = 'X') and ora_accept1 = '000000' " +
                                    " and a.status_aprov in ('1','6','21')  and " +
-                                   " (substr(ag.divizie,0,2) ='" + localDepart + "' or a.depart ='" + localDepart + "') ";
+                                   " ( (ag.divizie = '" + localDepart + "'  and a.depart = '11') or a.depart ='" + localDepart + "') ";
+                        }
+
+
+
+                      
+
                     }
 
                     if (tipUser == "DV")
@@ -4260,7 +4278,7 @@ namespace LiteSFATestWebService
                         if (tipUser == "DV")
                         {
                             cmd.CommandText = " select count(a.id) from sapprd.zclphead a where a.status = '2' and a.status_aprov = '1' and a.accept1 = '1' " +
-                                              " and (a.mt = 'TERT' or ( a.mt = 'TRAP' and a.curier = 'BV90')) and a.depart =:depart and a.dl !='X' and a.ul in (select prctr from sapprd.zfil_dv where pernr = '" + agCode + "' ) ";
+                                              " and (a.mt = 'TERT' or ( a.mt = 'TRAP' and a.curier = 'BV90')) and substr(a.depart,0,2) =:depart and a.dl !='X' and a.ul in (select prctr from sapprd.zfil_dv where pernr = '" + agCode + "' ) ";
                         }
 
 
@@ -6140,6 +6158,29 @@ namespace LiteSFATestWebService
 
         }
 
+        [WebMethod]
+        public string sendSmsFlota(string nrTel, string msgText)
+        {
+            String response = "";
+            System.Net.ServicePointManager.Expect100Continue = false;
+            SMSService.SMSServiceService smsService = new SMSService.SMSServiceService();
+
+            try
+            {
+                response = smsService.sendSmsAuthKey("arabesque", "6a35f3f7eee22cbf56555937f639291c8ff10a23", "ARABESQUE", nrTel, msgText, new DateTime(), 0, "");
+            }
+            catch (Exception ex)
+            {
+                response = ex.ToString();
+            }
+
+
+
+            return response;
+
+        }
+
+
         [WebMethod]//Android
         public string stergeSablonReduceri(string codSablon)
         {
@@ -6644,7 +6685,7 @@ namespace LiteSFATestWebService
 
 
                 cmd.CommandText = " select a.nume, a.cod from agenti a, sapprd.zpern_filiale b where (a.filiala=:fil or b.prctr=:fil) and b.pernr(+) = a.cod and " +
-                                  " substr(a.divizie,0,2) =:div  " + condTipAg + " and a.activ = 1 order by nume ";
+                                  " a.divizie =:div  " + condTipAg + " and a.activ = 1 order by nume ";
 
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add(":fil", OracleType.VarChar, 120).Direction = ParameterDirection.Input;
@@ -6703,6 +6744,9 @@ namespace LiteSFATestWebService
         [WebMethod]
         public string getListComenzi(string filiala, string codUser, string tipCmd, string tipUser, string depart, string interval, int restrictii, string codClient)
         {
+
+            
+
             string serializedResult = "";
             string retVal = "";
             string tipComanda = "";
@@ -6853,8 +6897,21 @@ namespace LiteSFATestWebService
                     {
                         string localFilGed = filiala.Substring(0, 2) + "2" + filiala.Substring(3, 1);  //cu 20
 
-                        selCmd = " and (a.accept1 = 'X' or a.accept2 = 'X') and ora_accept1 = '000000' and " +
-                                 " (substr(ag.divizie,0,2) = '" + depart + "' or a.depart = '" + depart + "') and a.ul in ('" + filiala + "','" + localFilGed + "')";
+
+
+                        if (depart.StartsWith("04") && (filiala.Equals("HD10") || filiala.Equals("VN10") || filiala.Equals("BU12") || filiala.Equals("BZ10") || filiala.Equals("MS10") || filiala.Equals("BC10")))
+                        {
+                            selCmd = " and (a.accept1 = 'X' or a.accept2 = 'X') and ora_accept1 = '000000' and " +
+                                     " (( substr(ag.divizie,0,2) = '" + depart.Substring(0,2) + "'  and a.depart='11') or substr(a.depart,0,2) = '" + depart.Substring(0,2) + "') and a.ul in ('" + filiala + "','" + localFilGed + "')";
+                        }
+                        else
+                        {
+                            selCmd = " and (a.accept1 = 'X' or a.accept2 = 'X') and ora_accept1 = '000000' and " +
+                                     " ((ag.divizie = '" + depart + "'  and a.depart='11') or a.depart = '" + depart + "') and a.ul in ('" + filiala + "','" + localFilGed + "')";
+                        }
+
+
+                       
 
                         tipComanda = " and a.status_aprov in ('1','6','21') and a.status in ('2','11') " + selCmd;
 
@@ -6892,7 +6949,7 @@ namespace LiteSFATestWebService
                             selCmd = " and a.accept2 = 'X' and a.ora_accept2 = '000000' and decode(decode(a.accept1,'X',a.ora_accept1,'1'),'000000',1,0)=0  ";
 
                             condDV = " and v.pernr = '" + codUser + "' and v.spart = '" + localDepart + "' and substr(v.prctr,0,2) = substr(a.ul,0,2) and substr(a.ul,3,1) != 4 and " +
-                                     " v.spart = a.depart  ";
+                                     " v.spart = substr(a.depart,0,2)  ";
 
                         }
 
@@ -6955,11 +7012,11 @@ namespace LiteSFATestWebService
                 }
 
 
-                string condDepart = " and cl.depart = a.depart ";
+                string condDepart = " and cl.depart = substr(a.depart,0,2) ";
 
 
                 if (tipUser == "KA")
-                    condDepart = " and cl.depart = a.depart ";
+                    condDepart = " and cl.depart = substr(a.depart,0,2) ";
 
                 string sqlAvans = " , 0 avans";
 
@@ -7035,8 +7092,8 @@ namespace LiteSFATestWebService
                 }
 
 
-
                
+
 
                 cmd.CommandText = sqlString;
 
@@ -7752,11 +7809,11 @@ namespace LiteSFATestWebService
 
                 if (tipUser == "SD")
                 {
-                    tipComanda = " and a.depart = '" + depart + "' and ((a.ul_dest = '" + filiala + "' and a.accept1 not in ('X') and a.fasonate !='X' ) or (a.ul = '" + filiala + "' and a.accept1 in ('X'))) ";
+                    tipComanda = " and substr(a.depart,0,2) = '" + depart + "' and ((a.ul_dest = '" + filiala + "' and a.accept1 not in ('X') and a.fasonate !='X' ) or (a.ul = '" + filiala + "' and a.accept1 in ('X'))) ";
                 }
                 if (tipUser == "DV")
                 {
-                    tipComanda = " and (a.mt = 'TERT' or (a.mt = 'TRAP' and a.curier = 'BV90')) and a.accept1 = '1' and a.depart = '" + depart + "' and a.ul in (select prctr from sapprd.zfil_dv where pernr = '" + codUser + "' ) ";
+                    tipComanda = " and (a.mt = 'TERT' or (a.mt = 'TRAP' and a.curier = 'BV90')) and a.accept1 = '1' and substr(a.depart,0,2) = '" + depart + "' and a.ul in (select prctr from sapprd.zfil_dv where pernr = '" + codUser + "' ) ";
                 }
 
 
@@ -11518,6 +11575,7 @@ namespace LiteSFATestWebService
         public string saveNewCmdAndroid(string comanda, bool alertSD, bool alertDV, bool cmdAngajament, string tipUser, string JSONArt, string JSONComanda, string JSONDateLivrare)
         {
 
+
             string retVal = "-1";
 
             if (tipUser.Equals("KA"))
@@ -11586,8 +11644,7 @@ namespace LiteSFATestWebService
 
         }
 
-
-
+      
 
 
 
@@ -11668,12 +11725,15 @@ namespace LiteSFATestWebService
                         string departArt = sortedArticoleDistrib[0].depart;
                         List<ArticolComanda> articoleAgenti = new List<ArticolComanda>();
                         double totalComanda = 0;
+                       
+                        comandaVanzare.parrentId = GeneralUtils.getUniqueIdFromCode(dateLivrareDistrib.codAgent);
+
                         foreach (var articol in sortedArticoleDistrib)
                         {
                             if (!departArt.Equals(articol.depart))
                             {
                                 dateLivrareDistrib.totalComanda = totalComanda.ToString();
-                                retVal = saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, tipUser, serializer.Serialize(articoleAgenti), JSONComanda, serializer.Serialize(dateLivrareDistrib), false);
+                                retVal = saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, tipUser, serializer.Serialize(articoleAgenti), serializer.Serialize(comandaVanzare), serializer.Serialize(dateLivrareDistrib), false);
                                 articoleAgenti.Clear();
                                 totalComanda = 0;
                             }
@@ -11696,7 +11756,7 @@ namespace LiteSFATestWebService
                         }
 
                         dateLivrareDistrib.totalComanda = totalComanda.ToString();
-                        retVal = saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, tipUser, serializer.Serialize(articoleAgenti), JSONComanda, serializer.Serialize(dateLivrareDistrib), true);
+                        retVal = saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, tipUser, serializer.Serialize(articoleAgenti), serializer.Serialize(comandaVanzare), serializer.Serialize(dateLivrareDistrib), true);
                     }
 
 
@@ -11723,7 +11783,6 @@ namespace LiteSFATestWebService
 
                     if (tipUser.Equals("KA"))
                     {
-                        //comandaVanzare.alerteKA = "!";
                         retVal = saveKANewCmd(comanda, alertSDGed, alertDVGed, cmdAngajament, tipUser, serializer.Serialize(articoleGed), serializer.Serialize(comandaVanzare), serializer.Serialize(dateLivrareGed), calcTransport);
                     }
                     else
@@ -11836,13 +11895,8 @@ namespace LiteSFATestWebService
         }
        
 
-  
-
-
-
         public string saveAVNewCmd(string comanda, bool alertSD, bool alertDV, bool cmdAngajament, string tipUser, string JSONArt, string JSONComanda, string JSONDateLivrare, bool calcTransport)
         {
-
 
 
             string retVal = "-1";
@@ -11930,7 +11984,7 @@ namespace LiteSFATestWebService
                     if (codArtDepart.Length == 8)
                         codArtDepart = "0000000000" + codArtDepart;
 
-                    cmd.CommandText = " select substr(grup_vz,0,2) from articole where cod =:codArt ";
+                    cmd.CommandText = " select grup_vz from articole where cod =:codArt ";
 
                     cmd.CommandType = CommandType.Text;
 
@@ -13371,10 +13425,11 @@ namespace LiteSFATestWebService
                 string tipAgent = "";
                 string consWood = "";
                 string filialaHome = "false";
+                string initDivizie = "";
 
                 if (idAg.Value.ToString().Trim().Length > 0)
                 {
-                    cmd.CommandText = " select b.tip, b.wood, nvl(h.filiala,'-1') filhome from agenti b, sapprd.zfilhome h where b.cod =:codAg and substr(b.filiala,0,2) = substr(h.filiala(+),0,2) ";
+                    cmd.CommandText = " select b.tip, b.wood, nvl(h.filiala,'-1') filhome, b.init_divi from agenti b, sapprd.zfilhome h where b.cod =:codAg and substr(b.filiala,0,2) = substr(h.filiala(+),0,2) ";
                     cmd.CommandType = CommandType.Text;
 
                     cmd.Parameters.Clear();
@@ -13387,8 +13442,17 @@ namespace LiteSFATestWebService
                     {
                         oReader.Read();
                         tipAgent = oReader.GetString(0);
+
+                        if (tipAgent.Equals("SRM"))
+                            tipAgent = "CVR";
+
                         consWood = oReader.GetString(1);
                         filialaHome = oReader.GetString(2).Equals("-1") ? "false" : "true";
+
+                        if (tipAgent.Equals("AV") || tipAgent.Equals("SD"))
+                            initDivizie = oReader.GetString(3);
+                        else
+                            initDivizie = oReader.GetString(3).Substring(0,2);
                     }
 
                     if (consWood.Trim().ToLower().Equals("y"))
@@ -13432,7 +13496,7 @@ namespace LiteSFATestWebService
                 }
                 else
                 {
-                    retVal += "#-1#" + getDepartExtra(idAg.Value.ToString()) + "#" + consSite; //campuri disponibile
+                    retVal += "#-1#" + getDepartExtra(idAg.Value.ToString(), initDivizie) + "#" + consSite; //campuri disponibile
                 }
 
                 //pentru directori se afla filialele de influenta
@@ -13494,8 +13558,7 @@ namespace LiteSFATestWebService
                 if (userId.Equals("MMESTER1"))
                     tipAgent = "SMW";
 
-                retVal += "#" + filiale + "#" + tipAgent + "#" + getExtraFiliale(idAg.Value.ToString()) + "#" + filialaHome + "#" + FtpHelper.getLocalFtpIp(localComp) + "#";
-
+                retVal += "#" + filiale + "#" + tipAgent + "#" + getExtraFiliale(idAg.Value.ToString(), tipAcces.Value.ToString(), localComp) + "#" + filialaHome + "#" + FtpHelper.getLocalFtpIp(localComp) + "#" + initDivizie + "#";
                 
 
             }
@@ -13525,12 +13588,17 @@ namespace LiteSFATestWebService
         }
 
 
-        private string getExtraFiliale(string codAgent)
+        private string getExtraFiliale(string codAgent, string tipAcces, string filiala)
         {
 
 
             string extraFiliale = "";
 
+
+            if (tipAcces.Equals("9") && (filiala.Equals("GLINA") || filiala.Equals("MILITARI") || filiala.Equals("ANDRONACHE") || filiala.Equals("OTOPENI")))
+            {
+               return "BU10,BU11,BU12,BU13";
+            }
 
             if (codAgent.Length == 0)
                 return extraFiliale;
@@ -13673,7 +13741,7 @@ namespace LiteSFATestWebService
         }
 
 
-        private string getDepartExtra(String codUser)
+        private string getDepartExtra(String codUser, string divizie)
         {
             string depExtra = null;
 
@@ -13687,6 +13755,20 @@ namespace LiteSFATestWebService
                         depExtra = "03";
                     else
                         depExtra += ";03";
+
+            if (divizie.Equals("041"))
+                if (depExtra == null)
+                    depExtra = "040";
+                else
+                    depExtra += ";040";
+
+
+            if (divizie.Equals("040"))
+                if (depExtra == null)
+                    depExtra = "041";
+                else
+                    depExtra += ";041";
+
 
             for (int i = 0; i < agentiExtra06.Length; i++)
                 if (agentiExtra06[i].Equals(codUser))
@@ -14647,8 +14729,6 @@ namespace LiteSFATestWebService
         public string getStocDepozit(string codArt, string filiala, string depozit, string depart)
         {
 
-
-
             string retVal = "";
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand();
@@ -14656,6 +14736,9 @@ namespace LiteSFATestWebService
             string umArt = "";
             string cant = "0", sinteticArt = "";
             string showStocVal = "1";
+
+            if (depart != null && (depart.Equals("040") || depart.Equals("041")))
+                depart = "04";
 
             try
             {
@@ -14673,8 +14756,8 @@ namespace LiteSFATestWebService
                                   " and m.matnr = mn.matnr and m.matnr =:art  and m.werks =:fil and m.lgort=:dep  " +
                                   " union all " +
                                   " select -1 * nvl(sum(e.omeng),0), e.meins, e.matnr  from sapprd.vbbe e " +
-                                  " where e.mandt = '900' and e.matnr =:art and e.werks =:fil and e.lgort=:dep " +
-                                  " group by e.meins, e.matnr), articole ar where ar.cod = matnr group by meins, ar.sintetic  having sum(labst) >= 0 ";
+                                  " where e.mandt = '900' and e.matnr =:art and e.werks =:fil and e.lgort=:dep and e.sobkz <> 'E' " +
+                                  " group by e.meins, e.matnr), articole ar where ar.cod = matnr group by meins, ar.sintetic   ";
 
 
                 cmd.CommandType = CommandType.Text;
@@ -14769,6 +14852,10 @@ namespace LiteSFATestWebService
                 }
 
                 retVal = cant + "#" + umArt + "#" + showStocVal + "#";
+
+
+
+               // retVal =  "1000#" + umArt + "#" + showStocVal + "#";
 
 
                 //exceptie material transport

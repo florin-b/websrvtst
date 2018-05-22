@@ -20,6 +20,9 @@ namespace LiteSFATestWebService
             OracleDataReader oReader = null;
             List<InfoVenituri> listaVenituri = new List<InfoVenituri>();
 
+            if (codDepart.Equals("040") || codDepart.Equals("041"))
+                codDepart = "04";
+
             string condAgent = "";
             if (an.Equals("2017") && (Int32.Parse(luna) >=4 ))
             {

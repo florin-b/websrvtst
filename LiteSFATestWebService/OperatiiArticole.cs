@@ -434,7 +434,7 @@ namespace LiteSFATestWebService
             
 
             string condExtraDepart = " ";
-            if (Array.IndexOf(Service1.agentiExtra07, codUser.TrimStart('0')) > -1 && departament.Equals("07"))
+            if (codUser != null && Array.IndexOf(Service1.agentiExtra07, codUser.TrimStart('0')) > -1 && departament.Equals("07"))
             {
                 condExtraDepart = " and x.sintetic in ('901_1','901') ";
             }
@@ -600,7 +600,7 @@ namespace LiteSFATestWebService
                         articol.umVanz10 = oReader.GetString(4);
                         articol.umVanz = oReader.GetString(8).Substring(0, 2).Equals("11") ? oReader.GetString(5) : oReader.GetString(4);
                         articol.tipAB = oReader.GetString(6);
-                        articol.depart = oReader.GetString(8).Substring(0, 2);
+                        articol.depart = oReader.GetString(8);
                         articol.departAprob = oReader.GetString(9);
                         articol.umPalet = oReader.GetInt32(10).ToString();
                         articol.stoc = oReader.GetDouble(11).ToString();
@@ -862,8 +862,6 @@ namespace LiteSFATestWebService
                 inParam.Regio = paramPret.codJudet;
                 inParam.City = paramPret.localitate;
                 inParam.UlStoc = paramPret.filialaAlternativa;
-
-               
 
 
 

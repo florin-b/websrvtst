@@ -85,7 +85,15 @@ namespace LiteSFATestWebService.General
             return nowTime;
         }
 
+        public static string getUniqueIdFromCode(string codAgent)
+        {
+            DateTime cDate = DateTime.Now;
+            string nowTime = cDate.Hour.ToString("00") + cDate.Minute.ToString("00") + cDate.Second.ToString("00");
+            string substrCodAgent = codAgent.Substring(3, 5);
+            string uniqueId = nowTime + substrCodAgent;
+            return uniqueId;
 
+        }
 
     }
 }
