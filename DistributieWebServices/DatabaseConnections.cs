@@ -23,6 +23,8 @@ namespace DistributieTESTWebServices
 
         }
 
+
+        /*
         static public string ConnectToProdEnvironment()
         {
 
@@ -33,6 +35,7 @@ namespace DistributieTESTWebServices
                    " User Id = WEBSAP; Password = 2INTER7;";
 
         }
+        */
 
 
         public static void CloseConnections(OracleDataReader reader, OracleCommand command)
@@ -50,6 +53,36 @@ namespace DistributieTESTWebServices
                 if (command != null)
                 {
                     command.Dispose();
+                }
+
+
+            }
+            catch (Exception)
+            {
+
+            }
+
+
+        }
+
+
+        public static void CloseConnections(OracleCommand command, OracleConnection connection)
+        {
+
+            try
+            {
+
+
+
+                if (command != null)
+                {
+                    command.Dispose();
+                }
+
+                if (connection != null)
+                {
+                    connection.Close();
+                    connection.Dispose();
                 }
 
 

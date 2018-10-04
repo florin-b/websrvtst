@@ -15,7 +15,7 @@ namespace LiteSFATestWebService
 
 
 
-        private string saveCmdClp(OracleConnection connection, AntetComandaCLP antetComanda, List<ArticolComandaCLP> articole, string filiala, string codAgent, bool alertSD)
+        private string saveCmdClp(OracleConnection connection, AntetComandaCLP antetComanda, List<ArticolComandaCLP> articole, string filiala, string codAgent, bool alertSD, string codSuperAgent)
         {
 
 
@@ -208,6 +208,9 @@ namespace LiteSFATestWebService
             OperatiiSuplimentare.saveTonajComanda(connection, idCmd.Value.ToString(), antetComanda.tonaj);
             new OperatiiSuplimentare().savePrelucrare04(connection, idCmd.Value.ToString(), antetComanda.prelucrare);
 
+            if (codSuperAgent != "")
+                OperatiiSuplimentare.saveComandaSuperAv(connection, codSuperAgent, idCmd.Value.ToString());
+
             return retVal;
 
 
@@ -215,7 +218,7 @@ namespace LiteSFATestWebService
 
 
 
-        public string saveNewClp(string comanda, string codAgent, string filiala, string depart, bool alertSD, string serData)
+        public string saveNewClp(string comanda, string codAgent, string filiala, string depart, bool alertSD, string serData, string codSuperAgent)
         {
 
 
@@ -223,12 +226,12 @@ namespace LiteSFATestWebService
             if (serData == null)
                 return saveNewClp_oldversion(comanda, codAgent, filiala, depart, alertSD);
             else
-                return saveNewClp_newversion(comanda, codAgent, filiala, depart, alertSD, serData);
+                return saveNewClp_newversion(comanda, codAgent, filiala, depart, alertSD, serData, codSuperAgent);
         }
 
 
 
-        public string saveNewClp_newversion(string comanda, string codAgent, string filiala, string depart, bool alertSD, string serData)
+        public string saveNewClp_newversion(string comanda, string codAgent, string filiala, string depart, bool alertSD, string serData, string codSuperAgent)
         {
 
 
@@ -257,7 +260,7 @@ namespace LiteSFATestWebService
 
                 if (!tempDepart.Equals(listArticole[i].depart) && !tempDepart.Equals(""))
                 {
-                    retVal = saveCmdClp(connection, antetComanda, tempList, filiala, codAgent, alertSD);
+                    retVal = saveCmdClp(connection, antetComanda, tempList, filiala, codAgent, alertSD, codSuperAgent);
                     tempList.Clear();
                 }
 
@@ -278,7 +281,7 @@ namespace LiteSFATestWebService
 
 
 
-            retVal = saveCmdClp(connection, antetComanda, tempList, filiala, codAgent, alertSD);
+            retVal = saveCmdClp(connection, antetComanda, tempList, filiala, codAgent, alertSD, codSuperAgent);
 
             connection.Close();
             connection.Dispose();
@@ -586,10 +589,14 @@ namespace LiteSFATestWebService
                     dateLivrare.oras = oReader.GetString(3);
                     dateLivrare.codJudet = oReader.GetString(4);
 
+                    /*
                     if (!oReader.GetString(21).Equals("-1"))
                         dateLivrare.data = GeneralUtils.addDays(oReader.GetString(21).Split(',')[0], Int32.Parse(oReader.GetString(21).Split(',')[1]));
                     else
                         dateLivrare.data = " ";
+                    */
+
+                    dateLivrare.data = oReader.GetString(5);
 
                     dateLivrare.tipMarfa = oReader.GetString(6);
                     dateLivrare.masa = oReader.GetString(7);
@@ -776,6 +783,252 @@ namespace LiteSFATestWebService
 
         }
 
+
+        public string getListDlExpirate(string filiala, string depart, string tipUser, string codUser)
+        {
+            string serializedResult = "";
+
+
+            string sqlString = "";
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                sqlString = " select  a.id,  b.nume nume_client, to_char(to_date(a.datac,'yyyymmdd')) data_creare, " +
+                            " to_char(to_date(a.ketdat, 'yyyymmdd'),'dd.mm.yyyy') data_livrare, " +
+                            " a.nrcmdsap, " +
+                            " (select name1 from sapprd.lfa1 where mandt = '900' and lifnr = a.lifnr) furnizor " +
+                            " from sapprd.zcomhead_tableta a, clienti b where a.status = 2 and a.status_aprov = 2 and " +
+                            " a.ketdat = to_char(sysdate,'yyyymmdd') and a.lifnr != ' ' and a.cod_agent =:codAgent and a.cod_client = b.cod " +
+                            " and not exists (select 1 from sapprd.zdl_finalizate where mandt='900' and id_comanda = a.id) ";
+               
+
+                cmd.CommandText = sqlString;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":codAgent", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codUser;
+
+                oReader = cmd.ExecuteReader();
+
+                List<DLExpirat> listaDocumenteDl = new List<DLExpirat>();
+                DLExpirat unDocumentDL = null;
+
+                if (oReader.HasRows)
+                {
+
+                    while (oReader.Read())
+                    {
+                        unDocumentDL = new DLExpirat();
+                        unDocumentDL.nrDocument = oReader.GetInt32(0).ToString();
+                        unDocumentDL.numeClient = oReader.GetString(1);
+                        unDocumentDL.dataDocument = oReader.GetString(2).ToString();
+                        unDocumentDL.dataLivrare = oReader.GetString(3).ToString();
+                        unDocumentDL.nrDocumentSap = oReader.GetString(4);
+                        unDocumentDL.furnizor = oReader.GetString(5);
+                        listaDocumenteDl.Add(unDocumentDL);
+
+                    }
+
+                }
+
+
+                oReader.Close();
+                oReader.Dispose();
+
+
+                JavaScriptSerializer serializer = new JavaScriptSerializer();
+                serializedResult = serializer.Serialize(listaDocumenteDl);
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+
+            }
+            finally
+            {
+                cmd.Dispose();
+                connection.Close();
+                connection.Dispose();
+
+            }
+
+            return serializedResult;
+
+
+        }
+
+
+        public string getArticoleDLExpirat(string idComanda)
+        {
+
+
+            List<ArticolCLP> listArticole = new List<ArticolCLP>();
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                string connectionString = DatabaseConnections.ConnectToProdEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select decode(length(a.cod),18,substr(a.cod,-8),a.cod) cod ,b.nume,a.cantitate,a.umb,a.depoz from sapprd.zcomdet_tableta a, articole b " +
+                                  " where a.cod = b.cod and id=:idcmd ";
+
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":idcmd", OracleType.Int32, 20).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = Int32.Parse(idComanda);
+
+                oReader = cmd.ExecuteReader();
+
+                ArticolCLP articol;
+
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+
+                        articol = new ArticolCLP();
+                        articol.cod = oReader.GetString(0);
+                        articol.nume = oReader.GetString(1);
+                        articol.cantitate = oReader.GetDouble(2).ToString();
+                        articol.umBaza = oReader.GetString(3);
+                        articol.depozit = oReader.GetString(4);
+                        listArticole.Add(articol);
+
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                cmd.Dispose();
+                connection.Close();
+                connection.Dispose();
+
+            }
+
+            return GeneralUtils.serializeObject(listArticole);
+
+        }
+
+
+        public string setDLFinalizata(string idComanda, string codAgent)
+        {
+            string retVal = "0";
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = null;
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+                cmd = connection.CreateCommand();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                string query = " insert into sapprd.zdl_finalizate (mandt, id_comanda, cod_agent, datac) " +
+                               " values ('900', :idComanda, :codagent, to_char(sysdate,'yyyymmdd')) ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":idComanda", OracleType.Number, 11).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = Int32.Parse(idComanda);
+
+                cmd.Parameters.Add(":codagent", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = codAgent;
+
+                cmd.ExecuteNonQuery();
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+                retVal = "-1";
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(cmd, connection);
+            }
+
+            return retVal;
+
+        }
+
+
+
+        public string setDLDataLivrare(string idComanda, string dataLivrare)
+        {
+            string retVal = "0";
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = null;
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+                cmd = connection.CreateCommand();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                string query = " update sapprd.zcomhead_tableta set ketdat=:dataLivrare where id=:idComanda ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":dataLivrare", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = dataLivrare;
+
+                cmd.Parameters.Add(":idComanda", OracleType.Number, 11).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = Int32.Parse(idComanda);
+
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+                retVal = "-1";
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(cmd, connection);
+            }
+
+            return retVal;
+
+        }
 
 
         private string getCurrentDate()

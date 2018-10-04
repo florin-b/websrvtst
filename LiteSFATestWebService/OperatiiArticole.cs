@@ -68,7 +68,10 @@ namespace LiteSFATestWebService
 
                 }
 
+                string conditieDepart = " b.grup_vz =:depart and ";
 
+                if (codDepart.StartsWith("04"))
+                    conditieDepart = " substr(b.grup_vz,0,2) = substr(:depart,0,2) and ";
 
                 cmd.CommandText = " select x.cod_art, x.nume, nvl(x.meins,'-') meins, x.umvanz10, x.sintetic, x.cod_nivel1, x.umvanz10, x.tip_mat, x.grup_vz, x.dep_aprobare, " +
                                   " x.palet, x.categ_mat, x.lungime " +
@@ -79,8 +82,10 @@ namespace LiteSFATestWebService
                                   " (select 1 from sapprd.marm m where m.mandt = '900' and m.matnr = b.cod and m.meinh = 'EPA'),-1) palet from dual) palet, " +
                                   " b.categ_mat, b.lungime " +
                                   " from sapprd.eina e, articole b, sintetice c where e.mandt = '900' and e.matnr = b.cod and   " +
-                                  " c.cod = b.sintetic and e.lifnr=:furniz and substr(b.grup_vz,0,2) =:depart and  " + conditie + " ) x where rownum < 50 order by x.nume ";
+                                  " c.cod = b.sintetic and e.lifnr=:furniz and  " + conditieDepart  + conditie + " ) x where rownum < 50 order by x.nume ";
 
+              
+                
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -428,15 +433,19 @@ namespace LiteSFATestWebService
         }
 
 
-        public string getListArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament, string afisStoc, string tipUser, string codUser)
+        public string getListArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament, string afisStoc, string tipUser, string codUser, string modulCautare)
         {
 
-            
 
             string condExtraDepart = " ";
-            if (codUser != null && Array.IndexOf(Service1.agentiExtra07, codUser.TrimStart('0')) > -1 && departament.Equals("07"))
+
+            if (codUser != null && (modulCautare == null || !modulCautare.Equals("CLP")) && General.GeneralUtils.isFilialaExtensie02(filiala) && departament.Equals("02"))
             {
-                condExtraDepart = " and x.sintetic in ('901_1','901') ";
+                string departUser =  Service1.getDepartAgent(codUser);
+                string departExtra = Service1.getDepartExtra(codUser, departUser, filiala);
+
+                if (departUser.Equals("01") && departExtra.Equals("02"))
+                    condExtraDepart = " and x.sintetic in ('204', '204_01', '205', '236', '237', '229', '238', '240') ";
             }
 
             string serializedResult = "";
@@ -447,10 +456,15 @@ namespace LiteSFATestWebService
             string valStoc = "";
 
             if (!departament.Equals("00") && !departament.Equals("12") && departament.Length > 0)
-                condDepart = " and (a.grup_vz like '" + departament + "%') ";
+            {
+                if (Utils.isFilialaMica04(filiala, departament) && modulCautare != null && modulCautare.Equals("CLP"))
+                    condDepart = " and ( substr(a.grup_vz,0,2) like '" + departament.Substring(0,2) + "%') ";
+                else
+                    condDepart = " and (a.grup_vz like '" + departament + "%') ";
+            }
             else
             {
-                if (departament.Equals("00"))
+                if (departament.Equals("00") && modulCautare == null)
                     condDepart = " and a.grup_vz <> '11' ";
                 else if (departament.Equals("12"))
                     condDepart = " and a.grup_vz in ('01','02') ";
@@ -544,7 +558,6 @@ namespace LiteSFATestWebService
 
 
 
-
                 }
                 else// consilieri
                 {
@@ -565,8 +578,6 @@ namespace LiteSFATestWebService
                     
 
                 }
-
-                
 
                 cmd.CommandType = CommandType.Text;
 
@@ -1462,6 +1473,84 @@ namespace LiteSFATestWebService
             return coduriBare;
 
 
+        }
+
+
+        public string getStocCustodie(string codArticol, string codClient, string filiala)
+        {
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+            double stocArt = 0;
+            string umArt = "BUC";
+            string stocResponse = "";
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select sum(kulab), 'BUC' um_art from " + 
+                                 " (select k.matnr, k.kulab from sapprd.MSKU k " + 
+                                 " where k.mandt = '900' and k.kunnr = :codClient and sobkz = 'W' and kulab > 0 and matnr = :codArticol " + 
+                                 " union all " +
+                                 " select d.matnr, -1 * (d.lfimg)from sapprd.lips d, sapprd.vbup p, sapprd.likp l " +
+                                 " where d.mandt = '900' and d.sobkz = 'W' and d.matnr = :codArticol and d.werks =:filiala " + 
+                                 " and d.mandt = p.mandt and d.vbeln = p.vbeln and d.posnr = p.posnr and d.mandt = l.mandt and d.vbeln = l.vbeln " +
+                                 " and l.kunnr =:codClient and p.WBSTA <> 'C')group by matnr ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codClient;
+
+                cmd.Parameters.Add(":codArticol", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = codArticol;
+
+                cmd.Parameters.Add(":codArticol", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = codArticol;
+
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[3].Value = getFilialaCustodie(filiala);
+
+                cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[4].Value = codClient;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    stocArt = oReader.GetDouble(0);
+                    umArt = oReader.GetString(1);
+                }
+
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+                stocResponse = "-1";
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            stocResponse = stocArt.ToString()  + "#" + umArt + "#1#";
+
+            return stocResponse;
+
+        }
+
+        private static string getFilialaCustodie(string filiala)
+        {
+            return filiala.Substring(0, 2) + "11" ;
         }
 
 

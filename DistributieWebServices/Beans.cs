@@ -13,6 +13,8 @@ namespace DistributieTESTWebServices
         public string tipBorderou;
         public string bordParent;
         public string agentDTI;
+        public string nrAuto;
+        public string codSofer;
 
     }
 
@@ -158,6 +160,8 @@ namespace DistributieTESTWebServices
         public string codClient;
         public string nrTelefon;
         public DateComanda dateComanda;
+        public string idComanda;
+        public string poz;
 
         public override string ToString()
         {

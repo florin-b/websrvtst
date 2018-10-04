@@ -40,7 +40,7 @@ namespace LiteSFATestWebService
 
                 cmd = connection.CreateCommand();
 
-                if (codDepart.Equals("04"))
+                if (codDepart.StartsWith("04"))
                 {
                     sqlString = " select distinct a.id, " +
                                 " nvl((select b.venitnet_p from  sapprd.zxy_coef b where b.mandt = a.mandt and b.id = a.id and b.prctr = a.prctr and b.anul = a.anul and " +
@@ -74,7 +74,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters[2].Value = luna;
 
 
-                if (!codDepart.Equals("04"))
+                if (!codDepart.StartsWith("04"))
                 {
                     cmd.Parameters.Add(":codDepart", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
                     cmd.Parameters[3].Value = codDepart;
@@ -90,7 +90,7 @@ namespace LiteSFATestWebService
 
                     while (oReader.Read())
                     {
-                        if (codDepart.Equals("04"))
+                        if (codDepart.StartsWith("04"))
                         {
                             unVenit = new InfoVenituri();
                             unVenit.id = oReader.GetInt32(0).ToString();

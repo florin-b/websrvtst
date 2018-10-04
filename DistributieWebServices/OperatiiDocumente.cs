@@ -142,10 +142,10 @@ namespace DistributieTESTWebServices
 
 
                 cmd.CommandText = " select x.* from (select b.numarb,  to_char(b.data_e),  nvl((select nvl(ev.eveniment,'0') eveniment " +
-                                  " from sapprd.zevenimentsofer ev where ev.document = b.numarb and ev.data = (select max(data) from sapprd.zevenimentsofer where document = ev.document and client = ev.document) " +
-                                  " and ev.ora = (select max(ora) from sapprd.zevenimentsofer where document = ev.document and client = ev.document and data = ev.data)),0) eveniment, b.shtyp, " +
-                                  " nvl((select distinct nr_bord from sapprd.zdocumentebord where nr_bord_urm =b.numarb and rownum=1),'-1') bordParent " +
-                                  " from  borderouri b, sapprd.zdocumentebord c  where  c.nr_bord = b.numarb and b.cod_sofer=:codSofer " + condData + " order by trunc(c.data_e), c.ora_e) x " + condTip;
+                                   " from sapprd.zevenimentsofer ev where ev.document = b.numarb and ev.data = (select max(data) from sapprd.zevenimentsofer where document = ev.document and client = ev.document) " +
+                                   " and ev.ora = (select max(ora) from sapprd.zevenimentsofer where document = ev.document and client = ev.document and data = ev.data)),0) eveniment, b.shtyp, " +
+                                   " nvl((select distinct nr_bord from sapprd.zdocumentebord where nr_bord_urm =b.numarb and rownum=1),'-1') bordParent, b.masina " +
+                                   " from  borderouri b, sapprd.zdocumentebord c  where  c.nr_bord = b.numarb and b.cod_sofer=:codSofer " + condData + " order by trunc(c.data_e), c.ora_e) x " + condTip;
 
 
 
@@ -169,6 +169,7 @@ namespace DistributieTESTWebServices
                         unBorderou.tipBorderou = oReader.GetString(3);
                         unBorderou.bordParent = oReader.GetString(4);
                         unBorderou.agentDTI = isAgentDTI(connection, unBorderou.numarBorderou).ToString();
+                        unBorderou.nrAuto = oReader.GetString(5).Replace("-", "").Replace(" ", "");
                         listaBorderouri.Add(unBorderou);
 
                     }
@@ -242,7 +243,7 @@ namespace DistributieTESTWebServices
 
                
 
-                string connectionString = DatabaseConnections.ConnectToProdEnvironment();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -441,6 +442,7 @@ namespace DistributieTESTWebServices
                 oReader.Close();
                 oReader.Dispose();
 
+
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 serializedResult = serializer.Serialize(listaFacturi);
 
@@ -528,7 +530,108 @@ namespace DistributieTESTWebServices
 
             return isDTI;
         }
-       
+
+
+
+        public string getBorderouriMasina(string nrMasina, string codSofer)
+        {
+            string condTip = "";
+            string serializedResult = "";
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            List<Borderouri> listaBorderouri = new List<Borderouri>();
+
+
+
+            try
+            {
+
+                condTip = " where x.eveniment != 'S' and rownum<2 ";
+
+
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select x.* from (select b.numarb,  to_char(b.data_e),  nvl((select nvl(ev.eveniment,'0') eveniment " +
+                                  " from sapprd.zevenimentsofer ev where ev.document = b.numarb and ev.data = (select max(data) from sapprd.zevenimentsofer where document = ev.document and client = ev.document) " +
+                                  " and ev.ora = (select max(ora) from sapprd.zevenimentsofer where document = ev.document and client = ev.document and data = ev.data)),0) eveniment, b.shtyp, " +
+                                  " nvl((select distinct nr_bord from sapprd.zdocumentebord where nr_bord_urm =b.numarb and rownum=1),'-1') bordParent, b.masina, b.cod_sofer " +
+                                  " from  borderouri b, sapprd.zdocumentebord c  where  c.nr_bord = b.numarb and b.masina=:nrMasina  order by trunc(c.data_e), c.ora_e) x " + condTip;
+
+
+
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":nrMasina", OracleType.VarChar, 120).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = nrMasina;
+
+                oReader = cmd.ExecuteReader();
+
+
+                Borderouri unBorderou = null;
+
+                if (oReader.HasRows)
+                {
+
+                    while (oReader.Read())
+                    {
+                        unBorderou = new Borderouri();
+                        unBorderou.numarBorderou = oReader.GetString(0);
+                        unBorderou.dataEmiterii = oReader.GetString(1);
+                        unBorderou.evenimentBorderou = oReader.GetString(2);
+                        unBorderou.tipBorderou = oReader.GetString(3);
+                        unBorderou.bordParent = oReader.GetString(4);
+                        unBorderou.agentDTI = isAgentDTI(connection, unBorderou.numarBorderou).ToString();
+                        unBorderou.nrAuto = oReader.GetString(5).Replace("-", "").Replace(" ", "");
+                        unBorderou.codSofer = oReader.GetString(6);
+                        listaBorderouri.Add(unBorderou);
+
+                    }
+
+                }
+                else
+                {
+                    if (OperatiiSoferi.isSoferDTI(connection, codSofer))
+                    {
+                        unBorderou = new Borderouri();
+                        unBorderou.agentDTI = isBorderouDTI(connection, codSofer).ToString();
+                        listaBorderouri.Add(unBorderou);
+                    }
+                }
+
+
+
+                oReader.Close();
+                oReader.Dispose();
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                cmd.Dispose();
+                connection.Close();
+                connection.Dispose();
+            }
+
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            serializedResult = serializer.Serialize(listaBorderouri);
+
+
+            return serializedResult;
+        }
+
+
+
 
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.OracleClient;
 using System.Globalization;
 using System.Linq;
@@ -32,7 +33,7 @@ namespace DistributieTESTWebServices
             try
             {
 
-                connection.ConnectionString = DatabaseConnections.ConnectToProdEnvironment();
+                connection.ConnectionString = DatabaseConnections.ConnectToTestEnvironment();
                 connection.Open();
 
                 cmd = connection.CreateCommand();
@@ -192,6 +193,175 @@ namespace DistributieTESTWebServices
 
         }
 
+
+
+        public bool getKmMasinaDeclarati(string nrAuto)
+        {
+
+            bool hasKm = false;
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                connection.ConnectionString = DatabaseConnections.ConnectToTestEnvironment();
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select 1 from sapprd.zkmmasini where datac=:datac and nrauto=:nrAuto ";
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":datac", OracleType.VarChar, 24).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[0].Value = getCurrentDate();
+
+                cmd.Parameters.Add(":nrAuto", OracleType.VarChar, 30).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[1].Value = nrAuto;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                    hasKm = true;
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(cmd, connection);
+            }
+
+            return hasKm;
+
+        }
+
+
+        public bool valideazaKmMasina(string nrAuto, string kmNoi)
+        {
+
+
+            bool isValid = true;
+            int kmSalvati = 0;
+            string dataKmSalvati = getCurrentDateFormatted();
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                connection.ConnectionString = DatabaseConnections.ConnectToTestEnvironment();
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+
+
+                cmd.CommandText = " select to_char(to_date(datac,'yyyymmdd')), km from sapprd.zkmmasini where nrauto =:nrAuto " +
+                                  " and datac = (select max(datac) from sapprd.zkmmasini where nrauto =:nrAuto) ";
+
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":nrAuto", OracleType.VarChar, 30).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[0].Value = nrAuto;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    kmSalvati = oReader.GetInt32(1);
+                    dataKmSalvati = oReader.GetString(0);
+
+
+                    string dataStart = dataKmSalvati;
+                    string dataStop = getCurrentDateFormatted();
+
+                    DateTime dateStart = Convert.ToDateTime(dataStart);
+                    DateTime dateStop = Convert.ToDateTime(dataStop);
+
+                    TimeSpan ts = dateStop - dateStart;
+
+                    int mediaKm = 1;
+
+                    if (ts.Days > 0)
+                        mediaKm = (Int32.Parse(kmNoi) - kmSalvati) / ts.Days;
+
+                    if (mediaKm > MEDIA_KM_ZI)
+                        isValid = false;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+
+            return isValid;
+
+        }
+
+
+        public void adaugaKmMasina(string codAngajat, string nrAuto, string km)
+        {
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+
+            try
+            {
+
+                connection.ConnectionString = DatabaseConnections.ConnectToTestEnvironment();
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " insert into sapprd.zkmmasini(mandt, codangajat, datac, nrauto, km) values ('900',:codAngajat, :datac, :nrAuto, :km) ";
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codAngajat", OracleType.VarChar, 24).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[0].Value = codAngajat;
+
+                cmd.Parameters.Add(":datac", OracleType.VarChar, 24).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[1].Value = getCurrentDate();
+
+                cmd.Parameters.Add(":nrAuto", OracleType.VarChar, 30).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[2].Value = nrAuto;
+
+                cmd.Parameters.Add(":km", OracleType.Number, 13).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[3].Value = Double.Parse(km, CultureInfo.InvariantCulture);
+
+                cmd.ExecuteNonQuery();
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(cmd, connection);
+            }
+
+
+        }
 
     }
 }

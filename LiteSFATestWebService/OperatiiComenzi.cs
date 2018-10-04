@@ -8,6 +8,7 @@ using System.Data;
 using System.Web.Script.Serialization;
 using System.Globalization;
 using LiteSFATestWebService.SAPWebServices;
+using LiteSFATestWebService.General;
 
 namespace LiteSFATestWebService
 {
@@ -16,8 +17,6 @@ namespace LiteSFATestWebService
 
         public string getArticoleComanda(string nrComanda, string afisConditii, string tipUser)
         {
-
-
 
 
             string unitLog1 = "";
@@ -763,6 +762,757 @@ namespace LiteSFATestWebService
 
         }
 
+
+
+
+        public string saveLivrareCustodie(string JSONArt, string JSONComanda, string JSONDateLivrare)
+        {
+
+            var serializer = new JavaScriptSerializer();
+            string query;
+            string retVal = "-1#0";
+
+            ComandaVanzare comandaVanzare = serializer.Deserialize<ComandaVanzare>(JSONComanda);
+            DateLivrare dateLivrare = serializer.Deserialize<DateLivrare>(JSONDateLivrare);
+            List<ArticolComanda> articolComanda = serializer.Deserialize<List<ArticolComanda>>(JSONArt);
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = null;
+            OracleTransaction transaction = null;
+            SAPWSCustodie.ZWS_CUSTODIE webService = null;
+
+            try
+            {
+
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+                cmd = connection.CreateCommand();
+
+                DateTime cDate = DateTime.Now;
+                string year = cDate.Year.ToString();
+                string day = cDate.Day.ToString("00");
+                string month = cDate.Month.ToString("00");
+                string nowDate = year + month + day;
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                string departLivare = Utils.getDepartArticol(connection, articolComanda[0].codArticol);
+                string numeClient = Utils.getNumeClient(connection, comandaVanzare.codClient);
+
+                transaction = connection.BeginTransaction();
+                cmd.Transaction = transaction;
+
+
+                query = " insert into sapprd.zcust_head(mandt, id, cod_client, cod_agent, ul, depart, status, datac,  pers_contact, telefon, adr_livrare, " +
+                        "  city, region, den_cl, ketdat, addrnumber, macara, descoperita, traty ) values " +
+                        " ('900', pk_key.nextval, :cod_client, :cod_agent, :ul, :depart, :status, :datac,  :pers_contact, :telefon, :adr_livrare, " +
+                        "  :city, :region, :den_cl, :ketdat, :addrnumber, :macara, :descoperita, :traty ) returning id into :id ";
+
+
+                cmd.CommandText = query;
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":cod_client", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = comandaVanzare.codClient;
+
+                cmd.Parameters.Add(":cod_agent", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = dateLivrare.codAgent;
+
+                cmd.Parameters.Add(":ul", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = dateLivrare.unitLog;
+
+                cmd.Parameters.Add(":depart", OracleType.VarChar, 6).Direction = ParameterDirection.Input;
+                cmd.Parameters[3].Value = departLivare;
+
+                cmd.Parameters.Add(":status", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[4].Value = "0";
+
+                cmd.Parameters.Add(":datac", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[5].Value = nowDate;
+
+                cmd.Parameters.Add(":pers_contact", OracleType.VarChar, 150).Direction = ParameterDirection.Input;
+                cmd.Parameters[6].Value = dateLivrare.persContact;
+
+                cmd.Parameters.Add(":telefon", OracleType.VarChar, 150).Direction = ParameterDirection.Input;
+                cmd.Parameters[7].Value = dateLivrare.nrTel;
+
+                cmd.Parameters.Add(":adr_livrare", OracleType.VarChar, 150).Direction = ParameterDirection.Input;
+                cmd.Parameters[8].Value = dateLivrare.Strada + " ";
+                
+                cmd.Parameters.Add(":city", OracleType.VarChar, 75).Direction = ParameterDirection.Input;
+                cmd.Parameters[9].Value = dateLivrare.Oras;
+
+                cmd.Parameters.Add(":region", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
+                cmd.Parameters[10].Value = dateLivrare.codJudet;
+
+                cmd.Parameters.Add(":den_cl", OracleType.VarChar, 90).Direction = ParameterDirection.Input;
+                cmd.Parameters[11].Value = numeClient;
+
+                cmd.Parameters.Add(":ketdat", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[12].Value = Utils.formatDateToSap(dateLivrare.dataLivrare);
+
+                cmd.Parameters.Add(":addrnumber", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[13].Value = dateLivrare.addrNumber;
+
+                cmd.Parameters.Add(":macara", OracleType.VarChar, 3).Direction = ParameterDirection.Input;
+                cmd.Parameters[14].Value = dateLivrare.macara;
+
+                cmd.Parameters.Add(":descoperita", OracleType.VarChar, 3).Direction = ParameterDirection.Input;
+                cmd.Parameters[15].Value = Convert.ToBoolean(dateLivrare.isCamionDescoperit) ? "X" : " ";
+                
+                cmd.Parameters.Add(":traty", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[16].Value = dateLivrare.Transport;
+
+                OracleParameter idCmd = new OracleParameter("id", OracleType.Number);
+                idCmd.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add(idCmd);
+
+                cmd.ExecuteNonQuery();
+
+
+                int artLen = articolComanda.Count;
+                int pozArt;
+                string codArt;
+
+                for (int i = 0; i < artLen; i++)
+                {
+                    pozArt = (i + 1) * 10;
+
+                    codArt = articolComanda[i].codArticol;
+
+                    if (codArt.Length == 8)
+                        codArt = "0000000000" + codArt;
+
+                    query = " insert into sapprd.zcust_det(mandt, id, poz, status, cod, cantitate, um ) values " +
+                            " ('900', :id, :poz, :status, :cod, :cantitate, :um ) ";
+
+                    cmd.CommandText = query;
+                    cmd.CommandType = CommandType.Text;
+                    cmd.Parameters.Clear();
+
+                    cmd.Parameters.Add(":id", OracleType.Int32, 10).Direction = ParameterDirection.Input;
+                    cmd.Parameters[0].Value = idCmd.Value;
+
+                    cmd.Parameters.Add(":poz", OracleType.NVarChar, 12).Direction = ParameterDirection.Input;
+                    cmd.Parameters[1].Value = pozArt;
+
+                    cmd.Parameters.Add(":status", OracleType.NVarChar, 12).Direction = ParameterDirection.Input;
+                    cmd.Parameters[2].Value = "0";
+
+                    cmd.Parameters.Add(":cod", OracleType.NVarChar, 54).Direction = ParameterDirection.Input;
+                    cmd.Parameters[3].Value = codArt;
+
+                    cmd.Parameters.Add(":cantitate", OracleType.Double, 13).Direction = ParameterDirection.Input;
+                    cmd.Parameters[4].Value = articolComanda[i].cantitate;
+
+                    cmd.Parameters.Add(":um", OracleType.NVarChar, 9).Direction = ParameterDirection.Input;
+                    cmd.Parameters[5].Value = articolComanda[i].um;
+
+                    cmd.ExecuteNonQuery();
+
+
+                }
+
+                transaction.Commit();
+
+                OperatiiAdresa.insereazaCoordonateAdresa(connection, idCmd.Value.ToString(), dateLivrare.coordonateGps);
+                OperatiiSuplimentare.saveTonajComanda(connection, idCmd.Value.ToString(), dateLivrare.tonaj);
+
+                if (dateLivrare.addrNumber.Trim() != "")
+                    OperatiiSuplimentare.saveTonajAdresa(connection, comandaVanzare.codClient, dateLivrare.addrNumber, dateLivrare.tonaj);
+
+                
+                webService = new SAPWSCustodie.ZWS_CUSTODIE();
+                SAPWSCustodie.ZlivrareCustodie inParam = new SAPWSCustodie.ZlivrareCustodie();
+                System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Service1.getUser(), Service1.getPass());
+                webService.Credentials = nc;
+                webService.Timeout = 300000;
+
+                inParam.IpId = idCmd.Value.ToString();
+                
+
+                SAPWSCustodie.ZlivrareCustodieResponse response = webService.ZlivrareCustodie(inParam);
+                retVal = response.EpOk + "#" + response.EpMesaj;
+
+                webService.Dispose();
+
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+                retVal = "-1";
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(cmd, connection);
+            }
+
+
+            return retVal;
+
+        }
+
+
+
+        public List<Comanda> getLivrariCustodie(string codAgent, string interval)
+        {
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand(), cmd1 = new OracleCommand();
+            OracleDataReader oReader = null;
+            string dateInterval = DateTime.Today.ToString("yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+            string condData = " and cst.datac =:interval ";
+
+            List<Comanda> listComenzi = new List<Comanda>();
+
+            if (interval == "0") //astazi
+            {
+                dateInterval = DateTime.Today.ToString("yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                condData = " and cst.datac =:interval ";
+            }
+            else if (interval == "1") //ultimele 7 zile
+            {
+                dateInterval = DateTime.Today.AddDays(-7).ToString("yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                condData = " and cst.datac >=:interval";
+            }
+            else if (interval == "2") //ultimele 30 zile
+            { 
+                dateInterval = DateTime.Today.AddDays(-30).ToString("yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                condData = " and cst.datac >=:interval ";
+            }
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                string sqlString = " select cst.id, cl.nume, cst.datac, cst.status, cst.cod_client, cst.nrcmdsap, cst.ul, ag.nume numeag, " + 
+                                   " cst.adr_livrare, ag.divizie, cst.depart, ag.nrtel, cst.ketdat " + 
+                                   " from sapprd.zcust_head cst, clienti cl, agenti ag where cst.cod_agent =:codag and cst.status != '6' " + 
+                                   " and cst.cod_client = cl.cod and cst.cod_agent = ag.cod " + condData;
+
+                cmd.CommandText = sqlString;
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codag", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codAgent;
+
+                cmd.Parameters.Add(":interval", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = dateInterval;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+
+                    Comanda comanda;
+
+                    while (oReader.Read())
+                    {
+                        comanda = new Comanda();
+
+
+                        comanda = new Comanda();
+                        comanda.idComanda = oReader.GetInt32(0).ToString();
+                        comanda.numeClient = oReader.GetString(1);
+                        comanda.dataComanda = oReader.GetString(2) + "#" + oReader.GetString(12);
+                        comanda.sumaComanda = "0";
+
+                        comanda.stareComanda = oReader.GetString(3);
+                        comanda.codClient = oReader.GetString(4);
+                        comanda.cmdSap = oReader.GetString(5);
+                        comanda.factRed = " ";
+                        comanda.filiala = oReader.GetString(6);
+                        comanda.accept1 = " ";
+                        comanda.accept2 = " ";
+                        comanda.tipClient = " ";
+                        comanda.numeAgent = oReader.GetString(7);
+                        comanda.termenPlata = " ";
+                        comanda.docInsotitor = " ";
+                        comanda.adresaLivrare = oReader.GetString(8);
+                        comanda.divizieAgent = oReader.GetString(9);
+                        comanda.divizieComanda = oReader.GetString(10);
+                        comanda.aprobariNecesare = " ";
+                        comanda.aprobariPrimite = " ";
+                        comanda.codClientGenericGed = " ";
+                        comanda.conditiiImpuse = " ";
+                        comanda.telAgent = oReader.GetString(11);
+                        comanda.monedaComanda = "RON";
+                        comanda.monedaTVA = "RON";
+                        comanda.sumaTVA = "0";
+                        comanda.canalDistrib = "10";
+                        comanda.cursValutar = "0";
+                        comanda.adresaNoua = "-1";
+                        comanda.pondere30 = "0";
+                        comanda.avans = "0";
+                        comanda.clientRaft = " ";
+                        
+
+
+                        listComenzi.Add(comanda);
+                    }
+
+                }
+
+
+
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+           
+            return listComenzi ;
+        }
+
+
+
+
+        public string getArticoleCustodie(string idComanda)
+        {
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null, oReader1 = null;
+
+            DateLivrareCmd dateLivrare = new DateLivrareCmd();
+            List<ArticolComandaRap> listArticole = new List<ArticolComandaRap>();
+            Conditii conditii = new Conditii();
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select a.pers_contact, a.telefon, a.adr_livrare, a.traty,    a.city, a.region, a.ul, " + 
+                                  " b.tip_pers,   a.ketdat,  a.macara, " + 
+                                  " nvl((select latitude || ',' || longitude from sapprd.zcoordcomenzi where idcomanda = a.id),'0,0') coord,  " +
+                                  " a.descoperita, nvl(a.addrnumber,'-1') from sapprd.zcust_head a, clienti b " + 
+                                  " where a.id = :idcmd and a.cod_client = b.cod ";
+
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":idcmd", OracleType.Int32, 11).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = Int32.Parse(idComanda);
+
+                oReader = cmd.ExecuteReader();
+
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+
+                    dateLivrare.persContact = oReader.GetString(0);
+                    dateLivrare.nrTel = oReader.GetString(1);
+                    dateLivrare.dateLivrare = oReader.GetString(2);
+                    dateLivrare.Transport = oReader.GetString(3);
+                    dateLivrare.tipPlata = " ";
+                    dateLivrare.Cantar = " ";
+                    dateLivrare.factRed = " ";
+                    dateLivrare.redSeparat = " ";
+                    dateLivrare.Oras = oReader.GetString(4);
+                    dateLivrare.codJudet = oReader.GetString(5);
+                    dateLivrare.unitLog = oReader.GetString(6);
+                    dateLivrare.termenPlata = " ";
+                    dateLivrare.obsLivrare = " ";
+                    dateLivrare.tipPersClient = oReader.GetString(7);
+                    dateLivrare.mail = " ";
+                    dateLivrare.obsPlata = " ";
+                    dateLivrare.dataLivrare = GeneralUtils.formatStrDate(oReader.GetString(8));
+                    dateLivrare.adresaD = oReader.GetString(12);
+                    dateLivrare.orasD = " ";
+                    dateLivrare.codJudetD = " ";
+                    dateLivrare.macara = oReader.GetString(9);
+                    dateLivrare.numeClient = " ";
+                    dateLivrare.cnpClient = " ";
+                    dateLivrare.idObiectiv = " ";
+                    dateLivrare.isAdresaObiectiv = false;
+                    dateLivrare.coordonateGps = oReader.GetString(10);
+                    dateLivrare.tonaj = "0";
+                    dateLivrare.clientRaft = " ";
+                    dateLivrare.meserias = " ";
+                    dateLivrare.factPaletiSeparat =  false;
+                    dateLivrare.furnizorMarfa = " ";
+                    dateLivrare.furnizorProduse = " ";
+                    dateLivrare.isCamionDescoperit = oReader.GetString(11).Equals("X") ? true : false;
+                    dateLivrare.diviziiClient = " ";
+                   
+
+
+                }
+
+
+
+                cmd.CommandText = " select a.status, decode(length(a.cod),18,substr(a.cod,-8),a.cod) codart ,nvl(b.nume,' '), a.cantitate, " +
+                                  " a.um, z.depart, nvl(b.tip_mat, ' '),  nvl(b.spart, ' ') " +
+                                  " from sapprd.zcust_det a, sintetice c, articole b,  sapprd.zcust_head z " +
+                                  " where a.cod = b.cod(+) and a.id =:idcmd and z.id = a.id  and b.sintetic = c.cod(+)  order by trim(poz) ";
+
+
+
+
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":idcmd", OracleType.Int32, 11).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = Int32.Parse(idComanda);
+
+                oReader1 = cmd.ExecuteReader();
+
+                ArticolComandaRap articol;
+                if (oReader1.HasRows)
+                {
+                    while (oReader1.Read())
+                    {
+
+
+                        articol = new ArticolComandaRap();
+                        articol.status = oReader1.GetString(0);
+                        articol.codArticol = oReader1.GetString(1);
+                        articol.numeArticol = oReader1.GetString(2);
+                        articol.cantitate = oReader1.GetDouble(3);
+                        articol.depozit = " ";
+                        articol.pretUnit = 0.0;
+                        articol.um = oReader1.GetString(4);
+                        articol.procent = 0.0;
+                        articol.procentFact = 0.0;
+                        articol.conditie = false;
+
+                        articol.cmp = 0.0;
+
+                        articol.discClient = 0.0;
+                        articol.discountAg = 0.0;
+                        articol.discountSd = 0.0;
+                        articol.discountDv = 0.0;
+                        articol.procAprob = 0.0;
+                        articol.permitSubCmp = " ";
+                        articol.multiplu = 1;
+                        articol.pret = 0.0;
+                        articol.infoArticol = " ";
+                        articol.cantUmb = oReader1.GetDouble(3).ToString();
+                        articol.Umb = oReader1.GetString(4);
+                        articol.unitLogAlt = " ";
+                        articol.depart = " ";
+                        articol.tipArt = "";
+                        articol.ponderare = -1;
+                        articol.departSintetic = " ";
+                        articol.departAprob = " ";
+                        articol.istoricPret = " ";
+                        articol.vechime = " ";
+                        articol.moneda = "RON";
+                        articol.valTransport = "0";
+                        articol.procTransport = "0";
+
+                        articol.pretMediu = "0.0";
+                        articol.adaosMediu = "0.0";
+                        articol.unitMasPretMediu = "0.0";
+                        articol.coefCorectie = "0.0";
+
+                        listArticole.Add(articol);
+
+
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            ArticolComandaAfis articoleComanda = new ArticolComandaAfis();
+
+            articoleComanda.dateLivrare = dateLivrare;
+            articoleComanda.articoleComanda = listArticole;
+            articoleComanda.conditii = conditii;
+
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+
+            return serializer.Serialize(articoleComanda);
+        }
+
+
+        public string setCustodieDataLivrare(string idComanda, string dataLivrare)
+        {
+            string retVal = "0#Operatie reusita.";
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = null;
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+                cmd = connection.CreateCommand();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                string query = " update sapprd.zcust_head set ketdat=:dataLivrare where id=:idComanda ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":dataLivrare", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = dataLivrare;
+
+                cmd.Parameters.Add(":idComanda", OracleType.Number, 11).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = Int32.Parse(idComanda);
+
+                cmd.ExecuteNonQuery();
+
+                SAPWSCustodie.ZWS_CUSTODIE webService = null;
+
+                webService = new SAPWSCustodie.ZWS_CUSTODIE();
+                SAPWSCustodie.ZcustChLivrare inParam = new SAPWSCustodie.ZcustChLivrare();
+
+                System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Service1.getUser(), Service1.getPass());
+                webService.Credentials = nc;
+                webService.Timeout = 300000;
+
+                string nrLivrare = getLivrareCustodie(connection, idComanda);
+                ErrorHandling.sendErrorToMail("Custodie nr livrare data livrare " + nrLivrare);
+
+                inParam.IpVbeln = nrLivrare;
+                inParam.IpData = "X";
+                inParam.IpMode = "U";
+
+                SAPWSCustodie.ZcustChLivrareResponse response = webService.ZcustChLivrare(inParam);
+                retVal = response.EpOk + "#" + response.EpMesaj;
+
+                webService.Dispose();
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+                retVal = "-1#Operatia esuata.";
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(cmd, connection);
+            }
+
+            return retVal;
+
+        }
+
+
+
+        public string setCustodieAdresaLivrare(string idComanda, string JSONDateLivrare)
+        {
+
+            var serializer = new JavaScriptSerializer();
+            DateLivrare dateLivrare = serializer.Deserialize<DateLivrare>(JSONDateLivrare);
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = null;
+            string retVal = "0#Operatie reusita.";
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+                cmd = connection.CreateCommand();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                string query = " update sapprd.zcust_head set adr_livrare=:adrLivrare, city=:city, region=:region, addrnumber=:addrnumber where id=:idComanda ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":adrLivrare", OracleType.NVarChar, 150).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = dateLivrare.Strada;
+
+                cmd.Parameters.Add(":city", OracleType.NVarChar, 75).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = dateLivrare.Oras;
+
+                cmd.Parameters.Add(":region", OracleType.NVarChar, 9).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = dateLivrare.codJudet;
+
+                cmd.Parameters.Add(":addrnumber", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[3].Value = dateLivrare.addrNumber;
+
+                cmd.Parameters.Add(":idComanda", OracleType.Number, 11).Direction = ParameterDirection.Input;
+                cmd.Parameters[4].Value = Int32.Parse(idComanda);
+
+                cmd.ExecuteNonQuery();
+
+                OperatiiAdresa.actualizeazaCoordonateAdresa(connection, idComanda, dateLivrare.coordonateGps);
+                OperatiiSuplimentare.actualizeazaTonajComanda(connection, idComanda, dateLivrare.tonaj);
+
+                SAPWSCustodie.ZWS_CUSTODIE webService = null;
+               
+                webService = new SAPWSCustodie.ZWS_CUSTODIE();
+                SAPWSCustodie.ZcustChLivrare inParam = new SAPWSCustodie.ZcustChLivrare();
+
+                System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Service1.getUser(), Service1.getPass());
+                webService.Credentials = nc;
+                webService.Timeout = 300000;
+
+                string nrLivrare = getLivrareCustodie(connection, idComanda);
+                ErrorHandling.sendErrorToMail("Custodie nr livrare adresa livrare " + nrLivrare);
+
+                inParam.IpVbeln = nrLivrare;
+                inParam.IpAdresa = "X";
+                inParam.IpMode = "U";
+
+                SAPWSCustodie.ZcustChLivrareResponse response = webService.ZcustChLivrare(inParam);
+                retVal = response.EpOk + "#" + response.EpMesaj;
+
+                webService.Dispose();
+
+
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+                retVal = "-1#Operatia esuata.";
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(cmd, connection);
+            }
+
+
+            return retVal;
+        }
+
+
+
+        public string stergeLivrareCustodie(string idComanda)
+        {
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = null;
+            string retVal = "0#Operatie reusita.";
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+                cmd = connection.CreateCommand();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                string query = " update sapprd.zcust_head set status = 6 where id=:idComanda ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":idComanda", OracleType.Number, 11).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = Int32.Parse(idComanda);
+
+                cmd.ExecuteNonQuery();
+
+
+                SAPWSCustodie.ZWS_CUSTODIE webService = null;
+
+                webService = new SAPWSCustodie.ZWS_CUSTODIE();
+                SAPWSCustodie.ZcustChLivrare inParam = new SAPWSCustodie.ZcustChLivrare();
+
+                System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Service1.getUser(), Service1.getPass());
+                webService.Credentials = nc;
+                webService.Timeout = 300000;
+
+
+                string nrLivrare = getLivrareCustodie(connection, idComanda);
+                ErrorHandling.sendErrorToMail("Custodie nr livrare stergere " + nrLivrare);
+
+                inParam.IpVbeln = nrLivrare;
+                inParam.IpMode = "D";
+
+                SAPWSCustodie.ZcustChLivrareResponse response = webService.ZcustChLivrare(inParam);
+                retVal = response.EpOk + "#" + response.EpMesaj;
+
+                webService.Dispose();
+
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+                retVal = "-1#Operatia esuata.";
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(cmd, connection);
+            }
+
+            return retVal;
+
+        }
+
+
+
+        private string getLivrareCustodie(OracleConnection connection, string idComanda)
+        {
+
+            string nrLivrare = "";
+
+            OracleCommand cmd = null;
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                string query = " select vbeln from sapprd.zcust_head where id=:idComanda ";
+                cmd = connection.CreateCommand();
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":idComanda", OracleType.Number, 11).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = Int32.Parse(idComanda);
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    nrLivrare = oReader.GetString(0);
+                }
+
+
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+
+            return nrLivrare;
+
+        }
 
 
         private static string conectToProd()

@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Script.Serialization;
 using System.Data.OracleClient;
 using System.Data;
+using LiteSFATestWebService.General;
 
 namespace LiteSFATestWebService
 {
@@ -72,7 +73,7 @@ namespace LiteSFATestWebService
 
 
 
-        public string getListClienti(string numeClient, string depart, string departAg, string unitLog, string codUser)
+        public string getListClienti(string numeClient, string depart, string departAg, string unitLog, string codUser, string tipUserSap)
         {
 
             string serializedResult = "";
@@ -126,6 +127,7 @@ namespace LiteSFATestWebService
                                  " and exists (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.cod " +
                                  " and p.vtweg = '20' and p.spart = '11' and p.parvw in ('ZA','ZS') " + exceptieClient + ")";
                 }
+
                 else
                 {
                     condClient = " and exists (select 1 from clie_tip t where t.canal = '10' " +
@@ -142,12 +144,11 @@ namespace LiteSFATestWebService
                     {
                         string tipUser = getTipUser(connection, codUser);
 
-                        if (tipUser != "SD" && !tipUser.StartsWith("KA"))
+                        if (tipUser != "SD" && !tipUser.StartsWith("KA") && tipUserSap != null && !tipUserSap.Equals(Constants.tipSuperAv))
                             condClient += condExtraClient;
 
                     }
 
-                   
                 }
 
 
@@ -175,7 +176,21 @@ namespace LiteSFATestWebService
                         unClient.numeClient = oReader.GetString(0);
                         unClient.codClient = oReader.GetString(1);
                         unClient.tipClient = oReader.GetString(2);
-                        listaClienti.Add(unClient);
+
+                        if (tipUserSap != null && tipUserSap.Equals(Constants.tipSuperAv))
+                        {
+                            unClient.agenti = getAgentiAlocati(connection, depart, unClient.codClient);
+                        }
+                        else
+                        {
+                            unClient.agenti = "@";
+                        }
+
+                        unClient.codAgent = "0";
+                        unClient.numeAgent = "0";
+
+                        if (unClient.agenti.Contains("@"))
+                            listaClienti.Add(unClient);
 
                     }
 
@@ -203,6 +218,55 @@ namespace LiteSFATestWebService
 
             return serializedResult;
         }
+
+
+        private string getAgentiAlocati(OracleConnection connection, string codDepart, string codClient)
+        {
+
+            string agenti = "";
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select pernr||'#'||nume from sapprd.knvp y, agenti ag where y.mandt = '900' and y.kunnr = '" + codClient + "' and y.parvw = 'VE' " +
+                                  " and vtweg = '10' and spart = '" + codDepart + "' and ag.cod = pernr and ag.activ = 1 ";
+
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+
+                    while (oReader.Read())
+                    {
+                        agenti += oReader.GetString(0) + "@";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+
+
+            return agenti;
+
+        }
+
+
+
 
          public string getListMeseriasi(string numeClient, string unitLog){
 
@@ -633,6 +697,10 @@ namespace LiteSFATestWebService
                     retVal += termPlata + "#";
 
                     detaliiClient.divizii = getDiviziiClient(connection, codClient, codUser);
+
+                    //TEST
+                    detaliiClient.divizii = "01;02;03;04;05;06;07;08;09;";
+
                     oReader.Close();
                     oReader.Dispose();
 
@@ -673,8 +741,15 @@ namespace LiteSFATestWebService
 
                 cmd = connection.CreateCommand();
 
+                string tipUser = getTipUser(connection, codAgent);
+                string condAgent = " and p.pernr =:codAgent ";
+
+                if (tipUser.Equals("SD"))
+                    condAgent = " ";
+
+
                 cmd.CommandText = " select distinct spart from sapprd.knvp p where p.mandt = '900' and p.kunnr =:codClient " +
-                                  " and p.pernr =:codAgent and p.vtweg = '10' and p.parvw in ('VE','ZC') ";
+                                  condAgent + " and p.vtweg = '10' and p.parvw in ('VE','ZC') order by spart ";
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -683,8 +758,11 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
                 cmd.Parameters[0].Value = codClient;
 
-                cmd.Parameters.Add(":codAgent", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
-                cmd.Parameters[1].Value = codAgent;
+                if (!tipUser.Equals("SD"))
+                {
+                    cmd.Parameters.Add(":codAgent", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                    cmd.Parameters[1].Value = codAgent;
+                }
 
                 oReader = cmd.ExecuteReader();
 
@@ -782,6 +860,9 @@ namespace LiteSFATestWebService
             OracleCommand cmd = new OracleCommand();
             OracleDataReader oReader = null;
 
+
+
+
             try
             {
                 string connectionString = DatabaseConnections.ConnectToTestEnvironment();
@@ -792,6 +873,7 @@ namespace LiteSFATestWebService
                 cmd = connection.CreateCommand();
 
                 string sqlString;
+                string tipConsilier = "";
 
                 if (tipUser.Equals("AV"))
                     sqlString = " select c.name1 nume, c.kunnr cod  from sapprd.kna1 c " +
@@ -800,10 +882,18 @@ namespace LiteSFATestWebService
                                 " p.parvw in ('ZA', 'ZS') and p.kunn2 =:filiala ) " +
                                 " and exists (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.kunnr " +
                                 " and p.vtweg = '20' and p.parvw in ('ZC') and p.pernr =:codAgent ) order by c.name1 ";
-                else
-                    sqlString = " select c.name1 nume, c.kunnr cod from sapprd.kna1 c where  c.ktokd = '1180'  and exists " +
-                               " (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.kunnr  and p.vtweg = '20' and p.parvw in ('ZA', 'ZS') and p.kunn2 =:filiala )  " +
-                               " order by c.name1 ";
+                else {
+                    tipConsilier = Utils.getTipConsilier(connection, codUser);
+
+                    if (tipConsilier.ToUpper().StartsWith("CAG") || tipConsilier.ToUpper().Equals("CVG"))
+                        sqlString = " select c.name1 nume, c.kunnr cod from sapprd.kna1 c where  c.ktokd = '1180'  and exists " +
+                                    " (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.kunnr  and p.vtweg = '20' and p.parvw in ('ZC') and p.pernr =:codAgent )  " +
+                                    " order by c.name1 ";
+                    else
+                        sqlString = " select c.name1 nume, c.kunnr cod from sapprd.kna1 c where  c.ktokd = '1180'  and exists " +
+                                   " (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.kunnr  and p.vtweg = '20' and p.parvw in ('ZA', 'ZS') and p.kunn2 =:filiala )  " +
+                                   " order by c.name1 ";
+                }
 
 
                 cmd.CommandText = sqlString;
@@ -811,13 +901,22 @@ namespace LiteSFATestWebService
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
 
-                cmd.Parameters.Add(":filiala", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
-                cmd.Parameters[0].Value = codFiliala;
+                if (tipUser.Equals("AV") || (!tipConsilier.ToUpper().StartsWith("CAG") && !tipConsilier.ToUpper().StartsWith("CVG")))
+                {
+                    cmd.Parameters.Add(":filiala", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                    cmd.Parameters[0].Value = codFiliala;
 
-                if (tipUser.Equals("AV"))
+                    if (tipUser.Equals("AV"))
+                    {
+                        cmd.Parameters.Add(":codAgent", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                        cmd.Parameters[1].Value = codUser;
+
+                    }
+                }
+                else if (tipConsilier.ToUpper().StartsWith("CAG") || tipConsilier.ToUpper().Equals("CVG"))
                 {
                     cmd.Parameters.Add(":codAgent", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
-                    cmd.Parameters[1].Value = codUser;
+                    cmd.Parameters[0].Value = codUser;
                 }
 
 
@@ -967,6 +1066,74 @@ namespace LiteSFATestWebService
 
             return tipAgent;
         }
+
+
+        public string getListClientiInstPublice(string numeClient, string unitLog)
+        {
+
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+            List<Client> listClienti = new List<Client>();
+
+            try
+            {
+
+                string connectionString = DatabaseConnections.ConnectToProdEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+
+
+
+                cmd.CommandText = " select c.nume, c.cod, c.tip_pers from websap.clienti c, sapprd.knvv v " +
+                                  " where c.cod = v.kunnr and v.mandt = '900' and v.vtweg = '20' and v.spart = '11' " +
+                                  " and v.kdgrp = '18' and lower(c.nume) like lower('" + numeClient + "%') order by c.nume";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+
+                //cmd.Parameters.Add(":numeClient", OracleType.VarChar, 105).Direction = ParameterDirection.Input;
+                //cmd.Parameters[0].Value = numeClient;
+
+
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        Client unClient = new Client();
+                        unClient.numeClient = oReader.GetString(0);
+                        unClient.codClient = oReader.GetString(1);
+                        unClient.tipClient = oReader.GetString(2);
+
+                        listClienti.Add(unClient);
+                    }
+                }
+
+                oReader.Close();
+                oReader.Dispose();
+
+                cmd.Dispose();
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+
+            return new JavaScriptSerializer().Serialize(listClienti);
+
+
+        }
+
 
 
 

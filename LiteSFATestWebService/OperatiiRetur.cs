@@ -81,8 +81,14 @@ namespace LiteSFATestWebService
 
                 if (tipUser.Equals("SD"))
                 {
+
+                    string condDepart = " and b.divizie like '" + depart + "%' ";
+
+                    if (Utils.isFilialaMica04(filiala, depart))
+                        condDepart = " and substr(b.divizie,0,2) = '" + depart.Substring(0, 2) + "' ";
+
                     query = " select a.id, a.nrdocument, a.numeclient, to_char(to_date(a.datacreare,'yyyymmdd')),  a.statusaprob , b.nume from sapprd.zreturhead a, agenti b where " +
-                            " a.codagent = b.cod and b.filiala =:filiala and b.divizie like '" + depart + "%' " + condData + stareComanda + " order by a.id ";
+                            " a.codagent = b.cod and b.filiala =:filiala " + condDepart + condData + stareComanda + " order by a.id ";
                 }
                 else if (tipUser.Contains("AV"))
                 {
@@ -636,7 +642,6 @@ namespace LiteSFATestWebService
             string serializedResult = "";
 
 
-            ErrorHandling.sendErrorToMail("111");
 
             OracleConnection connection = new OracleConnection();
             OracleDataReader oReader = null;
@@ -650,6 +655,10 @@ namespace LiteSFATestWebService
 
             string condPaleti = "";
             string condData = "";
+            string nrZileRetur = " sysdate-45 ";
+
+            if (tipDocument != null && tipDocument.Equals("PAL"))
+                nrZileRetur = " sysdate-90 ";
 
             if (tipDocument == null || (tipDocument != null && tipDocument.Equals("PAL")))
                 condPaleti = "and p.matkl in ('433', '433_1', '716', '626', '929_2', '515')";
@@ -665,7 +674,7 @@ namespace LiteSFATestWebService
                     cmd.CommandText = " select k.vbeln, to_date(k.fkdat,'yyyymmdd') " +
                                       " from sapprd.vbrk k, sapprd.vbrp p, sapprd.vbpa a, sapprd.adrc c where k.mandt = p.mandt " +
                                       " and k.vbeln = p.vbeln  and k.mandt = '900'  and k.fkart in ('ZFM','ZFMC','ZFS','ZFSC','ZFPA','ZFVS') " +
-                                      " and k.fksto <> 'X'  and k.fkdat >= to_char(sysdate-45,'yyyymmdd') " +
+                                      " and k.fksto <> 'X'  and k.fkdat >= to_char(" + nrZileRetur + ",'yyyymmdd') " +
                                       condPaleti +
                                       " and k.mandt = a.mandt  and k.vbeln = a.vbeln  and a.parvw = 'WE' " +
                                       " and p.prctr =:unitLog  and a.mandt = c.client and a.adrnr = c.addrnumber " +
@@ -678,13 +687,13 @@ namespace LiteSFATestWebService
                 }
                 else
                 {
-                    cmd.CommandText = " select distinct k.vbeln, to_date(k.fkdat,'yyyymmdd') " +
-                                      " from sapprd.vbrk k, sapprd.vbrp p where k.mandt = p.mandt and k.vbeln = p.vbeln and p.spart =:depart " +
-                                      " and k.mandt = '900' and k.fkdat >= to_char(sysdate-45,'yyyymmdd') and k.fkart = 'ZFI' and k.fksto <> 'X' " +
-                                      " and k.kunag =:codClient " + condPaleti + condData + " order by to_date(k.fkdat,'yyyymmdd') ";
+                        cmd.CommandText = " select distinct k.vbeln, to_date(k.fkdat,'yyyymmdd') " +
+                                     " from sapprd.vbrk k, sapprd.vbrp p where k.mandt = p.mandt and k.vbeln = p.vbeln and p.spart = substr(:depart,0,2) " +
+                                     " and k.mandt = '900' and k.fkdat >= to_char(" + nrZileRetur + ",'yyyymmdd') and k.fkart = 'ZFI' and k.fksto <> 'X' " +
+                                     " and k.kunag =:codClient " + condPaleti + condData + " order by to_date(k.fkdat,'yyyymmdd') ";
+                    
+                    
                 }
-
-                ErrorHandling.sendErrorToMail(cmd.CommandText);
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -1258,7 +1267,7 @@ namespace LiteSFATestWebService
 
                 //de modificat intervalul!!!
                 cmd.CommandText = " select  c.name1 from sapprd.vbrk k, sapprd.vbrp p, sapprd.vbpa a, sapprd.adrc c " +
-                                  " where k.mandt = p.mandt and k.vbeln = p.vbeln and k.mandt = '900' and k.fkart in ('ZFM','ZFMC','ZFS','ZFSC','ZFPA') " +
+                                  " where k.mandt = p.mandt and k.vbeln = p.vbeln and k.mandt = '900' and k.fkart in ('ZFM','ZFMC','ZFS','ZFSC','ZFPA', 'ZFVS','ZFCS') " +
                                   " and k.fksto <> 'X' and k.fkdat >= to_char(sysdate-45,'yyyymmdd') and p.matkl in ('433', '433_1', '716', '626', '929_2','515') " +
                                   " and k.mandt = a.mandt and k.vbeln = a.vbeln and a.parvw = 'WE' " +
                                   " and p.prctr =:unitLog and a.mandt = c.client and a.adrnr = c.addrnumber  and lower(c.name1) like lower('%" + numeClient.ToLower() + "%') order by fkdat";

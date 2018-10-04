@@ -127,6 +127,50 @@ namespace LiteSFATestWebService
         }
 
 
+        public static void actualizeazaTonajComanda(OracleConnection connection, string idComanda, string tonaj)
+        {
+
+            if (tonaj == null || tonaj.Equals("-1") || tonaj.Trim().Equals(""))
+                return;
+
+
+            OracleCommand cmd = null;
+
+            try
+            {
+                cmd = connection.CreateCommand();
+
+                string query = " update sapprd.ztonajcomanda set greutate=:greutate where id =:idComanda ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":greutate", OracleType.Number, 13).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = tonaj;
+
+                cmd.Parameters.Add(":idComanda", OracleType.Number, 11).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = Int32.Parse(idComanda);
+
+                cmd.ExecuteNonQuery();
+
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                if (cmd != null)
+                    cmd.Dispose();
+            }
+
+
+
+        }
+
 
         private static bool recordTonajExists(OracleConnection connection, string codClient, string addrNumber)
         {
@@ -495,6 +539,99 @@ namespace LiteSFATestWebService
 
             return existaDatePers;
         }
+
+
+
+
+        public static void aprobaAutomatSD(OracleConnection connection, string codAgent, string idComanda)
+        {
+            OracleCommand cmd = connection.CreateCommand();
+            OracleDataReader oReader = null;
+
+            try {
+
+                string query = " select count(*) from sapprd.zsuperav where mandt='900' and av = :codAgent ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codAgent", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codAgent;
+
+                oReader = cmd.ExecuteReader();
+                oReader.Read();
+
+                if (oReader.GetInt32(0) == 0)
+                {
+                    oReader.Close();
+                    oReader.Dispose();
+                    cmd.Dispose();
+                    return;
+                }
+
+                DateTime cDate = DateTime.Now;
+                string nowTime = cDate.Hour.ToString("00") + cDate.Minute.ToString("00") + cDate.Second.ToString("00");
+
+                cmd.CommandText = " update sapprd.zcomhead_tableta set ora_accept1 =:oraAccept where id =:idComanda ";
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":oraAccept", OracleType.NVarChar, 18).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = nowTime;
+
+                cmd.Parameters.Add(":idComanda", OracleType.Number, 11).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = idComanda;
+
+                cmd.ExecuteNonQuery();
+
+                oReader.Close();
+                oReader.Dispose();
+                cmd.Dispose();
+
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+
+
+        }
+
+
+
+        public static void saveComandaSuperAv(OracleConnection connection, string codSuperAv, string idComanda)
+        {
+
+            string query = "";
+
+            try
+            {
+                OracleCommand cmd = connection.CreateCommand();
+
+                query = " insert into sapprd.zcomsuperav(mandt, cod_sagent, id_comanda) " +
+                        " values ('900', :codAgent , :idComanda)";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codAgent", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codSuperAv;
+
+                cmd.Parameters.Add(":idComanda", OracleType.Number, 11).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = Int32.Parse(idComanda);
+
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+
+            return;
+        }
+
 
 
 

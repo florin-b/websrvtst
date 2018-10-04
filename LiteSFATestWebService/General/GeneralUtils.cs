@@ -95,5 +95,14 @@ namespace LiteSFATestWebService.General
 
         }
 
+
+        public static bool isFilialaExtensie02(string filiala)
+        {
+            string fil = filiala.ToUpper();
+
+            return fil.Equals("GALATI") || fil.Equals("IASI") || fil.Contains("BAIA") || fil.StartsWith("GL") || fil.StartsWith("IS") || fil.StartsWith("MM");
+
+        }
+
     }
 }

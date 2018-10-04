@@ -19,7 +19,7 @@ namespace LiteSFATestWebService
         public StarePlatitorTva verificaTVAService(string cuiClient)
         {
 
-            string serviceUrl = "http://www.verificaretva.ro/api/apiv2.aspx?key=z1dvZijKepDykHGS&cui=" + cuiClient + "&data=" + AddressUtils.getCurrentDate_YY_MM_DD();
+            string serviceUrl = "http://www.verificaretva.ro/api/apiv4.aspx?key=z1dvZijKepDykHGS&cui=" + cuiClient + "&data=" + AddressUtils.getCurrentDate_YY_MM_DD();
 
             System.Net.WebRequest req = System.Net.WebRequest.Create(serviceUrl);
             System.Net.WebResponse resp = req.GetResponse();
@@ -155,16 +155,16 @@ namespace LiteSFATestWebService
             cmd.Parameters[6].Value = starePlatitor.Nr == "" ? " " : starePlatitor.Nr;
 
             cmd.Parameters.Add(":stare", OracleType.VarChar, 300).Direction = ParameterDirection.Input;
-            cmd.Parameters[7].Value = starePlatitor.Stare;
+            cmd.Parameters[7].Value = starePlatitor.Stare == null ? " " : starePlatitor.Stare;
 
             cmd.Parameters.Add("tva", OracleType.VarChar, 3).Direction = ParameterDirection.Input;
-            cmd.Parameters[8].Value = starePlatitor.TVA;
+            cmd.Parameters[8].Value = starePlatitor.TVA == "False" ? "0" : "1";
 
             cmd.Parameters.Add(":tvaIncs", OracleType.VarChar, 3).Direction = ParameterDirection.Input;
-            cmd.Parameters[9].Value = starePlatitor.TVAIncasare;
+            cmd.Parameters[9].Value = starePlatitor.TVAIncasare == "False" ? "0" : "1";
 
             cmd.Parameters.Add(":dataTva", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
-            cmd.Parameters[10].Value = starePlatitor.DataTVA == "" ? " " : formatTvaDate(starePlatitor.DataTVA);
+            cmd.Parameters[10].Value = starePlatitor.DataTVA == null || starePlatitor.DataTVA == "" ? " " : formatTvaDate(starePlatitor.DataTVA);
 
             cmd.Parameters.Add(":dataUpdate", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
             cmd.Parameters[11].Value = AddressUtils.getCurrentDate_YYDDMM();
@@ -225,19 +225,19 @@ namespace LiteSFATestWebService
             cmd.Parameters[9].Value = starePlatitor.Nr == "" ? " " : starePlatitor.Nr;
 
             cmd.Parameters.Add(":stare", OracleType.VarChar, 300).Direction = ParameterDirection.Input;
-            cmd.Parameters[10].Value = starePlatitor.Stare;
+            cmd.Parameters[10].Value = starePlatitor.Stare == null ? " " : starePlatitor.Stare;
 
             cmd.Parameters.Add(":data_update", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
             cmd.Parameters[11].Value = AddressUtils.getCurrentDate_YYDDMM();
 
             cmd.Parameters.Add("tva", OracleType.VarChar, 3).Direction = ParameterDirection.Input;
-            cmd.Parameters[12].Value = starePlatitor.TVA;
+            cmd.Parameters[12].Value = starePlatitor.TVA == "False" ? "0" : "1";
 
             cmd.Parameters.Add(":tva_incs", OracleType.VarChar, 3).Direction = ParameterDirection.Input;
-            cmd.Parameters[13].Value = starePlatitor.TVAIncasare;
+            cmd.Parameters[13].Value = starePlatitor.TVAIncasare == "False" ? "0" : "1";
 
             cmd.Parameters.Add(":data_tva", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
-            cmd.Parameters[14].Value = starePlatitor.DataTVA == "" ? " " : formatTvaDate(starePlatitor.DataTVA);
+            cmd.Parameters[14].Value = starePlatitor.DataTVA == null || starePlatitor.DataTVA == "" ? " " : formatTvaDate(starePlatitor.DataTVA);
 
             cmd.Parameters.Add(":data_salv", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
             cmd.Parameters[15].Value = AddressUtils.getCurrentDate_YYMMDD();

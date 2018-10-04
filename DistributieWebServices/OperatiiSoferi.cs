@@ -116,7 +116,7 @@ namespace DistributieTESTWebServices
             try
             {
 
-                connection.ConnectionString = DatabaseConnections.ConnectToProdEnvironment();
+                connection.ConnectionString = DatabaseConnections.ConnectToTestEnvironment();
                 connection.Open();
 
                 cmd = connection.CreateCommand();
@@ -261,6 +261,181 @@ namespace DistributieTESTWebServices
         {
             string[] tokDate = strDate.Split('-');
             return tokDate[0] + "-" + tokDate[1] + "-20" + tokDate[2];
+
+
+        }
+
+
+        public string getMasinaSofer(string codSofer)
+        {
+            string nrMasina = "";
+
+            nrMasina = getMasinaSoferBorderou(codSofer);
+
+            if (nrMasina.Length == 0)
+                nrMasina = getMasinaSoferAlocata(codSofer);
+
+            if (nrMasina.Length == 0)
+                nrMasina = " ";
+
+            return nrMasina;
+        }
+
+
+        public string getMasinaSoferBorderou(string codSofer)
+        {
+            string nrMasina = "";
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select x.masina from (select to_char(b.data_e),  nvl((select nvl(ev.eveniment,'0') eveniment " +
+                                  " from sapprd.zevenimentsofer ev where ev.document = b.numarb and ev.data = (select max(data) from sapprd.zevenimentsofer where document = ev.document and client = ev.document) " +
+                                  " and ev.ora = (select max(ora) from sapprd.zevenimentsofer where document = ev.document and client = ev.document and data = ev.data)),0) eveniment, b.shtyp, " +
+                                  " nvl((select distinct nr_bord from sapprd.zdocumentebord where nr_bord_urm =b.numarb and rownum=1),'-1') bordParent, b.masina " +
+                                  " from  borderouri b, sapprd.zdocumentebord c  where  c.nr_bord = b.numarb and b.cod_sofer=:codSofer  order by trunc(c.data_e), c.ora_e) x where x.eveniment != 'S' and rownum<2 ";
+
+
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":codSofer", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codSofer;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    nrMasina = oReader.GetString(0);
+
+                }
+
+                oReader.Close();
+                oReader.Dispose();
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                cmd.Dispose();
+                connection.Close();
+                connection.Dispose();
+            }
+
+
+            return nrMasina;
+        }
+
+
+        public string getMasinaSoferAlocata(string codSofer)
+        {
+            string nrMasina = "";
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select ktext from( select distinct c.ktext,a.adatu " +
+                                  " from sapprd.anlz a join sapprd.anla b on b.anln1 = a.anln1 and b.anln2 = a.anln2 and b.mandt = a.mandt " +
+                                  " join sapprd.aufk c on c.aufnr = a.caufn and c.mandt = a.mandt where a.pernr = :codSofer " +
+                                  " and a.bdatu >= (select to_char(sysdate - 5, 'YYYYMMDD') from dual) and b.deakt = '00000000' and a.mandt = '900' and c.auart = '1001' " +
+                                  " order by a.adatu desc ) where rownum = 1 ";
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codSofer", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codSofer;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    nrMasina = oReader.GetString(0);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return nrMasina;
+        }
+
+        public string getKmMasina(string nrMasina)
+        {
+            string kmMasina = "0";
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select x.mileage from( select mileage from gps_date where " +
+                                  " device_id = (select id from gps_masini where nr_masina =:nrMasina) " +
+                                  " and trunc(record_time) = trunc(sysdate) order by mileage) x where rownum = 1 ";
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":nrMasina", OracleType.VarChar, 10).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = nrMasina.Replace("-", "").Replace(" ", "");
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    kmMasina = oReader.GetInt32(0).ToString();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return kmMasina;
+
 
 
         }

@@ -111,6 +111,7 @@
     <Compile Include="General\AddressUtils.cs" />
     <Compile Include="General\ArticoleUtils.cs" />
     <Compile Include="General\BeansObiectiveCVA.cs" />
+    <Compile Include="General\Constants.cs" />
     <Compile Include="General\DatabaseConnections.cs" />
     <Compile Include="General\ErrorHandling.cs" />
     <Compile Include="General\GeneralUtils.cs" />
@@ -180,6 +181,11 @@
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>
     <Compile Include="Web References\SapWsClp\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+    <Compile Include="Web References\SAPWSCustodie\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.map</DependentUpon>
@@ -274,6 +280,17 @@
       </CachedDynamicPropName>
       <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
       <CachedSettingsPropName>LiteSFATestWebService_PlataNeincasate_ZFG_INSTR_PLATA</CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://sap-qas1a.arabesque.ro:8082/sap/bc/srt/wsdl/flv_10002A111AD1/bndg_url/sap/bc/srt/rfc/sap/zws_custodie/900/zws_custodie/zws_custodie%3fsap-client=900">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\SAPWSCustodie\</RelPath>
+      <UpdateFromURL>http://sap-qas1a.arabesque.ro:8082/sap/bc/srt/wsdl/flv_10002A111AD1/bndg_url/sap/bc/srt/rfc/sap/zws_custodie/900/zws_custodie/zws_custodie%3fsap-client=900</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>LiteSFATestWebService_SAPWSCustodie_ZWS_CUSTODIE</CachedSettingsPropName>
     </WebReferenceUrl>
     <WebReferenceUrl Include="http://sap-test1a.arabesque.ro:8081/sap/bc/srt/wsdl/flv_10002A111AD1/bndg_url/sap/bc/srt/rfc/sap/zwbs_zintrarimarfa/900/zwbs_zintrarimarfa/zwbs_zintrarimarfa%3fsap-client=900">
       <UrlBehavior>Dynamic</UrlBehavior>
@@ -439,6 +456,17 @@
     <None Include="Web References\SapWsClp\ZstergeStoResponse.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
+    <None Include="Web References\SAPWSCustodie\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <Content Include="Web References\SAPWSCustodie\ZlivrareCustodieResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\SAPWSCustodie\ZcustChLivrareResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <None Include="Web References\SAPWSCustodie\zws_custodie.wsdl" />
     <None Include="Web References\SMSService\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>

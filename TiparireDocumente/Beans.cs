@@ -28,6 +28,7 @@ namespace TiparireDocumenteTest
         public string cantitate;
         public string um;
         public string isPregatit;
+        public string modificare;
     }
 
 

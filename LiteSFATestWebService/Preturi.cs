@@ -339,7 +339,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters[0].Value = codClient;
 
                 cmd.Parameters.Add(":dataStart", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
-                cmd.Parameters[1].Value = AddressUtils.getMonthDate(-2);
+                cmd.Parameters[1].Value = AddressUtils.getMonthDate(-3);
 
                 cmd.Parameters.Add(":codArticol", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
                 cmd.Parameters[2].Value = codArticol;

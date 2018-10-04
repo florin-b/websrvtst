@@ -141,6 +141,8 @@ namespace TiparireDocumenteTest
                         if (!unDocument.client.Equals(numeClient))
                             unDocument.client = unDocument.client + " " + numeClient;
 
+                        unDocument.modificare = "-2";
+
                         listaDocumente.Add(unDocument);
 
 

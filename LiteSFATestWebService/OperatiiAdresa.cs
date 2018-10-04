@@ -200,8 +200,6 @@ namespace LiteSFATestWebService
                 cmd.ExecuteNonQuery();
 
 
-
-
             }
             catch (Exception ex)
             {
@@ -224,6 +222,51 @@ namespace LiteSFATestWebService
         }
 
 
+
+        public static void actualizeazaCoordonateAdresa(OracleConnection connection, string idComanda, string coordonate)
+        {
+
+            String[] coords = coordonate.Split('#');
+
+            if (coords[0].Equals("0") || coords[0].Equals("0.0"))
+                return;
+
+            OracleCommand cmd = connection.CreateCommand();
+
+            try
+            {
+
+                cmd.CommandText = " update sapprd.zcoordcomenzi set latitude =:latitude, longitude=:longitude where idcomanda =:idComanda ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":latitude", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = coords[0];
+
+                cmd.Parameters.Add(":longitude", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = coords[1];
+
+                cmd.Parameters.Add(":idComanda", OracleType.Number, 11).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = idComanda;
+
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                if (cmd != null)
+                    cmd.Dispose();
+            }
+
+            return;
+
+
+        }
 
 
         public static void adaugaAdresaClient(OracleConnection connection, String idComanda, DateLivrare dateLivrare)

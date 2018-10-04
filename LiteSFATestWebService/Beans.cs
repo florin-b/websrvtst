@@ -37,6 +37,9 @@ namespace LiteSFATestWebService
         public string numeClient;
         public string codClient;
         public string tipClient;
+        public string agenti;
+        public string codAgent;
+        public string numeAgent;
     }
 
 
@@ -243,6 +246,8 @@ namespace LiteSFATestWebService
         public string furnizorProduse;
         public bool isCamionDescoperit;
         public string diviziiClient;
+        public string codSuperAgent;
+        public string programLivrare;
 
 
 
@@ -346,7 +351,6 @@ namespace LiteSFATestWebService
         public string telAgent;
         public string avans;
         public string clientRaft;
-        
 
     }
 
@@ -680,6 +684,14 @@ namespace LiteSFATestWebService
     }
 
 
-
+    public class DLExpirat
+    {
+        public string nrDocument;
+        public string numeClient;
+        public string dataDocument;
+        public string nrDocumentSap;
+        public string dataLivrare;
+        public string furnizor;
+    }
 
 }

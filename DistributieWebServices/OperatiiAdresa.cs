@@ -23,7 +23,7 @@ namespace DistributieTESTWebServices
 
             try
             {
-                string connectionString = DatabaseConnections.ConnectToProdEnvironment();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();

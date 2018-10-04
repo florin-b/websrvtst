@@ -173,5 +173,164 @@ namespace LiteSFATestWebService
         }
 
 
+
+        public static bool isFilialaMica04(string filiala, string departament)
+        {
+            if (filiala == null)
+                return false;
+
+            if (departament.StartsWith("04") && (filiala.Equals("HD10") || filiala.Equals("VN10") || filiala.Equals("BU12") || filiala.Equals("BZ10") || filiala.Equals("MS10") || filiala.Equals("BC10")))
+                return true;
+
+            return false;
+
+
+        }
+
+
+        public static string getTipConsilier(OracleConnection connection, string codConsilier)
+        {
+            string tipConsilier = "NN";
+
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select tip from agenti where cod =:codAgent and upper(tip) like 'C%' ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codAgent", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codConsilier.Trim();
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    tipConsilier = oReader.GetString(0).Trim();
+                    
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+
+            return tipConsilier;
+        }
+
+
+
+        public static string getDepartArticol(OracleConnection connection, string codArticol)
+        {
+            string departament = "00";
+
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            if (codArticol.Length == 8)
+                codArticol = "0000000000" + codArticol;
+
+            try
+            {
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select grup_vz from articole where cod =:codArt ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codArt", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codArticol;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    departament = oReader.GetString(0).Trim();
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+
+            return departament;
+        }
+
+
+
+        public static string getNumeClient(OracleConnection connection, string codClient)
+        {
+            string numeClient = "Nedefinit";
+
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select nume from clienti where cod =:codClient ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codClient;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    numeClient = oReader.GetString(0).Trim();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+
+            return numeClient;
+        }
+
+        public static string formatDateToSap(string date)
+        {
+            string[] toksDate = date.Split('.');
+            return toksDate[2] + toksDate[1] + toksDate[0];
+
+        }
+
+
+
     }
 }
