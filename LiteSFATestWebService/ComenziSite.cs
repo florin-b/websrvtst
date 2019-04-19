@@ -91,7 +91,7 @@ namespace LiteSFATestWebService
                 JSONComandaLocal = serializer.Serialize(comandaVanzare);
                 JSONDateLivrareLocal = serializer.Serialize(dateLivrare);
 
-                retVal = new Service1().saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, "CV", JSONArtLocal, JSONComandaLocal, JSONDateLivrareLocal, true);
+                retVal = new Service1().saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, "CV", JSONArtLocal, JSONComandaLocal, JSONDateLivrareLocal, true,"");
 
                 pretTransp += getPretTransport(retVal);
                 idComanda = getIdComanda(retVal);
@@ -113,7 +113,7 @@ namespace LiteSFATestWebService
                 JSONArtLocal = serializer.Serialize(tempListAlta);
                 JSONComandaLocal = serializer.Serialize(comandaVanzare);
                 JSONDateLivrareLocal = serializer.Serialize(dateLivrare);
-                retVal = new Service1().saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, "CV", JSONArtLocal, JSONComandaLocal, JSONDateLivrareLocal, true);
+                retVal = new Service1().saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, "CV", JSONArtLocal, JSONComandaLocal, JSONDateLivrareLocal, true,"");
 
                 pretTransp += getPretTransport(retVal);
 
@@ -140,7 +140,7 @@ namespace LiteSFATestWebService
                 JSONDateLivrareLocal = serializer.Serialize(dateLivrare);
 
                 JSONArtLocal = serializer.Serialize(tempListBV90);
-                retVal = new Service1().saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, "CV", JSONArtLocal, JSONComandaLocal, JSONDateLivrareLocal, true);
+                retVal = new Service1().saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, "CV", JSONArtLocal, JSONComandaLocal, JSONDateLivrareLocal, true,"");
 
                 pretTransp += getPretTransport(retVal);
 

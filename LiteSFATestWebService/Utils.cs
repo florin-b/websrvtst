@@ -330,6 +330,167 @@ namespace LiteSFATestWebService
 
         }
 
+        public static string getTipAngajat(string codAngajat)
+        {
+            string tipAngajat = "NN";
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select tip from agenti where cod =:codAgent ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codAgent", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codAngajat.Trim();
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    tipAngajat = oReader.GetString(0);
+                   
+                }
+
+
+                oReader.Close();
+                oReader.Dispose();
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                cmd.Dispose();
+                connection.Close();
+                connection.Dispose();
+            }
+
+
+            return tipAngajat;
+        }
+
+
+
+        public static string getTipAngajat(OracleConnection connection, OracleTransaction transaction, string codAngajat)
+        {
+            string tipAngajat = "NN";
+
+            
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select tip from agenti where cod =:codAgent ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codAgent", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codAngajat.Trim();
+
+                cmd.Transaction = transaction;
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    tipAngajat = oReader.GetString(0);
+
+                }
+
+
+                oReader.Close();
+                oReader.Dispose();
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                cmd.Dispose();
+            }
+
+
+            return tipAngajat;
+        }
+
+
+
+
+        public static string getCodAngajat(OracleConnection connection, string numeAngajat, string filiala)
+        {
+            string codAngajat = "00000000";
+
+
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select cod from agenti where activ = '1' and upper(nume) =:numeAngajat and substr(filiala,0,2) = :filiala ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":numeAngajat", OracleType.VarChar, 120).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = numeAngajat.ToUpper().Trim();
+
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = filiala.Substring(0, 2);
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    codAngajat = oReader.GetString(0);
+                }
+
+                oReader.Close();
+                oReader.Dispose();
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                cmd.Dispose();
+            }
+
+
+            return codAngajat;
+        }
+
 
 
     }

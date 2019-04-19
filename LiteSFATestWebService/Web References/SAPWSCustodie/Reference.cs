@@ -27,8 +27,8 @@ namespace LiteSFATestWebService.SAPWSCustodie {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Web.Services.WebServiceBindingAttribute(Name="ZWS_CUSTODIE", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
-    public partial class ZWS_CUSTODIE : System.Web.Services.Protocols.SoapHttpClientProtocol {
+    [System.Web.Services.WebServiceBindingAttribute(Name="zwbs_custodie", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class zwbs_custodie : System.Web.Services.Protocols.SoapHttpClientProtocol {
         
         private System.Threading.SendOrPostCallback ZcustChLivrareOperationCompleted;
         
@@ -37,7 +37,7 @@ namespace LiteSFATestWebService.SAPWSCustodie {
         private bool useDefaultCredentialsSetExplicitly;
         
         /// <remarks/>
-        public ZWS_CUSTODIE() {
+        public zwbs_custodie() {
             this.Url = global::LiteSFATestWebService.Properties.Settings.Default.LiteSFATestWebService_SAPWSCustodie_ZWS_CUSTODIE;
             if ((this.IsLocalFileSystemWebService(this.Url) == true)) {
                 this.UseDefaultCredentials = true;

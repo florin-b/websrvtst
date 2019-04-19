@@ -264,55 +264,55 @@
     <wsdl:operation name="send">
       <soap:operation soapAction="http://schemas.xmlsoap.org/soap/envelope/#SMSService#send" />
       <wsdl:input>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:input>
       <wsdl:output>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="SendSms">
       <soap:operation soapAction="http://schemas.xmlsoap.org/soap/envelope/#SMSService#SendSms" />
       <wsdl:input>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:input>
       <wsdl:output>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="sendSmsAuthKey">
       <soap:operation soapAction="http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendSmsAuthKey" />
       <wsdl:input>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:input>
       <wsdl:output>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="sendWapPush">
       <soap:operation soapAction="http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendWapPush" />
       <wsdl:input>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:input>
       <wsdl:output>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="sendVCalendar">
       <soap:operation soapAction="http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendVCalendar" />
       <wsdl:input>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:input>
       <wsdl:output>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="sendVCard">
       <soap:operation soapAction="http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendVCard" />
       <wsdl:input>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:input>
       <wsdl:output>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="sendSmsFlash">
@@ -327,88 +327,88 @@
     <wsdl:operation name="checkStatus">
       <soap:operation soapAction="http://schemas.xmlsoap.org/soap/envelope/#SMSService#checkStatus" />
       <wsdl:input>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:input>
       <wsdl:output>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="openSession">
       <soap:operation soapAction="http://schemas.xmlsoap.org/soap/envelope/#SMSService#openSession" />
       <wsdl:input>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:input>
       <wsdl:output>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="closeSession">
       <soap:operation soapAction="http://schemas.xmlsoap.org/soap/envelope/#SMSService#closeSession" />
       <wsdl:input>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:input>
       <wsdl:output>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="sendSession">
       <soap:operation soapAction="http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendSession" />
       <wsdl:input>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:input>
       <wsdl:output>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="sendSessionWapPush">
       <soap:operation soapAction="http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendSessionWapPush" />
       <wsdl:input>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:input>
       <wsdl:output>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="sendSessionVCalendar">
       <soap:operation soapAction="http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendSessionVCalendar" />
       <wsdl:input>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:input>
       <wsdl:output>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="sendSessionVCard">
       <soap:operation soapAction="http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendSessionVCard" />
       <wsdl:input>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:input>
       <wsdl:output>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="sendSessionSmsFlash">
       <soap:operation soapAction="http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendSessionSmsFlash" />
       <wsdl:input>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:input>
       <wsdl:output>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="showIp">
       <soap:operation soapAction="http://schemas.xmlsoap.org/soap/envelope/#SMSService#showIp" />
       <wsdl:input>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:input>
       <wsdl:output>
-        <soap:body use="encoded" namespace="http://wsi.bizpack.ro/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+        <soap:body use="encoded" namespace="https://www.bizpack.ro/wsi/service.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="SMSServiceService">
     <wsdl:port name="SMSServicePort" binding="tns:SMSServiceBinding">
-      <soap:address location="http://wsi.bizpack.ro/service.php" />
+      <soap:address location="https://www.bizpack.ro/wsi/service.php" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

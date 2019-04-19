@@ -23,7 +23,7 @@ namespace LiteSFATestWebService.SMSService {
     
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Web.Services.WebServiceBindingAttribute(Name="SMSServiceBinding", Namespace="urn:SMSService")]
@@ -148,7 +148,7 @@ namespace LiteSFATestWebService.SMSService {
         public event showIpCompletedEventHandler showIpCompleted;
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#send", RequestNamespace="http://wsi.bizpack.ro/service.php", ResponseNamespace="http://wsi.bizpack.ro/service.php")]
+        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#send", RequestNamespace="https://www.bizpack.ro/wsi/service.php", ResponseNamespace="https://www.bizpack.ro/wsi/service.php")]
         [return: System.Xml.Serialization.SoapElementAttribute("id")]
         public string send(string phone, string message, System.DateTime date, string sender, int validity) {
             object[] results = this.Invoke("send", new object[] {
@@ -186,7 +186,7 @@ namespace LiteSFATestWebService.SMSService {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#SendSms", RequestNamespace="http://wsi.bizpack.ro/service.php", ResponseNamespace="http://wsi.bizpack.ro/service.php")]
+        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#SendSms", RequestNamespace="https://www.bizpack.ro/wsi/service.php", ResponseNamespace="https://www.bizpack.ro/wsi/service.php")]
         [return: System.Xml.Serialization.SoapElementAttribute("id")]
         public string SendSms(string username, string password, string source, string destination, string body, bool isUnicode, System.DateTime scheduleDate, string callbackUrl) {
             object[] results = this.Invoke("SendSms", new object[] {
@@ -230,7 +230,7 @@ namespace LiteSFATestWebService.SMSService {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendSmsAuthKey", RequestNamespace="http://wsi.bizpack.ro/service.php", ResponseNamespace="http://wsi.bizpack.ro/service.php")]
+        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendSmsAuthKey", RequestNamespace="https://www.bizpack.ro/wsi/service.php", ResponseNamespace="https://www.bizpack.ro/wsi/service.php")]
         [return: System.Xml.Serialization.SoapElementAttribute("id")]
         public string sendSmsAuthKey(string username, string authKey, string sender, string recipient, string message, System.DateTime scheduleDate, int validity, string callbackUrl) {
             object[] results = this.Invoke("sendSmsAuthKey", new object[] {
@@ -274,7 +274,7 @@ namespace LiteSFATestWebService.SMSService {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendWapPush", RequestNamespace="http://wsi.bizpack.ro/service.php", ResponseNamespace="http://wsi.bizpack.ro/service.php")]
+        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendWapPush", RequestNamespace="https://www.bizpack.ro/wsi/service.php", ResponseNamespace="https://www.bizpack.ro/wsi/service.php")]
         [return: System.Xml.Serialization.SoapElementAttribute("id")]
         public string sendWapPush(string phone, string url, string message, System.DateTime date, string sender, int validity) {
             object[] results = this.Invoke("sendWapPush", new object[] {
@@ -314,7 +314,7 @@ namespace LiteSFATestWebService.SMSService {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendVCalendar", RequestNamespace="http://wsi.bizpack.ro/service.php", ResponseNamespace="http://wsi.bizpack.ro/service.php")]
+        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendVCalendar", RequestNamespace="https://www.bizpack.ro/wsi/service.php", ResponseNamespace="https://www.bizpack.ro/wsi/service.php")]
         [return: System.Xml.Serialization.SoapElementAttribute("return")]
         public string sendVCalendar(string recipient, string subject, string location, string description, System.DateTime startDatetime, System.DateTime endDatetime, System.DateTime alarmDatetime, System.DateTime sendDatetime, string sender, int validity) {
             object[] results = this.Invoke("sendVCalendar", new object[] {
@@ -362,7 +362,7 @@ namespace LiteSFATestWebService.SMSService {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendVCard", RequestNamespace="http://wsi.bizpack.ro/service.php", ResponseNamespace="http://wsi.bizpack.ro/service.php")]
+        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendVCard", RequestNamespace="https://www.bizpack.ro/wsi/service.php", ResponseNamespace="https://www.bizpack.ro/wsi/service.php")]
         [return: System.Xml.Serialization.SoapElementAttribute("return")]
         public string sendVCard(string recipient, string firstname, string lastname, string mobilephone, string email, string organization, System.DateTime sendDatetime, string sender, int validity) {
             object[] results = this.Invoke("sendVCard", new object[] {
@@ -446,7 +446,7 @@ namespace LiteSFATestWebService.SMSService {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#checkStatus", RequestNamespace="http://wsi.bizpack.ro/service.php", ResponseNamespace="http://wsi.bizpack.ro/service.php")]
+        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#checkStatus", RequestNamespace="https://www.bizpack.ro/wsi/service.php", ResponseNamespace="https://www.bizpack.ro/wsi/service.php")]
         [return: System.Xml.Serialization.SoapElementAttribute("status")]
         public string checkStatus(string messageId) {
             object[] results = this.Invoke("checkStatus", new object[] {
@@ -476,7 +476,7 @@ namespace LiteSFATestWebService.SMSService {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#openSession", RequestNamespace="http://wsi.bizpack.ro/service.php", ResponseNamespace="http://wsi.bizpack.ro/service.php")]
+        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#openSession", RequestNamespace="https://www.bizpack.ro/wsi/service.php", ResponseNamespace="https://www.bizpack.ro/wsi/service.php")]
         [return: System.Xml.Serialization.SoapElementAttribute("sessid")]
         public string openSession(string username, string password) {
             object[] results = this.Invoke("openSession", new object[] {
@@ -508,7 +508,7 @@ namespace LiteSFATestWebService.SMSService {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#closeSession", RequestNamespace="http://wsi.bizpack.ro/service.php", ResponseNamespace="http://wsi.bizpack.ro/service.php")]
+        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#closeSession", RequestNamespace="https://www.bizpack.ro/wsi/service.php", ResponseNamespace="https://www.bizpack.ro/wsi/service.php")]
         [return: System.Xml.Serialization.SoapElementAttribute("result")]
         public bool closeSession(string sessid) {
             object[] results = this.Invoke("closeSession", new object[] {
@@ -538,7 +538,7 @@ namespace LiteSFATestWebService.SMSService {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendSession", RequestNamespace="http://wsi.bizpack.ro/service.php", ResponseNamespace="http://wsi.bizpack.ro/service.php")]
+        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendSession", RequestNamespace="https://www.bizpack.ro/wsi/service.php", ResponseNamespace="https://www.bizpack.ro/wsi/service.php")]
         [return: System.Xml.Serialization.SoapElementAttribute("id")]
         public string sendSession(string sessid, string phone, string message, System.DateTime date, string sender, int validity) {
             object[] results = this.Invoke("sendSession", new object[] {
@@ -578,7 +578,7 @@ namespace LiteSFATestWebService.SMSService {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendSessionWapPush", RequestNamespace="http://wsi.bizpack.ro/service.php", ResponseNamespace="http://wsi.bizpack.ro/service.php")]
+        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendSessionWapPush", RequestNamespace="https://www.bizpack.ro/wsi/service.php", ResponseNamespace="https://www.bizpack.ro/wsi/service.php")]
         [return: System.Xml.Serialization.SoapElementAttribute("id")]
         public string sendSessionWapPush(string sessid, string phone, string url, string message, System.DateTime date, string sender, int validity) {
             object[] results = this.Invoke("sendSessionWapPush", new object[] {
@@ -620,7 +620,7 @@ namespace LiteSFATestWebService.SMSService {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendSessionVCalendar", RequestNamespace="http://wsi.bizpack.ro/service.php", ResponseNamespace="http://wsi.bizpack.ro/service.php")]
+        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendSessionVCalendar", RequestNamespace="https://www.bizpack.ro/wsi/service.php", ResponseNamespace="https://www.bizpack.ro/wsi/service.php")]
         [return: System.Xml.Serialization.SoapElementAttribute("return")]
         public string sendSessionVCalendar(string sessid, string recipient, string subject, string location, string description, System.DateTime startDatetime, System.DateTime endDatetime, System.DateTime alarmDatetime, System.DateTime sendDatetime, string sender, int validity) {
             object[] results = this.Invoke("sendSessionVCalendar", new object[] {
@@ -670,7 +670,7 @@ namespace LiteSFATestWebService.SMSService {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendSessionVCard", RequestNamespace="http://wsi.bizpack.ro/service.php", ResponseNamespace="http://wsi.bizpack.ro/service.php")]
+        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendSessionVCard", RequestNamespace="https://www.bizpack.ro/wsi/service.php", ResponseNamespace="https://www.bizpack.ro/wsi/service.php")]
         [return: System.Xml.Serialization.SoapElementAttribute("return")]
         public string sendSessionVCard(string sessid, string recipient, string firstname, string lastname, string mobilephone, string email, string organization, System.DateTime sendDatetime, string sender, int validity) {
             object[] results = this.Invoke("sendSessionVCard", new object[] {
@@ -718,7 +718,7 @@ namespace LiteSFATestWebService.SMSService {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendSessionSmsFlash", RequestNamespace="http://wsi.bizpack.ro/service.php", ResponseNamespace="http://wsi.bizpack.ro/service.php")]
+        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#sendSessionSmsFlash", RequestNamespace="https://www.bizpack.ro/service.php", ResponseNamespace="https://www.bizpack.ro/service.php")]
         [return: System.Xml.Serialization.SoapElementAttribute("return")]
         public string sendSessionSmsFlash(string sessid, string phone, string message, System.DateTime date, string sender, int validity) {
             object[] results = this.Invoke("sendSessionSmsFlash", new object[] {
@@ -758,7 +758,7 @@ namespace LiteSFATestWebService.SMSService {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#showIp", RequestNamespace="http://wsi.bizpack.ro/service.php", ResponseNamespace="http://wsi.bizpack.ro/service.php")]
+        [System.Web.Services.Protocols.SoapRpcMethodAttribute("http://schemas.xmlsoap.org/soap/envelope/#SMSService#showIp", RequestNamespace="https://www.bizpack.ro/wsi/service.php", ResponseNamespace="https://www.bizpack.ro/wsi/service.php")]
         [return: System.Xml.Serialization.SoapElementAttribute("return")]
         public string showIp() {
             object[] results = this.Invoke("showIp", new object[0]);
@@ -805,11 +805,11 @@ namespace LiteSFATestWebService.SMSService {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void sendCompletedEventHandler(object sender, sendCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class sendCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -831,11 +831,11 @@ namespace LiteSFATestWebService.SMSService {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void SendSmsCompletedEventHandler(object sender, SendSmsCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class SendSmsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -857,11 +857,11 @@ namespace LiteSFATestWebService.SMSService {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void sendSmsAuthKeyCompletedEventHandler(object sender, sendSmsAuthKeyCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class sendSmsAuthKeyCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -883,11 +883,11 @@ namespace LiteSFATestWebService.SMSService {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void sendWapPushCompletedEventHandler(object sender, sendWapPushCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class sendWapPushCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -909,11 +909,11 @@ namespace LiteSFATestWebService.SMSService {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void sendVCalendarCompletedEventHandler(object sender, sendVCalendarCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class sendVCalendarCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -935,11 +935,11 @@ namespace LiteSFATestWebService.SMSService {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void sendVCardCompletedEventHandler(object sender, sendVCardCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class sendVCardCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -961,11 +961,11 @@ namespace LiteSFATestWebService.SMSService {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void sendSmsFlashCompletedEventHandler(object sender, sendSmsFlashCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class sendSmsFlashCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -987,11 +987,11 @@ namespace LiteSFATestWebService.SMSService {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void checkStatusCompletedEventHandler(object sender, checkStatusCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class checkStatusCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1013,11 +1013,11 @@ namespace LiteSFATestWebService.SMSService {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void openSessionCompletedEventHandler(object sender, openSessionCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class openSessionCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1039,11 +1039,11 @@ namespace LiteSFATestWebService.SMSService {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void closeSessionCompletedEventHandler(object sender, closeSessionCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class closeSessionCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1065,11 +1065,11 @@ namespace LiteSFATestWebService.SMSService {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void sendSessionCompletedEventHandler(object sender, sendSessionCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class sendSessionCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1091,11 +1091,11 @@ namespace LiteSFATestWebService.SMSService {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void sendSessionWapPushCompletedEventHandler(object sender, sendSessionWapPushCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class sendSessionWapPushCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1117,11 +1117,11 @@ namespace LiteSFATestWebService.SMSService {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void sendSessionVCalendarCompletedEventHandler(object sender, sendSessionVCalendarCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class sendSessionVCalendarCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1143,11 +1143,11 @@ namespace LiteSFATestWebService.SMSService {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void sendSessionVCardCompletedEventHandler(object sender, sendSessionVCardCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class sendSessionVCardCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1169,11 +1169,11 @@ namespace LiteSFATestWebService.SMSService {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void sendSessionSmsFlashCompletedEventHandler(object sender, sendSessionSmsFlashCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class sendSessionSmsFlashCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1195,11 +1195,11 @@ namespace LiteSFATestWebService.SMSService {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void showIpCompletedEventHandler(object sender, showIpCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.6.1055.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class showIpCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {

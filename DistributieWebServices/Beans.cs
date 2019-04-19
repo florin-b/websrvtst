@@ -160,12 +160,12 @@ namespace DistributieTESTWebServices
         public string codClient;
         public string nrTelefon;
         public DateComanda dateComanda;
-        public string idComanda;
+        public string codAdresa;
         public string poz;
 
         public override string ToString()
         {
-            return "NotificareClient: [ codClient " + codClient + ", nrTelefon " + nrTelefon + ", dateComanda " + dateComanda.ToString() + " ]";
+            return "NotificareClient: [ codClient " + codClient + ", nrTelefon " + nrTelefon + ", dateComanda " + dateComanda.ToString() + ", codAdresa " + codAdresa + " ]";
         }
     }
 

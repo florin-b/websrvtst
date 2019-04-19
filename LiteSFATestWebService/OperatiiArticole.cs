@@ -68,7 +68,11 @@ namespace LiteSFATestWebService
 
                 }
 
-                string conditieDepart = " b.grup_vz =:depart and ";
+
+
+                string conditieDepart = "";
+                if (!codDepart.Equals("00"))
+                    conditieDepart = " b.grup_vz =:depart and ";
 
                 if (codDepart.StartsWith("04"))
                     conditieDepart = " substr(b.grup_vz,0,2) = substr(:depart,0,2) and ";
@@ -93,8 +97,11 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Add(":furniz", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
                 cmd.Parameters[0].Value = furnizor;
 
-                cmd.Parameters.Add(":depart", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
-                cmd.Parameters[1].Value = codDepart;
+                if (!codDepart.Equals("00"))
+                {
+                    cmd.Parameters.Add(":depart", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
+                    cmd.Parameters[1].Value = codDepart;
+                }
 
 
                 List<ArticolCautare> listArticole = new List<ArticolCautare>();
@@ -528,7 +535,7 @@ namespace LiteSFATestWebService
                     cmd.CommandText = " select x.* from ( " +
                                     " select distinct decode(length(a.cod),18,substr(a.cod,-8),a.cod) codart,a.nume, a.sintetic, b.cod_nivel1, a.umvanz10, a.umvanz, nvl(a.tip_mat,' '), " +
                                     " b.cod nume_sint,  " +
-                                    " a.grup_vz, decode(trim(a.dep_aprobare),'','00', a.dep_aprobare)  dep_aprobare, " +
+                                    " decode(a.grup_vz,' ','-1', a.grup_vz), decode(trim(a.dep_aprobare),'','00', a.dep_aprobare)  dep_aprobare, " +
                                     " (select nvl( " +
                                     " (select 1 from sapprd.marm m where m.mandt = '900' and m.matnr = a.cod and m.meinh = 'EPA'),-1) palet from dual) palet " +
                                     valStoc + ", categ_mat, lungime " +
@@ -547,7 +554,7 @@ namespace LiteSFATestWebService
                     cmd.CommandText = " select x.* from ( " +
                                     " select distinct decode(length(a.cod),18,substr(a.cod,-8),a.cod) codart,a.nume, a.sintetic, b.cod_nivel1, a.umvanz10, a.umvanz, nvl(a.tip_mat,' '), " +
                                     " b.cod nume_sint,  " +
-                                    " a.grup_vz, decode(trim(a.dep_aprobare),'','00', a.dep_aprobare)  dep_aprobare, " +
+                                    " decode(a.grup_vz,' ','-1', a.grup_vz), decode(trim(a.dep_aprobare),'','00', a.dep_aprobare)  dep_aprobare, " +
                                     " (select nvl( " +
                                     " (select 1 from sapprd.marm m where m.mandt = '900' and m.matnr = a.cod and m.meinh = 'EPA'),-1) palet from dual) palet " +
                                     valStoc + ", categ_mat, lungime " +
@@ -567,7 +574,7 @@ namespace LiteSFATestWebService
                         filGed = filiala.Substring(0, 2) + "2" + filiala.Substring(3, 1);
 
                     cmd.CommandText = " select distinct decode(length(a.cod),18,substr(a.cod,-8),a.cod) codart,a.nume, a.sintetic, b.cod_nivel1, a.umvanz10, a.umvanz, nvl(a.tip_mat,' '), b.cod nume_sint, " +
-                                      " a.grup_vz, decode(trim(a.dep_aprobare),'','00', a.dep_aprobare), " +
+                                      " decode(a.grup_vz,' ','-1', a.grup_vz), decode(trim(a.dep_aprobare),'','00', a.dep_aprobare), " +
                                       " (select nvl( " +
                                       " (select 1 from sapprd.marm m where m.mandt = '900' and m.matnr = a.cod and m.meinh = 'EPA'),-1) palet from dual) palet " +
                                       valStoc + ", categ_mat, lungime " +
@@ -909,6 +916,7 @@ namespace LiteSFATestWebService
                 string Umb = outParam.OutUmb.ToString() != "" ? outParam.OutUmb.ToString() : "-1";
                 string procentTransport = outParam.ProcTrap.ToString();
                 string impachetare = outParam.Impachet.ToString() != "" ? outParam.Impachet.ToString() : " ";
+                string pretFaraTva = outParam.GvNetwrFtva.ToString();
                 
 
                 pretArticolGed.pret = pretOut;
@@ -926,7 +934,12 @@ namespace LiteSFATestWebService
                 pretArticolGed.umBaza = Umb;
                 pretArticolGed.procTransport = procentTransport;
                 pretArticolGed.impachetare = impachetare;
+                pretArticolGed.pretFaraTva = ((outParam.GvNetwrFtva / outParam.GvCant) * outParam.Multiplu).ToString();
+
                 pretArticolGed.valTrap = outParam.ValTrap.ToString();
+
+                //pretArticolGed.valTrap = "150";
+
                 pretArticolGed.errMsg = outParam.VMess;
                 
 
@@ -1500,7 +1513,7 @@ namespace LiteSFATestWebService
                                  " where k.mandt = '900' and k.kunnr = :codClient and sobkz = 'W' and kulab > 0 and matnr = :codArticol " + 
                                  " union all " +
                                  " select d.matnr, -1 * (d.lfimg)from sapprd.lips d, sapprd.vbup p, sapprd.likp l " +
-                                 " where d.mandt = '900' and d.sobkz = 'W' and d.matnr = :codArticol and d.werks =:filiala " + 
+                                 " where d.mandt = '900' and d.sobkz = 'W' and d.matnr = :codArticol and (d.werks =:filiala or d.werks =:filiala2) " + 
                                  " and d.mandt = p.mandt and d.vbeln = p.vbeln and d.posnr = p.posnr and d.mandt = l.mandt and d.vbeln = l.vbeln " +
                                  " and l.kunnr =:codClient and p.WBSTA <> 'C')group by matnr ";
 
@@ -1519,8 +1532,11 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
                 cmd.Parameters[3].Value = getFilialaCustodie(filiala);
 
+                cmd.Parameters.Add(":filiala2", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[4].Value = getFilialaCustodie2(filiala);
+
                 cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
-                cmd.Parameters[4].Value = codClient;
+                cmd.Parameters[5].Value = codClient;
 
                 oReader = cmd.ExecuteReader();
 
@@ -1551,6 +1567,11 @@ namespace LiteSFATestWebService
         private static string getFilialaCustodie(string filiala)
         {
             return filiala.Substring(0, 2) + "11" ;
+        }
+
+        private static string getFilialaCustodie2(string filiala)
+        {
+            return filiala.Substring(0, 2) + "12";
         }
 
 

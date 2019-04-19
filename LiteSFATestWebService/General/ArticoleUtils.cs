@@ -23,6 +23,7 @@ namespace LiteSFATestWebService.General
             listArticole.Add("000000000030100029");
             listArticole.Add("000000000030100028");
             listArticole.Add("000000000030100840");
+            listArticole.Add("000000000030100072");
 
             return listArticole.Contains(codArticol);
 

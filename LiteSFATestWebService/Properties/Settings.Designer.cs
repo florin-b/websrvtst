@@ -48,8 +48,8 @@ namespace LiteSFATestWebService.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zclp_webservice/900/zclp_we" +
-            "bservice/zclp_webservice")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/zclp_webservice/900/zclp_w" +
+            "ebservice/zclp_webservice")]
         public string LiteSFATestWebService_SAPWebServiceCLP_ZCLP_WEBSERVICEService {
             get {
                 return ((string)(this["LiteSFATestWebService_SAPWebServiceCLP_ZCLP_WEBSERVICEService"]));
@@ -70,7 +70,7 @@ namespace LiteSFATestWebService.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://wsi.bizpack.ro/service.php")]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://www.bizpack.ro/wsi/service.php")]
         public string LiteSFATestWebService_SMSService_SMSServiceService {
             get {
                 return ((string)(this["LiteSFATestWebService_SMSService_SMSServiceService"]));
@@ -102,8 +102,8 @@ namespace LiteSFATestWebService.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/ztbl_webservice/900/ztbl_we" +
-            "bservice/ztbl_webservice")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/ztbl_webservice/900/ztbl_w" +
+            "ebservice/ztbl_webservice")]
         public string LiteSFATestWebService_SAPWebServices_ZTBL_WEBSERVICE {
             get {
                 return ((string)(this["LiteSFATestWebService_SAPWebServices_ZTBL_WEBSERVICE"]));
@@ -135,11 +135,22 @@ namespace LiteSFATestWebService.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zws_custodie/900/zws_custod" +
-            "ie/zws_custodie")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zws_custodie/900/zwbs_custo" +
+            "die/zwbs_custodie")]
         public string LiteSFATestWebService_SAPWSCustodie_ZWS_CUSTODIE {
             get {
                 return ((string)(this["LiteSFATestWebService_SAPWSCustodie_ZWS_CUSTODIE"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://sap-prd4a.arabesque.ro:8034/sap/bc/srt/rfc/sap/zws_salarizare_2019/900/zws" +
+            "_salarizare_2019/zws_salarizare_2019")]
+        public string LiteSFATestWebService_Salarizare2019_ZWS_SALARIZARE_2019 {
+            get {
+                return ((string)(this["LiteSFATestWebService_Salarizare2019_ZWS_SALARIZARE_2019"]));
             }
         }
     }

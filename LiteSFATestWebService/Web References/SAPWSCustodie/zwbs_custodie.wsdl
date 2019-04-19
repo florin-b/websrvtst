@@ -4,7 +4,7 @@
     <sidl:sidl xmlns:sidl="http://www.sap.com/2007/03/sidl" />
   </wsdl:documentation>
   <wsp:UsingPolicy wsdl:required="true" />
-  <wsp:Policy wsu:Id="BN__ZWS_CUSTODIE">
+  <wsp:Policy wsu:Id="BN__zwbs_custodie">
     <wsp:ExactlyOne>
       <wsp:All>
         <sapattahnd:Enabled xmlns:sapattahnd="http://www.sap.com/710/features/attachment/">false</sapattahnd:Enabled>
@@ -68,7 +68,7 @@
       </wsp:All>
     </wsp:ExactlyOne>
   </wsp:Policy>
-  <wsp:Policy wsu:Id="BN__ZWS_CUSTODIE_soap12">
+  <wsp:Policy wsu:Id="BN__zwbs_custodie_soap12">
     <wsp:ExactlyOne>
       <wsp:All>
         <sapattahnd:Enabled xmlns:sapattahnd="http://www.sap.com/710/features/attachment/">false</sapattahnd:Enabled>
@@ -255,9 +255,9 @@
       <wsdl:output message="tns:ZlivrareCustodieResponse" />
     </wsdl:operation>
   </wsdl:portType>
-  <wsdl:binding name="ZWS_CUSTODIE" type="tns:ZWS_CUSTODIE">
+  <wsdl:binding name="zwbs_custodie" type="tns:ZWS_CUSTODIE">
     <wsp:Policy>
-      <wsp:PolicyReference URI="#BN__ZWS_CUSTODIE" />
+      <wsp:PolicyReference URI="#BN__zwbs_custodie" />
     </wsp:Policy>
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="ZcustChLivrare">
@@ -279,9 +279,9 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
-  <wsdl:binding name="ZWS_CUSTODIE_soap12" type="tns:ZWS_CUSTODIE">
+  <wsdl:binding name="zwbs_custodie_soap12" type="tns:ZWS_CUSTODIE">
     <wsp:Policy>
-      <wsp:PolicyReference URI="#BN__ZWS_CUSTODIE_soap12" />
+      <wsp:PolicyReference URI="#BN__zwbs_custodie_soap12" />
     </wsp:Policy>
     <wsoap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="ZcustChLivrare">
@@ -303,12 +303,12 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
-  <wsdl:service name="ZWS_CUSTODIE">
-    <wsdl:port name="ZWS_CUSTODIE" binding="tns:ZWS_CUSTODIE">
-      <soap:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zws_custodie/900/zws_custodie/zws_custodie" />
+  <wsdl:service name="zwbs_custodie">
+    <wsdl:port name="zwbs_custodie" binding="tns:zwbs_custodie">
+      <soap:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zws_custodie/900/zwbs_custodie/zwbs_custodie" />
     </wsdl:port>
-    <wsdl:port name="ZWS_CUSTODIE_soap12" binding="tns:ZWS_CUSTODIE_soap12">
-      <wsoap12:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zws_custodie/900/zws_custodie/zws_custodie" />
+    <wsdl:port name="zwbs_custodie_soap12" binding="tns:zwbs_custodie_soap12">
+      <wsoap12:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zws_custodie/900/zwbs_custodie/zwbs_custodie" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

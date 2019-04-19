@@ -463,6 +463,95 @@ namespace LiteSFATestWebService
 
 
 
+        public static void saveDateDelegat(OracleConnection connection, Int32 idComanda, DateLivrare dateLivrare)
+        {
+
+            OracleCommand cmd = null;
+
+            try
+            {
+
+                if (dateLivrare.numeDelegat!= null && dateLivrare.numeDelegat.Trim().Length == 0 || dateLivrare.ciDelegat.Trim().Length == 0)
+                    return;
+
+                cmd = connection.CreateCommand();
+
+                string query = " insert into sapprd.zdatedelegat(mandt, id_comanda, nume, serie_nr_ci, nr_auto) " +
+                               " values ('900', :idCmd, :nume, :serie, :auto) ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":idCmd", OracleType.Int32, 10).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = idComanda;
+
+                cmd.Parameters.Add(":nume", OracleType.NChar, 120).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = dateLivrare.numeDelegat;
+
+                cmd.Parameters.Add(":serie", OracleType.NChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = dateLivrare.ciDelegat;
+
+                cmd.Parameters.Add(":auto", OracleType.NChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[3].Value = dateLivrare.autoDelegat == "" ? " " : dateLivrare.autoDelegat;
+
+                cmd.ExecuteNonQuery();
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                if (cmd != null)
+                    cmd.Dispose();
+            }
+
+
+        }
+
+        public static void getDateDelegat(OracleConnection connection, Int32 idComanda, DateLivrare dateLivrare)
+        {
+            OracleDataReader oReader = null;
+
+            try
+            {
+                OracleCommand cmd = connection.CreateCommand();
+
+                string query = " select nume, serie_nr_ci, nr_auto from sapprd.zdatedelegat where mandt='900' and id_comanda=:idComanda ";
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":idComanda", OracleType.Int32, 10).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = idComanda;
+
+                oReader = cmd.ExecuteReader();
+                oReader.Read();
+
+                if (oReader.HasRows)
+                {
+                    dateLivrare.numeDelegat = oReader.GetString(0);
+                    dateLivrare.ciDelegat = oReader.GetString(1);
+                    dateLivrare.autoDelegat = oReader.GetString(2);
+                }
+
+                if (oReader != null)
+                    oReader.Close();
+
+                cmd.Dispose();
+
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            
+        }
+
+
         public static bool existaDatePersonale(OracleConnection connection, DateLivrare dateLivrare, ComandaVanzare comandaVanzare)
         {
             bool existaDatePers = false;

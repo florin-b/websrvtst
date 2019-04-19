@@ -169,6 +169,8 @@ namespace LiteSFATestWebService
         public string departSintetic;
         public string coefCorectie;
         public string vechime;
+        public double procT1 = 0;
+        public double valT1 = 0;
     }
 
 
@@ -248,8 +250,12 @@ namespace LiteSFATestWebService
         public string diviziiClient;
         public string codSuperAgent;
         public string programLivrare;
-
-
+        public string livrareSambata;
+        public string blocScara;
+        public string filialaCLP;
+        public string numeDelegat = "";
+        public string ciDelegat = "";
+        public string autoDelegat = "";
 
     }
 
@@ -262,6 +268,8 @@ namespace LiteSFATestWebService
         public string codJudetD;
         public string numeClient;
         public string cnpClient;
+        public double marjaT1 = 0;
+        public double procentT1 = 0;
 
 
     }
@@ -351,6 +359,9 @@ namespace LiteSFATestWebService
         public string telAgent;
         public string avans;
         public string clientRaft;
+        public string tipComanda;
+        public string isCmdInstPublica;
+        public double bazaSalariala = 0;
 
     }
 
@@ -552,6 +563,7 @@ namespace LiteSFATestWebService
         public DateLivrareCmd dateLivrare;
         public List<ArticolComandaRap> articoleComanda;
         public Conditii conditii;
+
     }
 
 
@@ -669,6 +681,7 @@ namespace LiteSFATestWebService
         public string valTrap;
         public string errMsg;
         public string procReducereCmp;
+        public string pretFaraTva;
 
     }
 

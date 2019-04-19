@@ -402,6 +402,13 @@ namespace LiteSFATestWebService
                                  " where a.sttrg in (2, 3, 4, 6, 7) and b.cod_av =:codAgent and a.numarb = b.nr_bord and f.mandt = '900' and f.vbeln = b.nr_doc and d.cod = a.cod_sofer " + 
                                  " and k.mandt = '900' and k.vbeln = f.vbelv and f.vbtyp_v = 'C' and f.vbtyp_n = 'J' " + 
                                  " and k.auart in ('ZTAH','ZEPH') and k.mandt = p.mandt and k.vbeln = p.vbeln and p.parvw = 'WE' and p.mandt = a.client and p.adrnr = a.addrnumber" +
+                                 " union all " + 
+                                 " select distinct b.name1 || ' (CUSTODIE)' name1, k.netwr valoare, " + 
+                                 " a.city1, nvl(a.street, ' '), k.vbeln nrcmdsap, k.kunnr cod_client, b.nr_bord, a.masina, a.region, d.nume, " +        
+                                 " nvl(d.telefon, '-') telefon, a.sttrg from websap.borderouri a, sapprd.zdocumentesms b, sapprd.likp k, " + 
+                                 " websap.soferi d, sapprd.vbpa p, sapprd.adrc a where a.sttrg in (2, 3, 4, 6, 7) and b.cod_av = :codAgent " + 
+                                 " and a.numarb = b.nr_bord and k.mandt = '900' and k.vbeln = b.nr_doc and d.cod = a.cod_sofer and k.lfart = 'ZW' " + 
+                                 " and k.mandt = p.mandt and k.vbeln = p.vbeln and p.parvw = 'WE' and p.mandt = a.client and p.adrnr = a.addrnumber " + 
                                  " order by name1 ";
 
                 cmd.CommandType = CommandType.Text;
@@ -779,7 +786,9 @@ namespace LiteSFATestWebService
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = null;
             OracleTransaction transaction = null;
-            SAPWSCustodie.ZWS_CUSTODIE webService = null;
+            SAPWSCustodie.zwbs_custodie webService = null;
+
+            
 
             try
             {
@@ -923,7 +932,7 @@ namespace LiteSFATestWebService
                     OperatiiSuplimentare.saveTonajAdresa(connection, comandaVanzare.codClient, dateLivrare.addrNumber, dateLivrare.tonaj);
 
                 
-                webService = new SAPWSCustodie.ZWS_CUSTODIE();
+                webService = new SAPWSCustodie.zwbs_custodie();
                 SAPWSCustodie.ZlivrareCustodie inParam = new SAPWSCustodie.ZlivrareCustodie();
                 System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Service1.getUser(), Service1.getPass());
                 webService.Credentials = nc;
@@ -957,13 +966,22 @@ namespace LiteSFATestWebService
 
 
 
-        public List<Comanda> getLivrariCustodie(string codAgent, string interval)
+        public List<Comanda> getLivrariCustodie(string codAgent, string interval, string tipCmd)
         {
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand(), cmd1 = new OracleCommand();
             OracleDataReader oReader = null;
             string dateInterval = DateTime.Today.ToString("yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
             string condData = " and cst.datac =:interval ";
+
+            string tipComanda = "";
+
+            //modificare
+            if (tipCmd == "1")
+                tipComanda = " and cst.status != '6' " +
+                             " and not exists ( select * from sapprd.vttp p where p.mandt = '900' and p.vbeln = cst.vbeln) " +
+                             " and nvl((select sum(decode(f.bwart, 'ZW4', -1 * f.rfmng, f.rfmng)) from sapprd.vbfa f where f.mandt = '900' " +
+                             " and f.vbelv = cst.vbeln and f.vbtyp_v = 'J' and bwart in ('ZW3', 'ZW4')),0) = 0 ";
 
             List<Comanda> listComenzi = new List<Comanda>();
 
@@ -992,9 +1010,9 @@ namespace LiteSFATestWebService
 
                 cmd = connection.CreateCommand();
 
-                string sqlString = " select cst.id, cl.nume, cst.datac, cst.status, cst.cod_client, cst.nrcmdsap, cst.ul, ag.nume numeag, " + 
-                                   " cst.adr_livrare, ag.divizie, cst.depart, ag.nrtel, cst.ketdat " + 
-                                   " from sapprd.zcust_head cst, clienti cl, agenti ag where cst.cod_agent =:codag and cst.status != '6' " + 
+                string sqlString = " select cst.id, cl.nume, to_char(to_date(cst.datac,'yyyymmdd')), cst.status, cst.cod_client, cst.nrcmdsap, cst.ul, ag.nume numeag, " + 
+                                   " cst.adr_livrare, ag.divizie, cst.depart, ag.nrtel, cst.ketdat, cst.vbeln " + 
+                                   " from sapprd.zcust_head cst, clienti cl, agenti ag where cst.cod_agent =:codag  " + tipComanda + 
                                    " and cst.cod_client = cl.cod and cst.cod_agent = ag.cod " + condData;
 
                 cmd.CommandText = sqlString;
@@ -1027,7 +1045,7 @@ namespace LiteSFATestWebService
 
                         comanda.stareComanda = oReader.GetString(3);
                         comanda.codClient = oReader.GetString(4);
-                        comanda.cmdSap = oReader.GetString(5);
+                        comanda.cmdSap = oReader.GetString(13);
                         comanda.factRed = " ";
                         comanda.filiala = oReader.GetString(6);
                         comanda.accept1 = " ";
@@ -1053,9 +1071,8 @@ namespace LiteSFATestWebService
                         comanda.pondere30 = "0";
                         comanda.avans = "0";
                         comanda.clientRaft = " ";
+                        comanda.tipComanda = "CUST";
                         
-
-
                         listComenzi.Add(comanda);
                     }
 
@@ -1281,9 +1298,9 @@ namespace LiteSFATestWebService
 
                 cmd.ExecuteNonQuery();
 
-                SAPWSCustodie.ZWS_CUSTODIE webService = null;
+                SAPWSCustodie.zwbs_custodie webService = null;
 
-                webService = new SAPWSCustodie.ZWS_CUSTODIE();
+                webService = new SAPWSCustodie.zwbs_custodie();
                 SAPWSCustodie.ZcustChLivrare inParam = new SAPWSCustodie.ZcustChLivrare();
 
                 System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Service1.getUser(), Service1.getPass());
@@ -1364,9 +1381,9 @@ namespace LiteSFATestWebService
                 OperatiiAdresa.actualizeazaCoordonateAdresa(connection, idComanda, dateLivrare.coordonateGps);
                 OperatiiSuplimentare.actualizeazaTonajComanda(connection, idComanda, dateLivrare.tonaj);
 
-                SAPWSCustodie.ZWS_CUSTODIE webService = null;
+                SAPWSCustodie.zwbs_custodie webService = null;
                
-                webService = new SAPWSCustodie.ZWS_CUSTODIE();
+                webService = new SAPWSCustodie.zwbs_custodie();
                 SAPWSCustodie.ZcustChLivrare inParam = new SAPWSCustodie.ZcustChLivrare();
 
                 System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Service1.getUser(), Service1.getPass());
@@ -1430,9 +1447,9 @@ namespace LiteSFATestWebService
                 cmd.ExecuteNonQuery();
 
 
-                SAPWSCustodie.ZWS_CUSTODIE webService = null;
+                SAPWSCustodie.zwbs_custodie webService = null;
 
-                webService = new SAPWSCustodie.ZWS_CUSTODIE();
+                webService = new SAPWSCustodie.zwbs_custodie();
                 SAPWSCustodie.ZcustChLivrare inParam = new SAPWSCustodie.ZcustChLivrare();
 
                 System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Service1.getUser(), Service1.getPass());

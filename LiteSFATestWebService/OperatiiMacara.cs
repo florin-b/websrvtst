@@ -16,8 +16,6 @@ namespace LiteSFATestWebService
         public String getCostMacara(string unitLog, string codAgent, string codClient, string listArt)
         {
 
-            ErrorHandling.sendErrorToMail("get cost macara: " + unitLog  + " , " +  codAgent + " , " + codClient + " , " + listArt);
-
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();
 

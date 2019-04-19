@@ -19,7 +19,6 @@ namespace LiteSFATestWebService
         {
 
 
-
             OracleCommand cmd = connection.CreateCommand();
             OracleTransaction transaction = null;
 
@@ -221,7 +220,7 @@ namespace LiteSFATestWebService
         public string saveNewClp(string comanda, string codAgent, string filiala, string depart, bool alertSD, string serData, string codSuperAgent)
         {
 
-
+            ErrorHandling.sendErrorToMail("saveNewClp:" + comanda + "\n" +  codAgent + "\n" + filiala + "\n" + depart + "\n" + alertSD + "\n" + serData + "\n" + codSuperAgent);
 
             if (serData == null)
                 return saveNewClp_oldversion(comanda, codAgent, filiala, depart, alertSD);
@@ -238,11 +237,6 @@ namespace LiteSFATestWebService
 
             string retVal = "-1";
 
-            OracleConnection connection = new OracleConnection();
-
-            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
-            connection.ConnectionString = connectionString;
-            connection.Open();
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();
 
@@ -250,10 +244,32 @@ namespace LiteSFATestWebService
             List<ArticolComandaCLP> listArticole = serializer.Deserialize<List<ArticolComandaCLP>>(comandaCLP.listArticole);
             AntetComandaCLP antetComanda = serializer.Deserialize<AntetComandaCLP>(comandaCLP.antetComanda);
 
+            if (antetComanda.tipPlata.Equals("E") && (antetComanda.codFilialaDest.StartsWith("BU") || filiala.StartsWith("BU")))
+            {
+                retVal = "-1, Plata in numerar nu este acceptata.";
+                return retVal;    
+            }
+
+            OracleConnection connection = new OracleConnection();
+
+            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+            connection.ConnectionString = connectionString;
+            connection.Open();
 
             string tempDepart = "";
 
             List<ArticolComandaCLP> tempList = new List<ArticolComandaCLP>();
+
+
+            if (antetComanda.selectedAgent.Trim().Length != 0 && antetComanda.selectedAgent.Trim().Length != 1 && antetComanda.selectedAgent.Trim().Length != 8)
+            {
+
+                if (antetComanda.selectedAgent.Trim().Equals("Selectati un agent"))
+                    antetComanda.selectedAgent = "0";
+                else
+                    antetComanda.selectedAgent = Utils.getCodAngajat(connection, antetComanda.selectedAgent, filiala);
+
+            }
 
             for (int i = 0; i < listArticole.Count; i++)
             {

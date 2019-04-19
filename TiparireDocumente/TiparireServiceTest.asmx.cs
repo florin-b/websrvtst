@@ -84,7 +84,8 @@ namespace TiparireDocumenteTest
                                    " where h.mandt = '900'  and s.lgort not in ('DESC','PRT1','PRT2','GAR1','GAR2','02T1', '05T1', 'SRT1','MAV1', 'MAV2') and c.cod = h.kunnr  and h.mandt = s.mandt  and h.vbeln = s.vbeln " +
                                    " and art.cod = s.matnr and h.wadat between :dataStart and :dataStop and art.spart =:depart " +
                                      condFiliala + " and nvl(k.datbg, '00000000') = '00000000' and s.lfimg > 0 " +
-                                   " and h.mandt = p.mandt(+) and substr(s.matnr,11,1) != '3' " +
+                                   " and h.mandt = p.mandt(+)  " +
+                                   " and upper(art.nume) not like ('PREST%SERV%') " + 
                                    " and h.vbeln = p.vbeln(+) and h.lfart not in ('EL', 'ZUL', 'ZLR') and p.mandt = k.mandt(+) " +
                                    " and decode( substr(s.werks, 3, 1),4,(CASE WHEN art.spart = '02' then 'FALSE' else 'TRUE' end),'TRUE') = 'TRUE' " +
                                    " and ( ( h.traty = 'TRAP' and nvl(k.dalen,'00000000') = '00000000') or h.traty = 'TCLI'  or h.traty = 'TERT' ) " +

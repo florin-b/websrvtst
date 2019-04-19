@@ -38,7 +38,7 @@ namespace LiteSFATestWebService
                     connection.ConnectionString = connectionString;
                     connection.Open();
                     cmd = connection.CreateCommand();
-                    cmd.CommandText = " select b.nume, c.nume, a.pers_contact,a.telefon, b.nrtel, a.ul, a.nume_client from sapprd.zcomhead_tableta a, agenti b, clienti c where " +
+                    cmd.CommandText = " select b.nume, c.nume, a.pers_contact,a.telefon, b.nrtel, a.ul, a.nume_client, b.email from sapprd.zcomhead_tableta a, agenti b, clienti c where " +
                                       " id =:idCmd and b.cod = a.cod_agent and c.cod = a.cod_client ";
 
 
@@ -48,7 +48,7 @@ namespace LiteSFATestWebService
                     cmd.Parameters[0].Value = nrComanda;
                     oReader = cmd.ExecuteReader();
 
-                    string numeClient = "", persContact = "", telContact = "", numeAgent = "", telAgent = "", unitLog = "";
+                    string numeClient = "", persContact = "", telContact = "", numeAgent = "", telAgent = "", unitLog = "", mail = "";
                     if (oReader.HasRows)
                     {
                         oReader.Read();
@@ -58,6 +58,10 @@ namespace LiteSFATestWebService
                         telContact = oReader.GetString(3);
                         telAgent = oReader.GetString(4);
                         unitLog = oReader.GetString(5);
+
+                        if (oReader.GetString(7).Trim() != "")
+                            mail = ", email: " + oReader.GetString(7);
+
                     }
 
 
@@ -168,7 +172,7 @@ namespace LiteSFATestWebService
                     "</tr></tfoot>" +
                     tableBody +
                     "</table></div></td></tr><tr><td colspan='3'><table><tr><td class='customText5'><br>Reprezentant vanzari:" +
-                    "</td></tr><tr><td class='customText6'>" + numeAgent + ", tel. " + telAgent + "</td></tr></table>" +
+                    "</td></tr><tr><td class='customText6'>" + numeAgent + ", tel. " + telAgent + mail + "</td></tr></table>" +
                     "</td></tr></table>";
 
 

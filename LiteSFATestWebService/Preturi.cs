@@ -16,7 +16,7 @@ namespace LiteSFATestWebService
         public string getPret(string client, string articol, string cantitate, string depart, string um, string ul, string tipUser, string depoz, string codUser, string canalDistrib, string filialaAlternativa)
         {
 
-
+           
  
 
             string retVal = "";

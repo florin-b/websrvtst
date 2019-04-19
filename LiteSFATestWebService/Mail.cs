@@ -229,8 +229,89 @@ namespace LiteSFATestWebService
 
 
 
+        public void sendMailComenziOpFacturare(string idComanda)
+        {
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select d.nume , a.valoare, " + 
+                                  " nvl((select ag.email from agenti ag, sapprd.zcomhead_tableta t where t.id = a.id and ag.cod = t.cod_agent),'-1') adr_mail, a.nrcmdsap " + 
+                                  " from sapprd.zcomhead_tableta a, agenti b, sapprd.zcomsuperav c, clienti d where " + 
+                                  " a.id = :idcmd and a.id = c.id_comanda and c.cod_sagent = b.cod and b.tip = 'OIVPD' and d.cod = a.cod_client and a.mt = 'TCLI' ";
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":idcmd", OracleType.Int32, 20).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = Int32.Parse(idComanda);
+
+                oReader = cmd.ExecuteReader();
+
+                string adrMail = "";
+                string numeClient = "";
+                double valoare = 0;
+                string nrCmdSap = "";
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    adrMail = oReader.GetString(2);
+
+                    if (!adrMail.Equals("-1"))
+                    {
+                        numeClient = oReader.GetString(0);
+                        valoare = oReader.GetDouble(1);
+                        nrCmdSap = oReader.GetString(3);
+                        string msgText = " A fost creata comanda " + nrCmdSap + " pentru clientul " + numeClient + " in valoare de " + valoare + " RON , " + adrMail;
+
+                        sendMail("florin.brasoveanu@arabesque.ro", msgText);
+                    }
+                
+
+                    //sendMail(adrMail, msgText);
+
+                }
 
 
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+
+
+
+
+        }
+
+
+
+        public void sendMail(string mailAddress, string mailMessage)
+        {
+
+            MailMessage message = new MailMessage();
+            message.From = new MailAddress("comenzi.tableta@arabesque.ro");
+            //message.To.Add(new MailAddress(mailAddress));
+            message.To.Add(new MailAddress("florin.brasoveanu@arabesque.ro"));
+            message.Subject = "Comanda noua";
+            message.Body = mailMessage;
+            SmtpClient client = new SmtpClient("mail.arabesque.ro");
+            client.Send(message);
+
+        }
 
     }
 }
