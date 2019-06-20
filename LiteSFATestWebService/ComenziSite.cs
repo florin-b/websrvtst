@@ -10,7 +10,7 @@ namespace LiteSFATestWebService
     {
 
 
-        public string salveazaComanda(string comanda, bool alertSD, bool alertDV, bool cmdAngajament, string tipUser, string JSONArt, string JSONComanda, string JSONDateLivrare)
+        public string salveazaComanda(string comanda, bool alertSD, bool alertDV, bool cmdAngajament, string tipUser, string JSONArt, string JSONComanda, string JSONDateLivrare, string idCmdAmob)
         {
 
 
@@ -154,7 +154,10 @@ namespace LiteSFATestWebService
             if (!dateLivrare.Transport.Equals("TCLI"))
                 retVal = "100#" + pretTransp.ToString() + "#" + idComanda;
 
-          
+
+
+            if (idCmdAmob != null && !idCmdAmob.Equals("-1") && retVal != "")
+                ComenziAMOB.setStatusComanda(idCmdAmob, "6");
 
             return retVal;
         }

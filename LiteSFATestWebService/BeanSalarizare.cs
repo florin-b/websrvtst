@@ -92,6 +92,7 @@ namespace LiteSFATestWebService
         public DetaliiTCF detaliiTCF;
         public DetaliiCorectie detaliiCorectie;
         public List<DetaliiIncasari08> detaliiIncasari08;
+        public List<DetaliiMalus1> detaliiMalus;
     }
 
 
@@ -161,6 +162,26 @@ namespace LiteSFATestWebService
         public double valoareFTVA;
         public double cvs;
         
+
+    }
+
+
+    public class DetaliiMalus1
+    {
+        public string numeClient;
+        public string codClient;
+        public double valoareFactura;
+        public double penalizare;
+
+        public string nrFactura;
+        public string dataFactura;
+        public int tpFact;
+        public int tpAgreat;
+        public int tpIstoric;
+        public double valIncasare;
+        public string dataIncasare;
+        public int zileIntarziere;
+        public double coefPenalizare;
 
     }
 

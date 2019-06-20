@@ -153,5 +153,16 @@ namespace LiteSFATestWebService.Properties {
                 return ((string)(this["LiteSFATestWebService_Salarizare2019_ZWS_SALARIZARE_2019"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://sap-prd6a.arabesque.ro:8036/sap/bc/srt/rfc/sap/zws_sal_ka_2019/900/zws_sal" +
+            "_ka_2019/zws_sal_ka_2019")]
+        public string LiteSFATestWebService_SalarizareKA_ZWS_SAL_KA_2019 {
+            get {
+                return ((string)(this["LiteSFATestWebService_SalarizareKA_ZWS_SAL_KA_2019"]));
+            }
+        }
     }
 }

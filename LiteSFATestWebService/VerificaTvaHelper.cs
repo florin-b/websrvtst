@@ -22,6 +22,7 @@ namespace LiteSFATestWebService
         public string TVAIncasare;
         public string DataTVA;
         public string errMessage;
+        public string TVA_data;
 
         public override string ToString()
         {

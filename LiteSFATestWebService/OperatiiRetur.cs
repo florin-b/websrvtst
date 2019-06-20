@@ -40,6 +40,8 @@ namespace LiteSFATestWebService
         {
 
 
+            ErrorHandling.sendErrorToMail(" getListDocumenteSalvateToDb: " +  codAgent + "\n\n" +  filiala + "\n\n" + tipUser + "\n\n" + depart + "\n\n" + interval + "\n\n" + stare);
+
             string serializedListComenzi = "";
 
             OracleConnection connection = new OracleConnection();
@@ -1032,7 +1034,7 @@ namespace LiteSFATestWebService
                 inParam.VCity = comanda.adresaOras.Length < 25 ? comanda.adresaOras : comanda.adresaOras.Substring(0, 24);
                 inParam.VStreet = comanda.adresaStrada;
 
-
+                
 
                 SAPWebServices.ZmaterialeRetur[] articoleRetur = new ZmaterialeRetur[listaArticole.Count];
 

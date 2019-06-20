@@ -149,6 +149,138 @@ namespace LiteSFATestWebService
 
 
 
+        public static void logSms(string nrTel, string smsText, string response)
+        {
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = null;
+
+            try
+            {
+
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+                cmd = connection.CreateCommand();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                string query = " insert into sapprd.zsmslog (mandt,nrtel,datac,orac,sms,resp) " +
+                               " values ('900',:nrTel, :datac, :orac ,:sms ,:resp ) ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":nrTel", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = nrTel;
+
+                cmd.Parameters.Add(":datac", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = getNowDate();
+
+                cmd.Parameters.Add(":orac", OracleType.NVarChar, 18).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = getNowTime();
+
+                cmd.Parameters.Add(":sms", OracleType.NVarChar, 300).Direction = ParameterDirection.Input;
+                cmd.Parameters[3].Value = smsText;
+
+                cmd.Parameters.Add(":resp", OracleType.NVarChar, 210).Direction = ParameterDirection.Input;
+                cmd.Parameters[4].Value = response;
+
+                cmd.ExecuteNonQuery();
+
+
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(cmd, connection);
+            }
+
+        }
+
+
+
+        public static void logSms(OracleConnection conn, string nrTel, string smsText, string response)
+        {
+
+            OracleCommand cmd = null;
+
+            try
+            {
+                cmd = conn.CreateCommand();
+
+                string query = " insert into sapprd.zsmslog (mandt,nrtel,datac,orac,sms,resp) " +
+                               " values ('900',:nrTel, :datac, :orac ,:sms ,:resp ) ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":nrTel", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = nrTel;
+
+                cmd.Parameters.Add(":datac", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = getNowDate();
+
+                cmd.Parameters.Add(":orac", OracleType.NVarChar, 18).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = getNowTime();
+
+                cmd.Parameters.Add(":sms", OracleType.NVarChar, 300).Direction = ParameterDirection.Input;
+                cmd.Parameters[3].Value = smsText;
+
+                cmd.Parameters.Add(":resp", OracleType.NVarChar, 210).Direction = ParameterDirection.Input;
+                cmd.Parameters[4].Value = response;
+
+                cmd.ExecuteNonQuery();
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                if (cmd != null)
+                    cmd.Dispose();
+            }
+
+
+
+        }
+
+
+
+
+        private static string getNowDate()
+        {
+            DateTime cDate = DateTime.Now;
+            string year = cDate.Year.ToString();
+            string day = cDate.Day.ToString("00");
+            string month = cDate.Month.ToString("00");
+            string nowDate = year + month + day;
+
+            return nowDate;
+
+        }
+
+
+
+        private static string getNowTime()
+        {
+            DateTime cDate = DateTime.Now;
+            string hour = cDate.Hour.ToString("00");
+            string minute = cDate.Minute.ToString("00");
+            string sec = cDate.Second.ToString("00");
+            string nowTime = hour + minute + sec;
+
+            return nowTime;
+
+        }
+
 
     }
 }

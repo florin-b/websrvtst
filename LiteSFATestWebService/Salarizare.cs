@@ -137,9 +137,9 @@ namespace LiteSFATestWebService
                 cmd = connection.CreateCommand();
 
                 cmd.CommandText = " select  v.matnr, v.netwr val_art, " +
-                                  " case  " + 
+                                  " nvl(case  " + 
                                   " when v.WAVWR = 0 and h.auart = 'ZTP' then(select sum(rfwrt) from sapprd.vbfa f where f.mandt = '900' and f.vbelv = v.vbeln and f.posnv = v.posnr and f.vbtyp_n = 'V') " +
-                                  " else WAVWR end cost_marfa, " +
+                                  " else WAVWR end,0) cost_marfa, " +
                                  " nvl((select coef_corr from sapprd.zmarja_coef k where k.mandt = '900' and k.zan = :anCurent and " +
                                  " matnr = d.cod ),0) coef_corr_art, " +
                                  " nvl((select coef_corr from sapprd.zmarja_coef k where k.mandt = '900' and k.zan = :anCurent and " +
@@ -157,6 +157,7 @@ namespace LiteSFATestWebService
                                  " where v.mandt = '900' and h.mandt = '900' and d.mandt = '900' and h.id =:idCmd and v.vbeln = h.nrcmdsap " +
                                  " and v.matkl not in (select matkl from sapprd.zexc_salarizare where mandt='900' ) " +
                                  " and h.id = d.id and d.cod = v.matnr and t.mandt(+)='900' and t.matnr(+) = d.cod ";
+
 
                 cmd.CommandType = System.Data.CommandType.Text;
                 cmd.Parameters.Clear();
@@ -284,8 +285,13 @@ namespace LiteSFATestWebService
 
 
                 bazaSalariala.marjaT1 = valTotal;
-                bazaSalariala.procentT1 = valTotal / valFTVA;
 
+                if (valTotal == 0)
+                    bazaSalariala.procentT1 = 0;
+                else
+                    bazaSalariala.procentT1 = valTotal / valFTVA;
+                
+                
             }
             catch (Exception ex)
             {
@@ -317,9 +323,9 @@ namespace LiteSFATestWebService
                 cmd = connection.CreateCommand();
 
                 cmd.CommandText = " select  v.matnr, v.netwr val_art, " +
-                                  " case  " +
+                                  " nvl(case  " +
                                   " when v.WAVWR = 0 and h.auart = 'ZTP' then(select sum(rfwrt) from sapprd.vbfa f where f.mandt = '900' and f.vbelv = v.vbeln and f.posnv = v.posnr and f.vbtyp_n = 'V') " +
-                                  " else WAVWR end cost_marfa, " +
+                                  " else WAVWR end, 0) cost_marfa , " +
                                   " nvl((select coef_corr from sapprd.zmarja_coef k where k.mandt = '900' and k.zan = :anCurent and " +
                                   " matnr = d.cod ),0) coef_corr_art, " +
                                   " nvl((select coef_corr from sapprd.zmarja_coef k where k.mandt = '900' and k.zan = :anCurent and " +
@@ -493,8 +499,10 @@ namespace LiteSFATestWebService
 
                 cmd = connection.CreateCommand();
 
-                string sqlString = " select anv, IANUARIE,  FEBRUARIE, MARTIE, APRILIE, MAI, IUNIE, IULIE, AUGUST, SEPTEMBRIE, OCTOMBRIE, NOIEMBRIE, DECEMBRIE " +
-                                   " from sapprd.ZSREAL_NTCF where pernr =:codAgent and anv in (:anCurent, :anAnterior) ";
+                string sqlString = " select anv, sum(to_number(IANUARIE)),  sum(to_number(FEBRUARIE)), sum(to_number(MARTIE)), sum(to_number(APRILIE)), " + 
+                                   " sum(to_number(MAI)), sum(to_number(IUNIE)), sum(to_number(IULIE)), sum(to_number(AUGUST)), sum(to_number(SEPTEMBRIE)), " + 
+                                   " sum(to_number(OCTOMBRIE)), sum(to_number(NOIEMBRIE)), sum(to_number(DECEMBRIE)) " +
+                                   " from sapprd.ZSREAL_NTCF where pernr =:codAgent and anv in (:anCurent, :anAnterior) group by anv ";
 
                 cmd.CommandText = sqlString;
 
@@ -517,70 +525,128 @@ namespace LiteSFATestWebService
                     {
                         if (oReader.GetString(0).Equals(currentYear))
                         {
-                            clientFactAnCurent.Add("1", Int32.Parse(oReader.GetString(1)));
-                            clientFactAnCurent.Add("2", Int32.Parse(oReader.GetString(2)));
-                            clientFactAnCurent.Add("3", Int32.Parse(oReader.GetString(3)));
-                            clientFactAnCurent.Add("4", Int32.Parse(oReader.GetString(4)));
-                            clientFactAnCurent.Add("5", Int32.Parse(oReader.GetString(5)));
-                            clientFactAnCurent.Add("6", Int32.Parse(oReader.GetString(6)));
-                            clientFactAnCurent.Add("7", Int32.Parse(oReader.GetString(7)));
-                            clientFactAnCurent.Add("8", Int32.Parse(oReader.GetString(8)));
-                            clientFactAnCurent.Add("9", Int32.Parse(oReader.GetString(9)));
-                            clientFactAnCurent.Add("10", Int32.Parse(oReader.GetString(10)));
-                            clientFactAnCurent.Add("11", Int32.Parse(oReader.GetString(11)));
-                            clientFactAnCurent.Add("12", Int32.Parse(oReader.GetString(12)));
+                            clientFactAnCurent.Add("1", oReader.GetInt32(1));
+                            clientFactAnCurent.Add("2", oReader.GetInt32(2));
+                            clientFactAnCurent.Add("3", oReader.GetInt32(3));
+                            clientFactAnCurent.Add("4", oReader.GetInt32(4));
+                            clientFactAnCurent.Add("5", oReader.GetInt32(5));
+                            clientFactAnCurent.Add("6", oReader.GetInt32(6));
+                            clientFactAnCurent.Add("7", oReader.GetInt32(7));
+                            clientFactAnCurent.Add("8", oReader.GetInt32(8));
+                            clientFactAnCurent.Add("9", oReader.GetInt32(9));
+                            clientFactAnCurent.Add("10", oReader.GetInt32(10));
+                            clientFactAnCurent.Add("11", oReader.GetInt32(11));
+                            clientFactAnCurent.Add("12", oReader.GetInt32(12));
                         }
                         else
                         {
 
-                            targetAnCurent.Add("1", (int)(Math.Round((double.Parse(oReader.GetString(1)) * coefTarget), 0)));
-                            targetAnCurent.Add("2", (int)(Math.Round((double.Parse(oReader.GetString(2)) * coefTarget), 0)));
-                            targetAnCurent.Add("3", (int)(Math.Round((double.Parse(oReader.GetString(3)) * coefTarget), 0)));
-                            targetAnCurent.Add("4", (int)(Math.Round((double.Parse(oReader.GetString(4)) * coefTarget), 0)));
-                            targetAnCurent.Add("5", (int)(Math.Round((double.Parse(oReader.GetString(5)) * coefTarget), 0)));
-                            targetAnCurent.Add("6", (int)(Math.Round((double.Parse(oReader.GetString(6)) * coefTarget), 0)));
-                            targetAnCurent.Add("7", (int)(Math.Round((double.Parse(oReader.GetString(7)) * coefTarget), 0)));
-                            targetAnCurent.Add("8", (int)(Math.Round((double.Parse(oReader.GetString(8)) * coefTarget), 0)));
-                            targetAnCurent.Add("9", (int)(Math.Round((double.Parse(oReader.GetString(9)) * coefTarget), 0)));
-                            targetAnCurent.Add("10", (int)(Math.Round((double.Parse(oReader.GetString(10)) * coefTarget), 0)));
-                            targetAnCurent.Add("11", (int)(Math.Round((double.Parse(oReader.GetString(11)) * coefTarget), 0)));
-                            targetAnCurent.Add("12", (int)(Math.Round((double.Parse(oReader.GetString(12)) * coefTarget), 0)));
+                            targetAnCurent.Add("1", (int)(Math.Round((double.Parse(oReader.GetInt32(1).ToString()) * coefTarget), 0)));
+                            targetAnCurent.Add("2", (int)(Math.Round((double.Parse(oReader.GetInt32(2).ToString()) * coefTarget), 0)));
+                            targetAnCurent.Add("3", (int)(Math.Round((double.Parse(oReader.GetInt32(3).ToString()) * coefTarget), 0)));
+                            targetAnCurent.Add("4", (int)(Math.Round((double.Parse(oReader.GetInt32(4).ToString()) * coefTarget), 0)));
+                            targetAnCurent.Add("5", (int)(Math.Round((double.Parse(oReader.GetInt32(5).ToString()) * coefTarget), 0)));
+                            targetAnCurent.Add("6", (int)(Math.Round((double.Parse(oReader.GetInt32(6).ToString()) * coefTarget), 0)));
+                            targetAnCurent.Add("7", (int)(Math.Round((double.Parse(oReader.GetInt32(7).ToString()) * coefTarget), 0)));
+                            targetAnCurent.Add("8", (int)(Math.Round((double.Parse(oReader.GetInt32(8).ToString()) * coefTarget), 0)));
+                            targetAnCurent.Add("9", (int)(Math.Round((double.Parse(oReader.GetInt32(9).ToString()) * coefTarget), 0)));
+                            targetAnCurent.Add("10", (int)(Math.Round((double.Parse(oReader.GetInt32(10).ToString()) * coefTarget), 0)));
+                            targetAnCurent.Add("11", (int)(Math.Round((double.Parse(oReader.GetInt32(11).ToString()) * coefTarget), 0)));
+                            targetAnCurent.Add("12", (int)(Math.Round((double.Parse(oReader.GetInt32(12).ToString()) * coefTarget), 0)));
 
-                            clientFactAnAnterior.Add("1", Int32.Parse(oReader.GetString(1)));
-                            clientFactAnAnterior.Add("2", Int32.Parse(oReader.GetString(2)));
-                            clientFactAnAnterior.Add("3", Int32.Parse(oReader.GetString(3)));
-                            clientFactAnAnterior.Add("4", Int32.Parse(oReader.GetString(4)));
-                            clientFactAnAnterior.Add("5", Int32.Parse(oReader.GetString(5)));
-                            clientFactAnAnterior.Add("6", Int32.Parse(oReader.GetString(6)));
-                            clientFactAnAnterior.Add("7", Int32.Parse(oReader.GetString(7)));
-                            clientFactAnAnterior.Add("8", Int32.Parse(oReader.GetString(8)));
-                            clientFactAnAnterior.Add("9", Int32.Parse(oReader.GetString(9)));
-                            clientFactAnAnterior.Add("10", Int32.Parse(oReader.GetString(10)));
-                            clientFactAnAnterior.Add("11", Int32.Parse(oReader.GetString(11)));
-                            clientFactAnAnterior.Add("12", Int32.Parse(oReader.GetString(12)));
+                            clientFactAnAnterior.Add("1", oReader.GetInt32(1));
+                            clientFactAnAnterior.Add("2", oReader.GetInt32(2));
+                            clientFactAnAnterior.Add("3", oReader.GetInt32(3));
+                            clientFactAnAnterior.Add("4", oReader.GetInt32(4));
+                            clientFactAnAnterior.Add("5", oReader.GetInt32(5));
+                            clientFactAnAnterior.Add("6", oReader.GetInt32(6));
+                            clientFactAnAnterior.Add("7", oReader.GetInt32(7));
+                            clientFactAnAnterior.Add("8", oReader.GetInt32(8));
+                            clientFactAnAnterior.Add("9", oReader.GetInt32(9));
+                            clientFactAnAnterior.Add("10",oReader.GetInt32(10));
+                            clientFactAnAnterior.Add("11", oReader.GetInt32(11));
+                            clientFactAnAnterior.Add("12", oReader.GetInt32(12));
 
 
                         }
 
                     }
+
+
+                    foreach (KeyValuePair<string, int> entry in clientFactAnCurent)
+                    {
+
+                        float cAfect = 0;
+
+                        if (targetAnCurent[entry.Key] > 0)
+                            cAfect = (float)entry.Value / (float)targetAnCurent[entry.Key];
+
+                        if (cAfect >= 1)
+                            coefAfectare.Add(entry.Key, 10);
+                        else
+                            coefAfectare.Add(entry.Key, 0);
+
+                    }
+
+
                 }
-
-
-
-                foreach (KeyValuePair<string, int> entry in clientFactAnCurent)
+                else
                 {
+                    clientFactAnCurent.Add("1", 0);
+                    clientFactAnCurent.Add("2", 0);
+                    clientFactAnCurent.Add("3", 0);
+                    clientFactAnCurent.Add("4", 0);
+                    clientFactAnCurent.Add("5", 0);
+                    clientFactAnCurent.Add("6", 0);
+                    clientFactAnCurent.Add("7", 0);
+                    clientFactAnCurent.Add("8", 0);
+                    clientFactAnCurent.Add("9", 0);
+                    clientFactAnCurent.Add("10", 0);
+                    clientFactAnCurent.Add("11", 0);
+                    clientFactAnCurent.Add("12", 0);
 
-                    float cAfect = 0;
+                    targetAnCurent.Add("1", 0);
+                    targetAnCurent.Add("2", 0);
+                    targetAnCurent.Add("3", 0);
+                    targetAnCurent.Add("4", 0);
+                    targetAnCurent.Add("5", 0);
+                    targetAnCurent.Add("6", 0);
+                    targetAnCurent.Add("7", 0);
+                    targetAnCurent.Add("8", 0);
+                    targetAnCurent.Add("9", 0);
+                    targetAnCurent.Add("10", 0);
+                    targetAnCurent.Add("11", 0);
+                    targetAnCurent.Add("12", 0);
 
-                    if (targetAnCurent[entry.Key] > 0)
-                        cAfect = (float)entry.Value / (float)targetAnCurent[entry.Key];
+                    clientFactAnAnterior.Add("1", 0);
+                    clientFactAnAnterior.Add("2", 0);
+                    clientFactAnAnterior.Add("3", 0);
+                    clientFactAnAnterior.Add("4", 0);
+                    clientFactAnAnterior.Add("5", 0);
+                    clientFactAnAnterior.Add("6", 0);
+                    clientFactAnAnterior.Add("7", 0);
+                    clientFactAnAnterior.Add("8", 0);
+                    clientFactAnAnterior.Add("9", 0);
+                    clientFactAnAnterior.Add("10", 0);
+                    clientFactAnAnterior.Add("11", 0);
+                    clientFactAnAnterior.Add("12", 0);
 
-                    if (cAfect >= 1)
-                        coefAfectare.Add(entry.Key, 10);
-                    else
-                        coefAfectare.Add(entry.Key, 0);
+                    coefAfectare.Add("1", 0);
+                    coefAfectare.Add("2", 0);
+                    coefAfectare.Add("3", 0);
+                    coefAfectare.Add("4", 0);
+                    coefAfectare.Add("5", 0);
+                    coefAfectare.Add("6", 0);
+                    coefAfectare.Add("7", 0);
+                    coefAfectare.Add("8", 0);
+                    coefAfectare.Add("9", 0);
+                    coefAfectare.Add("10", 0);
+                    coefAfectare.Add("11", 0);
+                    coefAfectare.Add("12", 0);
+
 
                 }
+
 
 
 

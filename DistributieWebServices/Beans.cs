@@ -163,6 +163,31 @@ namespace DistributieTESTWebServices
         public string codAdresa;
         public string poz;
 
+
+        public override bool Equals(object obj)
+        {
+            NotificareClient em = (NotificareClient)obj;
+            return nrTelefon == em.nrTelefon
+                && dateComanda.emitere == em.dateComanda.emitere
+                && dateComanda.departament == em.dateComanda.departament;
+
+        }
+
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 23;
+
+                hash = nrTelefon == null ? hash * 11 : hash * 17 + nrTelefon.GetHashCode();
+                hash = dateComanda.emitere == null ? hash * 21 : hash * 17 + dateComanda.emitere.GetHashCode();
+                hash = dateComanda.departament == null ? hash * 23 : hash * 17 + dateComanda.departament.GetHashCode();
+                return hash;
+            }
+        }
+
+
         public override string ToString()
         {
             return "NotificareClient: [ codClient " + codClient + ", nrTelefon " + nrTelefon + ", dateComanda " + dateComanda.ToString() + ", codAdresa " + codAdresa + " ]";
@@ -176,6 +201,27 @@ namespace DistributieTESTWebServices
 
         public string emitere;
         public string departament;
+
+        public override bool Equals(object obj)
+        {
+            DateComanda em = (DateComanda)obj;
+            return this.emitere == em.emitere
+                && this.departament == em.departament;
+
+        }
+
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 23;
+
+                hash = emitere == null ? hash * 11 : hash * 17 + emitere.GetHashCode();
+                hash = emitere == null ? hash * 19 : hash * 17 + emitere.GetHashCode();
+                return hash;
+            }
+        }
 
         public override string ToString()
         {

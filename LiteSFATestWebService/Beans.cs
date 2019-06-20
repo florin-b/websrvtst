@@ -40,6 +40,23 @@ namespace LiteSFATestWebService
         public string agenti;
         public string codAgent;
         public string numeAgent;
+        public List<string> termenPlata;
+    }
+
+
+    public class ClientAlocat
+    {
+        public string numeClient;
+        public string tipClient01;
+        public string tipClient02;
+        public string tipClient03;
+        public string tipClient04;
+        public string tipClient05;
+        public string tipClient06;
+        public string tipClient07;
+        public string tipClient08;
+        public string tipClient09;
+
     }
 
 
@@ -171,6 +188,8 @@ namespace LiteSFATestWebService
         public string vechime;
         public double procT1 = 0;
         public double valT1 = 0;
+        public string sintetic;
+        public double lungime = 0;
     }
 
 
@@ -270,7 +289,12 @@ namespace LiteSFATestWebService
         public string cnpClient;
         public double marjaT1 = 0;
         public double procentT1 = 0;
-
+        public double mCantCmd = 0;
+        public double mCant30 = 0;
+        public double marjaBrutaPalVal = 0;
+        public double marjaBrutaCantVal = 0;
+        public double marjaBrutaPalProc = 0;
+        public double marjaBrutaCantProc = 0;
 
     }
 

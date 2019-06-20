@@ -443,8 +443,8 @@ namespace LiteSFATestWebService
         public string getListArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament, string afisStoc, string tipUser, string codUser, string modulCautare)
         {
 
-
             string condExtraDepart = " ";
+            List<ArticolCautare> listArticole = new List<ArticolCautare>();
 
             if (codUser != null && (modulCautare == null || !modulCautare.Equals("CLP")) && General.GeneralUtils.isFilialaExtensie02(filiala) && departament.Equals("02"))
             {
@@ -454,6 +454,13 @@ namespace LiteSFATestWebService
                 if (departUser.Equals("01") && departExtra.Equals("02"))
                     condExtraDepart = " and x.sintetic in ('204', '204_01', '205', '236', '237', '229', '238', '240') ";
             }
+
+            if (modulCautare != null && modulCautare.Equals("CLP") && !filiala.StartsWith("BU") && searchString.StartsWith("111"))
+            {
+                return new JavaScriptSerializer().Serialize(listArticole);
+            }
+
+
 
             string serializedResult = "";
             string condCautare = "";
@@ -603,7 +610,7 @@ namespace LiteSFATestWebService
 
                 string strCat;
 
-                List<ArticolCautare> listArticole = new List<ArticolCautare>();
+               
                 ArticolCautare articol;
                 if (oReader.HasRows)
                 {
@@ -935,7 +942,6 @@ namespace LiteSFATestWebService
                 pretArticolGed.procTransport = procentTransport;
                 pretArticolGed.impachetare = impachetare;
                 pretArticolGed.pretFaraTva = ((outParam.GvNetwrFtva / outParam.GvCant) * outParam.Multiplu).ToString();
-
                 pretArticolGed.valTrap = outParam.ValTrap.ToString();
 
                 //pretArticolGed.valTrap = "150";
@@ -1581,6 +1587,53 @@ namespace LiteSFATestWebService
                 return codArt.Substring(10, 8);
             else
                 return codArt;
+        }
+
+
+
+
+        public static bool isArticolExceptie02(OracleConnection connection, string codArticol)
+        {
+
+            bool isArticolExceptie = false;
+       
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = "select 1 from articole a, sapprd.zcant_02 b where a.cod = :codArticol and a.sintetic = b.matkl";
+
+                cmd.CommandType = CommandType.Text;
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":codArticol", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codArticol;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                        isArticolExceptie = true;
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+
+            return isArticolExceptie;
         }
 
 

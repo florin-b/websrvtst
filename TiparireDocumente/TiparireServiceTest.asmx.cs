@@ -95,8 +95,8 @@ namespace TiparireDocumenteTest
                                    " where a.mandt = h.mandt and a.vbeln = h.vbeln and a.posnn = s.posnr and a.vbtyp_n = 'J' and a.vbtyp_v = 'C' " +
                                    " and a.mandt = t.mandt and a.vbelv = t.nrcmdsap and t.mandt = tp.mandt and t.id = tp.id and ( tp.ul_stoc = 'BV90' or tp.depoz = 'DESC') and rownum = 1) " +
                                    " ) x  where nvl(datbg, '00000000') = '00000000' " +
-                                   " and not exists (select 1 from sapprd.ztipariredoc d  where x.vbeln = d.document) and x.lfimg > 0 order by livrare, x.kunnr, x.posnr ";
-
+                                   " and not exists (select 1 from sapprd.ztipariredoc d  where x.vbeln = d.document) and x.lfimg > 0 order by livrare, x.kunnr, art.sintetic ";
+                                    //order by x.posnr
 
 
                 cmd.CommandType = CommandType.Text;

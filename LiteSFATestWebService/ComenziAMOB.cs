@@ -18,8 +18,6 @@ namespace LiteSFATestWebService
             OracleCommand cmd = null;
             OracleDataReader oReader = null;
 
-            codAgent = "00086297";
-
             try
             {
                 string connectionString = DatabaseConnections.ConnectToTestEnvironment();
@@ -30,8 +28,8 @@ namespace LiteSFATestWebService
                 cmd = connection.CreateCommand();
 
 
-                cmd.CommandText = " select id, id_amob,  to_char(to_date(datac,'yyyymmdd')) datac, valoare from sapprd.zcom_amob_head " + 
-                                   " where cod_agent = :codAgent and status = '0' order by id_amob ";
+                cmd.CommandText = " select id, id_amob,  to_char(to_date(datac,'yyyymmdd')) datac, valoare, nume_client from sapprd.zcom_amob_head " + 
+                                  " where cod_agent = :codAgent and status = '0' order by id_amob ";
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -50,6 +48,7 @@ namespace LiteSFATestWebService
                         comanda.idAmob = oReader.GetString(1);
                         comanda.dataCreare = oReader.GetString(2);
                         comanda.valoare = oReader.GetDouble(3).ToString();
+                        comanda.numeClient = oReader.GetString(4);
                         listComenzi.Add(comanda);
 
                     }
@@ -191,6 +190,51 @@ namespace LiteSFATestWebService
             return procent;
 
         }
+
+
+        public static void setStatusComanda(string idComanda, string status)
+        {
+
+            ErrorHandling.sendErrorToMail("Set status comanda Amob: " + idComanda + " , " + status);
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = null;
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " update sapprd.zcom_amob_head set status =:status where id =:idComanda ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":status", OracleType.NVarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = status;
+
+                cmd.Parameters.Add(":idComanda", OracleType.Number, 15).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = idComanda;
+
+                cmd.ExecuteNonQuery();
+
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(cmd, connection);
+            }
+
+
+        }
+
 
 
 

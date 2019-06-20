@@ -16,6 +16,7 @@ namespace LiteSFATestWebService
         public string idComanda;
         public string idAmob;
         public string dataCreare;
+        public string numeClient;
         public string valoare;
     }
 

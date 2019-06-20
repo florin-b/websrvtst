@@ -16,8 +16,6 @@ namespace LiteSFATestWebService
         public string getPret(string client, string articol, string cantitate, string depart, string um, string ul, string tipUser, string depoz, string codUser, string canalDistrib, string filialaAlternativa)
         {
 
-           
- 
 
             string retVal = "";
             SAPWebServices.ZTBL_WEBSERVICE webService = null;
@@ -36,7 +34,6 @@ namespace LiteSFATestWebService
             {
                 tipUserLocal = tipUser;
             }
-            
 
             try
             {
@@ -78,6 +75,7 @@ namespace LiteSFATestWebService
                 string cantUmb = outParam.OutCantUmb.ToString() != "" ? outParam.OutCantUmb.ToString() : "-1";
                 string Umb = outParam.OutUmb.ToString() != "" ? outParam.OutUmb.ToString() : "-1";
                 string impachetare = outParam.Impachet.ToString() != "" ? outParam.Impachet.ToString() : " ";
+                string pretGed = outParam.GvNetwrFtva.ToString();
 
                 string extindere11 = outParam.ErrorCode.ToString();
 
@@ -284,10 +282,9 @@ namespace LiteSFATestWebService
                 if (canalDistrib.Equals("10"))
                     istoricPret = getIstoricPret(connection, articol, client);
 
-
                 retVal += discMaxAV + "#" + discMaxSD + "#" + discMaxDV + "#" +
                          Convert.ToInt32(Double.Parse(multiplu)).ToString() + "#" +
-                         cantUmb + "#" + Umb + "#" + discMaxKA + "#" + cmpArticol.ToString() + "#" + pretMediu + "#" + impachetare + "#" + istoricPret + "#" + procRedCmp + "#";
+                         cantUmb + "#" + Umb + "#" + discMaxKA + "#" + cmpArticol.ToString() + "#" + pretMediu + "#" + impachetare + "#" + istoricPret + "#" + procRedCmp + "#" + pretGed + "#";
 
 
                 if (pretOut.Equals("0.0"))

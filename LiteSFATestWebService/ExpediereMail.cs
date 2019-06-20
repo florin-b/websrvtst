@@ -167,11 +167,9 @@ namespace LiteSFATestWebService
                     "<th width='10%' align='center'>Valoarea</th>" +
                     "</tr><tr><th width='5%' align='center'>0</th><th width='30%' align='center'>1</th><th width='5%' align='center'>2</th><th width='10%' align='center'>3</th>" +
                     "<th width='10%' align='center'>4</th><th width='10%' align='center'>5(3x4)</th>" +
-                    "</tr></thead><tfoot><tr><td colspan='5' align='right' >Total:</td><td align='right'>" +
+                    "</tr></thead>" + tableBody + "<tfoot><tr><td colspan='5' align='right' >Total :</td><td align='right'>" +
                     "" + String.Format("{0:0.00}", totalVal) + "</td>" +
-                    "</tr></tfoot>" +
-                    tableBody +
-                    "</table></div></td></tr><tr><td colspan='3'><table><tr><td class='customText5'><br>Reprezentant vanzari:" +
+                    "</tr></tfoot></table></div></td></tr><tr><td colspan='3'><table><tr><td class='customText5'><br>Reprezentant vanzari:" +
                     "</td></tr><tr><td class='customText6'>" + numeAgent + ", tel. " + telAgent + mail + "</td></tr></table>" +
                     "</td></tr></table>";
 

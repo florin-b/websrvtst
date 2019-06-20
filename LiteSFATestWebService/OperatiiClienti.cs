@@ -225,6 +225,9 @@ namespace LiteSFATestWebService
                                   " where rownum<=50 order by x.nume ";
 
 
+
+                
+
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
 
@@ -1150,6 +1153,7 @@ namespace LiteSFATestWebService
             OracleCommand cmd = new OracleCommand();
             OracleDataReader oReader = null;
             List<Client> listClienti = new List<Client>();
+            
 
             try
             {
@@ -1186,6 +1190,10 @@ namespace LiteSFATestWebService
                         unClient.codClient = oReader.GetString(1);
                         unClient.tipClient = oReader.GetString(2);
 
+                        List<string> termenPlata = new List<string>();
+                        termenPlata.Add("C010");
+                        termenPlata.Add("C020");
+                        unClient.termenPlata = termenPlata;
                         listClienti.Add(unClient);
                     }
                 }
@@ -1263,6 +1271,130 @@ namespace LiteSFATestWebService
             return codAgent;
 
         }
+
+
+
+        public string getClientiAlocati(string codAgent, string filiala)
+        {
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            List<ClientAlocat> listClientiAlocati = new List<ClientAlocat>();
+
+            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+            try
+            {
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select c.nume, " +
+                                  " nvl(max(decode(t.depart, '01', t.tip)), ' ') d01, nvl(max(decode(t.depart, '02', t.tip)), ' ') d02, " +
+                                  " nvl(max(decode(t.depart, '03', t.tip)), ' ') d03, nvl(max(decode(t.depart, '04', t.tip)), ' ') d04, " +
+                                  " nvl(max(decode(t.depart, '05', t.tip)), ' ') d05, nvl(max(decode(t.depart, '06', t.tip)), ' ') d06, " +
+                                  " nvl(max(decode(t.depart, '07', t.tip)), ' ') d07, nvl(max(decode(t.depart, '08', t.tip)), ' ') d08, " +
+                                  " nvl(max(decode(t.depart, '09', t.tip)), ' ') d09 " +
+                                  " from clie_tip t, clienti c where t.cod_cli = c.cod and t.canal = '10' " +
+                                  " and exists (select 1 from clie_tip t where t.canal = '10'  and t.cod_cli = c.cod  ) " +
+                                  " and exists (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.cod  and p.vtweg = '10' " +
+                                  " and p.parvw in ('ZA', 'ZS')  and p.kunn2 =:filiala )  and exists (select 1 from sapprd.knvp p where p.mandt = '900' " +
+                                  " and p.kunnr = c.cod  and p.vtweg = '10'  and p.parvw in ('VE', 'ZC')  and p.pernr =:codAgent ) group by c.nume order by c.nume ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = filiala;
+
+                cmd.Parameters.Add(":codAgent", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = codAgent;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        ClientAlocat client = new ClientAlocat();
+
+                        client.numeClient = oReader.GetString(0);
+                        client.tipClient01 = getTipClient(oReader.GetString(1));
+                        client.tipClient02 = getTipClient(oReader.GetString(2));
+                        client.tipClient03 = getTipClient(oReader.GetString(3));
+                        client.tipClient04 = getTipClient(oReader.GetString(4));
+                        client.tipClient05 = getTipClient(oReader.GetString(5));
+                        client.tipClient06 = getTipClient(oReader.GetString(6));
+                        client.tipClient07 = getTipClient(oReader.GetString(7));
+                        client.tipClient08 = getTipClient(oReader.GetString(8));
+                        client.tipClient09 = getTipClient(oReader.GetString(9));
+                        listClientiAlocati.Add(client);
+                    }
+                }
+            }
+
+
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return new JavaScriptSerializer().Serialize(listClientiAlocati);
+
+
+        }
+
+
+
+        private static string getTipClient(string codTip)
+        {
+            string tipClient = codTip;
+
+            if (codTip.Equals("01"))
+                tipClient = "Final";
+
+            else if (codTip.Equals("02"))
+                tipClient = "Constr. general";
+
+            else if (codTip.Equals("03"))
+                tipClient = "Constr. special";
+
+            else if (codTip.Equals("04"))
+                tipClient = "Revanzator";
+
+            else if (codTip.Equals("05"))
+                tipClient = "Prod. mobila";
+
+            else if (codTip.Equals("06"))
+                tipClient = "Debit. mat. lemn.";
+
+            else if (codTip.Equals("07"))
+                tipClient = "Fraudator";
+
+            else if (codTip.Equals("08"))
+                tipClient = "Nespecificat";
+
+            else if (codTip.Equals("09"))
+                tipClient = "Extern UE";
+
+            else if (codTip.Equals("10"))
+                tipClient = "Extern non-UE";
+
+            else if (codTip.Equals("11"))
+                tipClient = "Desfiintat";
+
+            return tipClient;
+        }
+
+
 
 
 
