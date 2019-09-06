@@ -179,7 +179,7 @@ namespace LiteSFATestWebService
             if (filiala == null)
                 return false;
 
-            if (departament.StartsWith("04") && (filiala.Equals("HD10") || filiala.Equals("VN10") || filiala.Equals("BU12") || filiala.Equals("BZ10") || filiala.Equals("MS10") || filiala.Equals("BC10") || filiala.Equals("AG10")))
+            if (departament.StartsWith("04") && (filiala.Equals("HD10") || filiala.Equals("VN10") || filiala.Equals("BU12") || filiala.Equals("BZ10") || filiala.Equals("MS10") || filiala.Equals("BC10") || filiala.Equals("AG10") || filiala.Equals("NT10")))
                 return true;
 
             return false;

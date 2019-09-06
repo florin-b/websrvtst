@@ -313,5 +313,87 @@ namespace LiteSFATestWebService
 
         }
 
+
+        public static void sendAlertMailAdrLivrareNouaKA(OracleConnection connection, string codKA, string codClient, string adrLivrare, string unitLog)
+        {
+       
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select distinct a.mail, b.nume, c.nume from sapprd.zdest_mail a, agenti b, clienti c " + 
+                                  " where b.cod = :codKA and c.cod = :codClient " + 
+                                  " and(a.vkgrp = b.divizie or a.vkgrp = '00') and b.filiala = a.prctr and " + 
+                                  " funct in ('DZ','OF','SDKA') "; 
+
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codKA", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codKA;
+
+                cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = codClient;
+
+                oReader = cmd.ExecuteReader();
+                string mailDest = "", numeAgent = "", numeClient = "";
+                if (oReader.HasRows)
+                {
+
+                    MailMessage message = new MailMessage();
+                    message.From = new MailAddress("comenzi.tableta@arabesque.ro");
+
+                    while (oReader.Read())
+                    {
+                        mailDest = oReader.GetString(0);
+                        numeAgent = oReader.GetString(1);
+                        numeClient = oReader.GetString(2);
+
+                        mailDest = "florin.brasoveanu@arabesque.ro";
+
+                        if (!mailDest.Trim().Equals(""))
+                        {
+                            message.To.Add(new MailAddress(mailDest));
+
+                        }
+
+                    }//sf. while"
+
+                    message.Subject = "Adresa livrare noua comanda KA ";
+                    message.Body = "KA " + numeAgent + 
+                                   " a introdus pentru clientul " + numeClient + " adresa de livrare " + adrLivrare + ".";
+                    SmtpClient client = new SmtpClient("mail.arabesque.ro");
+                    client.Send(message);
+
+                    message.Dispose();
+
+                }
+
+                oReader.Close();
+                oReader.Dispose();
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                cmd.Dispose();
+            }
+
+
+        }
+
+
+
+
+
     }
 }

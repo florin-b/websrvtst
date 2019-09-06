@@ -22,23 +22,6 @@ namespace LiteSFATestWebService
             SalarizareAgent salarizare = new SalarizareAgent();
             List<DetaliiMalus1> listDetaliiMalus1 = new List<DetaliiMalus1>();
 
-            string stareMeniu = MeniuTableta.stareMeniuTableta(codAgent);
-
-            stareMeniu = "false";
-
-            if (stareMeniu.ToLower().Contains("true"))
-            {
-
-                salarizare.datePrincipale = datePrincipale;
-                salarizare.detaliiBaza = listDetaliiBaza;
-                salarizare.detaliiTCF = detaliiTCF;
-                salarizare.detaliiCorectie = detaliiCorectie;
-                salarizare.detaliiIncasari08 = listDetaliiIncasari08;
-                salarizare.detaliiMalus = listDetaliiMalus1;
-
-                return new JavaScriptSerializer().Serialize(salarizare);
-            }
-
             Salarizare2019.ZWS_SALARIZARE_2019 salarizareService = new ZWS_SALARIZARE_2019();
 
             System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Service1.getUser(), Service1.getPass());
@@ -182,23 +165,6 @@ namespace LiteSFATestWebService
             List<DetaliiIncasari08> listDetaliiIncasari08 = new List<DetaliiIncasari08>();
             List<DetaliiCVS> listDetaliiCvs = new List<DetaliiCVS>();
             List<DetaliiMalus1> listDetaliiMalus1 = new List<DetaliiMalus1>();
-
-            string stareMeniu = MeniuTableta.stareMeniuTableta(codAgent);
-
-            if (stareMeniu.ToLower().Contains("true"))
-            {
-
-                salarizare.datePrincipale = datePrincipale;
-                salarizare.detaliiBaza = listDetaliiBaza;
-                salarizare.detaliiTCF = detaliiTCF;
-                salarizare.detaliiCorectie = detaliiCorectie;
-                salarizare.detaliiIncasari08 = listDetaliiIncasari08;
-                salarizare.detaliiCVS = listDetaliiCvs;
-                salarizare.detaliiMalus = listDetaliiMalus1;
-
-                return new JavaScriptSerializer().Serialize(salarizare);
-            }
-
 
             Salarizare2019.ZWS_SALARIZARE_2019 salarizareService = new ZWS_SALARIZARE_2019();
 

@@ -39,9 +39,6 @@ namespace LiteSFATestWebService
         private string getListDocumenteSalvateToDb(string codAgent, string filiala, string tipUser, string depart, string interval, string stare)
         {
 
-
-            ErrorHandling.sendErrorToMail(" getListDocumenteSalvateToDb: " +  codAgent + "\n\n" +  filiala + "\n\n" + tipUser + "\n\n" + depart + "\n\n" + interval + "\n\n" + stare);
-
             string serializedListComenzi = "";
 
             OracleConnection connection = new OracleConnection();
@@ -116,8 +113,6 @@ namespace LiteSFATestWebService
                     cmd.Parameters.Add(":codagent", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
                     cmd.Parameters[1].Value = codAgent;
                 }
-
-
 
                 oReader = cmd.ExecuteReader();
 
@@ -1034,7 +1029,11 @@ namespace LiteSFATestWebService
                 inParam.VCity = comanda.adresaOras.Length < 25 ? comanda.adresaOras : comanda.adresaOras.Substring(0, 24);
                 inParam.VStreet = comanda.adresaStrada;
 
-                
+                string obsTransp = " ";
+                if (comanda.transpBack != null && Boolean.Parse(comanda.transpBack))
+                    obsTransp = "X";
+
+                inParam.VAcelasiTransp = obsTransp;
 
                 SAPWebServices.ZmaterialeRetur[] articoleRetur = new ZmaterialeRetur[listaArticole.Count];
 

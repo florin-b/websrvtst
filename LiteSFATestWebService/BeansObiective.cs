@@ -87,6 +87,17 @@ namespace LiteSFATestWebService
 
     }
 
+    public class ObiectivConsilier
+    {
 
+        public string id;
+        public string beneficiar;
+        public string dataCreare;
+        public string adresa;
+        public string codJudet;
+        public string coordGps;
+
+
+    }
 
 }

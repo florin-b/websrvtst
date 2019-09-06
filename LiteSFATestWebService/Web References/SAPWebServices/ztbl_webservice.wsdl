@@ -476,6 +476,12 @@
           <xsd:maxLength value="5" />
         </xsd:restriction>
       </xsd:simpleType>
+      <xsd:simpleType name="curr11.2">
+        <xsd:restriction base="xsd:decimal">
+          <xsd:totalDigits value="11" />
+          <xsd:fractionDigits value="2" />
+        </xsd:restriction>
+      </xsd:simpleType>
       <xsd:simpleType name="curr15.2">
         <xsd:restriction base="xsd:decimal">
           <xsd:totalDigits value="15" />
@@ -498,6 +504,12 @@
         <xsd:restriction base="xsd:decimal">
           <xsd:totalDigits value="11" />
           <xsd:fractionDigits value="0" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="decimal16.3">
+        <xsd:restriction base="xsd:decimal">
+          <xsd:totalDigits value="16" />
+          <xsd:fractionDigits value="3" />
         </xsd:restriction>
       </xsd:simpleType>
       <xsd:simpleType name="decimal23.4">
@@ -653,16 +665,39 @@
     </xsd:schema>
     <xsd:schema xmlns:n0="urn:sap-com:document:sap:rfc:functions" attributeFormDefault="qualified" targetNamespace="urn:sap-com:document:sap:soap:functions:mc-style">
       <xsd:import namespace="urn:sap-com:document:sap:rfc:functions" />
-      <xsd:simpleType name="char1">
-        <xsd:restriction base="xsd:string">
-          <xsd:maxLength value="1" />
-        </xsd:restriction>
-      </xsd:simpleType>
-      <xsd:simpleType name="char2">
-        <xsd:restriction base="xsd:string">
-          <xsd:maxLength value="2" />
-        </xsd:restriction>
-      </xsd:simpleType>
+      <xsd:complexType name="ZdetInfocv">
+        <xsd:sequence>
+          <xsd:element name="Matnr" type="n0:char18" />
+          <xsd:element name="Matkl" type="n0:char9" />
+          <xsd:element name="Arktx" type="n0:char40" />
+          <xsd:element name="Lgort" type="n0:char4" />
+          <xsd:element name="Kwmeng" type="n0:quantum15.3" />
+          <xsd:element name="Vrkme" type="n0:unit3" />
+          <xsd:element name="Menge" type="n0:quantum13.3" />
+          <xsd:element name="Meins" type="n0:unit3" />
+          <xsd:element name="ValNet" type="n0:curr15.2" />
+          <xsd:element name="ValBrut" type="n0:curr15.2" />
+          <xsd:element name="ProcRed" type="n0:decimal16.3" />
+          <xsd:element name="Cmp" type="n0:curr11.2" />
+          <xsd:element name="Pret" type="n0:curr11.2" />
+          <xsd:element name="Zdis" type="n0:curr15.2" />
+          <xsd:element name="t1" type="n0:curr15.2" />
+          <xsd:element name="T1Proc" type="n0:curr15.2" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ZheadInfocv">
+        <xsd:sequence>
+          <xsd:element name="Nrcmdsap" type="n0:char10" />
+          <xsd:element name="Status" type="n0:char20" />
+          <xsd:element name="ValNet" type="n0:curr15.2" />
+          <xsd:element name="ValBrut" type="n0:curr15.2" />
+          <xsd:element name="t1" type="n0:curr15.2" />
+          <xsd:element name="T1Proc" type="n0:curr15.2" />
+          <xsd:element name="t0" type="n0:curr15.2" />
+          <xsd:element name="T0Proc" type="n0:curr15.2" />
+          <xsd:element name="Waers" type="n0:cuky5" />
+        </xsd:sequence>
+      </xsd:complexType>
       <xsd:complexType name="ZtrapSite">
         <xsd:sequence>
           <xsd:element name="Matnr" type="n0:char18" />
@@ -2131,8 +2166,8 @@
       </xsd:complexType>
       <xsd:complexType name="ZsfaExtra">
         <xsd:sequence>
-          <xsd:element name="ProgLivrare" type="tns:char1" />
-          <xsd:element name="LivrSambata" type="tns:char2" />
+          <xsd:element name="ProgLivrare" type="n0:char1" />
+          <xsd:element name="LivrSambata" type="n0:char2" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="Bapicublb">
@@ -2680,6 +2715,11 @@
           <xsd:element name="Fmstatus" type="n0:char1" />
         </xsd:sequence>
       </xsd:complexType>
+      <xsd:complexType name="TableOfZdetInfocv">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZdetInfocv" />
+        </xsd:sequence>
+      </xsd:complexType>
       <xsd:complexType name="TableOfZtrapSite">
         <xsd:sequence>
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZtrapSite" />
@@ -2693,6 +2733,11 @@
       <xsd:complexType name="ZttEtPaleti">
         <xsd:sequence>
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZstEtPaleti" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="TableOfZheadInfocv">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZheadInfocv" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="TableOfZsdRuBParame">
@@ -2870,6 +2915,22 @@
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapisdkey" />
         </xsd:sequence>
       </xsd:complexType>
+      <xsd:element name="ZgetInfocv">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="0" name="IpSapdoc" type="n0:char10" />
+            <xsd:element minOccurs="0" name="ItDet" type="tns:TableOfZdetInfocv" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ZgetInfocvResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="0" name="ItDet" type="tns:TableOfZdetInfocv" />
+            <xsd:element name="WaHead" type="tns:ZheadInfocv" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <xsd:element name="ZcalcTrapSite">
         <xsd:complexType>
           <xsd:sequence>
@@ -2888,6 +2949,24 @@
             <xsd:element name="GvTraty" type="n0:char4" />
             <xsd:element name="ItMatnr" type="tns:TableOfZtrapSite" />
             <xsd:element name="ValTrap" type="n0:curr15.2" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ZcustChLivrare">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="0" name="IpAdresa" type="n0:char1" />
+            <xsd:element minOccurs="0" name="IpData" type="n0:char1" />
+            <xsd:element minOccurs="0" name="IpMode" type="n0:char1" />
+            <xsd:element minOccurs="0" name="IpVbeln" type="n0:char10" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ZcustChLivrareResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="EpMesaj" type="n0:char100" />
+            <xsd:element name="EpOk" type="n0:char2" />
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -2963,6 +3042,20 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
+      <xsd:element name="ZgetInfoheadcv">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ItComenzi" type="tns:TableOfZheadInfocv" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ZgetInfoheadcvResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ItComenzi" type="tns:TableOfZheadInfocv" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <xsd:element name="ZsablonReducere">
         <xsd:complexType>
           <xsd:sequence>
@@ -2988,11 +3081,27 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
+      <xsd:element name="ZlivrareCustodie">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="0" name="IpId" type="n0:char10" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ZlivrareCustodieResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="EpMesaj" type="n0:char100" />
+            <xsd:element name="EpOk" type="n0:char2" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <xsd:element name="ZretMarfa">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element minOccurs="0" name="ItMateriale" type="tns:TableOfZmaterialeRetur" />
             <xsd:element minOccurs="0" name="TipPers" type="n0:char2" />
+            <xsd:element minOccurs="0" name="VAcelasiTransp" type="n0:char1" />
             <xsd:element minOccurs="0" name="VAddrnumber" type="n0:char12" />
             <xsd:element minOccurs="0" name="VAugru" type="n0:char3" />
             <xsd:element minOccurs="0" name="VCity" type="n0:char25" />
@@ -3234,11 +3343,23 @@
       </xsd:element>
     </xsd:schema>
   </wsdl:types>
+  <wsdl:message name="ZgetInfocv">
+    <wsdl:part name="parameters" element="tns:ZgetInfocv" />
+  </wsdl:message>
+  <wsdl:message name="ZgetInfocvResponse">
+    <wsdl:part name="parameter" element="tns:ZgetInfocvResponse" />
+  </wsdl:message>
   <wsdl:message name="ZcalcTrapSite">
     <wsdl:part name="parameters" element="tns:ZcalcTrapSite" />
   </wsdl:message>
   <wsdl:message name="ZcalcTrapSiteResponse">
     <wsdl:part name="parameter" element="tns:ZcalcTrapSiteResponse" />
+  </wsdl:message>
+  <wsdl:message name="ZcustChLivrare">
+    <wsdl:part name="parameters" element="tns:ZcustChLivrare" />
+  </wsdl:message>
+  <wsdl:message name="ZcustChLivrareResponse">
+    <wsdl:part name="parameter" element="tns:ZcustChLivrareResponse" />
   </wsdl:message>
   <wsdl:message name="ZstareCurenta">
     <wsdl:part name="parameters" element="tns:ZstareCurenta" />
@@ -3264,11 +3385,23 @@
   <wsdl:message name="ZNrPaletiResponse">
     <wsdl:part name="parameter" element="tns:ZNrPaletiResponse" />
   </wsdl:message>
+  <wsdl:message name="ZgetInfoheadcv">
+    <wsdl:part name="parameters" element="tns:ZgetInfoheadcv" />
+  </wsdl:message>
+  <wsdl:message name="ZgetInfoheadcvResponse">
+    <wsdl:part name="parameter" element="tns:ZgetInfoheadcvResponse" />
+  </wsdl:message>
   <wsdl:message name="ZsablonReducere">
     <wsdl:part name="parameters" element="tns:ZsablonReducere" />
   </wsdl:message>
   <wsdl:message name="ZsablonReducereResponse">
     <wsdl:part name="parameter" element="tns:ZsablonReducereResponse" />
+  </wsdl:message>
+  <wsdl:message name="ZlivrareCustodie">
+    <wsdl:part name="parameters" element="tns:ZlivrareCustodie" />
+  </wsdl:message>
+  <wsdl:message name="ZlivrareCustodieResponse">
+    <wsdl:part name="parameter" element="tns:ZlivrareCustodieResponse" />
   </wsdl:message>
   <wsdl:message name="ZretMarfa">
     <wsdl:part name="parameters" element="tns:ZretMarfa" />
@@ -3316,12 +3449,20 @@
     <wsp:Policy>
       <wsp:PolicyReference URI="#IF__ZTBL_WEBSERVICE" />
     </wsp:Policy>
+    <wsdl:operation name="ZgetInfocv">
+      <wsdl:input message="tns:ZgetInfocv" />
+      <wsdl:output message="tns:ZgetInfocvResponse" />
+    </wsdl:operation>
     <wsdl:operation name="ZcalcTrapSite">
       <wsp:Policy>
         <wsp:PolicyReference URI="#OP__ZcalcTrapSite" />
       </wsp:Policy>
       <wsdl:input message="tns:ZcalcTrapSite" />
       <wsdl:output message="tns:ZcalcTrapSiteResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="ZcustChLivrare">
+      <wsdl:input message="tns:ZcustChLivrare" />
+      <wsdl:output message="tns:ZcustChLivrareResponse" />
     </wsdl:operation>
     <wsdl:operation name="ZstareCurenta">
       <wsp:Policy>
@@ -3351,12 +3492,20 @@
       <wsdl:input message="tns:ZNrPaleti" />
       <wsdl:output message="tns:ZNrPaletiResponse" />
     </wsdl:operation>
+    <wsdl:operation name="ZgetInfoheadcv">
+      <wsdl:input message="tns:ZgetInfoheadcv" />
+      <wsdl:output message="tns:ZgetInfoheadcvResponse" />
+    </wsdl:operation>
     <wsdl:operation name="ZsablonReducere">
       <wsp:Policy>
         <wsp:PolicyReference URI="#OP__ZsablonReducere" />
       </wsp:Policy>
       <wsdl:input message="tns:ZsablonReducere" />
       <wsdl:output message="tns:ZsablonReducereResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="ZlivrareCustodie">
+      <wsdl:input message="tns:ZlivrareCustodie" />
+      <wsdl:output message="tns:ZlivrareCustodieResponse" />
     </wsdl:operation>
     <wsdl:operation name="ZretMarfa">
       <wsp:Policy>
@@ -3413,8 +3562,26 @@
       <wsp:PolicyReference URI="#BN__ZTBL_WEBSERVICE" />
     </wsp:Policy>
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="ZgetInfocv">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="ZcalcTrapSite">
       <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZcalcTrapSiteRequest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ZcustChLivrare">
+      <soap:operation soapAction="" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -3458,8 +3625,26 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="ZgetInfoheadcv">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="ZsablonReducere">
       <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZsablonReducereRequest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ZlivrareCustodie">
+      <soap:operation soapAction="" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -3536,8 +3721,26 @@
       <wsp:PolicyReference URI="#BN__ZTBL_WEBSERVICE_soap12" />
     </wsp:Policy>
     <wsoap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="ZgetInfocv">
+      <wsoap12:operation soapAction="" style="document" />
+      <wsdl:input>
+        <wsoap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <wsoap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="ZcalcTrapSite">
       <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZcalcTrapSiteRequest" style="document" />
+      <wsdl:input>
+        <wsoap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <wsoap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ZcustChLivrare">
+      <wsoap12:operation soapAction="" style="document" />
       <wsdl:input>
         <wsoap12:body use="literal" />
       </wsdl:input>
@@ -3581,8 +3784,26 @@
         <wsoap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="ZgetInfoheadcv">
+      <wsoap12:operation soapAction="" style="document" />
+      <wsdl:input>
+        <wsoap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <wsoap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="ZsablonReducere">
       <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZsablonReducereRequest" style="document" />
+      <wsdl:input>
+        <wsoap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <wsoap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ZlivrareCustodie">
+      <wsoap12:operation soapAction="" style="document" />
       <wsdl:input>
         <wsoap12:body use="literal" />
       </wsdl:input>

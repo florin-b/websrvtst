@@ -188,6 +188,12 @@ namespace LiteSFATestWebService
             bool isBlocat = true;
             string codPin = "-1";
 
+            if (codAgent == null || codAgent.Equals(""))
+            {
+                return "[" + isBlocat + "," + codPin + "]";
+            }
+
+
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand();
             OracleDataReader oReader = null;
@@ -222,7 +228,7 @@ namespace LiteSFATestWebService
             }
             catch (Exception ex)
             {
-                ErrorHandling.sendErrorToMail(ex.ToString());
+                ErrorHandling.sendErrorToMail(ex.ToString() + " , cod agent = " + codAgent);
                 isBlocat = true;
             }
             finally

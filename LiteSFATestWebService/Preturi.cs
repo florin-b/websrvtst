@@ -115,7 +115,7 @@ namespace LiteSFATestWebService
 
                 cmd = connection.CreateCommand();
 
-                cmd.CommandText = " select nvl(to_char(decode(y.lbkum,0,y.verpr,y.salk3/y.lbkum),'99999.9999'),0) from sapprd.mbew y where " +
+                cmd.CommandText = " select nvl(to_char(decode(y.lbkum,0,y.verpr,y.salk3/y.lbkum),'999999.9999'),0) from sapprd.mbew y where " +
                                   " y.mandt='900' and y.matnr=:matnr  and y.bwkey = :unitLog ";
 
                 cmd.CommandType = CommandType.Text;

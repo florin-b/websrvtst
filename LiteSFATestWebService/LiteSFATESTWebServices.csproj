@@ -85,7 +85,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlarmaObiectivKA.cs" />
+    <Compile Include="BeanPierderi.cs" />
     <Compile Include="HelperComenzi.cs" />
+    <Compile Include="InfoComenziSap.cs" />
     <Compile Include="JurnalAprobari.cs" />
     <Compile Include="Aprobari.cs" />
     <Compile Include="Auth.cs" />
@@ -123,6 +125,7 @@
     <Compile Include="Mail.cs" />
     <Compile Include="MeniuTableta.cs" />
     <Compile Include="Neincasate.cs" />
+    <Compile Include="ObiectiveConsilieri.cs" />
     <Compile Include="OperatiiComenziBG.cs" />
     <Compile Include="OperatiiCLP.cs" />
     <Compile Include="OperatiiConditiiBG.cs" />
@@ -138,6 +141,7 @@
     <Compile Include="OperatiiNecesar.cs" />
     <Compile Include="OperatiiObiectiveKA.cs" />
     <Compile Include="OperatiiPreturiBG.cs" />
+    <Compile Include="PierderiVanzari.cs" />
     <Compile Include="Preturi.cs" />
     <Compile Include="OperatiiRetur.cs" />
     <Compile Include="OperatiiSemiactivi.cs" />
@@ -201,6 +205,11 @@
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>
     <Compile Include="Web References\SAPWSCustodie\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+    <Compile Include="Web References\SapWSPierderiVanzari\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.map</DependentUpon>
@@ -284,6 +293,17 @@
       </CachedDynamicPropName>
       <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
       <CachedSettingsPropName>LiteSFATestWebService_SalarizareKA_ZWS_SAL_KA_2019</CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/wsdl/flv_10002A111AD1/bndg_url/sap/bc/srt/rfc/sap/zws_cl_fact_avsd/900/zws_cl_fact_avsd/zws_cl_fact_avsd%3fsap-client=900">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\SapWSPierderiVanzari\</RelPath>
+      <UpdateFromURL>http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/wsdl/flv_10002A111AD1/bndg_url/sap/bc/srt/rfc/sap/zws_cl_fact_avsd/900/zws_cl_fact_avsd/zws_cl_fact_avsd%3fsap-client=900</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>LiteSFATestWebService_SapWSPierderiVanzri_ZWS_CL_FACT_AVSD</CachedSettingsPropName>
     </WebReferenceUrl>
     <WebReferenceUrl Include="http://sap-test1a.arabesque.ro:8081/sap/bc/srt/wsdl/flv_10002A111AD1/bndg_url/sap/bc/srt/rfc/sap/zclp_webservice/900/zclp_webservice/zclp_webservice%3fsap-client=900">
       <UrlBehavior>Dynamic</UrlBehavior>
@@ -474,6 +494,18 @@
     <Content Include="Web References\SAPWebServices\ZstareCurentaResponse.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </Content>
+    <Content Include="Web References\SAPWebServices\ZcustChLivrareResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\SAPWebServices\ZgetInfocvResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\SAPWebServices\ZlivrareCustodieResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\SAPWebServices\ZgetInfoheadcvResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
     <None Include="Web References\SAPWebServices\ztbl_webservice.wsdl" />
     <Content Include="Web References\SAPWSBudmax\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
@@ -526,6 +558,14 @@
       <DependentUpon>Reference.map</DependentUpon>
     </Content>
     <None Include="Web References\SAPWSCustodie\zwbs_custodie.wsdl" />
+    <None Include="Web References\SapWSPierderiVanzari\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <Content Include="Web References\SapWSPierderiVanzari\ZCL_FACT_AVSDResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <None Include="Web References\SapWSPierderiVanzari\zws_cl_fact_avsd.wsdl" />
     <None Include="Web References\SMSService\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>

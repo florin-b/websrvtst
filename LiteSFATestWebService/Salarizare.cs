@@ -21,14 +21,13 @@ namespace LiteSFATestWebService
 
             WebServiceSalarizareAV.ZWBS_SAL_AV webService = new ZWBS_SAL_AV();
 
-            
-
             System.Net.NetworkCredential nc = new System.Net.NetworkCredential(DatabaseConnections.getUser(), DatabaseConnections.getPass());
             webService.Credentials = nc;
             webService.Timeout = 300000;
 
             WebServiceSalarizareAV.ZgetSalav inParam = new WebServiceSalarizareAV.ZgetSalav();
 
+           
 
             WebServiceSalarizareAV.Ztmarja[] zMarja = new Ztmarja[1];
             WebServiceSalarizareAV.ZtprsSapreport[] zTPR = new ZtprsSapreport[1];
@@ -37,8 +36,9 @@ namespace LiteSFATestWebService
             WebServiceSalarizareAV.Zsalav3[] zFinal = new Zsalav3[1];
             WebServiceSalarizareAV.ZprocincSapreport[] zProcente = new ZprocincSapreport[1];
 
+           
 
-            WebServiceSalarizareAV.Zpernr[] codAgenti = new Zpernr[3];
+           WebServiceSalarizareAV.Zpernr[] codAgenti = new Zpernr[3];
             codAgenti[0] = new Zpernr();
             codAgenti[0].Pernr = codAgent;
 

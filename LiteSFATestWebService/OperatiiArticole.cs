@@ -1169,7 +1169,7 @@ namespace LiteSFATestWebService
             }
             catch (Exception ex)
             {
-                ErrorHandling.sendErrorToMail(ex.ToString());
+                ErrorHandling.sendErrorToMail(ex.ToString() + " , " + parametruPret);
                 serializedResult = "-1";
             }
             finally
@@ -1178,6 +1178,7 @@ namespace LiteSFATestWebService
             }
 
             serializedResult = serializer.Serialize(pretArticolGed);
+
 
             return serializedResult;
 
@@ -1514,6 +1515,7 @@ namespace LiteSFATestWebService
 
                 cmd = connection.CreateCommand();
 
+                /*
                 cmd.CommandText = " select sum(kulab), 'BUC' um_art from " + 
                                  " (select k.matnr, k.kulab from sapprd.MSKU k " + 
                                  " where k.mandt = '900' and k.kunnr = :codClient and sobkz = 'W' and kulab > 0 and matnr = :codArticol " + 
@@ -1522,6 +1524,19 @@ namespace LiteSFATestWebService
                                  " where d.mandt = '900' and d.sobkz = 'W' and d.matnr = :codArticol and (d.werks =:filiala or d.werks =:filiala2) " + 
                                  " and d.mandt = p.mandt and d.vbeln = p.vbeln and d.posnr = p.posnr and d.mandt = l.mandt and d.vbeln = l.vbeln " +
                                  " and l.kunnr =:codClient and p.WBSTA <> 'C')group by matnr ";
+                */
+
+                cmd.CommandText = " select sum(kulab), m.meins um_art from " +
+                                  " (select k.matnr, k.kulab from sapprd.MSKU k " +
+                                  " where k.mandt = '900' and k.kunnr = :codClient and sobkz = 'W' and kulab > 0 and matnr = :codArticol " +
+                                  " union all " +
+                                  " select d.matnr, -1 * (d.lfimg)from sapprd.lips d, sapprd.vbup p, sapprd.likp l " +
+                                  " where d.mandt = '900' and d.sobkz = 'W' and d.matnr = :codArticol and(d.werks = :filiala or d.werks = :filiala2) " +
+                                  " and d.mandt = p.mandt and d.vbeln = p.vbeln and d.posnr = p.posnr and d.mandt = l.mandt and d.vbeln = l.vbeln " +
+                                  " and l.kunnr =:codClient and p.WBSTA <> 'C') y, sapprd.mara m where m.mandt = '900' and y.matnr = m.matnr " +
+                                  " group by y.matnr, m.meins  ";
+
+
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();

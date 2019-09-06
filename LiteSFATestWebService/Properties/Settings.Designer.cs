@@ -164,5 +164,16 @@ namespace LiteSFATestWebService.Properties {
                 return ((string)(this["LiteSFATestWebService_SalarizareKA_ZWS_SAL_KA_2019"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zws_cl_fact_avsd/900/zws_cl" +
+            "_fact_avsd/zws_cl_fact_avsd")]
+        public string LiteSFATestWebService_SapWSPierderiVanzri_ZWS_CL_FACT_AVSD {
+            get {
+                return ((string)(this["LiteSFATestWebService_SapWSPierderiVanzri_ZWS_CL_FACT_AVSD"]));
+            }
+        }
     }
 }

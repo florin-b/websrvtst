@@ -30,7 +30,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     [System.Web.Services.WebServiceBindingAttribute(Name="ZTBL_WEBSERVICE", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
     public partial class ZTBL_WEBSERVICE : System.Web.Services.Protocols.SoapHttpClientProtocol {
         
+        private System.Threading.SendOrPostCallback ZgetInfocvOperationCompleted;
+        
         private System.Threading.SendOrPostCallback ZcalcTrapSiteOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback ZcustChLivrareOperationCompleted;
         
         private System.Threading.SendOrPostCallback ZstareCurentaOperationCompleted;
         
@@ -40,7 +44,11 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         private System.Threading.SendOrPostCallback ZNrPaletiOperationCompleted;
         
+        private System.Threading.SendOrPostCallback ZgetInfoheadcvOperationCompleted;
+        
         private System.Threading.SendOrPostCallback ZsablonReducereOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback ZlivrareCustodieOperationCompleted;
         
         private System.Threading.SendOrPostCallback ZretMarfaOperationCompleted;
         
@@ -95,7 +103,13 @@ namespace LiteSFATestWebService.SAPWebServices {
         }
         
         /// <remarks/>
+        public event ZgetInfocvCompletedEventHandler ZgetInfocvCompleted;
+        
+        /// <remarks/>
         public event ZcalcTrapSiteCompletedEventHandler ZcalcTrapSiteCompleted;
+        
+        /// <remarks/>
+        public event ZcustChLivrareCompletedEventHandler ZcustChLivrareCompleted;
         
         /// <remarks/>
         public event ZstareCurentaCompletedEventHandler ZstareCurentaCompleted;
@@ -110,7 +124,13 @@ namespace LiteSFATestWebService.SAPWebServices {
         public event ZNrPaletiCompletedEventHandler ZNrPaletiCompleted;
         
         /// <remarks/>
+        public event ZgetInfoheadcvCompletedEventHandler ZgetInfoheadcvCompleted;
+        
+        /// <remarks/>
         public event ZsablonReducereCompletedEventHandler ZsablonReducereCompleted;
+        
+        /// <remarks/>
+        public event ZlivrareCustodieCompletedEventHandler ZlivrareCustodieCompleted;
         
         /// <remarks/>
         public event ZretMarfaCompletedEventHandler ZretMarfaCompleted;
@@ -132,6 +152,36 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         /// <remarks/>
         public event ZCalcStocCompletedEventHandler ZCalcStocCompleted;
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
+        [return: System.Xml.Serialization.XmlElementAttribute("ZgetInfocvResponse", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+        public ZgetInfocvResponse ZgetInfocv([System.Xml.Serialization.XmlElementAttribute("ZgetInfocv", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")] ZgetInfocv ZgetInfocv1) {
+            object[] results = this.Invoke("ZgetInfocv", new object[] {
+                        ZgetInfocv1});
+            return ((ZgetInfocvResponse)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void ZgetInfocvAsync(ZgetInfocv ZgetInfocv1) {
+            this.ZgetInfocvAsync(ZgetInfocv1, null);
+        }
+        
+        /// <remarks/>
+        public void ZgetInfocvAsync(ZgetInfocv ZgetInfocv1, object userState) {
+            if ((this.ZgetInfocvOperationCompleted == null)) {
+                this.ZgetInfocvOperationCompleted = new System.Threading.SendOrPostCallback(this.OnZgetInfocvOperationCompleted);
+            }
+            this.InvokeAsync("ZgetInfocv", new object[] {
+                        ZgetInfocv1}, this.ZgetInfocvOperationCompleted, userState);
+        }
+        
+        private void OnZgetInfocvOperationCompleted(object arg) {
+            if ((this.ZgetInfocvCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.ZgetInfocvCompleted(this, new ZgetInfocvCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
         
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZcalcTrapSiteReq" +
@@ -161,6 +211,36 @@ namespace LiteSFATestWebService.SAPWebServices {
             if ((this.ZcalcTrapSiteCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.ZcalcTrapSiteCompleted(this, new ZcalcTrapSiteCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
+        [return: System.Xml.Serialization.XmlElementAttribute("ZcustChLivrareResponse", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+        public ZcustChLivrareResponse ZcustChLivrare([System.Xml.Serialization.XmlElementAttribute("ZcustChLivrare", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")] ZcustChLivrare ZcustChLivrare1) {
+            object[] results = this.Invoke("ZcustChLivrare", new object[] {
+                        ZcustChLivrare1});
+            return ((ZcustChLivrareResponse)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void ZcustChLivrareAsync(ZcustChLivrare ZcustChLivrare1) {
+            this.ZcustChLivrareAsync(ZcustChLivrare1, null);
+        }
+        
+        /// <remarks/>
+        public void ZcustChLivrareAsync(ZcustChLivrare ZcustChLivrare1, object userState) {
+            if ((this.ZcustChLivrareOperationCompleted == null)) {
+                this.ZcustChLivrareOperationCompleted = new System.Threading.SendOrPostCallback(this.OnZcustChLivrareOperationCompleted);
+            }
+            this.InvokeAsync("ZcustChLivrare", new object[] {
+                        ZcustChLivrare1}, this.ZcustChLivrareOperationCompleted, userState);
+        }
+        
+        private void OnZcustChLivrareOperationCompleted(object arg) {
+            if ((this.ZcustChLivrareCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.ZcustChLivrareCompleted(this, new ZcustChLivrareCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -289,6 +369,36 @@ namespace LiteSFATestWebService.SAPWebServices {
         }
         
         /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
+        [return: System.Xml.Serialization.XmlElementAttribute("ZgetInfoheadcvResponse", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+        public ZgetInfoheadcvResponse ZgetInfoheadcv([System.Xml.Serialization.XmlElementAttribute("ZgetInfoheadcv", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")] ZgetInfoheadcv ZgetInfoheadcv1) {
+            object[] results = this.Invoke("ZgetInfoheadcv", new object[] {
+                        ZgetInfoheadcv1});
+            return ((ZgetInfoheadcvResponse)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void ZgetInfoheadcvAsync(ZgetInfoheadcv ZgetInfoheadcv1) {
+            this.ZgetInfoheadcvAsync(ZgetInfoheadcv1, null);
+        }
+        
+        /// <remarks/>
+        public void ZgetInfoheadcvAsync(ZgetInfoheadcv ZgetInfoheadcv1, object userState) {
+            if ((this.ZgetInfoheadcvOperationCompleted == null)) {
+                this.ZgetInfoheadcvOperationCompleted = new System.Threading.SendOrPostCallback(this.OnZgetInfoheadcvOperationCompleted);
+            }
+            this.InvokeAsync("ZgetInfoheadcv", new object[] {
+                        ZgetInfoheadcv1}, this.ZgetInfoheadcvOperationCompleted, userState);
+        }
+        
+        private void OnZgetInfoheadcvOperationCompleted(object arg) {
+            if ((this.ZgetInfoheadcvCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.ZgetInfoheadcvCompleted(this, new ZgetInfoheadcvCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZsablonReducereR" +
             "equest", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
         [return: System.Xml.Serialization.XmlElementAttribute("ZsablonReducereResponse", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
@@ -316,6 +426,36 @@ namespace LiteSFATestWebService.SAPWebServices {
             if ((this.ZsablonReducereCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.ZsablonReducereCompleted(this, new ZsablonReducereCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
+        [return: System.Xml.Serialization.XmlElementAttribute("ZlivrareCustodieResponse", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+        public ZlivrareCustodieResponse ZlivrareCustodie([System.Xml.Serialization.XmlElementAttribute("ZlivrareCustodie", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")] ZlivrareCustodie ZlivrareCustodie1) {
+            object[] results = this.Invoke("ZlivrareCustodie", new object[] {
+                        ZlivrareCustodie1});
+            return ((ZlivrareCustodieResponse)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void ZlivrareCustodieAsync(ZlivrareCustodie ZlivrareCustodie1) {
+            this.ZlivrareCustodieAsync(ZlivrareCustodie1, null);
+        }
+        
+        /// <remarks/>
+        public void ZlivrareCustodieAsync(ZlivrareCustodie ZlivrareCustodie1, object userState) {
+            if ((this.ZlivrareCustodieOperationCompleted == null)) {
+                this.ZlivrareCustodieOperationCompleted = new System.Threading.SendOrPostCallback(this.OnZlivrareCustodieOperationCompleted);
+            }
+            this.InvokeAsync("ZlivrareCustodie", new object[] {
+                        ZlivrareCustodie1}, this.ZlivrareCustodieOperationCompleted, userState);
+        }
+        
+        private void OnZlivrareCustodieOperationCompleted(object arg) {
+            if ((this.ZlivrareCustodieCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.ZlivrareCustodieCompleted(this, new ZlivrareCustodieCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -561,84 +701,32 @@ namespace LiteSFATestWebService.SAPWebServices {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
-    public partial class ZcalcTrapSite {
+    public partial class ZgetInfocv {
         
-        private string gvKunnrField;
+        private string ipSapdocField;
         
-        private string gvOrasField;
-        
-        private string gvRegioField;
-        
-        private string gvTipplataField;
-        
-        private string gvWerksField;
-        
-        private ZtrapSite[] itMatnrField;
+        private ZdetInfocv[] itDetField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string GvKunnr {
+        public string IpSapdoc {
             get {
-                return this.gvKunnrField;
+                return this.ipSapdocField;
             }
             set {
-                this.gvKunnrField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string GvOras {
-            get {
-                return this.gvOrasField;
-            }
-            set {
-                this.gvOrasField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string GvRegio {
-            get {
-                return this.gvRegioField;
-            }
-            set {
-                this.gvRegioField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string GvTipplata {
-            get {
-                return this.gvTipplataField;
-            }
-            set {
-                this.gvTipplataField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string GvWerks {
-            get {
-                return this.gvWerksField;
-            }
-            set {
-                this.gvWerksField = value;
+                this.ipSapdocField = value;
             }
         }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
         [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
-        public ZtrapSite[] ItMatnr {
+        public ZdetInfocv[] ItDet {
             get {
-                return this.itMatnrField;
+                return this.itDetField;
             }
             set {
-                this.itMatnrField = value;
+                this.itDetField = value;
             }
         }
     }
@@ -649,15 +737,39 @@ namespace LiteSFATestWebService.SAPWebServices {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
-    public partial class ZtrapSite {
+    public partial class ZdetInfocv {
         
         private string matnrField;
         
-        private decimal netwrField;
+        private string matklField;
+        
+        private string arktxField;
+        
+        private string lgortField;
+        
+        private decimal kwmengField;
+        
+        private string vrkmeField;
         
         private decimal mengeField;
         
         private string meinsField;
+        
+        private decimal valNetField;
+        
+        private decimal valBrutField;
+        
+        private decimal procRedField;
+        
+        private decimal cmpField;
+        
+        private decimal pretField;
+        
+        private decimal zdisField;
+        
+        private decimal t1Field;
+        
+        private decimal t1ProcField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
@@ -672,12 +784,56 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public decimal Netwr {
+        public string Matkl {
             get {
-                return this.netwrField;
+                return this.matklField;
             }
             set {
-                this.netwrField = value;
+                this.matklField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Arktx {
+            get {
+                return this.arktxField;
+            }
+            set {
+                this.arktxField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Lgort {
+            get {
+                return this.lgortField;
+            }
+            set {
+                this.lgortField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal Kwmeng {
+            get {
+                return this.kwmengField;
+            }
+            set {
+                this.kwmengField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Vrkme {
+            get {
+                return this.vrkmeField;
+            }
+            set {
+                this.vrkmeField = value;
             }
         }
         
@@ -700,6 +856,94 @@ namespace LiteSFATestWebService.SAPWebServices {
             }
             set {
                 this.meinsField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal ValNet {
+            get {
+                return this.valNetField;
+            }
+            set {
+                this.valNetField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal ValBrut {
+            get {
+                return this.valBrutField;
+            }
+            set {
+                this.valBrutField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal ProcRed {
+            get {
+                return this.procRedField;
+            }
+            set {
+                this.procRedField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal Cmp {
+            get {
+                return this.cmpField;
+            }
+            set {
+                this.cmpField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal Pret {
+            get {
+                return this.pretField;
+            }
+            set {
+                this.pretField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal Zdis {
+            get {
+                return this.zdisField;
+            }
+            set {
+                this.zdisField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal t1 {
+            get {
+                return this.t1Field;
+            }
+            set {
+                this.t1Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal T1Proc {
+            get {
+                return this.t1ProcField;
+            }
+            set {
+                this.t1ProcField = value;
             }
         }
     }
@@ -24934,6 +25178,317 @@ namespace LiteSFATestWebService.SAPWebServices {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZtrapSite {
+        
+        private string matnrField;
+        
+        private decimal netwrField;
+        
+        private decimal mengeField;
+        
+        private string meinsField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Matnr {
+            get {
+                return this.matnrField;
+            }
+            set {
+                this.matnrField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal Netwr {
+            get {
+                return this.netwrField;
+            }
+            set {
+                this.netwrField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal Menge {
+            get {
+                return this.mengeField;
+            }
+            set {
+                this.mengeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Meins {
+            get {
+                return this.meinsField;
+            }
+            set {
+                this.meinsField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZheadInfocv {
+        
+        private string nrcmdsapField;
+        
+        private string statusField;
+        
+        private decimal valNetField;
+        
+        private decimal valBrutField;
+        
+        private decimal t1Field;
+        
+        private decimal t1ProcField;
+        
+        private decimal t0Field;
+        
+        private decimal t0ProcField;
+        
+        private string waersField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Nrcmdsap {
+            get {
+                return this.nrcmdsapField;
+            }
+            set {
+                this.nrcmdsapField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Status {
+            get {
+                return this.statusField;
+            }
+            set {
+                this.statusField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal ValNet {
+            get {
+                return this.valNetField;
+            }
+            set {
+                this.valNetField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal ValBrut {
+            get {
+                return this.valBrutField;
+            }
+            set {
+                this.valBrutField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal t1 {
+            get {
+                return this.t1Field;
+            }
+            set {
+                this.t1Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal T1Proc {
+            get {
+                return this.t1ProcField;
+            }
+            set {
+                this.t1ProcField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal t0 {
+            get {
+                return this.t0Field;
+            }
+            set {
+                this.t0Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal T0Proc {
+            get {
+                return this.t0ProcField;
+            }
+            set {
+                this.t0ProcField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Waers {
+            get {
+                return this.waersField;
+            }
+            set {
+                this.waersField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZgetInfocvResponse {
+        
+        private ZdetInfocv[] itDetField;
+        
+        private ZheadInfocv waHeadField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
+        public ZdetInfocv[] ItDet {
+            get {
+                return this.itDetField;
+            }
+            set {
+                this.itDetField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public ZheadInfocv WaHead {
+            get {
+                return this.waHeadField;
+            }
+            set {
+                this.waHeadField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZcalcTrapSite {
+        
+        private string gvKunnrField;
+        
+        private string gvOrasField;
+        
+        private string gvRegioField;
+        
+        private string gvTipplataField;
+        
+        private string gvWerksField;
+        
+        private ZtrapSite[] itMatnrField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvKunnr {
+            get {
+                return this.gvKunnrField;
+            }
+            set {
+                this.gvKunnrField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvOras {
+            get {
+                return this.gvOrasField;
+            }
+            set {
+                this.gvOrasField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvRegio {
+            get {
+                return this.gvRegioField;
+            }
+            set {
+                this.gvRegioField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvTipplata {
+            get {
+                return this.gvTipplataField;
+            }
+            set {
+                this.gvTipplataField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvWerks {
+            get {
+                return this.gvWerksField;
+            }
+            set {
+                this.gvWerksField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
+        public ZtrapSite[] ItMatnr {
+            get {
+                return this.itMatnrField;
+            }
+            set {
+                this.itMatnrField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
     public partial class ZcalcTrapSiteResponse {
         
@@ -24974,6 +25529,102 @@ namespace LiteSFATestWebService.SAPWebServices {
             }
             set {
                 this.valTrapField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZcustChLivrare {
+        
+        private string ipAdresaField;
+        
+        private string ipDataField;
+        
+        private string ipModeField;
+        
+        private string ipVbelnField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string IpAdresa {
+            get {
+                return this.ipAdresaField;
+            }
+            set {
+                this.ipAdresaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string IpData {
+            get {
+                return this.ipDataField;
+            }
+            set {
+                this.ipDataField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string IpMode {
+            get {
+                return this.ipModeField;
+            }
+            set {
+                this.ipModeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string IpVbeln {
+            get {
+                return this.ipVbelnField;
+            }
+            set {
+                this.ipVbelnField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZcustChLivrareResponse {
+        
+        private string epMesajField;
+        
+        private string epOkField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string EpMesaj {
+            get {
+                return this.epMesajField;
+            }
+            set {
+                this.epMesajField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string EpOk {
+            get {
+                return this.epOkField;
+            }
+            set {
+                this.epOkField = value;
             }
         }
     }
@@ -25383,6 +26034,52 @@ namespace LiteSFATestWebService.SAPWebServices {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZgetInfoheadcv {
+        
+        private ZheadInfocv[] itComenziField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
+        public ZheadInfocv[] ItComenzi {
+            get {
+                return this.itComenziField;
+            }
+            set {
+                this.itComenziField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZgetInfoheadcvResponse {
+        
+        private ZheadInfocv[] itComenziField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
+        public ZheadInfocv[] ItComenzi {
+            get {
+                return this.itComenziField;
+            }
+            set {
+                this.itComenziField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
     public partial class ZsablonReducere {
         
         private string clientField;
@@ -25574,11 +26271,70 @@ namespace LiteSFATestWebService.SAPWebServices {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZlivrareCustodie {
+        
+        private string ipIdField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string IpId {
+            get {
+                return this.ipIdField;
+            }
+            set {
+                this.ipIdField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZlivrareCustodieResponse {
+        
+        private string epMesajField;
+        
+        private string epOkField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string EpMesaj {
+            get {
+                return this.epMesajField;
+            }
+            set {
+                this.epMesajField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string EpOk {
+            get {
+                return this.epOkField;
+            }
+            set {
+                this.epOkField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
     public partial class ZretMarfa {
         
         private ZmaterialeRetur[] itMaterialeField;
         
         private string tipPersField;
+        
+        private string vAcelasiTranspField;
         
         private string vAddrnumberField;
         
@@ -25624,6 +26380,17 @@ namespace LiteSFATestWebService.SAPWebServices {
             }
             set {
                 this.tipPersField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string VAcelasiTransp {
+            get {
+                return this.vAcelasiTranspField;
+            }
+            set {
+                this.vAcelasiTranspField = value;
             }
         }
         
@@ -27872,6 +28639,32 @@ namespace LiteSFATestWebService.SAPWebServices {
     
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    public delegate void ZgetInfocvCompletedEventHandler(object sender, ZgetInfocvCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class ZgetInfocvCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal ZgetInfocvCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public ZgetInfocvResponse Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((ZgetInfocvResponse)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void ZcalcTrapSiteCompletedEventHandler(object sender, ZcalcTrapSiteCompletedEventArgs e);
     
     /// <remarks/>
@@ -27892,6 +28685,32 @@ namespace LiteSFATestWebService.SAPWebServices {
             get {
                 this.RaiseExceptionIfNecessary();
                 return ((ZcalcTrapSiteResponse)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    public delegate void ZcustChLivrareCompletedEventHandler(object sender, ZcustChLivrareCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class ZcustChLivrareCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal ZcustChLivrareCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public ZcustChLivrareResponse Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((ZcustChLivrareResponse)(this.results[0]));
             }
         }
     }
@@ -28002,6 +28821,32 @@ namespace LiteSFATestWebService.SAPWebServices {
     
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    public delegate void ZgetInfoheadcvCompletedEventHandler(object sender, ZgetInfoheadcvCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class ZgetInfoheadcvCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal ZgetInfoheadcvCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public ZgetInfoheadcvResponse Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((ZgetInfoheadcvResponse)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void ZsablonReducereCompletedEventHandler(object sender, ZsablonReducereCompletedEventArgs e);
     
     /// <remarks/>
@@ -28022,6 +28867,32 @@ namespace LiteSFATestWebService.SAPWebServices {
             get {
                 this.RaiseExceptionIfNecessary();
                 return ((ZsablonReducereResponse)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    public delegate void ZlivrareCustodieCompletedEventHandler(object sender, ZlivrareCustodieCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class ZlivrareCustodieCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal ZlivrareCustodieCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public ZlivrareCustodieResponse Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((ZlivrareCustodieResponse)(this.results[0]));
             }
         }
     }
