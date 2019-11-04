@@ -135,7 +135,7 @@ namespace LiteSFATestWebService
                     }
                 }
 
-                retVal += "!" + cmpVal + "!" + showStocVal_ + "!" + getStocImbatranit(connection,codArt, filiala);
+                retVal += "!" + cmpVal + "!" + showStocVal_ + "!" + getStocImbatranit(connection,codArt, filiala) + "!" + getStocBlocat(connection, codArt, filiala);
 
 
             }
@@ -230,6 +230,53 @@ namespace LiteSFATestWebService
 
             return stocImbatranit.ToString();
             
+        }
+
+
+        private string getStocBlocat(OracleConnection connection, string codArticol, string filiala)
+        {
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+            string stocBlocat = "#";
+            try
+            {
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select (r.intr1c_nb + r.intr2c + r.intr3c + r.intr4c + r.intr5v + r.intr6c + r.intr1c_ub) qty_deschise, r.dismm, " + 
+                                  " r.werks, r.matnr from sapprd.zcalc_rotatii r " + 
+                                  " where r.mandt = '900'  and r.matnr = :codArt and r.werks = :filiala ";
+
+                cmd.CommandType = CommandType.Text;
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":codArt", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codArticol;
+
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = filiala;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+
+                    if (oReader.GetDouble(0) > 0)
+                        stocBlocat = oReader.GetDouble(0) + "#" + oReader.GetString(1);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+            return stocBlocat;
         }
 
 

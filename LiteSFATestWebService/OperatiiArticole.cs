@@ -85,7 +85,7 @@ namespace LiteSFATestWebService
                                   " (select nvl( " +
                                   " (select 1 from sapprd.marm m where m.mandt = '900' and m.matnr = b.cod and m.meinh = 'EPA'),-1) palet from dual) palet, " +
                                   " b.categ_mat, b.lungime " +
-                                  " from sapprd.eina e, articole b, sintetice c where e.mandt = '900' and e.matnr = b.cod and   " +
+                                  " from sapprd.eina e, articole b, sintetice c where e.mandt = '900' and e.matnr = b.cod and b.blocat <> '01' and   " +
                                   " c.cod = b.sintetic and e.lifnr=:furniz and  " + conditieDepart  + conditie + " ) x where rownum < 50 order by x.nume ";
 
               
@@ -345,7 +345,12 @@ namespace LiteSFATestWebService
 
             OracleCommand cmd = connection.CreateCommand();
 
-            try
+            string condDepart = "";
+
+            if (!departament.Equals("00"))
+                condDepart = " and a.grup_vz =:depart ";
+
+                try
             {
 
                 cmd.CommandText = " select x.* from (select distinct decode(length(a.cod), 18, substr(a.cod, -8), a.cod) codart,a.nume, " +
@@ -357,7 +362,7 @@ namespace LiteSFATestWebService
                               " sapprd.zcomhead_tableta ht, sapprd.zcomdet_tableta dt " +
                               " where c.mandt = '900' and c.matnr = a.cod and c.werks =:filiala and c.mmsta <> '01' " +
                               " and a.sintetic = b.cod and upper(a.nume)not like '%TRANSPORT%' and a.blocat <> '01' and " +
-                              " ht.datac >=:dataCautare and ht.cod_client =:codClient  and a.cod = dt.cod and a.grup_vz =:depart and " +
+                              " ht.datac >=:dataCautare and ht.cod_client =:codClient  and a.cod = dt.cod " + condDepart + " and " +
                               " ht.id = dt.id and ht.status = '2' and ht.status_aprov in (2, 15)  " +
                               " group by a.cod, a.nume, a.sintetic, b.cod_nivel1, a.umvanz10, a.umvanz, a.tip_mat, b.cod, a.grup_vz,a.dep_aprobare, " +
                               " categ_mat, lungime having count(b.cod) > 1  order by count(b.cod) desc, a.nume) x where rownum<=100 ";
@@ -373,11 +378,16 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
                 cmd.Parameters[1].Value = codClient;
 
-                cmd.Parameters.Add(":depart", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
-                cmd.Parameters[2].Value = departament;
+                int posParam = 2;
+                if (!departament.Equals("00"))
+                {
+                    cmd.Parameters.Add(":depart", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
+                    cmd.Parameters[posParam].Value = departament;
+                    posParam++;
+                }
 
                 cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[3].Value = filiala;
+                cmd.Parameters[posParam].Value = filiala;
 
                 oReader = cmd.ExecuteReader();
 
@@ -1417,11 +1427,22 @@ namespace LiteSFATestWebService
 
             foreach (ArticolStoc articol in listArticoleStoc)
             {
-                string[] str = new Service1().getStocDepozit(articol.cod, articol.unitLog, articol.depozit, articol.depart).Split('#');
+
                 ArticolStoc resultArt = new ArticolStoc();
-                resultArt.cod = getCleanCodArt(articol.cod);
-                resultArt.depozit = articol.depozit;
-                resultArt.stoc = Double.Parse(str[0]);
+
+                if (articol.cod.StartsWith("000000000030"))
+                {
+                    resultArt.cod = getCleanCodArt(articol.cod);
+                    resultArt.depozit = articol.depozit;
+                    resultArt.stoc = 20;
+                }
+                else
+                {
+                    string[] str = new Service1().getStocDepozit(articol.cod, articol.unitLog, articol.depozit, articol.depart).Split('#');
+                    resultArt.cod = getCleanCodArt(articol.cod);
+                    resultArt.depozit = articol.depozit;
+                    resultArt.stoc = Double.Parse(str[0]);
+                }
                 resultList.Add(resultArt);
             }
 

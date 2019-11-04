@@ -36,6 +36,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         private System.Threading.SendOrPostCallback ZcustChLivrareOperationCompleted;
         
+        private System.Threading.SendOrPostCallback ZgetKunnrOperationCompleted;
+        
         private System.Threading.SendOrPostCallback ZstareCurentaOperationCompleted;
         
         private System.Threading.SendOrPostCallback ZcreazaComandaOperationCompleted;
@@ -45,6 +47,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         private System.Threading.SendOrPostCallback ZNrPaletiOperationCompleted;
         
         private System.Threading.SendOrPostCallback ZgetInfoheadcvOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback ZmodificaLivrareOperationCompleted;
         
         private System.Threading.SendOrPostCallback ZsablonReducereOperationCompleted;
         
@@ -112,6 +116,9 @@ namespace LiteSFATestWebService.SAPWebServices {
         public event ZcustChLivrareCompletedEventHandler ZcustChLivrareCompleted;
         
         /// <remarks/>
+        public event ZgetKunnrCompletedEventHandler ZgetKunnrCompleted;
+        
+        /// <remarks/>
         public event ZstareCurentaCompletedEventHandler ZstareCurentaCompleted;
         
         /// <remarks/>
@@ -125,6 +132,9 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         /// <remarks/>
         public event ZgetInfoheadcvCompletedEventHandler ZgetInfoheadcvCompleted;
+        
+        /// <remarks/>
+        public event ZmodificaLivrareCompletedEventHandler ZmodificaLivrareCompleted;
         
         /// <remarks/>
         public event ZsablonReducereCompletedEventHandler ZsablonReducereCompleted;
@@ -154,7 +164,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         public event ZCalcStocCompletedEventHandler ZCalcStocCompleted;
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZgetInfocvReques" +
+            "t", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
         [return: System.Xml.Serialization.XmlElementAttribute("ZgetInfocvResponse", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
         public ZgetInfocvResponse ZgetInfocv([System.Xml.Serialization.XmlElementAttribute("ZgetInfocv", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")] ZgetInfocv ZgetInfocv1) {
             object[] results = this.Invoke("ZgetInfocv", new object[] {
@@ -215,7 +226,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZcustChLivrareRe" +
+            "quest", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
         [return: System.Xml.Serialization.XmlElementAttribute("ZcustChLivrareResponse", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
         public ZcustChLivrareResponse ZcustChLivrare([System.Xml.Serialization.XmlElementAttribute("ZcustChLivrare", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")] ZcustChLivrare ZcustChLivrare1) {
             object[] results = this.Invoke("ZcustChLivrare", new object[] {
@@ -241,6 +253,37 @@ namespace LiteSFATestWebService.SAPWebServices {
             if ((this.ZcustChLivrareCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.ZcustChLivrareCompleted(this, new ZcustChLivrareCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZgetKunnrRequest" +
+            "", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
+        [return: System.Xml.Serialization.XmlElementAttribute("ZgetKunnrResponse", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+        public ZgetKunnrResponse ZgetKunnr([System.Xml.Serialization.XmlElementAttribute("ZgetKunnr", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")] ZgetKunnr ZgetKunnr1) {
+            object[] results = this.Invoke("ZgetKunnr", new object[] {
+                        ZgetKunnr1});
+            return ((ZgetKunnrResponse)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void ZgetKunnrAsync(ZgetKunnr ZgetKunnr1) {
+            this.ZgetKunnrAsync(ZgetKunnr1, null);
+        }
+        
+        /// <remarks/>
+        public void ZgetKunnrAsync(ZgetKunnr ZgetKunnr1, object userState) {
+            if ((this.ZgetKunnrOperationCompleted == null)) {
+                this.ZgetKunnrOperationCompleted = new System.Threading.SendOrPostCallback(this.OnZgetKunnrOperationCompleted);
+            }
+            this.InvokeAsync("ZgetKunnr", new object[] {
+                        ZgetKunnr1}, this.ZgetKunnrOperationCompleted, userState);
+        }
+        
+        private void OnZgetKunnrOperationCompleted(object arg) {
+            if ((this.ZgetKunnrCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.ZgetKunnrCompleted(this, new ZgetKunnrCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -369,7 +412,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZgetInfoheadcvRe" +
+            "quest", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
         [return: System.Xml.Serialization.XmlElementAttribute("ZgetInfoheadcvResponse", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
         public ZgetInfoheadcvResponse ZgetInfoheadcv([System.Xml.Serialization.XmlElementAttribute("ZgetInfoheadcv", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")] ZgetInfoheadcv ZgetInfoheadcv1) {
             object[] results = this.Invoke("ZgetInfoheadcv", new object[] {
@@ -395,6 +439,36 @@ namespace LiteSFATestWebService.SAPWebServices {
             if ((this.ZgetInfoheadcvCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.ZgetInfoheadcvCompleted(this, new ZgetInfoheadcvCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
+        [return: System.Xml.Serialization.XmlElementAttribute("ZmodificaLivrareResponse", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+        public ZmodificaLivrareResponse ZmodificaLivrare([System.Xml.Serialization.XmlElementAttribute("ZmodificaLivrare", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")] ZmodificaLivrare ZmodificaLivrare1) {
+            object[] results = this.Invoke("ZmodificaLivrare", new object[] {
+                        ZmodificaLivrare1});
+            return ((ZmodificaLivrareResponse)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void ZmodificaLivrareAsync(ZmodificaLivrare ZmodificaLivrare1) {
+            this.ZmodificaLivrareAsync(ZmodificaLivrare1, null);
+        }
+        
+        /// <remarks/>
+        public void ZmodificaLivrareAsync(ZmodificaLivrare ZmodificaLivrare1, object userState) {
+            if ((this.ZmodificaLivrareOperationCompleted == null)) {
+                this.ZmodificaLivrareOperationCompleted = new System.Threading.SendOrPostCallback(this.OnZmodificaLivrareOperationCompleted);
+            }
+            this.InvokeAsync("ZmodificaLivrare", new object[] {
+                        ZmodificaLivrare1}, this.ZmodificaLivrareOperationCompleted, userState);
+        }
+        
+        private void OnZmodificaLivrareOperationCompleted(object arg) {
+            if ((this.ZmodificaLivrareCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.ZmodificaLivrareCompleted(this, new ZmodificaLivrareCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -430,7 +504,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZlivrareCustodie" +
+            "Request", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
         [return: System.Xml.Serialization.XmlElementAttribute("ZlivrareCustodieResponse", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
         public ZlivrareCustodieResponse ZlivrareCustodie([System.Xml.Serialization.XmlElementAttribute("ZlivrareCustodie", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")] ZlivrareCustodie ZlivrareCustodie1) {
             object[] results = this.Invoke("ZlivrareCustodie", new object[] {
@@ -25635,6 +25710,50 @@ namespace LiteSFATestWebService.SAPWebServices {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZgetKunnr {
+        
+        private string ipStcegField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string IpStceg {
+            get {
+                return this.ipStcegField;
+            }
+            set {
+                this.ipStcegField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZgetKunnrResponse {
+        
+        private string epKunnrField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string EpKunnr {
+            get {
+                return this.epKunnrField;
+            }
+            set {
+                this.epKunnrField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
     public partial class ZstareCurenta {
         
         private string pVbelnField;
@@ -26070,6 +26189,76 @@ namespace LiteSFATestWebService.SAPWebServices {
             }
             set {
                 this.itComenziField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZmodificaLivrare {
+        
+        private string ipComandaField;
+        
+        private string ipDlivrField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string IpComanda {
+            get {
+                return this.ipComandaField;
+            }
+            set {
+                this.ipComandaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string IpDlivr {
+            get {
+                return this.ipDlivrField;
+            }
+            set {
+                this.ipDlivrField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZmodificaLivrareResponse {
+        
+        private string epMessField;
+        
+        private string epOkField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string EpMess {
+            get {
+                return this.epMessField;
+            }
+            set {
+                this.epMessField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string EpOk {
+            get {
+                return this.epOkField;
+            }
+            set {
+                this.epOkField = value;
             }
         }
     }
@@ -28717,6 +28906,32 @@ namespace LiteSFATestWebService.SAPWebServices {
     
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    public delegate void ZgetKunnrCompletedEventHandler(object sender, ZgetKunnrCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class ZgetKunnrCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal ZgetKunnrCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public ZgetKunnrResponse Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((ZgetKunnrResponse)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
     public delegate void ZstareCurentaCompletedEventHandler(object sender, ZstareCurentaCompletedEventArgs e);
     
     /// <remarks/>
@@ -28841,6 +29056,32 @@ namespace LiteSFATestWebService.SAPWebServices {
             get {
                 this.RaiseExceptionIfNecessary();
                 return ((ZgetInfoheadcvResponse)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    public delegate void ZmodificaLivrareCompletedEventHandler(object sender, ZmodificaLivrareCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class ZmodificaLivrareCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal ZmodificaLivrareCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public ZmodificaLivrareResponse Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((ZmodificaLivrareResponse)(this.results[0]));
             }
         }
     }

@@ -28,4 +28,19 @@ namespace LiteSFATestWebService
 
     }
 
+
+    public class DateLivrareClient
+    {
+        public string codJudet;
+        public string localitate;
+        public string strada;
+        public string nrStrada;
+        public string numePersContact;
+        public string telPersContact;
+        public string termenPlata;
+
+    }
+
+
+
 }

@@ -506,6 +506,12 @@
     <Content Include="Web References\SAPWebServices\ZgetInfoheadcvResponse.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </Content>
+    <Content Include="Web References\SAPWebServices\ZgetKunnrResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\SAPWebServices\ZmodificaLivrareResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
     <None Include="Web References\SAPWebServices\ztbl_webservice.wsdl" />
     <Content Include="Web References\SAPWSBudmax\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>

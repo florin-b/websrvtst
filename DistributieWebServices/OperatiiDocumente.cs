@@ -310,7 +310,7 @@ namespace DistributieTESTWebServices
             try
             {
 
-                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+                string connectionString = DatabaseConnections.ConnectToProdEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();

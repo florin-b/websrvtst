@@ -70,7 +70,7 @@ namespace LiteSFATestWebService
                     DetaliiBaza detaliiBaza = new DetaliiBaza();
                     detaliiBaza.numeClient = respDetaliiBaza[i].Name1;
                     detaliiBaza.codSintetic = respDetaliiBaza[i].Matkl;
-                    detaliiBaza.numeSintetic = respDetaliiBaza[i].Wgbez;
+                    detaliiBaza.numeSintetic = respDetaliiBaza[i].Wgbez.Trim();
                     detaliiBaza.valoareNeta = Double.Parse(respDetaliiBaza[i].ValNet.ToString());
                     detaliiBaza.T0 = Double.Parse(respDetaliiBaza[i].t0.ToString());
                     detaliiBaza.T1A = Double.Parse(respDetaliiBaza[i].T1a.ToString());
@@ -81,6 +81,10 @@ namespace LiteSFATestWebService
                     listDetaliiBaza.Add(detaliiBaza);
 
                 }
+
+                listDetaliiBaza = listDetaliiBaza.OrderBy(o => o.numeClient).ThenBy(o => o.numeSintetic).ToList();
+
+                
 
                 ZsalNtcf respDetaliiNtcf = response.GtTcf[0];
 
@@ -110,6 +114,9 @@ namespace LiteSFATestWebService
                     incasari08.venitCorectat = Double.Parse(respDetaliiCorectie08[i].VenCorInc.ToString());
                     listDetaliiIncasari08.Add(incasari08);
                 }
+
+
+                listDetaliiIncasari08 = listDetaliiIncasari08.OrderBy(o => o.numeClient).ToList();
 
 
                 ZsalFactMalus[] respDetaliiMalus = response.GtMalEx;
@@ -230,6 +237,7 @@ namespace LiteSFATestWebService
 
                 }
 
+                listDetaliiBaza = listDetaliiBaza.OrderBy(o => o.numeClient).ThenBy(o => o.numeSintetic).ToList();
 
                 ZSAL_NTCF respDetaliiNtcf = response.GtTcf[0];
 
@@ -260,6 +268,7 @@ namespace LiteSFATestWebService
                     listDetaliiIncasari08.Add(incasari08);
                 }
 
+                listDetaliiIncasari08 = listDetaliiIncasari08.OrderBy(o => o.numeClient).ToList();
 
                 Zcvss2019[] respGtCvss = response.GtCvss;
 
@@ -380,6 +389,10 @@ namespace LiteSFATestWebService
                     listAgenti.Add(salarizareAgent);
 
                 }
+
+
+                listAgenti = listAgenti.OrderBy(o => o.numeAgent).ToList();
+
             }
 
             salarizareService.Dispose();
@@ -467,6 +480,8 @@ namespace LiteSFATestWebService
 
                 }
 
+                listDetaliiBaza = listDetaliiBaza.OrderBy(o => o.numeClient).ThenBy(o => o.numeSintetic).ToList();
+
                 SalarizareKA.ZsalCorrInc respDetaliiCor = response.GtCorrInc[0];
 
                 detaliiCorectie.venitBaza = Double.Parse(respDetaliiCor.Baza.ToString());
@@ -487,7 +502,7 @@ namespace LiteSFATestWebService
                     listDetaliiIncasari08.Add(incasari08);
                 }
 
-
+                listDetaliiIncasari08 = listDetaliiIncasari08.OrderBy(o => o.numeClient).ToList();
 
                 SalarizareKA.ZsalFactMalus[] respDetaliiMalus = response.GtMalEx;
 
@@ -585,6 +600,9 @@ namespace LiteSFATestWebService
                     listAgenti.Add(salarizareAgent);
 
                 }
+
+
+                listAgenti = listAgenti.OrderBy(o => o.numeAgent).ToList();
             }
 
             salarizareService.Dispose();
@@ -662,6 +680,8 @@ namespace LiteSFATestWebService
 
                 }
 
+                listDetaliiBaza = listDetaliiBaza.OrderBy(o => o.numeClient).ThenBy(o => o.numeSintetic).ToList();
+
                 SalarizareKA.ZSAL_CORR_INC respDetaliiCor = response.GtCorrInc[0];
 
                 detaliiCorectie.venitBaza = Double.Parse(respDetaliiCor.BAZA.ToString());
@@ -680,6 +700,8 @@ namespace LiteSFATestWebService
                     incasari08.venitCorectat = Double.Parse(respDetaliiCorectie08[i].VEN_COR_INC.ToString());
                     listDetaliiIncasari08.Add(incasari08);
                 }
+
+                listDetaliiIncasari08 = listDetaliiIncasari08.OrderBy(o => o.numeClient).ToList();
 
                 SalarizareKA.ZSAL_FACT_MALUS[] respDetaliiMalus = response.GtMalEx;
 
@@ -714,6 +736,7 @@ namespace LiteSFATestWebService
             salarizare.detaliiCorectie = detaliiCorectie;
             salarizare.detaliiIncasari08 = listDetaliiIncasari08;
             salarizare.detaliiMalus = listDetaliiMalus1;
+            salarizare.detaliiCVS = listDetaliiCvs;
 
             return new JavaScriptSerializer().Serialize(salarizare);
 

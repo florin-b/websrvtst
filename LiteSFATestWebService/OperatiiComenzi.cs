@@ -1300,6 +1300,7 @@ namespace LiteSFATestWebService
 
                 SAPWSCustodie.zwbs_custodie webService = null;
 
+
                 webService = new SAPWSCustodie.zwbs_custodie();
                 SAPWSCustodie.ZcustChLivrare inParam = new SAPWSCustodie.ZcustChLivrare();
 
@@ -1334,6 +1335,46 @@ namespace LiteSFATestWebService
             return retVal;
 
         }
+
+
+
+        public string setCmdVanzDataLivrare(string idComanda, string dataLivrare)
+        {
+
+            ErrorHandling.sendErrorToMail("setCmdVanzDataLivrare: " + idComanda + " , " + dataLivrare);
+
+            SAPWebServices.ZTBL_WEBSERVICE  webService = new ZTBL_WEBSERVICE();
+            string retVal = "0#Operatie reusita.";
+
+            try {
+
+                System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Service1.getUser(), Service1.getPass());
+                webService.Credentials = nc;
+                webService.Timeout = 300000;
+
+                SAPWebServices.ZmodificaLivrare inParam = new ZmodificaLivrare();
+
+                inParam.IpComanda = idComanda;
+                inParam.IpDlivr = dataLivrare;
+
+                SAPWebServices.ZmodificaLivrareResponse response = webService.ZmodificaLivrare(inParam);
+
+
+                
+                retVal = response.EpOk + "#" + response.EpMess;
+                
+
+                webService.Dispose();
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+                retVal = "-1#Operatia esuata.";
+            }
+
+            return retVal;
+        }
+
 
 
 
@@ -1587,6 +1628,74 @@ namespace LiteSFATestWebService
 
             return nrCmdSap;
         }
+
+
+        public string getAgentComandaInfo(string codClient, string filiala)
+        {
+
+            //Ultimul agent care a facut o comanda pentru clientul din filiala 
+            string agentInfo = "#";
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            DateTime cDate = DateTime.Now.AddMonths(-3);
+            string year = cDate.Year.ToString();
+            string day = cDate.Day.ToString("00");
+            string month = cDate.Month.ToString("00");
+            string nowDate = year + month + day;
+
+            try
+            {
+
+                string connectionString = DatabaseConnections.ConnectToProdEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                string sqlString = " select x.nume, x.cod from (select b.nume, b.cod, a.* from sapprd.zcomhead_tableta a, agenti b where " + 
+                                   " a.cod_client = :codClient and substr(a.ul,0,2) = :unitLog and a.cod_agent = b.cod and a.status = 2 and b.activ = 1 " +
+                                   " and a.datac >= :datac order by datac desc) x where rownum < 2  ";
+
+
+                cmd.CommandText = sqlString;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codClient", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codClient;
+
+                cmd.Parameters.Add(":unitLog", OracleType.NVarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = filiala.Substring(0,2);
+
+                cmd.Parameters.Add(":datac", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = nowDate;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    agentInfo = oReader.GetString(0) + "#" + oReader.GetString(1);
+                }
+
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+
+            return agentInfo;
+
+        }
+
 
 
     }

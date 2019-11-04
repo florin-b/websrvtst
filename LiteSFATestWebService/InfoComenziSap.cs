@@ -52,10 +52,6 @@ namespace LiteSFATestWebService
                     if (com.cmdSap.Equals(resp.Nrcmdsap))
                     {
                         com.bazaSalariala = Double.Parse(resp.t1.ToString());
-                        if (com.canalDistrib.Equals("20"))
-                        {
-                            com.sumaComanda = resp.ValNet.ToString();
-                        }
                         break;
                     }
                 }

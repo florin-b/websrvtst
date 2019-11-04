@@ -24,6 +24,22 @@ namespace DistributieTESTWebServices
         }
 
 
+        static public string ConnectToProdEnvironment()
+        {
+            //PRD
+            return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
+                   " (HOST = 10.1.3.76)(PORT = 1521)))(CONNECT_DATA = (SERVICE_NAME = PRD))); " +
+                   " User Id = WEBSAP; Password = 2INTER7; ";
+
+
+
+            //DR
+            //return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
+            //        " (HOST = 172.17.18.34)(PORT = 1521)))(CONNECT_DATA = (SERVICE_NAME = dr_site) )); " +
+            //        " User Id = WEBSAP; Password = 2INTER7;";
+        }
+
+
         /*
         static public string ConnectToProdEnvironment()
         {

@@ -144,7 +144,37 @@
       </wsp:All>
     </wsp:ExactlyOne>
   </wsp:Policy>
+  <wsp:Policy wsu:Id="OP__ZgetInfocv">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
+        <sapcomhnd:enableCommit xmlns:sapcomhnd="http://www.sap.com/NW05/soap/features/commit/">false</sapcomhnd:enableCommit>
+        <sapblock:enableBlocking xmlns:sapblock="http://www.sap.com/NW05/soap/features/blocking/">true</sapblock:enableBlocking>
+        <saprmnw05:enableWSRM xmlns:saprmnw05="http://www.sap.com/NW05/soap/features/wsrm/">false</saprmnw05:enableWSRM>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
   <wsp:Policy wsu:Id="OP__ZcalcTrapSite">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
+        <sapcomhnd:enableCommit xmlns:sapcomhnd="http://www.sap.com/NW05/soap/features/commit/">false</sapcomhnd:enableCommit>
+        <sapblock:enableBlocking xmlns:sapblock="http://www.sap.com/NW05/soap/features/blocking/">true</sapblock:enableBlocking>
+        <saprmnw05:enableWSRM xmlns:saprmnw05="http://www.sap.com/NW05/soap/features/wsrm/">false</saprmnw05:enableWSRM>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsp:Policy wsu:Id="OP__ZcustChLivrare">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
+        <sapcomhnd:enableCommit xmlns:sapcomhnd="http://www.sap.com/NW05/soap/features/commit/">false</sapcomhnd:enableCommit>
+        <sapblock:enableBlocking xmlns:sapblock="http://www.sap.com/NW05/soap/features/blocking/">true</sapblock:enableBlocking>
+        <saprmnw05:enableWSRM xmlns:saprmnw05="http://www.sap.com/NW05/soap/features/wsrm/">false</saprmnw05:enableWSRM>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsp:Policy wsu:Id="OP__ZgetKunnr">
     <wsp:ExactlyOne>
       <wsp:All>
         <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
@@ -194,7 +224,27 @@
       </wsp:All>
     </wsp:ExactlyOne>
   </wsp:Policy>
+  <wsp:Policy wsu:Id="OP__ZgetInfoheadcv">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
+        <sapcomhnd:enableCommit xmlns:sapcomhnd="http://www.sap.com/NW05/soap/features/commit/">false</sapcomhnd:enableCommit>
+        <sapblock:enableBlocking xmlns:sapblock="http://www.sap.com/NW05/soap/features/blocking/">true</sapblock:enableBlocking>
+        <saprmnw05:enableWSRM xmlns:saprmnw05="http://www.sap.com/NW05/soap/features/wsrm/">false</saprmnw05:enableWSRM>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
   <wsp:Policy wsu:Id="OP__ZsablonReducere">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
+        <sapcomhnd:enableCommit xmlns:sapcomhnd="http://www.sap.com/NW05/soap/features/commit/">false</sapcomhnd:enableCommit>
+        <sapblock:enableBlocking xmlns:sapblock="http://www.sap.com/NW05/soap/features/blocking/">true</sapblock:enableBlocking>
+        <saprmnw05:enableWSRM xmlns:saprmnw05="http://www.sap.com/NW05/soap/features/wsrm/">false</saprmnw05:enableWSRM>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsp:Policy wsu:Id="OP__ZlivrareCustodie">
     <wsp:ExactlyOne>
       <wsp:All>
         <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
@@ -2970,6 +3020,20 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
+      <xsd:element name="ZgetKunnr">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="0" name="IpStceg" type="n0:char20" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ZgetKunnrResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="EpKunnr" type="n0:char10" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <xsd:element name="ZstareCurenta">
         <xsd:complexType>
           <xsd:sequence>
@@ -3045,14 +3109,30 @@
       <xsd:element name="ZgetInfoheadcv">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="ItComenzi" type="tns:TableOfZheadInfocv" />
+            <xsd:element minOccurs="0" name="ItComenzi" type="tns:TableOfZheadInfocv" />
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="ZgetInfoheadcvResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="ItComenzi" type="tns:TableOfZheadInfocv" />
+            <xsd:element minOccurs="0" name="ItComenzi" type="tns:TableOfZheadInfocv" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ZmodificaLivrare">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="0" name="IpComanda" type="n0:char10" />
+            <xsd:element minOccurs="0" name="IpDlivr" type="n0:date10" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ZmodificaLivrareResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="EpMess" type="n0:char100" />
+            <xsd:element name="EpOk" type="n0:char1" />
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -3361,6 +3441,12 @@
   <wsdl:message name="ZcustChLivrareResponse">
     <wsdl:part name="parameter" element="tns:ZcustChLivrareResponse" />
   </wsdl:message>
+  <wsdl:message name="ZgetKunnr">
+    <wsdl:part name="parameters" element="tns:ZgetKunnr" />
+  </wsdl:message>
+  <wsdl:message name="ZgetKunnrResponse">
+    <wsdl:part name="parameter" element="tns:ZgetKunnrResponse" />
+  </wsdl:message>
   <wsdl:message name="ZstareCurenta">
     <wsdl:part name="parameters" element="tns:ZstareCurenta" />
   </wsdl:message>
@@ -3390,6 +3476,12 @@
   </wsdl:message>
   <wsdl:message name="ZgetInfoheadcvResponse">
     <wsdl:part name="parameter" element="tns:ZgetInfoheadcvResponse" />
+  </wsdl:message>
+  <wsdl:message name="ZmodificaLivrare">
+    <wsdl:part name="parameters" element="tns:ZmodificaLivrare" />
+  </wsdl:message>
+  <wsdl:message name="ZmodificaLivrareResponse">
+    <wsdl:part name="parameter" element="tns:ZmodificaLivrareResponse" />
   </wsdl:message>
   <wsdl:message name="ZsablonReducere">
     <wsdl:part name="parameters" element="tns:ZsablonReducere" />
@@ -3450,6 +3542,9 @@
       <wsp:PolicyReference URI="#IF__ZTBL_WEBSERVICE" />
     </wsp:Policy>
     <wsdl:operation name="ZgetInfocv">
+      <wsp:Policy>
+        <wsp:PolicyReference URI="#OP__ZgetInfocv" />
+      </wsp:Policy>
       <wsdl:input message="tns:ZgetInfocv" />
       <wsdl:output message="tns:ZgetInfocvResponse" />
     </wsdl:operation>
@@ -3461,8 +3556,18 @@
       <wsdl:output message="tns:ZcalcTrapSiteResponse" />
     </wsdl:operation>
     <wsdl:operation name="ZcustChLivrare">
+      <wsp:Policy>
+        <wsp:PolicyReference URI="#OP__ZcustChLivrare" />
+      </wsp:Policy>
       <wsdl:input message="tns:ZcustChLivrare" />
       <wsdl:output message="tns:ZcustChLivrareResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="ZgetKunnr">
+      <wsp:Policy>
+        <wsp:PolicyReference URI="#OP__ZgetKunnr" />
+      </wsp:Policy>
+      <wsdl:input message="tns:ZgetKunnr" />
+      <wsdl:output message="tns:ZgetKunnrResponse" />
     </wsdl:operation>
     <wsdl:operation name="ZstareCurenta">
       <wsp:Policy>
@@ -3493,8 +3598,15 @@
       <wsdl:output message="tns:ZNrPaletiResponse" />
     </wsdl:operation>
     <wsdl:operation name="ZgetInfoheadcv">
+      <wsp:Policy>
+        <wsp:PolicyReference URI="#OP__ZgetInfoheadcv" />
+      </wsp:Policy>
       <wsdl:input message="tns:ZgetInfoheadcv" />
       <wsdl:output message="tns:ZgetInfoheadcvResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="ZmodificaLivrare">
+      <wsdl:input message="tns:ZmodificaLivrare" />
+      <wsdl:output message="tns:ZmodificaLivrareResponse" />
     </wsdl:operation>
     <wsdl:operation name="ZsablonReducere">
       <wsp:Policy>
@@ -3504,6 +3616,9 @@
       <wsdl:output message="tns:ZsablonReducereResponse" />
     </wsdl:operation>
     <wsdl:operation name="ZlivrareCustodie">
+      <wsp:Policy>
+        <wsp:PolicyReference URI="#OP__ZlivrareCustodie" />
+      </wsp:Policy>
       <wsdl:input message="tns:ZlivrareCustodie" />
       <wsdl:output message="tns:ZlivrareCustodieResponse" />
     </wsdl:operation>
@@ -3563,7 +3678,7 @@
     </wsp:Policy>
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="ZgetInfocv">
-      <soap:operation soapAction="" style="document" />
+      <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZgetInfocvRequest" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -3581,7 +3696,16 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ZcustChLivrare">
-      <soap:operation soapAction="" style="document" />
+      <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZcustChLivrareRequest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ZgetKunnr">
+      <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZgetKunnrRequest" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -3626,6 +3750,15 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ZgetInfoheadcv">
+      <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZgetInfoheadcvRequest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ZmodificaLivrare">
       <soap:operation soapAction="" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
@@ -3644,7 +3777,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ZlivrareCustodie">
-      <soap:operation soapAction="" style="document" />
+      <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZlivrareCustodieRequest" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -3722,7 +3855,7 @@
     </wsp:Policy>
     <wsoap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="ZgetInfocv">
-      <wsoap12:operation soapAction="" style="document" />
+      <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZgetInfocvRequest" style="document" />
       <wsdl:input>
         <wsoap12:body use="literal" />
       </wsdl:input>
@@ -3740,7 +3873,16 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ZcustChLivrare">
-      <wsoap12:operation soapAction="" style="document" />
+      <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZcustChLivrareRequest" style="document" />
+      <wsdl:input>
+        <wsoap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <wsoap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ZgetKunnr">
+      <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZgetKunnrRequest" style="document" />
       <wsdl:input>
         <wsoap12:body use="literal" />
       </wsdl:input>
@@ -3785,6 +3927,15 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ZgetInfoheadcv">
+      <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZgetInfoheadcvRequest" style="document" />
+      <wsdl:input>
+        <wsoap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <wsoap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ZmodificaLivrare">
       <wsoap12:operation soapAction="" style="document" />
       <wsdl:input>
         <wsoap12:body use="literal" />
@@ -3803,7 +3954,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ZlivrareCustodie">
-      <wsoap12:operation soapAction="" style="document" />
+      <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZlivrareCustodieRequest" style="document" />
       <wsdl:input>
         <wsoap12:body use="literal" />
       </wsdl:input>

@@ -325,10 +325,10 @@ namespace LiteSFATestWebService
 
                 cmd = connection.CreateCommand();
 
-                cmd.CommandText = " select distinct a.mail, b.nume, c.nume from sapprd.zdest_mail a, agenti b, clienti c " + 
+                cmd.CommandText = " select distinct a.mail, b.nume, c.nume from personal a, agenti b, clienti c " + 
                                   " where b.cod = :codKA and c.cod = :codClient " + 
-                                  " and(a.vkgrp = b.divizie or a.vkgrp = '00') and b.filiala = a.prctr and " + 
-                                  " funct in ('DZ','OF','SDKA') "; 
+                                  " and b.filiala = a.filiala and " + 
+                                  " a.functie in ('DZ','OF','SDKA') "; 
 
 
                 cmd.CommandType = CommandType.Text;

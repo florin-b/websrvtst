@@ -34,7 +34,7 @@ namespace LiteSFATestWebService
 
             inParam.LV_ANGAJ = "00000000";
             inParam.LV_PRCTR = " ";
-            inParam.LV_SPART = codDepart;
+            inParam.LV_SPART = codDepart.Substring(0,2);
             inParam.LV_DATA_CRT = "2019-03-01";
             inParam.CU_DVDD = "X";
 
@@ -81,7 +81,7 @@ namespace LiteSFATestWebService
 
             inParam.LV_ANGAJ = "00000000";
             inParam.LV_PRCTR = ul;
-            inParam.LV_SPART = codDepart;
+            inParam.LV_SPART = codDepart.Substring(0,2);
             inParam.LV_DATA_CRT = "2019-03-01";
             
 
@@ -109,6 +109,7 @@ namespace LiteSFATestWebService
 
             }
 
+            pierderiDep = pierderiDep.OrderBy(o => o.numeAgent).ToList();
 
             return new JavaScriptSerializer().Serialize(pierderiDep);
         }
@@ -142,7 +143,7 @@ namespace LiteSFATestWebService
            
             inParam.LV_ANGAJ = codAgent;
             inParam.LV_PRCTR = ul;
-            inParam.LV_SPART = codDepart;
+            inParam.LV_SPART = codDepart.Substring(0,2);
             inParam.LV_DATA_CRT = "2019-03-01";
             inParam.ONLY_SD_1FIL = " ";
             inParam.ALL_AVSD_1FIL = " ";
@@ -168,6 +169,9 @@ namespace LiteSFATestWebService
                 listPierderi.Add(pVanz);
             }
 
+            listPierderi = listPierderi.OrderBy(o => o.numeTipClient).ToList();
+
+
             for (int i = 0; i < response.ITAB_CLIENT.Length; i++)
             {
                 PierderiTipClient pTip = new PierderiTipClient();
@@ -180,7 +184,9 @@ namespace LiteSFATestWebService
 
             }
 
-          
+
+            listPierderiTip = listPierderiTip.OrderBy(o => o.numeClient).ToList();
+
             for (int i=0;i<response.ITAB_CLI_NIVELE.Length; i++)
             {
                 PierderiNivel1 pNivel1 = new PierderiNivel1();
@@ -192,6 +198,8 @@ namespace LiteSFATestWebService
                 listPierderiNivel.Add(pNivel1);
 
             }
+
+            listPierderiNivel = listPierderiNivel.OrderBy(o => o.numeNivel1).ToList();
 
             pierderiAV.pierderiAvHeader = listPierderi;
             pierderiAV.pierderiTipClient = listPierderiTip;

@@ -275,6 +275,7 @@ namespace LiteSFATestWebService
         public string numeDelegat = "";
         public string ciDelegat = "";
         public string autoDelegat = "";
+        public string refClient = "";
 
     }
 

@@ -555,5 +555,102 @@ namespace LiteSFATestWebService
         }
 
 
+
+        public string getDateLivrareClient(string codClient)
+        {
+
+            DateLivrareClient dateLivrare = new DateLivrareClient();
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                string sqlString = " select c.region, c.city1, c.street, c.house_num1 num from sapprd.kna1 k, sapprd.adrc c " +
+                                   " where k.mandt = '900' and k.kunnr = :codClient  and k.mandt = c.client and k.adrnr = c.addrnumber ";
+
+                cmd.CommandText = sqlString;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codClient", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codClient;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+
+                    dateLivrare.codJudet = oReader.GetString(0);
+                    dateLivrare.localitate = oReader.GetString(1);
+                    dateLivrare.strada = oReader.GetString(2);
+                    dateLivrare.nrStrada = oReader.GetString(3);
+                }
+
+                cmd.CommandText = " select namev, name1, telf1 from sapprd.knvk u where u.mandt = '900' and " +
+                                  " (u.parnr, u.kunnr) in (select distinct p.parnr, p.kunnr from sapprd.knvp p where p.mandt = '900' " +
+                                  " and p.kunnr =:k and parvw = 'AP' and vtweg = '20' )";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":k", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codClient;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    dateLivrare.numePersContact = oReader.GetString(0) + " " + oReader.GetString(1);
+                    dateLivrare.telPersContact = oReader.GetString(2);
+                }
+
+                cmd.CommandText = " select u.zterm from sapprd.T052u u, sapprd.TVZBT t where u.mandt = '900' and " +
+                                  " u.spras = '4' and u.mandt = t.mandt and u.spras = t.spras and u.zterm = t.zterm " +
+                                  " and u.zterm <= (select max(p.zterm) from sapprd.knvv p where p.mandt = '900' " +
+                                  " and p.kunnr =:k and p.vtweg = '20' and p.spart = '11') order by u.zterm ";
+
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":k", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codClient;
+
+                oReader = cmd.ExecuteReader();
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        dateLivrare.termenPlata = oReader.GetString(0).ToString() + ";";
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return new JavaScriptSerializer().Serialize(dateLivrare);
+        }
+
+
+
+
     }
 }

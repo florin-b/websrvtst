@@ -143,6 +143,9 @@ namespace LiteSFATestWebService
         public string getListClienti(string numeClient, string depart, string departAg, string unitLog, string codUser, string tipUserSap)
         {
 
+            ErrorHandling.sendErrorToMail("getListClienti: " +  numeClient + "\n\n" + depart + "\n\n" + departAg + "\n\n" + unitLog + "\n\n" + codUser + "\n\n" + tipUserSap);
+
+
             string serializedResult = "";
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand();
@@ -1029,6 +1032,10 @@ namespace LiteSFATestWebService
 
         public string getDatePersonaleClient(string numeClient, string tipClient)
         {
+
+            ErrorHandling.sendErrorToMail("getDatePersonale:" +  numeClient + "\n" + tipClient);
+
+
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand();
             OracleDataReader oReader = null;
@@ -1139,15 +1146,20 @@ namespace LiteSFATestWebService
         }
 
 
-        public string getListClientiInstPublice(string numeClient, string unitLog)
+        public string getListClientiInstPublice(string numeClient, string unitLog, string tipUser)
         {
-
 
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand();
             OracleDataReader oReader = null;
             List<Client> listClienti = new List<Client>();
-            
+
+
+            string condFiliala = " and substr(p.kunn2,0,2) = :unitLog ";
+
+            if (tipUser != null && tipUser.Equals("SDIP"))
+                condFiliala = "";
+
 
             try
             {
@@ -1164,14 +1176,18 @@ namespace LiteSFATestWebService
                                   " where c.cod = v.kunnr and v.mandt = '900' and v.vtweg = '20' " + 
                                   " and v.spart = '11' and v.kdgrp = '18' and v.mandt = p.mandt " + 
                                   " and v.kunnr = p.kunnr and v.vtweg = p.vtweg and v.spart = p.spart " + 
-                                  " and p.parvw = 'ZA' and substr(p.kunn2,0,2) = :unitLog and lower(c.nume) like lower('" + numeClient + "%') order by nume ";
+                                  " and p.parvw = 'ZA' " + condFiliala + " and lower(c.nume) like lower('" + numeClient + "%') order by nume ";
 
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
 
-                cmd.Parameters.Add(":unitLog", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
-                cmd.Parameters[0].Value = unitLog.Substring(0,2);
+                if (tipUser == null || (tipUser != null && !tipUser.Equals("SDIP")))
+                {
+                    cmd.Parameters.Add(":unitLog", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                    cmd.Parameters[0].Value = unitLog.Substring(0, 2);
+                }
+
 
                 oReader = cmd.ExecuteReader();
 
