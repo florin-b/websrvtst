@@ -25,6 +25,7 @@ namespace LiteSFATestWebService
         public string localitate;
         public string filialaAlternativa;
         public string codClientParavan;
+        public string filialaClp;
     }
 
     public class ArticolPretTransportGed
@@ -41,7 +42,14 @@ namespace LiteSFATestWebService
         public string unitLog;
         public string depart;
         public double stoc;
+        public string um;
     }
 
+    public class StocMathaus
+    {
+        public string filiala;
+        public double stoc;
+        public string strService;
+    }
 
 }

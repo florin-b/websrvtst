@@ -652,16 +652,26 @@ namespace LiteSFATestWebService
 
             string condPaleti = "";
             string condData = "";
-            string nrZileRetur = " sysdate-45 ";
+            string nrZileRetur = " sysdate-145 ";
+            string condDepart = "";
 
             if (tipDocument != null && tipDocument.Equals("PAL"))
                 nrZileRetur = " sysdate-90 ";
 
             if (tipDocument == null || (tipDocument != null && tipDocument.Equals("PAL")))
-                condPaleti = "and p.matkl in ('433', '433_1', '716', '626', '929_2', '515')";
+            {
+                if (codDepartament.Equals("11"))
+                    condPaleti = "and p.matkl in ('433', '433_1', '716', '626', '929_2', '515')";
+                else
+                    condPaleti = " and m.categ_mat in ('PA','AM') ";
+            }
 
             if (interval != null)
                 condData = " and substr(k.fkdat,0,6) = '" + interval + "' ";
+
+            if (!codDepartament.Equals("00") && !codDepartament.Equals("11"))
+                condDepart = " and p.spart = substr(:depart,0,2) ";
+
 
             try
             {
@@ -685,12 +695,23 @@ namespace LiteSFATestWebService
                 else
                 {
                         cmd.CommandText = " select distinct k.vbeln, to_date(k.fkdat,'yyyymmdd') " +
-                                     " from sapprd.vbrk k, sapprd.vbrp p where k.mandt = p.mandt and k.vbeln = p.vbeln and p.spart = substr(:depart,0,2) " +
+                                     " from sapprd.vbrk k, sapprd.vbrp p where k.mandt = p.mandt and k.vbeln = p.vbeln " + condDepart + 
                                      " and k.mandt = '900' and k.fkdat >= to_char(" + nrZileRetur + ",'yyyymmdd') and k.fkart = 'ZFI' and k.fksto <> 'X' " +
                                      " and k.kunag =:codClient " + condPaleti + condData + " order by to_date(k.fkdat,'yyyymmdd') ";
-                    
+
+
+
+                    cmd.CommandText = " select distinct k.vbeln, to_date(k.fkdat,'yyyymmdd') from sapprd.vbrk k, " +
+                                      " sapprd.vbrp p, sapprd.mara m where k.mandt = p.mandt and k.vbeln = p.vbeln " + condDepart +
+                                      " and k.mandt = '900' and k.fkdat >= to_char(" + nrZileRetur + ", 'yyyymmdd') " +
+                                      " and k.fkart = 'ZFI' and k.fksto <> 'X' and k.kunag = :codClient " + condData + 
+                                      " and p.mandt = m.mandt and p.matnr = m.matnr " + condPaleti +
+                                      " order by to_date(k.fkdat, 'yyyymmdd') ";
+
                     
                 }
+
+                ErrorHandling.sendErrorToMail("getDocumenteRetur: " + cmd.CommandText);
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -706,8 +727,11 @@ namespace LiteSFATestWebService
                     cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
                     cmd.Parameters[0].Value = codClient;
 
-                    cmd.Parameters.Add(":depart", OracleType.VarChar, 6).Direction = ParameterDirection.Input;
-                    cmd.Parameters[1].Value = codDepartament;
+                    if (!codDepartament.Equals("00"))
+                    {
+                        cmd.Parameters.Add(":depart", OracleType.VarChar, 6).Direction = ParameterDirection.Input;
+                        cmd.Parameters[1].Value = codDepartament;
+                    }
                 }
 
                 oReader = cmd.ExecuteReader();
@@ -772,9 +796,14 @@ namespace LiteSFATestWebService
             OracleCommand cmd = connection.CreateCommand();
 
             string condPaleti = "";
+            string tabelaPaleti = "";
 
             if (tipDocument == null || (tipDocument != null && tipDocument.Equals("PAL")))
-                condPaleti = "and p.matkl in ('433', '433_1', '716', '626', '929_2', '515')";
+            {
+                //condPaleti = "and p.matkl in ('433', '433_1', '716', '626', '929_2', '515')";
+                tabelaPaleti = " , sapprd.mara m ";
+                condPaleti = " and p.mandt = m.mandt and p.matnr = m.matnr and m.categ_mat in ('PA','AM') ";
+            }
 
             try
             {
@@ -785,7 +814,7 @@ namespace LiteSFATestWebService
                                   " where a.mandt = '900' and a.vbelv = p.vbeln and a.posnv = p.posnr and a.vbtyp_v = 'M' " +
                                   " and a.vbtyp_n = 'H' and a.mandt = vk.mandt and a.vbeln = vk.vbeln and vk.auart = 'ZRI' " +
                                   " and a.mandt = cp.mandt and a.vbeln = cp.vbeln and a.posnn = cp.posnr and cp.abgru = ' ') returnate " +
-                                  " from sapprd.vbrp p where p.mandt = '900' and p.vbeln =:nrDoc " + condPaleti + "  ) where fkimg - returnate > 0 " +
+                                  " from sapprd.vbrp p " + tabelaPaleti + " where p.mandt = '900' and p.vbeln =:nrDoc " + condPaleti + "  ) where fkimg - returnate > 0 " +
                                   " group by matnr, arktx, vrkme order by codart ";
 
 
@@ -1065,6 +1094,8 @@ namespace LiteSFATestWebService
 
         public string saveComandaRetur(string dateRetur, string tipRetur)
         {
+
+            ErrorHandling.sendErrorToMail("saveComandaRetur: " + dateRetur);
 
             string retVal = "";
 

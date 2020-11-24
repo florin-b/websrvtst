@@ -24,7 +24,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     
     /// <remarks/>
     // CODEGEN: The optional WSDL extension element 'Policy' from namespace 'http://schemas.xmlsoap.org/ws/2004/09/policy' was not handled.
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Web.Services.WebServiceBindingAttribute(Name="ZTBL_WEBSERVICE", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
@@ -42,6 +42,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         private System.Threading.SendOrPostCallback ZcreazaComandaOperationCompleted;
         
+        private System.Threading.SendOrPostCallback ZPalcantOperationCompleted;
+        
         private System.Threading.SendOrPostCallback ZcalcTrapOperationCompleted;
         
         private System.Threading.SendOrPostCallback ZNrPaletiOperationCompleted;
@@ -56,7 +58,11 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         private System.Threading.SendOrPostCallback ZretMarfaOperationCompleted;
         
+        private System.Threading.SendOrPostCallback ZstareCurenta1OperationCompleted;
+        
         private System.Threading.SendOrPostCallback ZactDiscMaximOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback ZbapiReservationChangeOperationCompleted;
         
         private System.Threading.SendOrPostCallback ZgetPriceOperationCompleted;
         
@@ -125,6 +131,9 @@ namespace LiteSFATestWebService.SAPWebServices {
         public event ZcreazaComandaCompletedEventHandler ZcreazaComandaCompleted;
         
         /// <remarks/>
+        public event ZPalcantCompletedEventHandler ZPalcantCompleted;
+        
+        /// <remarks/>
         public event ZcalcTrapCompletedEventHandler ZcalcTrapCompleted;
         
         /// <remarks/>
@@ -146,7 +155,13 @@ namespace LiteSFATestWebService.SAPWebServices {
         public event ZretMarfaCompletedEventHandler ZretMarfaCompleted;
         
         /// <remarks/>
+        public event ZstareCurenta1CompletedEventHandler ZstareCurenta1Completed;
+        
+        /// <remarks/>
         public event ZactDiscMaximCompletedEventHandler ZactDiscMaximCompleted;
+        
+        /// <remarks/>
+        public event ZbapiReservationChangeCompletedEventHandler ZbapiReservationChangeCompleted;
         
         /// <remarks/>
         public event ZgetPriceCompletedEventHandler ZgetPriceCompleted;
@@ -350,6 +365,36 @@ namespace LiteSFATestWebService.SAPWebServices {
         }
         
         /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZPalcantRequest", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
+        [return: System.Xml.Serialization.XmlElementAttribute("ZPalcantResponse", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+        public ZPalcantResponse ZPalcant([System.Xml.Serialization.XmlElementAttribute("ZPalcant", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")] ZPalcant ZPalcant1) {
+            object[] results = this.Invoke("ZPalcant", new object[] {
+                        ZPalcant1});
+            return ((ZPalcantResponse)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void ZPalcantAsync(ZPalcant ZPalcant1) {
+            this.ZPalcantAsync(ZPalcant1, null);
+        }
+        
+        /// <remarks/>
+        public void ZPalcantAsync(ZPalcant ZPalcant1, object userState) {
+            if ((this.ZPalcantOperationCompleted == null)) {
+                this.ZPalcantOperationCompleted = new System.Threading.SendOrPostCallback(this.OnZPalcantOperationCompleted);
+            }
+            this.InvokeAsync("ZPalcant", new object[] {
+                        ZPalcant1}, this.ZPalcantOperationCompleted, userState);
+        }
+        
+        private void OnZPalcantOperationCompleted(object arg) {
+            if ((this.ZPalcantCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.ZPalcantCompleted(this, new ZPalcantCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZcalcTrapRequest" +
             "", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
         [return: System.Xml.Serialization.XmlElementAttribute("ZcalcTrapResponse", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
@@ -443,7 +488,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZmodificaLivrare" +
+            "Request", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
         [return: System.Xml.Serialization.XmlElementAttribute("ZmodificaLivrareResponse", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
         public ZmodificaLivrareResponse ZmodificaLivrare([System.Xml.Serialization.XmlElementAttribute("ZmodificaLivrare", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")] ZmodificaLivrare ZmodificaLivrare1) {
             object[] results = this.Invoke("ZmodificaLivrare", new object[] {
@@ -566,6 +612,37 @@ namespace LiteSFATestWebService.SAPWebServices {
         }
         
         /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZstareCurenta1Re" +
+            "quest", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
+        [return: System.Xml.Serialization.XmlElementAttribute("ZstareCurenta1Response", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+        public ZstareCurenta1Response ZstareCurenta1([System.Xml.Serialization.XmlElementAttribute("ZstareCurenta1", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")] ZstareCurenta1 ZstareCurenta11) {
+            object[] results = this.Invoke("ZstareCurenta1", new object[] {
+                        ZstareCurenta11});
+            return ((ZstareCurenta1Response)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void ZstareCurenta1Async(ZstareCurenta1 ZstareCurenta11) {
+            this.ZstareCurenta1Async(ZstareCurenta11, null);
+        }
+        
+        /// <remarks/>
+        public void ZstareCurenta1Async(ZstareCurenta1 ZstareCurenta11, object userState) {
+            if ((this.ZstareCurenta1OperationCompleted == null)) {
+                this.ZstareCurenta1OperationCompleted = new System.Threading.SendOrPostCallback(this.OnZstareCurenta1OperationCompleted);
+            }
+            this.InvokeAsync("ZstareCurenta1", new object[] {
+                        ZstareCurenta11}, this.ZstareCurenta1OperationCompleted, userState);
+        }
+        
+        private void OnZstareCurenta1OperationCompleted(object arg) {
+            if ((this.ZstareCurenta1Completed != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.ZstareCurenta1Completed(this, new ZstareCurenta1CompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZactDiscMaximReq" +
             "uest", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
         [return: System.Xml.Serialization.XmlElementAttribute("ZactDiscMaximResponse", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
@@ -593,6 +670,37 @@ namespace LiteSFATestWebService.SAPWebServices {
             if ((this.ZactDiscMaximCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.ZactDiscMaximCompleted(this, new ZactDiscMaximCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZbapiReservation" +
+            "ChangeRequest", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
+        [return: System.Xml.Serialization.XmlElementAttribute("ZbapiReservationChangeResponse", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+        public ZbapiReservationChangeResponse ZbapiReservationChange([System.Xml.Serialization.XmlElementAttribute("ZbapiReservationChange", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")] ZbapiReservationChange ZbapiReservationChange1) {
+            object[] results = this.Invoke("ZbapiReservationChange", new object[] {
+                        ZbapiReservationChange1});
+            return ((ZbapiReservationChangeResponse)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void ZbapiReservationChangeAsync(ZbapiReservationChange ZbapiReservationChange1) {
+            this.ZbapiReservationChangeAsync(ZbapiReservationChange1, null);
+        }
+        
+        /// <remarks/>
+        public void ZbapiReservationChangeAsync(ZbapiReservationChange ZbapiReservationChange1, object userState) {
+            if ((this.ZbapiReservationChangeOperationCompleted == null)) {
+                this.ZbapiReservationChangeOperationCompleted = new System.Threading.SendOrPostCallback(this.OnZbapiReservationChangeOperationCompleted);
+            }
+            this.InvokeAsync("ZbapiReservationChange", new object[] {
+                        ZbapiReservationChange1}, this.ZbapiReservationChangeOperationCompleted, userState);
+        }
+        
+        private void OnZbapiReservationChangeOperationCompleted(object arg) {
+            if ((this.ZbapiReservationChangeCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.ZbapiReservationChangeCompleted(this, new ZbapiReservationChangeCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -771,7 +879,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -807,7 +915,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1024,7 +1132,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1182,6 +1290,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         private string lebheadstaField;
         
         private string fmstatusField;
+        
+        private string sdDocCatLongField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
@@ -2018,10 +2128,21 @@ namespace LiteSFATestWebService.SAPWebServices {
                 this.fmstatusField = value;
             }
         }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string SdDocCatLong {
+            get {
+                return this.sdDocCatLongField;
+            }
+            set {
+                this.sdDocCatLongField = value;
+            }
+        }
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -2257,6 +2378,10 @@ namespace LiteSFATestWebService.SAPWebServices {
         private string refDocLLongField;
         
         private string crmGuidField;
+        
+        private string sdDocCatLongField;
+        
+        private string docCatSdLongField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
@@ -3522,10 +3647,32 @@ namespace LiteSFATestWebService.SAPWebServices {
                 this.crmGuidField = value;
             }
         }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string SdDocCatLong {
+            get {
+                return this.sdDocCatLongField;
+            }
+            set {
+                this.sdDocCatLongField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string DocCatSdLong {
+            get {
+                return this.docCatSdLongField;
+            }
+            set {
+                this.docCatSdLongField = value;
+            }
+        }
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -3651,7 +3798,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -4102,7 +4249,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -4124,7 +4271,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -4926,7 +5073,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -5039,7 +5186,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -5347,7 +5494,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -5655,7 +5802,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -5846,7 +5993,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -6336,7 +6483,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -6566,7 +6713,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -6998,6 +7145,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         private string poQuanField;
         
         private string poUnitField;
+        
+        private string reqSegLongField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
@@ -9341,10 +9490,21 @@ namespace LiteSFATestWebService.SAPWebServices {
                 this.poUnitField = value;
             }
         }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string ReqSegLong {
+            get {
+                return this.reqSegLongField;
+            }
+            set {
+                this.reqSegLongField = value;
+            }
+        }
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -9790,6 +9950,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         private decimal poQuanField;
         
         private string poUnitField;
+        
+        private string reqSegLongField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
@@ -12210,10 +12372,21 @@ namespace LiteSFATestWebService.SAPWebServices {
                 this.poUnitField = value;
             }
         }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string ReqSegLong {
+            get {
+                return this.reqSegLongField;
+            }
+            set {
+                this.reqSegLongField = value;
+            }
+        }
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -13860,7 +14033,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -15559,7 +15732,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -15867,7 +16040,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -16162,7 +16335,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -16301,7 +16474,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -16362,7 +16535,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -16488,7 +16661,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -16536,7 +16709,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -16714,7 +16887,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -16853,7 +17026,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -17044,7 +17217,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -17079,7 +17252,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -17517,198 +17690,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
-    public partial class Bapiret2 {
-        
-        private string typeField;
-        
-        private string idField;
-        
-        private string numberField;
-        
-        private string messageField;
-        
-        private string logNoField;
-        
-        private string logMsgNoField;
-        
-        private string messageV1Field;
-        
-        private string messageV2Field;
-        
-        private string messageV3Field;
-        
-        private string messageV4Field;
-        
-        private string parameterField;
-        
-        private int rowField;
-        
-        private string fieldField;
-        
-        private string systemField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form=global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string Type {
-            get {
-                return this.typeField;
-            }
-            set {
-                this.typeField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string Id {
-            get {
-                return this.idField;
-            }
-            set {
-                this.idField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string Number {
-            get {
-                return this.numberField;
-            }
-            set {
-                this.numberField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string Message {
-            get {
-                return this.messageField;
-            }
-            set {
-                this.messageField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string LogNo {
-            get {
-                return this.logNoField;
-            }
-            set {
-                this.logNoField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string LogMsgNo {
-            get {
-                return this.logMsgNoField;
-            }
-            set {
-                this.logMsgNoField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string MessageV1 {
-            get {
-                return this.messageV1Field;
-            }
-            set {
-                this.messageV1Field = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string MessageV2 {
-            get {
-                return this.messageV2Field;
-            }
-            set {
-                this.messageV2Field = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string MessageV3 {
-            get {
-                return this.messageV3Field;
-            }
-            set {
-                this.messageV3Field = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string MessageV4 {
-            get {
-                return this.messageV4Field;
-            }
-            set {
-                this.messageV4Field = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string Parameter {
-            get {
-                return this.parameterField;
-            }
-            set {
-                this.parameterField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public int Row {
-            get {
-                return this.rowField;
-            }
-            set {
-                this.rowField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string Field {
-            get {
-                return this.fieldField;
-            }
-            set {
-                this.fieldField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string System {
-            get {
-                return this.systemField;
-            }
-            set {
-                this.systemField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -18042,7 +18024,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -18198,6 +18180,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         private string townshipCodeField;
         
         private string townshipField;
+        
+        private string xpcptField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
@@ -19023,10 +19007,21 @@ namespace LiteSFATestWebService.SAPWebServices {
                 this.townshipField = value;
             }
         }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Xpcpt {
+            get {
+                return this.xpcptField;
+            }
+            set {
+                this.xpcptField = value;
+            }
+        }
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -19061,7 +19056,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -19148,7 +19143,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -22147,7 +22142,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -22247,7 +22242,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -22321,7 +22316,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -23058,7 +23053,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -23184,7 +23179,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -23380,6 +23375,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         private string incoterms2lField;
         
         private string incoterms3lField;
+        
+        private string transMatLongField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
@@ -24425,10 +24422,21 @@ namespace LiteSFATestWebService.SAPWebServices {
                 this.incoterms3lField = value;
             }
         }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string TransMatLong {
+            get {
+                return this.transMatLongField;
+            }
+            set {
+                this.transMatLongField = value;
+            }
+        }
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -24528,7 +24536,1668 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class Bapiret2 {
+        
+        private string typeField;
+        
+        private string idField;
+        
+        private string numberField;
+        
+        private string messageField;
+        
+        private string logNoField;
+        
+        private string logMsgNoField;
+        
+        private string messageV1Field;
+        
+        private string messageV2Field;
+        
+        private string messageV3Field;
+        
+        private string messageV4Field;
+        
+        private string parameterField;
+        
+        private int rowField;
+        
+        private string fieldField;
+        
+        private string systemField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Type {
+            get {
+                return this.typeField;
+            }
+            set {
+                this.typeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Id {
+            get {
+                return this.idField;
+            }
+            set {
+                this.idField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Number {
+            get {
+                return this.numberField;
+            }
+            set {
+                this.numberField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Message {
+            get {
+                return this.messageField;
+            }
+            set {
+                this.messageField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string LogNo {
+            get {
+                return this.logNoField;
+            }
+            set {
+                this.logNoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string LogMsgNo {
+            get {
+                return this.logMsgNoField;
+            }
+            set {
+                this.logMsgNoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string MessageV1 {
+            get {
+                return this.messageV1Field;
+            }
+            set {
+                this.messageV1Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string MessageV2 {
+            get {
+                return this.messageV2Field;
+            }
+            set {
+                this.messageV2Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string MessageV3 {
+            get {
+                return this.messageV3Field;
+            }
+            set {
+                this.messageV3Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string MessageV4 {
+            get {
+                return this.messageV4Field;
+            }
+            set {
+                this.messageV4Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Parameter {
+            get {
+                return this.parameterField;
+            }
+            set {
+                this.parameterField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public int Row {
+            get {
+                return this.rowField;
+            }
+            set {
+                this.rowField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Field {
+            get {
+                return this.fieldField;
+            }
+            set {
+                this.fieldField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string System {
+            get {
+                return this.systemField;
+            }
+            set {
+                this.systemField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class Bapi2093ResItemChangex {
+        
+        private string resItemField;
+        
+        private string stgeLocField;
+        
+        private string batchField;
+        
+        private string entryQntField;
+        
+        private string reqDateField;
+        
+        private string itemTextField;
+        
+        private string grRcptField;
+        
+        private string unloadPtField;
+        
+        private string fixedQuanField;
+        
+        private string movementField;
+        
+        private string deleteIndField;
+        
+        private string withdrawnField;
+        
+        private string prioUrgencyField;
+        
+        private string prioRequirementField;
+        
+        private string stkSegmentField;
+        
+        private string reqSegmentField;
+        
+        private string stkSegLongField;
+        
+        private string reqSegLongField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string ResItem {
+            get {
+                return this.resItemField;
+            }
+            set {
+                this.resItemField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string StgeLoc {
+            get {
+                return this.stgeLocField;
+            }
+            set {
+                this.stgeLocField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Batch {
+            get {
+                return this.batchField;
+            }
+            set {
+                this.batchField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string EntryQnt {
+            get {
+                return this.entryQntField;
+            }
+            set {
+                this.entryQntField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string ReqDate {
+            get {
+                return this.reqDateField;
+            }
+            set {
+                this.reqDateField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string ItemText {
+            get {
+                return this.itemTextField;
+            }
+            set {
+                this.itemTextField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GrRcpt {
+            get {
+                return this.grRcptField;
+            }
+            set {
+                this.grRcptField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string UnloadPt {
+            get {
+                return this.unloadPtField;
+            }
+            set {
+                this.unloadPtField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string FixedQuan {
+            get {
+                return this.fixedQuanField;
+            }
+            set {
+                this.fixedQuanField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Movement {
+            get {
+                return this.movementField;
+            }
+            set {
+                this.movementField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string DeleteInd {
+            get {
+                return this.deleteIndField;
+            }
+            set {
+                this.deleteIndField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Withdrawn {
+            get {
+                return this.withdrawnField;
+            }
+            set {
+                this.withdrawnField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string PrioUrgency {
+            get {
+                return this.prioUrgencyField;
+            }
+            set {
+                this.prioUrgencyField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string PrioRequirement {
+            get {
+                return this.prioRequirementField;
+            }
+            set {
+                this.prioRequirementField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string StkSegment {
+            get {
+                return this.stkSegmentField;
+            }
+            set {
+                this.stkSegmentField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string ReqSegment {
+            get {
+                return this.reqSegmentField;
+            }
+            set {
+                this.reqSegmentField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string StkSegLong {
+            get {
+                return this.stkSegLongField;
+            }
+            set {
+                this.stkSegLongField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string ReqSegLong {
+            get {
+                return this.reqSegLongField;
+            }
+            set {
+                this.reqSegLongField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class Bapi2093ResItemChange {
+        
+        private string resItemField;
+        
+        private string stgeLocField;
+        
+        private string batchField;
+        
+        private decimal entryQntField;
+        
+        private string reqDateField;
+        
+        private string itemTextField;
+        
+        private string grRcptField;
+        
+        private string unloadPtField;
+        
+        private string fixedQuanField;
+        
+        private string movementField;
+        
+        private string deleteIndField;
+        
+        private string withdrawnField;
+        
+        private string prioUrgencyField;
+        
+        private string prioRequirementField;
+        
+        private string stkSegmentField;
+        
+        private string reqSegmentField;
+        
+        private string stkSegLongField;
+        
+        private string reqSegLongField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string ResItem {
+            get {
+                return this.resItemField;
+            }
+            set {
+                this.resItemField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string StgeLoc {
+            get {
+                return this.stgeLocField;
+            }
+            set {
+                this.stgeLocField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Batch {
+            get {
+                return this.batchField;
+            }
+            set {
+                this.batchField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal EntryQnt {
+            get {
+                return this.entryQntField;
+            }
+            set {
+                this.entryQntField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string ReqDate {
+            get {
+                return this.reqDateField;
+            }
+            set {
+                this.reqDateField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string ItemText {
+            get {
+                return this.itemTextField;
+            }
+            set {
+                this.itemTextField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GrRcpt {
+            get {
+                return this.grRcptField;
+            }
+            set {
+                this.grRcptField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string UnloadPt {
+            get {
+                return this.unloadPtField;
+            }
+            set {
+                this.unloadPtField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string FixedQuan {
+            get {
+                return this.fixedQuanField;
+            }
+            set {
+                this.fixedQuanField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Movement {
+            get {
+                return this.movementField;
+            }
+            set {
+                this.movementField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string DeleteInd {
+            get {
+                return this.deleteIndField;
+            }
+            set {
+                this.deleteIndField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Withdrawn {
+            get {
+                return this.withdrawnField;
+            }
+            set {
+                this.withdrawnField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string PrioUrgency {
+            get {
+                return this.prioUrgencyField;
+            }
+            set {
+                this.prioUrgencyField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string PrioRequirement {
+            get {
+                return this.prioRequirementField;
+            }
+            set {
+                this.prioRequirementField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string StkSegment {
+            get {
+                return this.stkSegmentField;
+            }
+            set {
+                this.stkSegmentField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string ReqSegment {
+            get {
+                return this.reqSegmentField;
+            }
+            set {
+                this.reqSegmentField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string StkSegLong {
+            get {
+                return this.stkSegLongField;
+            }
+            set {
+                this.stkSegLongField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string ReqSegLong {
+            get {
+                return this.reqSegLongField;
+            }
+            set {
+                this.reqSegLongField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZcomheadTableta {
+        
+        private string mandtField;
+        
+        private decimal idField;
+        
+        private string codClientField;
+        
+        private string codAgentField;
+        
+        private string ulField;
+        
+        private string departField;
+        
+        private string statusField;
+        
+        private string datacField;
+        
+        private string cantarField;
+        
+        private string nrcmdsapField;
+        
+        private string codInitField;
+        
+        private decimal valoareField;
+        
+        private decimal valoaresapField;
+        
+        private string tipPlataField;
+        
+        private string persContactField;
+        
+        private string telefonField;
+        
+        private string adrLivrareField;
+        
+        private string mtField;
+        
+        private string accept1Field;
+        
+        private System.DateTime oraAccept1Field;
+        
+        private string accept2Field;
+        
+        private System.DateTime oraAccept2Field;
+        
+        private string waersField;
+        
+        private string statusAprovField;
+        
+        private string factRedField;
+        
+        private string pattIdField;
+        
+        private string comReferintaField;
+        
+        private string cityField;
+        
+        private string regionField;
+        
+        private string denClField;
+        
+        private string nrTvaField;
+        
+        private string pmnttrmsField;
+        
+        private string obstraField;
+        
+        private System.DateTime timpcField;
+        
+        private string pernrModField;
+        
+        private string ketdatField;
+        
+        private string abgruField;
+        
+        private string docinField;
+        
+        private string adrNouaField;
+        
+        private decimal parentIdField;
+        
+        private string obsplataField;
+        
+        private string addrnumberField;
+        
+        private string awbField;
+        
+        private string numeClientField;
+        
+        private string stcegField;
+        
+        private string tipPersField;
+        
+        private decimal valIncasataField;
+        
+        private string siteField;
+        
+        private string modAvField;
+        
+        private string emailField;
+        
+        private string codJField;
+        
+        private string adrLivrareDField;
+        
+        private string cityDField;
+        
+        private string regionDField;
+        
+        private string aprobCvNecesarField;
+        
+        private string aprobCvRealizField;
+        
+        private string condCvField;
+        
+        private string mutatField;
+        
+        private string macaraField;
+        
+        private decimal valMinTrField;
+        
+        private string auartField;
+        
+        private decimal idObiectivField;
+        
+        private string adresaObiectivField;
+        
+        private string factPrimField;
+        
+        private string clientRaftField;
+        
+        private string mailBv90Field;
+        
+        private string meseriasField;
+        
+        private string factPaletSeparatField;
+        
+        private string descoperitaField;
+        
+        private string lifnrField;
+        
+        private string lifnrProdField;
+        
+        private string progLivrField;
+        
+        private string livrSambataField;
+        
+        private string blocField;
+        
+        private string refClientField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Mandt {
+            get {
+                return this.mandtField;
+            }
+            set {
+                this.mandtField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal Id {
+            get {
+                return this.idField;
+            }
+            set {
+                this.idField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string CodClient {
+            get {
+                return this.codClientField;
+            }
+            set {
+                this.codClientField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string CodAgent {
+            get {
+                return this.codAgentField;
+            }
+            set {
+                this.codAgentField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Ul {
+            get {
+                return this.ulField;
+            }
+            set {
+                this.ulField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Depart {
+            get {
+                return this.departField;
+            }
+            set {
+                this.departField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Status {
+            get {
+                return this.statusField;
+            }
+            set {
+                this.statusField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Datac {
+            get {
+                return this.datacField;
+            }
+            set {
+                this.datacField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Cantar {
+            get {
+                return this.cantarField;
+            }
+            set {
+                this.cantarField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Nrcmdsap {
+            get {
+                return this.nrcmdsapField;
+            }
+            set {
+                this.nrcmdsapField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string CodInit {
+            get {
+                return this.codInitField;
+            }
+            set {
+                this.codInitField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal Valoare {
+            get {
+                return this.valoareField;
+            }
+            set {
+                this.valoareField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal Valoaresap {
+            get {
+                return this.valoaresapField;
+            }
+            set {
+                this.valoaresapField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string TipPlata {
+            get {
+                return this.tipPlataField;
+            }
+            set {
+                this.tipPlataField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string PersContact {
+            get {
+                return this.persContactField;
+            }
+            set {
+                this.persContactField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Telefon {
+            get {
+                return this.telefonField;
+            }
+            set {
+                this.telefonField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string AdrLivrare {
+            get {
+                return this.adrLivrareField;
+            }
+            set {
+                this.adrLivrareField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Mt {
+            get {
+                return this.mtField;
+            }
+            set {
+                this.mtField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Accept1 {
+            get {
+                return this.accept1Field;
+            }
+            set {
+                this.accept1Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified, DataType="time")]
+        public System.DateTime OraAccept1 {
+            get {
+                return this.oraAccept1Field;
+            }
+            set {
+                this.oraAccept1Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Accept2 {
+            get {
+                return this.accept2Field;
+            }
+            set {
+                this.accept2Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified, DataType="time")]
+        public System.DateTime OraAccept2 {
+            get {
+                return this.oraAccept2Field;
+            }
+            set {
+                this.oraAccept2Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Waers {
+            get {
+                return this.waersField;
+            }
+            set {
+                this.waersField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string StatusAprov {
+            get {
+                return this.statusAprovField;
+            }
+            set {
+                this.statusAprovField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string FactRed {
+            get {
+                return this.factRedField;
+            }
+            set {
+                this.factRedField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string PattId {
+            get {
+                return this.pattIdField;
+            }
+            set {
+                this.pattIdField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string ComReferinta {
+            get {
+                return this.comReferintaField;
+            }
+            set {
+                this.comReferintaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string City {
+            get {
+                return this.cityField;
+            }
+            set {
+                this.cityField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Region {
+            get {
+                return this.regionField;
+            }
+            set {
+                this.regionField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string DenCl {
+            get {
+                return this.denClField;
+            }
+            set {
+                this.denClField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string NrTva {
+            get {
+                return this.nrTvaField;
+            }
+            set {
+                this.nrTvaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Pmnttrms {
+            get {
+                return this.pmnttrmsField;
+            }
+            set {
+                this.pmnttrmsField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Obstra {
+            get {
+                return this.obstraField;
+            }
+            set {
+                this.obstraField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified, DataType="time")]
+        public System.DateTime Timpc {
+            get {
+                return this.timpcField;
+            }
+            set {
+                this.timpcField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string PernrMod {
+            get {
+                return this.pernrModField;
+            }
+            set {
+                this.pernrModField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Ketdat {
+            get {
+                return this.ketdatField;
+            }
+            set {
+                this.ketdatField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Abgru {
+            get {
+                return this.abgruField;
+            }
+            set {
+                this.abgruField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Docin {
+            get {
+                return this.docinField;
+            }
+            set {
+                this.docinField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string AdrNoua {
+            get {
+                return this.adrNouaField;
+            }
+            set {
+                this.adrNouaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal ParentId {
+            get {
+                return this.parentIdField;
+            }
+            set {
+                this.parentIdField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Obsplata {
+            get {
+                return this.obsplataField;
+            }
+            set {
+                this.obsplataField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Addrnumber {
+            get {
+                return this.addrnumberField;
+            }
+            set {
+                this.addrnumberField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Awb {
+            get {
+                return this.awbField;
+            }
+            set {
+                this.awbField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string NumeClient {
+            get {
+                return this.numeClientField;
+            }
+            set {
+                this.numeClientField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Stceg {
+            get {
+                return this.stcegField;
+            }
+            set {
+                this.stcegField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string TipPers {
+            get {
+                return this.tipPersField;
+            }
+            set {
+                this.tipPersField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal ValIncasata {
+            get {
+                return this.valIncasataField;
+            }
+            set {
+                this.valIncasataField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Site {
+            get {
+                return this.siteField;
+            }
+            set {
+                this.siteField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string ModAv {
+            get {
+                return this.modAvField;
+            }
+            set {
+                this.modAvField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Email {
+            get {
+                return this.emailField;
+            }
+            set {
+                this.emailField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string CodJ {
+            get {
+                return this.codJField;
+            }
+            set {
+                this.codJField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string AdrLivrareD {
+            get {
+                return this.adrLivrareDField;
+            }
+            set {
+                this.adrLivrareDField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string CityD {
+            get {
+                return this.cityDField;
+            }
+            set {
+                this.cityDField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string RegionD {
+            get {
+                return this.regionDField;
+            }
+            set {
+                this.regionDField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string AprobCvNecesar {
+            get {
+                return this.aprobCvNecesarField;
+            }
+            set {
+                this.aprobCvNecesarField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string AprobCvRealiz {
+            get {
+                return this.aprobCvRealizField;
+            }
+            set {
+                this.aprobCvRealizField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string CondCv {
+            get {
+                return this.condCvField;
+            }
+            set {
+                this.condCvField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Mutat {
+            get {
+                return this.mutatField;
+            }
+            set {
+                this.mutatField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Macara {
+            get {
+                return this.macaraField;
+            }
+            set {
+                this.macaraField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal ValMinTr {
+            get {
+                return this.valMinTrField;
+            }
+            set {
+                this.valMinTrField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Auart {
+            get {
+                return this.auartField;
+            }
+            set {
+                this.auartField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal IdObiectiv {
+            get {
+                return this.idObiectivField;
+            }
+            set {
+                this.idObiectivField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string AdresaObiectiv {
+            get {
+                return this.adresaObiectivField;
+            }
+            set {
+                this.adresaObiectivField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string FactPrim {
+            get {
+                return this.factPrimField;
+            }
+            set {
+                this.factPrimField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string ClientRaft {
+            get {
+                return this.clientRaftField;
+            }
+            set {
+                this.clientRaftField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string MailBv90 {
+            get {
+                return this.mailBv90Field;
+            }
+            set {
+                this.mailBv90Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Meserias {
+            get {
+                return this.meseriasField;
+            }
+            set {
+                this.meseriasField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string FactPaletSeparat {
+            get {
+                return this.factPaletSeparatField;
+            }
+            set {
+                this.factPaletSeparatField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Descoperita {
+            get {
+                return this.descoperitaField;
+            }
+            set {
+                this.descoperitaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Lifnr {
+            get {
+                return this.lifnrField;
+            }
+            set {
+                this.lifnrField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string LifnrProd {
+            get {
+                return this.lifnrProdField;
+            }
+            set {
+                this.lifnrProdField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string ProgLivr {
+            get {
+                return this.progLivrField;
+            }
+            set {
+                this.progLivrField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string LivrSambata {
+            get {
+                return this.livrSambataField;
+            }
+            set {
+                this.livrSambataField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Bloc {
+            get {
+                return this.blocField;
+            }
+            set {
+                this.blocField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string RefClient {
+            get {
+                return this.refClientField;
+            }
+            set {
+                this.refClientField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -24576,7 +26245,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -24728,7 +26397,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -25114,7 +26783,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -25188,7 +26857,146 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZstEtMarfaPalet {
+        
+        private string spartMarfaField;
+        
+        private string matnrMarfaField;
+        
+        private decimal cantMarfaField;
+        
+        private string meinsMarfaField;
+        
+        private string spartPaletField;
+        
+        private string matnrPaletField;
+        
+        private decimal cantPaletField;
+        
+        private string meinsPaletField;
+        
+        private string furnizorPaletField;
+        
+        private decimal pretPaletField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string SpartMarfa {
+            get {
+                return this.spartMarfaField;
+            }
+            set {
+                this.spartMarfaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string MatnrMarfa {
+            get {
+                return this.matnrMarfaField;
+            }
+            set {
+                this.matnrMarfaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal CantMarfa {
+            get {
+                return this.cantMarfaField;
+            }
+            set {
+                this.cantMarfaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string MeinsMarfa {
+            get {
+                return this.meinsMarfaField;
+            }
+            set {
+                this.meinsMarfaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string SpartPalet {
+            get {
+                return this.spartPaletField;
+            }
+            set {
+                this.spartPaletField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string MatnrPalet {
+            get {
+                return this.matnrPaletField;
+            }
+            set {
+                this.matnrPaletField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal CantPalet {
+            get {
+                return this.cantPaletField;
+            }
+            set {
+                this.cantPaletField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string MeinsPalet {
+            get {
+                return this.meinsPaletField;
+            }
+            set {
+                this.meinsPaletField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string FurnizorPalet {
+            get {
+                return this.furnizorPaletField;
+            }
+            set {
+                this.furnizorPaletField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal PretPalet {
+            get {
+                return this.pretPaletField;
+            }
+            set {
+                this.pretPaletField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -25249,7 +27057,246 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZpalcantRez {
+        
+        private string spartField;
+        
+        private string prodPalField;
+        
+        private string coddecorField;
+        
+        private string matnrPalField;
+        
+        private string denPalField;
+        
+        private string tipCantField;
+        
+        private string caractCantField;
+        
+        private string matnrCantField;
+        
+        private string denCantField;
+        
+        private decimal latimeCantField;
+        
+        private decimal grosimeCantField;
+        
+        private string meabmField;
+        
+        private decimal stocField;
+        
+        private string umBazaField;
+        
+        private string werksField;
+        
+        private string lgortField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Spart {
+            get {
+                return this.spartField;
+            }
+            set {
+                this.spartField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string ProdPal {
+            get {
+                return this.prodPalField;
+            }
+            set {
+                this.prodPalField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Coddecor {
+            get {
+                return this.coddecorField;
+            }
+            set {
+                this.coddecorField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string MatnrPal {
+            get {
+                return this.matnrPalField;
+            }
+            set {
+                this.matnrPalField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string DenPal {
+            get {
+                return this.denPalField;
+            }
+            set {
+                this.denPalField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string TipCant {
+            get {
+                return this.tipCantField;
+            }
+            set {
+                this.tipCantField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string CaractCant {
+            get {
+                return this.caractCantField;
+            }
+            set {
+                this.caractCantField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string MatnrCant {
+            get {
+                return this.matnrCantField;
+            }
+            set {
+                this.matnrCantField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string DenCant {
+            get {
+                return this.denCantField;
+            }
+            set {
+                this.denCantField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal LatimeCant {
+            get {
+                return this.latimeCantField;
+            }
+            set {
+                this.latimeCantField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal GrosimeCant {
+            get {
+                return this.grosimeCantField;
+            }
+            set {
+                this.grosimeCantField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Meabm {
+            get {
+                return this.meabmField;
+            }
+            set {
+                this.meabmField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal Stoc {
+            get {
+                return this.stocField;
+            }
+            set {
+                this.stocField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string UmBaza {
+            get {
+                return this.umBazaField;
+            }
+            set {
+                this.umBazaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Werks {
+            get {
+                return this.werksField;
+            }
+            set {
+                this.werksField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Lgort {
+            get {
+                return this.lgortField;
+            }
+            set {
+                this.lgortField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class Zmateriale {
+        
+        private string matnrField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Matnr {
+            get {
+                return this.matnrField;
+            }
+            set {
+                this.matnrField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -25310,7 +27357,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -25436,7 +27483,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -25472,7 +27519,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -25560,7 +27607,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -25609,7 +27656,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -25670,7 +27717,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -25705,7 +27752,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -25727,7 +27774,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -25749,7 +27796,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -25771,7 +27818,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -25781,6 +27828,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         private string epDelField;
         
         private string epStatusField;
+        
+        private string epStatusLongField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
@@ -25803,10 +27852,21 @@ namespace LiteSFATestWebService.SAPWebServices {
                 this.epStatusField = value;
             }
         }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string EpStatusLong {
+            get {
+                return this.epStatusLongField;
+            }
+            set {
+                this.epStatusLongField = value;
+            }
+        }
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -25867,7 +27927,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -25915,7 +27975,94 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZPalcant {
+        
+        private Zmateriale[] gtMaterialeField;
+        
+        private ZpalcantRez[] gtRezultatField;
+        
+        private string gvWerksField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
+        public Zmateriale[] GtMateriale {
+            get {
+                return this.gtMaterialeField;
+            }
+            set {
+                this.gtMaterialeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
+        public ZpalcantRez[] GtRezultat {
+            get {
+                return this.gtRezultatField;
+            }
+            set {
+                this.gtRezultatField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvWerks {
+            get {
+                return this.gvWerksField;
+            }
+            set {
+                this.gvWerksField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZPalcantResponse {
+        
+        private Zmateriale[] gtMaterialeField;
+        
+        private ZpalcantRez[] gtRezultatField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
+        public Zmateriale[] GtMateriale {
+            get {
+                return this.gtMaterialeField;
+            }
+            set {
+                this.gtMaterialeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
+        public ZpalcantRez[] GtRezultat {
+            get {
+                return this.gtRezultatField;
+            }
+            set {
+                this.gtRezultatField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26002,7 +28149,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26024,7 +28171,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26033,7 +28180,11 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         private string ipKunnrField;
         
+        private string ipLifnrField;
+        
         private string ipPernrField;
+        
+        private string ipUlStocField;
         
         private string ipWerksField;
         
@@ -26052,12 +28203,34 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string IpLifnr {
+            get {
+                return this.ipLifnrField;
+            }
+            set {
+                this.ipLifnrField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public string IpPernr {
             get {
                 return this.ipPernrField;
             }
             set {
                 this.ipPernrField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string IpUlStoc {
+            get {
+                return this.ipUlStocField;
+            }
+            set {
+                this.ipUlStocField = value;
             }
         }
         
@@ -26086,7 +28259,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26098,6 +28271,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         private string epMacaraField;
         
         private decimal epNrpalField;
+        
+        private ZstEtMarfaPalet[] etMarfaPaletField;
         
         private ZstEtPaleti[] etValpalField;
         
@@ -26137,6 +28312,18 @@ namespace LiteSFATestWebService.SAPWebServices {
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
         [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
+        public ZstEtMarfaPalet[] EtMarfaPalet {
+            get {
+                return this.etMarfaPaletField;
+            }
+            set {
+                this.etMarfaPaletField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
         public ZstEtPaleti[] EtValpal {
             get {
                 return this.etValpalField;
@@ -26148,7 +28335,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26171,7 +28358,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26194,7 +28381,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26229,7 +28416,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26264,7 +28451,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26405,7 +28592,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26455,7 +28642,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26477,7 +28664,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26512,7 +28699,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26717,7 +28904,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26779,7 +28966,64 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZstareCurenta1 {
+        
+        private string pVbelnField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string PVbeln {
+            get {
+                return this.pVbelnField;
+            }
+            set {
+                this.pVbelnField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZstareCurenta1Response {
+        
+        private string epDelField;
+        
+        private string epStatusField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string EpDel {
+            get {
+                return this.epDelField;
+            }
+            set {
+                this.epDelField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string EpStatus {
+            get {
+                return this.epStatusField;
+            }
+            set {
+                this.epStatusField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26801,7 +29045,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -26823,7 +29067,135 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZbapiReservationChange {
+        
+        private ZcomheadTableta isComenziField;
+        
+        private string reservationField;
+        
+        private Bapi2093ResItemChange[] reservationitemsChangedField;
+        
+        private Bapi2093ResItemChangex[] reservationitemsChangedxField;
+        
+        private Bapiret2[] returnField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public ZcomheadTableta IsComenzi {
+            get {
+                return this.isComenziField;
+            }
+            set {
+                this.isComenziField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Reservation {
+            get {
+                return this.reservationField;
+            }
+            set {
+                this.reservationField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
+        public Bapi2093ResItemChange[] ReservationitemsChanged {
+            get {
+                return this.reservationitemsChangedField;
+            }
+            set {
+                this.reservationitemsChangedField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
+        public Bapi2093ResItemChangex[] ReservationitemsChangedx {
+            get {
+                return this.reservationitemsChangedxField;
+            }
+            set {
+                this.reservationitemsChangedxField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
+        public Bapiret2[] Return {
+            get {
+                return this.returnField;
+            }
+            set {
+                this.returnField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZbapiReservationChangeResponse {
+        
+        private Bapi2093ResItemChange[] reservationitemsChangedField;
+        
+        private Bapi2093ResItemChangex[] reservationitemsChangedxField;
+        
+        private Bapiret2[] returnField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
+        public Bapi2093ResItemChange[] ReservationitemsChanged {
+            get {
+                return this.reservationitemsChangedField;
+            }
+            set {
+                this.reservationitemsChangedField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
+        public Bapi2093ResItemChangex[] ReservationitemsChangedx {
+            get {
+                return this.reservationitemsChangedxField;
+            }
+            set {
+                this.reservationitemsChangedxField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
+        public Bapiret2[] Return {
+            get {
+                return this.returnField;
+            }
+            set {
+                this.returnField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -27040,7 +29412,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -27058,6 +29430,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         private string gvCondField;
         
         private string gvCurrencyField;
+        
+        private string gvDatbiField;
         
         private string gvMatnrFreeField;
         
@@ -27152,6 +29526,17 @@ namespace LiteSFATestWebService.SAPWebServices {
             }
             set {
                 this.gvCurrencyField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvDatbi {
+            get {
+                return this.gvDatbiField;
+            }
+            set {
+                this.gvDatbiField = value;
             }
         }
         
@@ -27322,7 +29707,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -28093,7 +30478,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -28617,7 +31002,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -28665,7 +31050,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -28687,7 +31072,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -28748,7 +31133,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -28783,7 +31168,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -28805,7 +31190,7 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -28827,11 +31212,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     public delegate void ZgetInfocvCompletedEventHandler(object sender, ZgetInfocvCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZgetInfocvCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -28853,11 +31238,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     public delegate void ZcalcTrapSiteCompletedEventHandler(object sender, ZcalcTrapSiteCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZcalcTrapSiteCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -28879,11 +31264,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     public delegate void ZcustChLivrareCompletedEventHandler(object sender, ZcustChLivrareCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZcustChLivrareCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -28905,11 +31290,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     public delegate void ZgetKunnrCompletedEventHandler(object sender, ZgetKunnrCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZgetKunnrCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -28931,11 +31316,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     public delegate void ZstareCurentaCompletedEventHandler(object sender, ZstareCurentaCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZstareCurentaCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -28957,11 +31342,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     public delegate void ZcreazaComandaCompletedEventHandler(object sender, ZcreazaComandaCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZcreazaComandaCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -28983,11 +31368,37 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
+    public delegate void ZPalcantCompletedEventHandler(object sender, ZPalcantCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class ZPalcantCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal ZPalcantCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public ZPalcantResponse Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((ZPalcantResponse)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     public delegate void ZcalcTrapCompletedEventHandler(object sender, ZcalcTrapCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZcalcTrapCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -29009,11 +31420,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     public delegate void ZNrPaletiCompletedEventHandler(object sender, ZNrPaletiCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZNrPaletiCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -29035,11 +31446,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     public delegate void ZgetInfoheadcvCompletedEventHandler(object sender, ZgetInfoheadcvCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZgetInfoheadcvCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -29061,11 +31472,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     public delegate void ZmodificaLivrareCompletedEventHandler(object sender, ZmodificaLivrareCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZmodificaLivrareCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -29087,11 +31498,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     public delegate void ZsablonReducereCompletedEventHandler(object sender, ZsablonReducereCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZsablonReducereCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -29113,11 +31524,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     public delegate void ZlivrareCustodieCompletedEventHandler(object sender, ZlivrareCustodieCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZlivrareCustodieCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -29139,11 +31550,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     public delegate void ZretMarfaCompletedEventHandler(object sender, ZretMarfaCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZretMarfaCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -29165,11 +31576,37 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
+    public delegate void ZstareCurenta1CompletedEventHandler(object sender, ZstareCurenta1CompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class ZstareCurenta1CompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal ZstareCurenta1CompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public ZstareCurenta1Response Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((ZstareCurenta1Response)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     public delegate void ZactDiscMaximCompletedEventHandler(object sender, ZactDiscMaximCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZactDiscMaximCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -29191,11 +31628,37 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
+    public delegate void ZbapiReservationChangeCompletedEventHandler(object sender, ZbapiReservationChangeCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class ZbapiReservationChangeCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal ZbapiReservationChangeCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public ZbapiReservationChangeResponse Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((ZbapiReservationChangeResponse)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     public delegate void ZgetPriceCompletedEventHandler(object sender, ZgetPriceCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZgetPriceCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -29217,11 +31680,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     public delegate void ZsdSalesdocumentCreateCompletedEventHandler(object sender, ZsdSalesdocumentCreateCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZsdSalesdocumentCreateCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -29243,11 +31706,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     public delegate void ZextindeClientCompletedEventHandler(object sender, ZextindeClientCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZextindeClientCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -29269,11 +31732,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     public delegate void ZstareComandaCompletedEventHandler(object sender, ZstareComandaCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZstareComandaCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -29295,11 +31758,11 @@ namespace LiteSFATestWebService.SAPWebServices {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     public delegate void ZCalcStocCompletedEventHandler(object sender, ZCalcStocCompletedEventArgs e);
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.7.3056.0")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ZCalcStocCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {

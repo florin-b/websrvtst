@@ -209,6 +209,121 @@ namespace DistributieTESTWebServices
 
 
 
+        public string getArticoleBorderouWS(string nrBorderou, string codClient, string codAdresa)
+        {
+
+            List<ArticoleFactura> listArticole = new List<ArticoleFactura>();
+            SapWebService.ZARTICOLE_CT webService = new SapWebService.ZARTICOLE_CT();
+
+            System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Utils.getUser(), Utils.getPass());
+            webService.Credentials = nc;
+            webService.Timeout = 300000;
+
+            SapWebService.ZarticoleCt1 inParam = new SapWebService.ZarticoleCt1();
+
+            inParam.Nrbord = nrBorderou;
+            inParam.Codclient = codClient;
+            inParam.Codadresa = codAdresa;
+            inParam.Articole = new SapWebService.ZarticoleCt[0];
+
+            SapWebService.ZarticoleCtResponse response = webService.ZarticoleCt(inParam);
+
+            SapWebService.ZarticoleCt[] articole = response.Articole;
+
+            for (int i = 0; i < articole.Length; i++)
+            {
+                ArticoleFactura unArticol = new ArticoleFactura();
+
+                unArticol.nume = Regex.Replace(articole[i].Textmat, @"[!]|[#]|[@@]|[,]", " ");
+                unArticol.cantitate = articole[i].Cantitate.ToString();
+                unArticol.umCant = articole[i].Umcant;
+                unArticol.departament = articole[i].Spart;
+                unArticol.greutate = articole[i].Greutbruta.ToString();
+                unArticol.umGreutate = articole[i].Umgreut;
+                unArticol.tipOperatiune = articole[i].Tip;
+                listArticole.Add(unArticol);
+            }
+
+            webService.Dispose();
+
+            return SerUtils.serializeObject(listArticole);
+
+        }
+
+
+
+        public string getArticoleBordMathaus()
+        {
+
+
+          
+         
+            
+
+            /*
+
+
+
+            BordSapService.ZWS_CANT_BORD bordServ = new BordSapService.ZWS_CANT_BORD();
+
+            System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Utils.getUser(), Utils.getPass());
+            bordServ.Credentials = nc;
+            bordServ.Timeout = 300000;
+
+            BordSapService.Z_CANT_BORD inParam = new BordSapService.Z_CANT_BORD();
+
+            inParam.GV_NRBORD = "0002232903";
+            inParam.GV_ADR = "9009385330";
+            inParam.GT_RESULT = new BordSapService.ZCANTBORD[0];
+
+
+            BordSapService.Z_CANT_BORDResponse response = bordServ.Z_CANT_BORD(inParam);
+
+            int sz =  response.GT_RESULT.Length;
+
+            */
+
+            return "!";
+        }
+
+
+        public string getArticoleBorderouMathaus(string codBorderou, string codAdresa)
+        {
+
+            List<ArticoleBorderou> listArticole = new List<ArticoleBorderou>();
+
+            BordSapService.ZWS_CANT_BORD bordServ = new BordSapService.ZWS_CANT_BORD();
+
+            System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Utils.getUser(), Utils.getPass());
+            bordServ.Credentials = nc;
+            bordServ.Timeout = 300000;
+
+            BordSapService.Z_CANT_BORD inParam = new BordSapService.Z_CANT_BORD();
+
+            inParam.GV_NRBORD = codBorderou;
+            inParam.GV_ADR = codAdresa;
+            inParam.GT_RESULT = new BordSapService.ZCANTBORD[0];
+
+
+            BordSapService.Z_CANT_BORDResponse response = bordServ.Z_CANT_BORD(inParam);
+
+            BordSapService.ZCANTBORD[] articole = response.GT_RESULT;
+
+
+            for (int i=0;i< articole.Length; i++)
+            {
+                ArticoleBorderou art = new ArticoleBorderou();
+                art.nume = articole[i].ARKTX;
+                art.cantitate = articole[i].CANTITATE.ToString();
+                art.um = articole[i].VRKME;
+                listArticole.Add(art);
+            }
+
+            return new JavaScriptSerializer().Serialize(listArticole);
+
+        }
+
+
         public string getArticoleBorderou(string nrBorderou, string codClient, string codAdresa)
         {
 
@@ -310,7 +425,7 @@ namespace DistributieTESTWebServices
             try
             {
 
-                string connectionString = DatabaseConnections.ConnectToProdEnvironment();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -628,6 +743,138 @@ namespace DistributieTESTWebServices
 
 
             return serializedResult;
+        }
+
+
+
+        public string getArticoleBorderouDistributie(string nrBorderou, string codClient, string codAdresa)
+        {
+
+            List<ArticoleFactura> listArticole = new List<ArticoleFactura>();
+
+            BordDistService.ZARTICOLE_BORD bordServ = new BordDistService.ZARTICOLE_BORD();
+
+            System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Utils.getUser(), Utils.getPass());
+            bordServ.Credentials = nc;
+            bordServ.Timeout = 300000;
+
+            BordDistService.ZarticoleBord inParam = new BordDistService.ZarticoleBord();
+
+            inParam.Nrbord = nrBorderou;
+            inParam.Codadresa = codAdresa;
+            inParam.Codclient = codClient;
+            inParam.Articole = new BordDistService.ZarticoleCt[0];
+
+            BordDistService.ZarticoleBordResponse response = bordServ.ZarticoleBord(inParam);
+
+            BordDistService.ZarticoleCt[] articole = response.Articole;
+
+
+            for (int i = 0; i < articole.Length; i++)
+            {
+                ArticoleFactura art = new ArticoleFactura();
+                art.nume = Regex.Replace(articole[i].Textmat, @"[!]|[#]|[@@]|[,]", " ");  
+                art.cantitate = articole[i].Cantitate.ToString();
+                art.umCant = articole[i].Umcant;
+                art.departament = articole[i].Spart;
+                art.greutate = ((int)articole[i].Greutbruta).ToString();
+                art.umGreutate = articole[i].Umgreut;
+                art.tipOperatiune = articole[i].Tip;
+                listArticole.Add(art);
+            }
+
+            return new JavaScriptSerializer().Serialize(listArticole);
+
+        }
+
+
+
+        public string getArticoleBorderouDistributieDB(string nrBorderou, string codClient, string codAdresa)
+        {
+
+            List<ArticoleFactura> listArticole = new List<ArticoleFactura>();
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+
+                string sqlString = " select poz.ARKTX as textmat, a.CANT_AMB as cantitate,den.mseh3 as umcant, poz.spart, a.CANT_AMB* a.GRBPUAMB as greutbruta, a.GEWEI as umgreut, 'des' tip " +
+                            " from sapprd.zdocumentebord b join sapprd.vttp p on p.tknum = b.nr_bord " +
+                            " join sapprd.vbpa pa on pa.mandt = p.mandt and pa.vbeln = p.vbeln and pa.KUNNR = b.cod and pa.adrnr = b.adresa " +
+                            " join sapprd.lips poz on poz.mandt = p.mandt and poz.vbeln = p.vbeln " +
+                            " join sapprd.zlips_amb a on a.mandt = poz.mandt and a.vbeln = poz.vbeln and a.posnr = poz.posnr " +
+                            " JOIN SAPPRD.t006a den on den.mandt = P.mandt and den.MSEHI = a.UM_AMB " +
+                            " where P.mandt = '900' and den.spras = '4' and b.TIPCOD = 'C' and pa.parvw = 'WE' " +
+                            " and poz.matnr not in(select distinct matnr from sapprd.zarticol_trap where mandt = '900') " +
+                            " and b.nr_bord =:nrBord and b.cod =:codClient " +
+                            " and b.adresa =:codAdresa " +
+                            " UNION " +
+                            " select poz.ARKTX as textmat, a.CANT_AMB as cantitate,den.mseh3 as umcant, poz.spart, a.CANT_AMB* a.GRBPUAMB as greutbruta, a.GEWEI as umgreut, 'inc' tip " +
+                            " from sapprd.zdocumentebord b join sapprd.vttp p on p.tknum = b.nr_bord " +
+                            " join sapprd.likp l on l.mandt = p.mandt and l.vbeln = p.vbeln and l.vstel = b.cod " +
+                            " join sapprd.lips poz on poz.mandt = p.mandt and poz.vbeln = p.vbeln " +
+                            " join sapprd.zlips_amb a on a.mandt = poz.mandt and a.vbeln = poz.vbeln and a.posnr = poz.posnr " +
+                            " JOIN SAPPRD.t006a den on den.mandt = P.mandt and den.MSEHI = a.UM_AMB " +
+                            " where P.mandt = '900' and den.spras = '4' and b.TIPCOD = 'F' " +
+                            " and poz.matnr not in(select distinct matnr from sapprd.zarticol_trap where mandt = '900') " +
+                            " and b.nr_bord =:nrBord and b.cod =:codClient  and b.adresa =:codAdresa ";
+
+
+
+
+                string connectionString = DatabaseConnections.ConnectToProdEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+                cmd.CommandText = sqlString;
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":nrbord", OracleType.VarChar, 36).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = nrBorderou;
+
+                cmd.Parameters.Add(":codclient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = codClient;
+
+                cmd.Parameters.Add(":codadresa", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = codAdresa;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        ArticoleFactura unArticol = new ArticoleFactura();
+                        unArticol.nume = Regex.Replace(oReader.GetString(0), @"[!]|[#]|[@@]|[,]", " ");
+                        unArticol.cantitate = oReader.GetDouble(1).ToString();
+                        unArticol.umCant = oReader.GetString(2);
+                        unArticol.departament = oReader.GetString(3);
+                        unArticol.greutate = ((int)oReader.GetDouble(4)).ToString();
+                        unArticol.umGreutate = oReader.GetString(5);
+                        unArticol.tipOperatiune = oReader.GetString(6);
+                        listArticole.Add(unArticol);
+                    }
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+
+
+            return SerUtils.serializeObject(listArticole);
         }
 
 

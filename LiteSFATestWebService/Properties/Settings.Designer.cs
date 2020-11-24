@@ -37,8 +37,8 @@ namespace LiteSFATestWebService.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/zwbs_zintrarimarfa/900/zwb" +
-            "s_zintrarimarfa/zwbs_zintrarimarfa")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zwbs_zintrarimarfa/900/zwbs" +
+            "_zintrarimarfa/zwbs_zintrarimarfa")]
         public string LiteSFATestWebService_WebNecesar1_ZWBS_ZNECESAR1Service {
             get {
                 return ((string)(this["LiteSFATestWebService_WebNecesar1_ZWBS_ZNECESAR1Service"]));
@@ -48,8 +48,8 @@ namespace LiteSFATestWebService.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/zclp_webservice/900/zclp_w" +
-            "ebservice/zclp_webservice")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zclp_webservice/900/zclp_we" +
+            "bservice/zclp_webservice")]
         public string LiteSFATestWebService_SAPWebServiceCLP_ZCLP_WEBSERVICEService {
             get {
                 return ((string)(this["LiteSFATestWebService_SAPWebServiceCLP_ZCLP_WEBSERVICEService"]));
@@ -80,8 +80,8 @@ namespace LiteSFATestWebService.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/zwbs_semiactivi/900/zwbs_s" +
-            "emiactivi/zwbs_semiactivi")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zwbs_semiactivi/900/zwbs_se" +
+            "miactivi/zwbs_semiactivi")]
         public string LiteSFATestWebService_ClientiSemiactivi_ZWBS_SEMIACTIVI {
             get {
                 return ((string)(this["LiteSFATestWebService_ClientiSemiactivi_ZWBS_SEMIACTIVI"]));
@@ -102,8 +102,8 @@ namespace LiteSFATestWebService.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/ztbl_webservice/900/ztbl_w" +
-            "ebservice/ztbl_webservice")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/ztbl_webservice/900/ztbl_we" +
+            "bservice/ztbl_webservice")]
         public string LiteSFATestWebService_SAPWebServices_ZTBL_WEBSERVICE {
             get {
                 return ((string)(this["LiteSFATestWebService_SAPWebServices_ZTBL_WEBSERVICE"]));
@@ -113,8 +113,8 @@ namespace LiteSFATestWebService.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zfg_instr_plata/900/zfg_ins" +
-            "tr_plata/zfg_instr_plata")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/zfg_instr_plata/900/zfg_in" +
+            "str_plata/zfg_instr_plata")]
         public string LiteSFATestWebService_PlataNeincasate_ZFG_INSTR_PLATA {
             get {
                 return ((string)(this["LiteSFATestWebService_PlataNeincasate_ZFG_INSTR_PLATA"]));
@@ -168,11 +168,22 @@ namespace LiteSFATestWebService.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zws_cl_fact_avsd/900/zws_cl" +
+        [global::System.Configuration.DefaultSettingValueAttribute("http://sap-prd6a.arabesque.ro:8036/sap/bc/srt/rfc/sap/zws_cl_fact_avsd/900/zws_cl" +
             "_fact_avsd/zws_cl_fact_avsd")]
         public string LiteSFATestWebService_SapWSPierderiVanzri_ZWS_CL_FACT_AVSD {
             get {
                 return ((string)(this["LiteSFATestWebService_SapWSPierderiVanzri_ZWS_CL_FACT_AVSD"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://sap-prd6a.arabesque.ro:8036/sap/bc/srt/rfc/sap/ztbl_webservice/900/ztbl_we" +
+            "bservice/ztbl_webservice")]
+        public string LiteSFATestWebService_SAPWebServicesPRD_ZTBL_WEBSERVICE {
+            get {
+                return ((string)(this["LiteSFATestWebService_SAPWebServicesPRD_ZTBL_WEBSERVICE"]));
             }
         }
     }

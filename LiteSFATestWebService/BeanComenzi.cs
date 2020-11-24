@@ -19,6 +19,7 @@ namespace LiteSFATestWebService
         public string numeSofer;
         public string telSofer;
         public string stareComanda;
+        public string telClient;
 
     }
 

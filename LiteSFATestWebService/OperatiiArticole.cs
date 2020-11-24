@@ -85,11 +85,10 @@ namespace LiteSFATestWebService
                                   " (select nvl( " +
                                   " (select 1 from sapprd.marm m where m.mandt = '900' and m.matnr = b.cod and m.meinh = 'EPA'),-1) palet from dual) palet, " +
                                   " b.categ_mat, b.lungime " +
-                                  " from sapprd.eina e, articole b, sintetice c where e.mandt = '900' and e.matnr = b.cod and b.blocat <> '01' and   " +
+                                  " from sapprd.eina e, articole b, sintetice c where e.mandt = '900' and e.matnr = b.cod and b.blocat <> '01' and e.loekz <> 'X' and   " +
                                   " c.cod = b.sintetic and e.lifnr=:furniz and  " + conditieDepart  + conditie + " ) x where rownum < 50 order by x.nume ";
 
-              
-                
+
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -329,6 +328,123 @@ namespace LiteSFATestWebService
         }
 
 
+        public string getListArticoleCustodie(string codClient, string filiala, string departament)
+        {
+
+            string serializedResult;
+            List<ArticolCautare> listArticole = new List<ArticolCautare>();
+
+            OracleConnection connection = new OracleConnection();
+            OracleDataReader oReader = null;
+
+            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+            connection.ConnectionString = connectionString;
+            connection.Open();
+
+            OracleCommand cmd = connection.CreateCommand();
+
+            string condDepart = "";
+
+            if (!departament.Equals("00"))
+                condDepart = " and substr(m.spart,0,2) =:depart ";
+
+            try
+            {
+
+                cmd.CommandText = " select decode(length(y.matnr), 18, substr(y.matnr, -8), y.matnr) codart, a.nume, a.sintetic, b.cod_nivel1, " +
+                                  " a.umvanz10, a.umvanz, nvl(a.tip_mat, ' '),  b.cod nume_sint, " +
+                                  " a.grup_vz, decode(trim(a.dep_aprobare), '', '00', a.dep_aprobare)  dep_aprobare, " +
+                                  " (select nvl((select 1 from sapprd.marm m where m.mandt = '900' " +
+                                  " and m.matnr = a.cod and m.meinh = 'EPA'),-1) palet from dual) palet, " +
+                                  " -1 stoc , categ_mat, lungime, y.kulab , " +
+                                  " nvl((select sum(d.lfimg) from sapprd.lips d, sapprd.vbup p, sapprd.likp l " +
+                                  " where d.mandt = '900' and d.sobkz = 'W'  and(d.werks = :filiala1 or d.werks = :filiala2) " +
+                                  " and d.mandt = p.mandt and d.vbeln = p.vbeln and d.posnr = p.posnr and d.mandt = l.mandt and d.vbeln = l.vbeln " +
+                                  " and l.kunnr = y.kunnr and p.WBSTA <> 'C' and d.matnr = y.matnr),0) kulab " +
+                                  " from (select k.kunnr, k.matnr, sum(k.kulab) kulab, k.werks " + 
+                                  " from sapprd.MSKU k, sapprd.mara m " +
+                                  " where k.mandt = '900' and k.kunnr = :codClient and sobkz = 'W' and kulab > 0 " + 
+                                  " and k.mandt = m.mandt and k.matnr = m.matnr " +  condDepart +
+                                  " group by k.matnr, k.werks, k.kunnr) y, articole a, sintetice b where a.cod = y.matnr and a.sintetic = b.cod ";
+
+
+
+
+                cmd.CommandType = CommandType.Text;
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":filiala1", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = getFilialaCustodie(filiala);
+
+                cmd.Parameters.Add(":filiala2", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = getFilialaCustodie2(filiala);
+
+                cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = codClient;
+
+
+                int posParam = 3;
+                if (!departament.Equals("00"))
+                {
+                    cmd.Parameters.Add(":depart", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
+                    cmd.Parameters[posParam].Value = departament.Substring(0,2);
+                    posParam++;
+                }
+
+
+                oReader = cmd.ExecuteReader();
+
+                ArticolCautare articol;
+                string strCat;
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        articol = new ArticolCautare();
+                        articol.cod = oReader.GetString(0);
+                        articol.nume = oReader.GetString(1);
+                        articol.sintetic = oReader.GetString(2);
+                        articol.nivel1 = oReader.GetString(3);
+                        articol.umVanz10 = oReader.GetString(4);
+                        articol.umVanz = oReader.GetString(8).Substring(0, 2).Equals("11") ? oReader.GetString(5) : oReader.GetString(4);
+                        articol.tipAB = oReader.GetString(6);
+                        articol.depart = oReader.GetString(8).Substring(0, 2);
+                        articol.departAprob = oReader.GetString(9);
+                        articol.umPalet = oReader.GetInt32(10).ToString();
+                        articol.stoc = oReader.GetDouble(11).ToString();
+
+                        strCat = oReader.GetString(12);
+
+                        if (strCat.ToUpper().Equals("AM") || strCat.ToUpper().Equals("PA"))
+                            strCat = "AM";
+                        else
+                            strCat = " ";
+
+                        articol.categorie = strCat;
+                        articol.lungime = oReader.GetDouble(13).ToString();
+
+                        listArticole.Add(articol);
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            serializedResult = serializer.Serialize(listArticole);
+
+            return serializedResult;
+        }
+
         public string getListArticoleStatistic(string codClient, string filiala, string departament)
         {
 
@@ -554,7 +670,7 @@ namespace LiteSFATestWebService
                                     " b.cod nume_sint,  " +
                                     " decode(a.grup_vz,' ','-1', a.grup_vz), decode(trim(a.dep_aprobare),'','00', a.dep_aprobare)  dep_aprobare, " +
                                     " (select nvl( " +
-                                    " (select 1 from sapprd.marm m where m.mandt = '900' and m.matnr = a.cod and m.meinh = 'EPA'),-1) palet from dual) palet " +
+                                    " (select 1 from sapprd.mara m where m.mandt = '900' and m.matnr = a.cod and m.categ_mat in ('PA','AM')),-1) palet from dual) palet " +
                                     valStoc + ", categ_mat, lungime " +
                                     " from articole a, " +
                                     " sintetice b " + condTabCodBare + " where a.sintetic = b.cod and a.cod != 'MAT GENERIC PROD' and a.blocat <> '01' and " + condCautare + condDepart +
@@ -573,7 +689,7 @@ namespace LiteSFATestWebService
                                     " b.cod nume_sint,  " +
                                     " decode(a.grup_vz,' ','-1', a.grup_vz), decode(trim(a.dep_aprobare),'','00', a.dep_aprobare)  dep_aprobare, " +
                                     " (select nvl( " +
-                                    " (select 1 from sapprd.marm m where m.mandt = '900' and m.matnr = a.cod and m.meinh = 'EPA'),-1) palet from dual) palet " +
+                                    " (select 1 from sapprd.mara m where m.mandt = '900' and m.matnr = a.cod and m.categ_mat in ('PA','AM')),-1) palet from dual) palet " +
                                     valStoc + ", categ_mat, lungime " +
                                     " from articole a, " +
                                     " sintetice b, sapprd.marc c " + condTabCodBare + " where c.mandt = '900' and c.matnr = a.cod and c.werks = '" + condFil + "' and c.mmsta <> '01' " +
@@ -593,7 +709,7 @@ namespace LiteSFATestWebService
                     cmd.CommandText = " select distinct decode(length(a.cod),18,substr(a.cod,-8),a.cod) codart,a.nume, a.sintetic, b.cod_nivel1, a.umvanz10, a.umvanz, nvl(a.tip_mat,' '), b.cod nume_sint, " +
                                       " decode(a.grup_vz,' ','-1', a.grup_vz), decode(trim(a.dep_aprobare),'','00', a.dep_aprobare), " +
                                       " (select nvl( " +
-                                      " (select 1 from sapprd.marm m where m.mandt = '900' and m.matnr = a.cod and m.meinh = 'EPA'),-1) palet from dual) palet " +
+                                      " (select 1 from sapprd.mara m where m.mandt = '900' and m.matnr = a.cod and m.categ_mat in ('PA','AM')),-1) palet from dual) palet " +
                                       valStoc + ", categ_mat, lungime " +
                                       " from articole a, " +
                                       " sintetice b, sapprd.marc c " + condTabCodBare + " where c.mandt = '900' and c.matnr = a.cod and c.werks = '" + filGed + "' and c.mmsta <> '01'" +
@@ -602,6 +718,7 @@ namespace LiteSFATestWebService
                     
 
                 }
+
 
                 cmd.CommandType = CommandType.Text;
 
@@ -852,7 +969,7 @@ namespace LiteSFATestWebService
 
         public string getPretGed(string parametruPret)
         {
-           
+
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             ParametruPretGed paramPret = serializer.Deserialize<ParametruPretGed>(parametruPret);
@@ -895,9 +1012,9 @@ namespace LiteSFATestWebService
                 inParam.Mp = paramPret.metodaPlata;
                 inParam.Dzterm = paramPret.termenPlata;
                 inParam.Regio = paramPret.codJudet;
-                inParam.City = paramPret.localitate;
-                inParam.UlStoc = paramPret.filialaAlternativa;
-
+                inParam.City = paramPret.localitate == null ? " " : paramPret.localitate.Length <= 25 ? paramPret.localitate : paramPret.localitate.Substring(0,25);
+                inParam.UlStoc = paramPret.filialaClp != null ? paramPret.filialaClp : " ";
+                
 
 
                 SAPWebServices.ZgetPriceResponse outParam = webService.ZgetPrice(inParam);
@@ -953,6 +1070,7 @@ namespace LiteSFATestWebService
                 pretArticolGed.impachetare = impachetare;
                 pretArticolGed.pretFaraTva = ((outParam.GvNetwrFtva / outParam.GvCant) * outParam.Multiplu).ToString();
                 pretArticolGed.valTrap = outParam.ValTrap.ToString();
+                pretArticolGed.dataExp = outParam.GvDatbi;
 
                 //pretArticolGed.valTrap = "150";
 
@@ -1419,6 +1537,8 @@ namespace LiteSFATestWebService
         public string getStocArticole(string listArticole)
         {
 
+            ErrorHandling.sendErrorToMail("getStocArticole: " + listArticole);
+
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             List<ArticolStoc> listArticoleStoc = serializer.Deserialize<List<ArticolStoc>>(listArticole);
 
@@ -1442,16 +1562,31 @@ namespace LiteSFATestWebService
                     resultArt.cod = getCleanCodArt(articol.cod);
                     resultArt.depozit = articol.depozit;
                     resultArt.stoc = Double.Parse(str[0]);
+
+                    if (articol.um != null && !articol.um.ToLower().Equals(str[1].ToLower()))
+                        resultArt.stoc = getStocUmVanz(articol.cod, resultArt.stoc, articol.um, str[1]);
+
                 }
                 resultList.Add(resultArt);
             }
 
             string retVal = serializer.Serialize(resultList);
 
-
             return retVal;
 
         }
+
+
+
+        private double getStocUmVanz(string codArticol, double cantitate, string umVanz, string umStoc)
+        {
+            double cantUmVanz = cantitate;
+            string[] factConv = new Service1().getArtFactConvUM(codArticol, umVanz).Split('#');
+            cantUmVanz = cantitate / (Double.Parse(factConv[0]) / Double.Parse(factConv[1]));
+            return cantUmVanz;
+        }
+
+
 
         public string getCodBare(string codArticol)
         {
@@ -1495,6 +1630,8 @@ namespace LiteSFATestWebService
                     }
 
                 }
+                else
+                    coduriBare = "Nedefinit";
 
                 oReader.Close();
                 oReader.Dispose();
@@ -1520,6 +1657,7 @@ namespace LiteSFATestWebService
         public string getStocCustodie(string codArticol, string codClient, string filiala)
         {
 
+            
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand();
             OracleDataReader oReader = null;
@@ -1536,16 +1674,6 @@ namespace LiteSFATestWebService
 
                 cmd = connection.CreateCommand();
 
-                /*
-                cmd.CommandText = " select sum(kulab), 'BUC' um_art from " + 
-                                 " (select k.matnr, k.kulab from sapprd.MSKU k " + 
-                                 " where k.mandt = '900' and k.kunnr = :codClient and sobkz = 'W' and kulab > 0 and matnr = :codArticol " + 
-                                 " union all " +
-                                 " select d.matnr, -1 * (d.lfimg)from sapprd.lips d, sapprd.vbup p, sapprd.likp l " +
-                                 " where d.mandt = '900' and d.sobkz = 'W' and d.matnr = :codArticol and (d.werks =:filiala or d.werks =:filiala2) " + 
-                                 " and d.mandt = p.mandt and d.vbeln = p.vbeln and d.posnr = p.posnr and d.mandt = l.mandt and d.vbeln = l.vbeln " +
-                                 " and l.kunnr =:codClient and p.WBSTA <> 'C')group by matnr ";
-                */
 
                 cmd.CommandText = " select sum(kulab), m.meins um_art from " +
                                   " (select k.matnr, k.kulab from sapprd.MSKU k " +
@@ -1556,7 +1684,6 @@ namespace LiteSFATestWebService
                                   " and d.mandt = p.mandt and d.vbeln = p.vbeln and d.posnr = p.posnr and d.mandt = l.mandt and d.vbeln = l.vbeln " +
                                   " and l.kunnr =:codClient and p.WBSTA <> 'C') y, sapprd.mara m where m.mandt = '900' and y.matnr = m.matnr " +
                                   " group by y.matnr, m.meins  ";
-
 
 
                 cmd.CommandType = CommandType.Text;
@@ -1589,6 +1716,7 @@ namespace LiteSFATestWebService
                     umArt = oReader.GetString(1);
                 }
 
+
             }
             catch(Exception ex)
             {
@@ -1602,18 +1730,201 @@ namespace LiteSFATestWebService
 
             stocResponse = stocArt.ToString()  + "#" + umArt + "#1#";
 
+
+
+
             return stocResponse;
 
         }
 
+
+
+        public string getStocMathaus(string codArt, string filiala, string depozit, string depart, string catMathaus, string filialeMathaus)
+        {
+
+
+            string[] toateMathaus = { "GL20", "AG20", "BU20", "BH20", "CT20", "DJ20", "IS20" };
+
+            List<string> listFilMathaus = new List<string> { "GL20", "AG20", "BU20", "BH20", "CT20", "DJ20", "IS20" };
+            int nrFilialeMathaus = 2;
+
+            if (filialeMathaus.Equals(String.Empty) && !listFilMathaus.Contains(filiala))
+                listFilMathaus.Insert(0, filiala);
+            else if (filialeMathaus.Split(',').Length == nrFilialeMathaus)
+            {
+                listFilMathaus = new List<string>();
+                listFilMathaus.AddRange(filialeMathaus.Split(','));
+            }
+
+
+            string stocMag = "";
+            string localMag ;
+            string tempMag;
+
+            List<StocMathaus> listMathaus = new List<StocMathaus>();
+
+
+            if (catMathaus.Equals("S"))
+            {
+
+                foreach (string mathaus in listFilMathaus)
+                {
+                    tempMag = getUnitLogGed(mathaus);
+
+                    localMag = new Service1().getStocDepozit(codArt, mathaus, depozit, depart);
+
+                    if (Double.Parse(localMag.Split('#')[0]) > 0)
+                    {
+
+                        {
+                            StocMathaus stocMathaus = new StocMathaus();
+                            stocMathaus.filiala = tempMag;
+                            stocMathaus.stoc = Double.Parse(localMag.Split('#')[0]);
+                            stocMathaus.strService = "@" + localMag + tempMag;
+                            listMathaus.Add(stocMathaus);
+                        }
+
+                    }
+
+                }
+
+            }
+
+
+            List<StocMathaus> sortedStocMathaus = listMathaus.OrderByDescending(order => order.stoc).ToList();
+
+            if (filialeMathaus.Equals(String.Empty))
+            {
+                foreach(StocMathaus stocMathaus in listMathaus)
+                {
+                    stocMag += stocMathaus.strService ;
+                }
+            }
+            else if (filialeMathaus.Split(',').Length < nrFilialeMathaus)
+            {
+
+                int localFilialeMat = nrFilialeMathaus;
+                bool isLocalFil = false;
+
+                foreach (StocMathaus stocMathaus in sortedStocMathaus)
+                {
+                    if (filiala.Equals(stocMathaus.filiala))
+                    {
+                        stocMag += stocMathaus.strService ;
+                        localFilialeMat--;
+                        isLocalFil = true;
+                    }
+
+                    if (filialeMathaus.Contains(stocMathaus.filiala) && !filiala.Equals(stocMathaus.filiala) && localFilialeMat > 0)
+                    {
+                        stocMag += stocMathaus.strService ;
+                        localFilialeMat--;
+                    }
+
+                }
+
+                while (localFilialeMat > 0)
+                {
+                    if (isLocalFil)
+                    {
+                        foreach (StocMathaus stocMathaus in sortedStocMathaus)
+                        {
+                            if (!filiala.Equals(stocMathaus.filiala) && localFilialeMat > 0)
+                            {
+                                stocMag += stocMathaus.strService;
+                                localFilialeMat--;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (StocMathaus stocMathaus in sortedStocMathaus)
+                        {
+                            if (!filialeMathaus.Contains(stocMathaus.filiala) && localFilialeMat > 0)
+                            {
+                                stocMag += stocMathaus.strService;
+                                localFilialeMat--;
+                            }
+                        }
+                    }
+
+                }
+
+            }
+            else if (filialeMathaus.Split(',').Length == nrFilialeMathaus)
+            {
+                foreach (StocMathaus stocMathaus in listMathaus)
+                {
+                    if (filialeMathaus.Contains(stocMathaus.filiala))
+                    {
+                        stocMag += stocMathaus.strService;
+                    }
+                }
+            }
+
+
+            stocMag = stocMag.Substring(1);
+
+            if (!stocMag.Contains(filiala))
+                stocMag += "@0#" + stocMag.Split('@')[0].Split('#')[1] + "#1#" + filiala;
+
+            ErrorHandling.sendErrorToMail("getStocMathaus: " + codArt + ":" + filiala + ":" + depozit + ":" + depart + ":" + catMathaus + " , " + stocMag + " , " + filialeMathaus);
+
+            return stocMag;
+        }
+
+
+        public string getInfoPretMathaus(string parametruPret, string cantitati)
+        {
+
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            string infoRes = "";
+
+            ParametruPretGed paramPret = serializer.Deserialize<ParametruPretGed>(parametruPret);
+            string[] cantArt = cantitati.Split('#');
+
+            foreach(string cant in cantArt)
+            {
+                paramPret.cantitate = cant;
+
+                if (paramPret.articol.Length == 8)
+                    paramPret.articol = "0000000000" + paramPret.articol;
+
+                string serPret = serializer.Serialize(paramPret);
+
+                if (infoRes.Equals(String.Empty))
+                    infoRes = getPretGed(serPret);
+                else
+                    infoRes += "#" + getPretGed(serPret);
+
+            }
+
+            return infoRes;
+        }
+
+
         private static string getFilialaCustodie(string filiala)
         {
-            return filiala.Substring(0, 2) + "11" ;
+            if (filiala.Equals("BU10"))
+                return "B101";
+            else if (filiala.Equals("BU11"))
+                return "B111";
+            else if (filiala.Equals("BU12"))
+                return "B121";
+            else
+                return filiala.Substring(0, 2) + "11";
         }
 
         private static string getFilialaCustodie2(string filiala)
         {
-            return filiala.Substring(0, 2) + "12";
+            if (filiala.Equals("BU10"))
+                return "B101";
+            else if (filiala.Equals("BU11"))
+                return "B111";
+            else if (filiala.Equals("BU12"))
+                return "B121";
+            else
+                return filiala.Substring(0, 2) + "12";
         }
 
 
@@ -1625,7 +1936,10 @@ namespace LiteSFATestWebService
                 return codArt;
         }
 
-
+        private string getUnitLogGed(string untiLog)
+        {
+            return untiLog.Substring(0, 2) + "2" + untiLog.Substring(3, 1);
+        }
 
 
         public static bool isArticolExceptie02(OracleConnection connection, string codArticol)

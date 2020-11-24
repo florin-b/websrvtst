@@ -19,7 +19,7 @@ namespace LiteSFATestWebService
             string depArt = "";
             string umArt = "";
             float cant = 0;
-            string condFil1 = "", condFil2 = "", cmpVal = "", filGed = "", sinteticArt = ""; ;
+            string condFil1 = "", condFil2 = "", cmpVal = "", filGed = "", sinteticArt = "", filWood = "" ;
             string showStocVal_ = "1";
 
             if (filiala == "BU")
@@ -30,8 +30,9 @@ namespace LiteSFATestWebService
             else
             {
                 filGed = filiala.Substring(0, 2) + "2" + filiala.Substring(3, 1);
-                condFil1 = " and m.werks in ('" + filiala + "','" + filGed + "')";
-                condFil2 = " and e.werks in ('" + filiala + "','" + filGed + "')";
+                filWood = filiala.Substring(0, 2) + "4" + filiala.Substring(3, 1);
+                condFil1 = " and m.werks in ('" + filiala + "','" + filGed + "','" + filWood + "')";
+                condFil2 = " and e.werks in ('" + filiala + "','" + filGed + "','" + filWood + "')";
             }
 
             try

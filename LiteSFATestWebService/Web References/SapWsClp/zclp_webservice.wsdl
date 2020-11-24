@@ -494,10 +494,10 @@
   </wsdl:binding>
   <wsdl:service name="ZCLP_WEBSERVICE">
     <wsdl:port name="ZCLP_WEBSERVICE" binding="tns:ZCLP_WEBSERVICE">
-      <soap:address location="http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/zclp_webservice/900/zclp_webservice/zclp_webservice" />
+      <soap:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zclp_webservice/900/zclp_webservice/zclp_webservice" />
     </wsdl:port>
     <wsdl:port name="ZCLP_WEBSERVICE_soap12" binding="tns:ZCLP_WEBSERVICE_soap12">
-      <wsoap12:address location="http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/zclp_webservice/900/zclp_webservice/zclp_webservice" />
+      <wsoap12:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zclp_webservice/900/zclp_webservice/zclp_webservice" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

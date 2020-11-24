@@ -6,7 +6,7 @@ using LiteSFATestWebService.SMSService;
 using System.Data.OracleClient;
 using System.Data.Common;
 using System.Data;
-
+using System.Net;
 
 namespace LiteSFATestWebService
 {
@@ -47,6 +47,8 @@ namespace LiteSFATestWebService
             List<String> listTelefoane = getListNrTelefon(tipUser, filiala);
             System.Net.ServicePointManager.Expect100Continue = false;
             string smsMessage = getSmsMessage(tipUser);
+
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
             if (listTelefoane.Count > 0)
             {

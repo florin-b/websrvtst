@@ -32,5 +32,38 @@ namespace DistributieTESTWebServices.Properties {
                 return ((string)(this["DistributieTESTWebServices_SMSService_SMSServiceService"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/zarticole_ct/900/zarticole" +
+            "_ct/zarticole_ct")]
+        public string DistributieTESTWebServices_SapWebService_ZARTICOLE_CT {
+            get {
+                return ((string)(this["DistributieTESTWebServices_SapWebService_ZARTICOLE_CT"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zws_cant_bord/900/zws_cant_" +
+            "bord/zws_cant_bord")]
+        public string DistributieTESTWebServices_BordSapService_ZWS_CANT_BORD {
+            get {
+                return ((string)(this["DistributieTESTWebServices_BordSapService_ZWS_CANT_BORD"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://sap-prd4a.arabesque.ro:8034/sap/bc/srt/rfc/sap/zarticole_bord/900/zarticol" +
+            "e_bord/zarticole_bord")]
+        public string DistributieTESTWebServices_BordDistService_ZARTICOLE_BORD {
+            get {
+                return ((string)(this["DistributieTESTWebServices_BordDistService_ZARTICOLE_BORD"]));
+            }
+        }
     }
 }

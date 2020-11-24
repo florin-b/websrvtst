@@ -13,10 +13,11 @@ namespace LiteSFATestWebService
     public class Preturi
     {
 
-        public string getPret(string client, string articol, string cantitate, string depart, string um, string ul, string tipUser, string depoz, string codUser, string canalDistrib, string filialaAlternativa)
+        public string getPret(string client, string articol, string cantitate, string depart, string um, string ul, string tipUser, string depoz, string codUser, string canalDistrib, string filialaAlternativa, string filialaClp)
         {
 
 
+            ErrorHandling.sendErrorToMail("getPret: " +  client + "\n\n" +  articol + "\n\n" + cantitate + "\n\n" + depart + "\n\n" + um + "\n\n" + ul + "\n\n" + tipUser + "\n\n" + depoz + "\n\n" + codUser + "\n\n" + canalDistrib + "\n\n" + filialaAlternativa + "\n\n" + filialaClp);
 
             string retVal = "";
             SAPWebServices.ZTBL_WEBSERVICE webService = null;
@@ -49,7 +50,7 @@ namespace LiteSFATestWebService
 
                 inParam.GvKunnr = client;
                 inParam.GvMatnr = articol;
-                inParam.GvSpart = depart;
+                inParam.GvSpart = depart.Substring(0,2);
                 inParam.GvVrkme = um;
                 inParam.GvWerks = ul;
                 inParam.GvLgort = depoz;
@@ -58,6 +59,7 @@ namespace LiteSFATestWebService
                 inParam.GvSite = " ";
                 inParam.TipPers = tipUserLocal;
                 inParam.Canal = canalDistrib;
+                inParam.UlStoc = filialaClp != null ? filialaClp : " ";
 
 
                 SAPWebServices.ZgetPriceResponse outParam = webService.ZgetPrice(inParam);
@@ -77,6 +79,7 @@ namespace LiteSFATestWebService
                 string Umb = outParam.OutUmb.ToString() != "" ? outParam.OutUmb.ToString() : "-1";
                 string impachetare = outParam.Impachet.ToString() != "" ? outParam.Impachet.ToString() : " ";
                 string pretGed = outParam.GvNetwrFtva.ToString();
+                string dataExp = outParam.GvDatbi;
 
                 string extindere11 = outParam.ErrorCode.ToString();
 
@@ -85,7 +88,7 @@ namespace LiteSFATestWebService
                 {
                     if (Service1.extindeClient(client).Equals("0"))
                     {
-                        return getPret(client, articol, cantitate, depart, um, ul, tipUserLocal, depoz, codUser, canalDistrib, filialaAlternativa);
+                        return getPret(client, articol, cantitate, depart, um, ul, tipUserLocal, depoz, codUser, canalDistrib, filialaAlternativa, filialaClp);
                     }
                     else
                     {
@@ -285,14 +288,13 @@ namespace LiteSFATestWebService
 
                 retVal += discMaxAV + "#" + discMaxSD + "#" + discMaxDV + "#" +
                          Convert.ToInt32(Double.Parse(multiplu)).ToString() + "#" +
-                         cantUmb + "#" + Umb + "#" + discMaxKA + "#" + cmpArticol.ToString() + "#" + pretMediu + "#" + impachetare + "#" + istoricPret + "#" + procRedCmp + "#" + pretGed + "#";
+                         cantUmb + "#" + Umb + "#" + discMaxKA + "#" + cmpArticol.ToString() + "#" + pretMediu + "#" + 
+                         impachetare + "#" + istoricPret + "#" + procRedCmp + "#" + pretGed + "#" + dataExp + "#";
 
 
                 if (pretOut.Equals("0.0"))
                     retVal = "-1";
 
-
-                
 
             }
             catch (Exception ex)
@@ -305,10 +307,6 @@ namespace LiteSFATestWebService
                 webService.Dispose();
                 DatabaseConnections.CloseConnections(oReader, cmd, connection);
             }
-
-
-
-           
 
             return retVal;
         }

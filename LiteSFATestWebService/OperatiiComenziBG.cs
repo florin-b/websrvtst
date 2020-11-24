@@ -142,11 +142,6 @@ namespace LiteSFATestWebService
                     string condCanal = " and substr(a.ul,3,1) = substr(cl.canal(+),1,1) ";
                   
 
-
-
-
-
-
                     sqlString = " select distinct a.id, nvl(b.nume,'-') nume1, to_char(to_date(a.datac,'yyyymmdd')) datac1, a.valoare,a.status,  a.cod_client, " +
                                 " decode(a.nrcmdsap,' ','-1',a.nrcmdsap) cmdsap, nvl(a.status_aprov,-1) status_aprov, a.fact_red,  a.ul, a.accept1, a.accept2, " +
                                 " nvl((select  cl.tip from clie_tip cl where cl.depart = a.depart  " + condCanal + "   and cl.cod_cli = a.cod_client),' ') tip" +
@@ -173,7 +168,7 @@ namespace LiteSFATestWebService
 
                 }
 
-
+                
 
                 cmd.CommandText = sqlString;
 
@@ -362,9 +357,9 @@ namespace LiteSFATestWebService
                                      
 
             if ((tipUser.Equals("DV") || tipUser.Equals("DD")) && !departament.Equals("00") && !departament.Equals("11"))
-                conditieDepart = " and (b.spart = '" + departament + "' or b.dep_aprobare = '" + departament + "' or b.spart = '11') " + condArticole111;
-            else if ((tipUser.Equals("DV") || tipUser.Equals("DD")) && (departament.Equals("00") || departament.Equals("11")))
-                conditieDepart = " and a.cod like '0000000000111%' ";
+                conditieDepart = " and (b.spart = '" + departament + "' or b.spart = '11') " + condArticole111;
+            //else if ((tipUser.Equals("DV") || tipUser.Equals("DD")) && (departament.Equals("00") || departament.Equals("11")))
+            //    conditieDepart = " and a.cod like '0000000000111%' ";
 
 
 
@@ -495,7 +490,7 @@ namespace LiteSFATestWebService
                                   " and werks ='" + unitLog1 + "' and inactiv <> 'X' and matkl = c.cod),0) dv, nvl(a.procent_aprob,0) procent_aprob, " +
                                   " decode(s.matkl,'','0','1') permitsubcmp, nvl(a.multiplu,1) multiplu, nvl(a.val_poz,0) " + infoPret +
                                   " ,nvl(a.cant_umb,0) cant_umb , nvl(a.umb,' ') umb, a.ul_stoc, z.depart, nvl(b.tip_mat,' '), nvl(a.ponderat,'-1'), nvl(b.spart,' '), " +
-                                  " decode(trim(b.dep_aprobare),'','00', b.dep_aprobare)  dep_aprobare " + condBlocAprov + istoricPret + vechime +
+                                  " decode(trim(z.depart),'','00', z.depart)  dep_aprobare " + condBlocAprov + istoricPret + vechime +
                                   " from sapdev.zcomdet_tableta a, sapdev.zdisc_pers_sint a1,  sintetice c," +
                                   " articole b, sapdev.zpretsubcmp s " + condTabKA + " where a.cod = b.cod(+) " + condIdKA + " and " +
                                   " a1.inactiv(+) <> 'X' and a1.functie(+)='AV' and a1.spart(+)=substr(c.COD_NIVEL1,2,2) and a1.werks(+) ='" + unitLog1 + "' " +
@@ -569,11 +564,13 @@ namespace LiteSFATestWebService
                         articol.tipArt = tipMat;
                         articol.ponderare = Int32.Parse(oReader1.GetString(25).Trim().Equals("") ? "-1" : oReader1.GetString(25));
                         articol.departSintetic = oReader1.GetString(26);
-                        articol.departAprob = oReader1.GetString(27);
+                        //articol.departAprob = oReader1.GetString(27);
+                        articol.departAprob = depart;
                         articol.istoricPret = GeneralUtils.formatIstoricPret(oReader1.GetString(29));
                         articol.vechime = oReader1.GetDouble(30).ToString();
                         articol.moneda = "BGN";
-
+                        articol.valTransport = "0";
+                        articol.procTransport = "0";
 
                         //verificare factori conversie
 
@@ -669,6 +666,9 @@ namespace LiteSFATestWebService
                 connection.Close();
                 connection.Dispose();
             }
+
+            if (tipUser.Equals("DV") && departament.Equals("01"))
+                HelperComenzi.setMarjaCantPal(listArticole, dateLivrare);
 
             ArticolComandaAfis articoleComanda = new ArticolComandaAfis();
 
@@ -802,6 +802,9 @@ namespace LiteSFATestWebService
 
         public string opereazaComandaSap(string idComanda, string codUser, string tipOperatie, string codRespingere)
         {
+
+            ErrorHandling.sendErrorToMail("opereazaComandaSap BG" + idComanda + "\n" +  codUser + "\n" + tipOperatie + "\n" + codRespingere);
+
             string retVal = "-1";
 
             string codOperatie = "-1";
@@ -828,11 +831,13 @@ namespace LiteSFATestWebService
 
             if (response.Equals("0"))
             {
-               
+
                 if (tipOperatie.Equals("RESPINGERE"))
                     setMotivRespingere(idComanda, codRespingere);
+                else if (tipOperatie.Equals("APROBARE"))
+                    updateAcceptTime(idComanda);
 
-                retVal = "Operatie reusita BG.";
+               retVal = "Operatie reusita BG.";
 
             }
             else
@@ -843,6 +848,43 @@ namespace LiteSFATestWebService
             return retVal;
         }
 
+
+        private void updateAcceptTime(string idComanda) {
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = null;
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToBGTest();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " update sapdev.zcomhead_tableta set ora_accept2 = (select to_char(systimestamp, 'hh24mmss') from dual) " +
+                                  " where id =:idCmd ";
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":idCmd", OracleType.Number, 11).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = idComanda;
+                cmd.ExecuteNonQuery();
+
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(cmd, connection);
+            }
+
+
+        }
 
     public void setMotivRespingere(string idComanda, string codRespingere)
         {

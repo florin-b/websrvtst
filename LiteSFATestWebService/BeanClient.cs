@@ -36,7 +36,13 @@ namespace LiteSFATestWebService
         public string strada;
     }
 
-
+    public class AdresaClientGed
+    {
+        public string codAdresa;
+        public string codJudet;
+        public string localitate;
+        public string strada;
+    }
    
 
 }

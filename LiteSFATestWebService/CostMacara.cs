@@ -10,7 +10,7 @@ namespace LiteSFATestWebService
 
         public List<ArticolDescarcare> articoleDescarcare;
         public bool sePermite;
-
+        public List<ArticolPalet> articolePaleti;
     }
 
 
@@ -32,6 +32,19 @@ namespace LiteSFATestWebService
         public string depoz;
     }
 
+    public class ArticolPalet
+    {
+        public string codPalet;
+        public string numePalet;
+        public string depart;
+        public string cantitate;
+        public string pretUnit;
+        public string furnizor;
+        public string codArticol;
+        public string numeArticol;
+        public string cantArticol;
+        public string umArticol;
+    }
 
     public class CalculDescarcare
     {

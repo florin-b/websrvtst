@@ -12,7 +12,7 @@ namespace LiteSFATestWebService
     public class Neincasate
     {
 
-        public string getRaportNeincasateData(string reportParams, string filiala)
+        public string getRaportNeincasateData(string reportParams, string filiala, string tipUserSap)
         {
             
 
@@ -33,6 +33,10 @@ namespace LiteSFATestWebService
             if (!clienti.Equals("0"))
             {
                 listClienti = " and kunnr in ('" + clienti.Replace("#", "','") + "') and prctr = '" + filiala + "' ";
+
+                if (tipUserSap != null && (tipUserSap.Equals("CVIP") || tipUserSap.Equals("SDIP")))
+                    listClienti = " and kunnr in ('" + clienti.Replace("#", "','") + "') ";
+
                 tabAgenti = " , agenti ag ";
                 condAgenti = " and ag.cod = angaj ";
                 campAg1 = ", ag.nume ";

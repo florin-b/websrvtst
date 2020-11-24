@@ -104,6 +104,16 @@ namespace DistributieTESTWebServices
         public string umGreutate;
     }
 
+
+    public class ArticoleBorderou
+    {
+        public string nume;
+        public string cantitate;
+        public string um;
+    }
+
+
+
     public class User
     {
         public string status;

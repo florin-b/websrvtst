@@ -271,7 +271,9 @@ namespace LiteSFATestWebService
 
             SAPWebServices.ZstareCurentaResponse outParam = webService.ZstareCurenta(inParam);
 
-            stareResponse = outParam.EpStatus;
+            stareResponse = outParam.EpStatus + ". " + outParam.EpStatusLong;
+            
+            
 
             webService.Dispose();
 

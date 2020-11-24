@@ -79,17 +79,28 @@ namespace LiteSFATestWebService
 
             SapWSPierderiVanzari.ZCL_FACT_AVSD inParam = new SapWSPierderiVanzari.ZCL_FACT_AVSD();
 
+            string departVanz = codDepart.Substring(0, 2);
+            string opt_all_avsd = " ";
+            string opt_only_sd_1fil = "X";
+            if (codDepart.Equals("10"))
+            {
+                departVanz = " ";
+                opt_all_avsd = "X";
+                opt_only_sd_1fil = " ";
+            }
+
             inParam.LV_ANGAJ = "00000000";
             inParam.LV_PRCTR = ul;
-            inParam.LV_SPART = codDepart.Substring(0,2);
-            inParam.LV_DATA_CRT = "2019-03-01";
+            inParam.LV_SPART = departVanz;
+            //inParam.LV_DATA_CRT = "2019-03-01";
             
 
             inParam.ITAB_CLIENT = ITAB_CLIENT1;
             inParam.ITAB_CLI_NIVELE = ITAB_CLI_NIVELE1;
             inParam.ITAB_TIPCL = ITAB_TIPCL1;
             inParam.ITAB_SDAV = ITAB_SDAV;
-            inParam.ONLY_SD_1FIL = "X";
+            inParam.ONLY_SD_1FIL = opt_only_sd_1fil;
+            inParam.ALL_AVSD_1FIL = opt_all_avsd;
            
 
             SapWSPierderiVanzari.ZCL_FACT_AVSDResponse response = new SapWSPierderiVanzari.ZCL_FACT_AVSDResponse();
@@ -120,7 +131,6 @@ namespace LiteSFATestWebService
         public string getVanzariAv(string codAgent, string ul, string codDepart)
         {
 
-
             PierderiVanzariAV pierderiAV = new PierderiVanzariAV();
 
             List<PierderiAvHeader1> listPierderi = new List<PierderiAvHeader1>();
@@ -140,16 +150,23 @@ namespace LiteSFATestWebService
             SapWSPierderiVanzari.ZCL_FACT_AVSD inParam = new SapWSPierderiVanzari.ZCL_FACT_AVSD();
 
 
-           
+            string departVanz = codDepart.Substring(0, 2);
+            string opt_all_avsd = " ";
+            string opt_only_sd_1fil = "X";
+            if (codDepart.Equals("10"))
+            {
+                departVanz = " ";
+                opt_all_avsd = "X";
+                opt_only_sd_1fil = " ";
+            }
+
             inParam.LV_ANGAJ = codAgent;
             inParam.LV_PRCTR = ul;
-            inParam.LV_SPART = codDepart.Substring(0,2);
-            inParam.LV_DATA_CRT = "2019-03-01";
-            inParam.ONLY_SD_1FIL = " ";
-            inParam.ALL_AVSD_1FIL = " ";
+            inParam.LV_SPART = departVanz;
+            //inParam.LV_DATA_CRT = " ";
+            inParam.ONLY_SD_1FIL = opt_only_sd_1fil;
+            inParam.ALL_AVSD_1FIL = opt_all_avsd;
             inParam.CU_DVDD = " ";
-
-           
 
             inParam.ITAB_CLIENT = ITAB_CLIENT1;
             inParam.ITAB_CLI_NIVELE = ITAB_CLI_NIVELE1;
@@ -191,7 +208,7 @@ namespace LiteSFATestWebService
             {
                 PierderiNivel1 pNivel1 = new PierderiNivel1();
                 pNivel1.numeClient = response.ITAB_CLI_NIVELE[i].NUMECLIENT;
-                pNivel1.numeNivel1 = response.ITAB_CLI_NIVELE[i].DENNIV1;
+                pNivel1.numeNivel1 = response.ITAB_CLI_NIVELE[i].DENNIV1.ToUpper();
                 pNivel1.venitLC = Double.Parse(response.ITAB_CLI_NIVELE[i].VENITNET_LUNACRT.ToString());
                 pNivel1.venitLC1 = Double.Parse(response.ITAB_CLI_NIVELE[i].VENITNET_LUNACRT_1.ToString());
                 pNivel1.venitLC2 = Double.Parse(response.ITAB_CLI_NIVELE[i].VENITNET_LUNACRT_2.ToString());

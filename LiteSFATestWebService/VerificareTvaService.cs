@@ -153,7 +153,7 @@ namespace LiteSFATestWebService
             cmd.Parameters[5].Value = starePlatitor.Adresa == "" ? " " : starePlatitor.Adresa;
 
             cmd.Parameters.Add(":nr", OracleType.VarChar, 120).Direction = ParameterDirection.Input;
-            cmd.Parameters[6].Value = starePlatitor.Nr == null  || starePlatitor.Nr == "" ? " " : starePlatitor.Nr;
+            cmd.Parameters[6].Value = starePlatitor.Nr == null || starePlatitor.Nr.Length > 21 || starePlatitor.Nr == "" ? " " : starePlatitor.Nr;
 
             cmd.Parameters.Add(":stare", OracleType.VarChar, 300).Direction = ParameterDirection.Input;
             cmd.Parameters[7].Value = starePlatitor.Stare == null ? " " : starePlatitor.Stare;

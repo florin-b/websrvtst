@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.OracleClient;
 using System.Linq;
 using System.Web;
 
@@ -67,6 +69,72 @@ namespace LiteSFATestWebService
 
             dateLivrare.mCant30 = 0;
 
+        }
+
+
+        public static string getArtExcCherestea(OracleConnection connection, OracleTransaction transaction, List<ArticolComanda> listArticole, string codArticol)
+        {
+            string codExceptie = codArticol;
+
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+            string sintCherestea = "374#373#372#368#349";
+            Boolean isComandaCherestea = false;
+
+
+            try
+            {
+                cmd = connection.CreateCommand();
+
+                foreach (ArticolComanda articol in listArticole)
+                {
+
+                    cmd.CommandText = "select sintetic from articole where cod=:codArticol ";
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add(":codArticol", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
+                    cmd.Parameters[0].Value = "0000000000" + articol.codArticol;
+
+                    if (transaction != null )
+                        cmd.Transaction = transaction;
+
+                    oReader = cmd.ExecuteReader();
+
+                    if (oReader.HasRows)
+                    {
+                        while (oReader.Read())
+                        {
+                            if (sintCherestea.Contains(oReader.GetString(0))){
+                                isComandaCherestea = true;
+                            }
+                        }
+                    }
+
+                    if (isComandaCherestea)
+                        break;
+                }
+
+                if (isComandaCherestea)
+                {
+                    if (codArticol.Equals("30101747"))
+                        codExceptie = "30101924";
+                    else if (codArticol.Equals("30101748"))
+                        codExceptie = "30101925";
+                }
+
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+
+            return codExceptie;
         }
 
     }

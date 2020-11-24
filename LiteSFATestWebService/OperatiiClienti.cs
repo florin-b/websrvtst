@@ -143,8 +143,6 @@ namespace LiteSFATestWebService
         public string getListClienti(string numeClient, string depart, string departAg, string unitLog, string codUser, string tipUserSap)
         {
 
-            ErrorHandling.sendErrorToMail("getListClienti: " +  numeClient + "\n\n" + depart + "\n\n" + departAg + "\n\n" + unitLog + "\n\n" + codUser + "\n\n" + tipUserSap);
-
 
             string serializedResult = "";
             OracleConnection connection = new OracleConnection();
@@ -207,6 +205,7 @@ namespace LiteSFATestWebService
                                   exceptieClient + " ) ";
 
 
+
                     string condExtraClient = " and exists (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.cod  and p.vtweg = '10' " +
                                              " and p.spart = '" + departAg+ "' and p.parvw in ('VE', 'ZC')  and p.pernr = '" + codUser + "' ) ";
 
@@ -214,7 +213,7 @@ namespace LiteSFATestWebService
                     {
                         string tipUser = getTipUser(connection, codUser);
 
-                        if (tipUser != "SD" && !tipUser.StartsWith("KA") && tipUserSap != null && !tipUserSap.Equals(Constants.tipSuperAv) && !tipUserSap.Equals(Constants.tipInfoAv) && !tipUserSap.Equals(Constants.tipSMR) && !tipUserSap.Equals(Constants.tipCVR) && !tipUserSap.Equals(Constants.tipSSCM) && !tipUserSap.Equals(Constants.tipCGED) && !tipUserSap.Equals(Constants.tipOIVPD))
+                        if (tipUser != "SD" && !tipUserSap.Contains("KA") && tipUserSap != null && !tipUserSap.Equals(Constants.tipSuperAv) && !tipUserSap.Equals(Constants.tipInfoAv) && !tipUserSap.Equals(Constants.tipSMR) && !tipUserSap.Equals(Constants.tipCVR) && !tipUserSap.Equals(Constants.tipSSCM) && !tipUserSap.Equals(Constants.tipCGED) && !tipUserSap.Equals(Constants.tipOIVPD))
                             condClient += condExtraClient;
 
                     }
@@ -226,6 +225,9 @@ namespace LiteSFATestWebService
                                   " where upper(c.nume) like upper('" + numeClient.Replace("'", "") + "%')  " + condClient +
                                   "  ) x " +
                                   " where rownum<=50 order by x.nume ";
+
+
+                
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -261,6 +263,7 @@ namespace LiteSFATestWebService
 
                         unClient.codAgent = "0";
                         unClient.numeAgent = "0";
+                        unClient.termenPlata = getTermenPlataClient(connection, unClient.codClient);
 
                         if (unClient.agenti.Contains("@"))
                             listaClienti.Add(unClient);
@@ -750,6 +753,7 @@ namespace LiteSFATestWebService
                                       " and u.zterm <= (select max(p.zterm) from sapprd.knvv p where p.mandt = '900' " +
                                       " and p.kunnr =:k " + condClient2 + " ) order by u.zterm ";
 
+
                     cmd.CommandType = CommandType.Text;
                     cmd.Parameters.Clear();
 
@@ -1053,7 +1057,7 @@ namespace LiteSFATestWebService
 
                
 
-                string sqlString = " select name1, stceg, regio, city1, street from sapprd.zinformclmag where mandt='900' " +
+                string sqlString = " select name1, stceg, regio, city1, street||' '||nr from sapprd.zinformclmag where mandt='900' " +
                                    " and lower(name1) like lower('" + numeClient + "%') and tip_cl =:tipClient order by name1 ";
 
 
@@ -1172,11 +1176,11 @@ namespace LiteSFATestWebService
                 cmd = connection.CreateCommand();
 
 
-                cmd.CommandText = " select c.nume, c.cod, c.tip_pers from websap.clienti c,  sapprd.knvv v, sapprd.knvp p " +
+                cmd.CommandText = " select distinct c.nume, c.cod, c.tip_pers, k.stceg from websap.clienti c,  sapprd.knvv v, sapprd.knvp p, sapprd.kna1 k " +
                                   " where c.cod = v.kunnr and v.mandt = '900' and v.vtweg = '20' " + 
-                                  " and v.spart = '11' and v.kdgrp = '18' and v.mandt = p.mandt " + 
-                                  " and v.kunnr = p.kunnr and v.vtweg = p.vtweg and v.spart = p.spart " + 
-                                  " and p.parvw = 'ZA' " + condFiliala + " and lower(c.nume) like lower('" + numeClient + "%') order by nume ";
+                                  " and v.spart = '11' and v.kdgrp = '18' and v.mandt = p.mandt " +
+                                  " and v.kunnr = p.kunnr and v.vtweg = p.vtweg and v.spart = p.spart and k.mandt='900' and k.kunnr = c.cod " + 
+                                  " and p.parvw in ('ZA','ZS') " + condFiliala + " and lower(c.nume) like lower('" + numeClient + "%') order by nume ";
 
 
                 cmd.CommandType = CommandType.Text;
@@ -1199,6 +1203,7 @@ namespace LiteSFATestWebService
                         unClient.numeClient = oReader.GetString(0);
                         unClient.codClient = oReader.GetString(1);
                         unClient.tipClient = oReader.GetString(2);
+                        unClient.codCUI = oReader.GetString(3);
 
                         unClient.termenPlata = getTermenPlataInstPublic(connection, unClient.codClient);
 
@@ -1242,6 +1247,7 @@ namespace LiteSFATestWebService
                                   " <= (select max(p.zterm) from sapprd.knvv p where p.mandt = '900' " +
                                   " and p.kunnr = :codClient and p.vtweg = '20'  and p.spart = '11' ) and u.zterm != 'C000' order by u.zterm ";
 
+
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
 
@@ -1270,6 +1276,118 @@ namespace LiteSFATestWebService
 
 
             return termenPlata;
+
+
+        }
+
+
+        private List<string> getTermenPlataClient(OracleConnection connection, string codClient)
+        {
+
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            List<string> termenPlata = new List<string>();
+            termenPlata.Add("C010");
+
+            try
+            {
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select u.zterm from sapprd.T052u u, sapprd.TVZBT t where u.mandt = '900' and  u.spras = '4' " +
+                                  " and u.mandt = t.mandt and u.spras = t.spras and u.zterm = t.zterm  and u.zterm " +
+                                  " <= (select max(p.zterm) from sapprd.knvv p where p.mandt = '900' " +
+                                  " and p.kunnr = :codClient and p.vtweg = '10' ) and upper(u.zterm) like 'C%' order by u.zterm ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codClient;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    termenPlata.Clear();
+                    while (oReader.Read())
+                    {
+                        termenPlata.Add(oReader.GetString(0));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+
+            return termenPlata;
+
+
+        }
+
+
+        public string getTermenPlataClientDepart(string codAgent, string codClient)
+        {
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            List<string> termenPlata = new List<string>();
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select u.zterm from sapprd.T052u u, sapprd.TVZBT t where u.mandt = '900' and  u.spras = '4' " +
+                                  " and u.mandt = t.mandt and u.spras = t.spras and u.zterm = t.zterm  and u.zterm " +
+                                  " <= (select max(p.zterm) from sapprd.knvv p where p.mandt = '900' " +
+                                  " and p.kunnr = :codClient and p.vtweg = '20' and p.spart = (select divizie from agenti where activ = 1 and cod=:codAgent)) " + 
+                                  " and u.zterm != 'C000' order by u.zterm ";
+
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codClient;
+
+                cmd.Parameters.Add(":codAgent", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = codAgent;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    termenPlata.Clear();
+                    while (oReader.Read())
+                    {
+                        termenPlata.Add(oReader.GetString(0));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+
+            return new JavaScriptSerializer().Serialize(termenPlata);
 
 
         }

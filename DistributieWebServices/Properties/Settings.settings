@@ -5,5 +5,14 @@
     <Setting Name="DistributieTESTWebServices_SMSService_SMSServiceService" Type="(Web Service URL)" Scope="Application">
       <Value Profile="(Default)">http://wsi.bizpack.ro/service.php</Value>
     </Setting>
+    <Setting Name="DistributieTESTWebServices_SapWebService_ZARTICOLE_CT" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/zarticole_ct/900/zarticole_ct/zarticole_ct</Value>
+    </Setting>
+    <Setting Name="DistributieTESTWebServices_BordSapService_ZWS_CANT_BORD" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zws_cant_bord/900/zws_cant_bord/zws_cant_bord</Value>
+    </Setting>
+    <Setting Name="DistributieTESTWebServices_BordDistService_ZARTICOLE_BORD" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://sap-prd4a.arabesque.ro:8034/sap/bc/srt/rfc/sap/zarticole_bord/900/zarticole_bord/zarticole_bord</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

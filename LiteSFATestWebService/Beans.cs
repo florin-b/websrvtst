@@ -41,6 +41,7 @@ namespace LiteSFATestWebService
         public string codAgent;
         public string numeAgent;
         public List<string> termenPlata;
+        public string codCUI;
     }
 
 
@@ -151,6 +152,7 @@ namespace LiteSFATestWebService
         public string istoricPret;
         public string valTransport;
         public string procTransport;
+        public string dataExp;
        
 
         public override string ToString()
@@ -190,6 +192,7 @@ namespace LiteSFATestWebService
         public double valT1 = 0;
         public string sintetic;
         public double lungime = 0;
+        public string umPalet;
     }
 
 
@@ -276,6 +279,8 @@ namespace LiteSFATestWebService
         public string ciDelegat = "";
         public string autoDelegat = "";
         public string refClient = "";
+
+
 
     }
 
@@ -445,6 +450,7 @@ namespace LiteSFATestWebService
         public string tipComanda;
         public string articole;
         public string clienti;
+        public string tipUserSap;
     }
 
 
@@ -707,6 +713,7 @@ namespace LiteSFATestWebService
         public string errMsg;
         public string procReducereCmp;
         public string pretFaraTva;
+        public string dataExp;
 
     }
 

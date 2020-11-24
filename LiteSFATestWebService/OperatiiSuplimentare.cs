@@ -382,7 +382,8 @@ namespace LiteSFATestWebService
 
             ClientComanda clientComanda = OperatiiComenzi.getClientComanda(connection, idComanda);
 
-            saveTonajAdresa(connection, clientComanda.codClient, clientComanda.codAdresa, tonaj);
+            if (clientComanda != null)
+                saveTonajAdresa(connection, clientComanda.codClient, clientComanda.codAdresa, tonaj);
 
         }
 
@@ -690,6 +691,7 @@ namespace LiteSFATestWebService
 
         public static void saveComandaSuperAv(OracleConnection connection, string codSuperAv, string idComanda)
         {
+
 
             string query = "";
 
