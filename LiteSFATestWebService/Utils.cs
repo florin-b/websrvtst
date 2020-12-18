@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.OracleClient;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 
 namespace LiteSFATestWebService
@@ -166,8 +167,12 @@ namespace LiteSFATestWebService
 
             string localCnp = cnpClient;
 
-            if (cnpClient.ToUpper().StartsWith("RORO"))
-                localCnp = cnpClient.ToUpper().Replace("RORO", "RO");
+
+            if (cnpClient.ToUpper().StartsWith("RO"))
+            {
+                localCnp = cnpClient.ToUpper().Replace("RO", "");
+                localCnp = "RO" + localCnp;
+            }
 
             return localCnp;
         }

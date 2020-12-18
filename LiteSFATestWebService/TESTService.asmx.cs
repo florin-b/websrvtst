@@ -5607,6 +5607,9 @@ namespace LiteSFATestWebService
                 if (tipOp.Equals("0")) //aprobare cmd
                 {
 
+
+                    new JurnalAprobari().salveazaAprobare(nrCmd, codUser, "A");
+
                     if (OperatiiComenziBG.isComandaBG(nrCmd))
                     {
                         return new OperatiiComenziBG().opereazaComandaSap(nrCmd, codUser,"APROBARE", "");
@@ -5672,7 +5675,6 @@ namespace LiteSFATestWebService
                                 {
                                     retVal = "Comanda aprobata";
                                     new Mail().sendMailComenziOpFacturare(idCmd);
-                                    new JurnalAprobari().salveazaAprobare(nrCmd, codUser, "A");
                                 }
                                 else
                                 {
@@ -5720,6 +5722,7 @@ namespace LiteSFATestWebService
                         return new OperatiiComenziBG().opereazaComandaSap(nrCmd, codUser, "RESPINGERE", codRespingere);
                     }
 
+                    new JurnalAprobari().salveazaAprobare(nrCmd, codUser, "R");
 
                     if (divizieAgent.Equals("11") && !isFilialaWood(filiala))
                     {
@@ -5735,7 +5738,7 @@ namespace LiteSFATestWebService
                     try
                     {
 
-                        new JurnalAprobari().salveazaAprobare(nrCmd, codUser, "R");
+                       
 
                         //stergere cmd
                         SAPWebServices.ZTBL_WEBSERVICE webService = null;
@@ -5821,6 +5824,7 @@ namespace LiteSFATestWebService
                         cmd = connection.CreateCommand();
 
                         string status_aprov = "4";
+
                         if (codStare.Equals("21"))
                             status_aprov = "41";
 
@@ -7227,7 +7231,7 @@ namespace LiteSFATestWebService
         {
 
 
-            ErrorHandling.sendErrorToMail("getListComenzi: " +  filiala + "\n" +  codUser + "\n" + tipCmd + "\n" + tipUser + "\n" + depart + "\n" + interval + "\n" + restrictii + "\n" + codClient + "\n" + tipUserSap);
+            
 
 
             string serializedResult = "";
@@ -13319,6 +13323,10 @@ namespace LiteSFATestWebService
                         pretUnit = articolComanda[i].pretUnit;
                         valPoz = articolComanda[i].pretUnit * Double.Parse(articolComanda[i].cantUmb, CultureInfo.InvariantCulture);
 
+                        string valTransportArt = articolComanda[i].valTransport;
+                        if (dateLivrare.Transport.Equals("TCLI"))
+                            valTransportArt = "0";
+
                         query = " insert into sapprd.zcomdet_tableta(mandt,id,poz,status,cod,cantitate,valoare,depoz, " +
                                 " transfer,valoaresap,ppoz,procent,um,pret_cl,conditie,disclient,procent_aprob,multiplu, " +
                                 " val_poz,inf_pret,cant_umb,umb, ul_stoc, fake, ponderat, istoric_pret, val_transp, data_exp_pret) " +
@@ -13328,9 +13336,7 @@ namespace LiteSFATestWebService
                                 articolComanda[i].discClient.ToString(nfi) + "," + articolComanda[i].procAprob.ToString(nfi) + "," + articolComanda[i].multiplu.ToString(nfi) + "," +
                                 valPoz.ToString(nfi) + ",'" + articolComanda[i].infoArticol + "'," + articolComanda[i].cantUmb + ",'" +
                                 articolComanda[i].Umb + "','" + ulStoc + "', '" + fakeArt + "','" + articolComanda[i].ponderare + "','" + articolComanda[i].istoricPret + "', " +
-                                articolComanda[i].valTransport +  ", '" + dataExp +"' ) ";
-
-
+                                valTransportArt +  ", '" + dataExp +"' ) ";
 
                     }
                     else
@@ -15900,7 +15906,7 @@ namespace LiteSFATestWebService
                 retVal = cant + "#" + umArt + "#" + showStocVal + "#";
 
 
-                //retVal =  "1000#" + umArt + "#" + showStocVal + "#";
+                retVal =  "1000#" + umArt + "#" + showStocVal + "#";
 
 
                 //exceptie material transport

@@ -70,9 +70,11 @@ namespace LiteSFATestWebService
 
             List<ArticolDescarcare> listArticole = new List<ArticolDescarcare>();
 
+            ArticolDescarcare articol = new ArticolDescarcare();
+
             for (int i = 0; i < valPaleti.Length; i++)
             {
-                ArticolDescarcare articol = new ArticolDescarcare();
+                articol = new ArticolDescarcare();
                 articol.cod = valPaleti[i].Matnr;
                 articol.depart = valPaleti[i].Spart.Equals("04") ? "041" : valPaleti[i].Spart;
                 articol.valoare = valPaleti[i].Valpal.Trim();
@@ -80,6 +82,19 @@ namespace LiteSFATestWebService
                 articol.valoareMin = valPaleti[i].Valmin.Trim();
                 listArticole.Add(articol);
             }
+
+            if (valPaleti.Length == 0)
+            {
+                articol = new ArticolDescarcare();
+                articol.cod = "30101791";
+                articol.depart = "01";
+                articol.valoare = "0";
+                articol.cantitate = "0";
+                articol.valoareMin = "0";
+                listArticole.Add(articol);
+            }
+
+
 
             List<ArticolPalet> listPaleti = new List<ArticolPalet>();
 
@@ -104,7 +119,7 @@ namespace LiteSFATestWebService
            
             
 
-            if (codAgent.Equals("00056241__"))
+            if (codAgent.Equals("00083313__"))
             {
 
                 //test

@@ -83,7 +83,7 @@ namespace LiteSFATestWebService
                                   " cod_art, b.nume, e.meins, b.umvanz10, b.sintetic, c.cod_nivel1, nvl(b.tip_mat,' ') tip_mat, b.grup_vz, " +
                                   " decode(trim(b.dep_aprobare),'','00', b.dep_aprobare)  dep_aprobare, " +
                                   " (select nvl( " +
-                                  " (select 1 from sapprd.marm m where m.mandt = '900' and m.matnr = b.cod and m.meinh = 'EPA'),-1) palet from dual) palet, " +
+                                  " (select 1 from sapprd.mara m where m.mandt = '900' and m.matnr = e.matnr and m.categ_mat in ('PA','AM')),-1) palet from dual) palet, " +
                                   " b.categ_mat, b.lungime " +
                                   " from sapprd.eina e, articole b, sintetice c where e.mandt = '900' and e.matnr = b.cod and b.blocat <> '01' and e.loekz <> 'X' and   " +
                                   " c.cod = b.sintetic and e.lifnr=:furniz and  " + conditieDepart  + conditie + " ) x where rownum < 50 order by x.nume ";
