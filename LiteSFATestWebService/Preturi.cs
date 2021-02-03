@@ -17,8 +17,6 @@ namespace LiteSFATestWebService
         {
 
 
-            ErrorHandling.sendErrorToMail("getPret: " +  client + "\n\n" +  articol + "\n\n" + cantitate + "\n\n" + depart + "\n\n" + um + "\n\n" + ul + "\n\n" + tipUser + "\n\n" + depoz + "\n\n" + codUser + "\n\n" + canalDistrib + "\n\n" + filialaAlternativa + "\n\n" + filialaClp);
-
             string retVal = "";
             SAPWebServices.ZTBL_WEBSERVICE webService = null;
 

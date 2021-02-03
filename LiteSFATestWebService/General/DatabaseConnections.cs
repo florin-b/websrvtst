@@ -25,7 +25,10 @@ namespace LiteSFATestWebService
                    " (HOST = 10.1.3.88)(PORT = 1527)))(CONNECT_DATA = (SERVICE_NAME = QAS))); " +
                    " User Id = WEBSAP; Password = 2INTER7; ";
 
-
+            //Server de test Gabi
+            //return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +
+            //       " (HOST = 10.1.3.81)(PORT = 1521)))(CONNECT_DATA = (SERVICE_NAME = PRD))); " +
+            //       " User Id = WEBSAP; Password = 2INTER7; ";
 
             //DR
             //return "Data Source = (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP) " +

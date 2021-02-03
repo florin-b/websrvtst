@@ -44,6 +44,10 @@ namespace LiteSFATestWebService
         public string codCUI;
     }
 
+    public class ClientIP : Client
+    {
+        public string tipClientIP;
+    }
 
     public class ClientAlocat
     {
@@ -392,7 +396,14 @@ namespace LiteSFATestWebService
         public string tipComanda;
         public string isCmdInstPublica;
         public double bazaSalariala = 0;
+        public string tipClientInstPublica;
 
+    }
+
+    public class DateClientInstPublica
+    {
+        public bool isClientInstPublica;
+        public string tipClientInstPublica;
     }
 
     public class AdresaGpsClient

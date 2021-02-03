@@ -9,21 +9,21 @@ namespace LiteSFATestWebService
 {
     public class HelperClienti
     {
-        public static bool isClientInstitutiePublica(OracleConnection connection, string codClient)
+        public static DateClientInstPublica getDateClientInstPublica(OracleConnection connection, string codClient)
         {
+            DateClientInstPublica dateClient = new DateClientInstPublica();
+            dateClient.isClientInstPublica = false;
 
             OracleCommand cmd = new OracleCommand();
             OracleDataReader oReader = null;
-
-            bool isInstPublica = false;
 
             try
             {
 
                 cmd = connection.CreateCommand();
 
-                cmd.CommandText = " select 1 from   sapprd.knvv v, sapprd.knvp p where v.mandt = '900' and v.vtweg = '20' " +
-                                  " and v.spart = '11' and v.kdgrp = '18' and v.mandt = p.mandt and v.kunnr = p.kunnr and v.vtweg = p.vtweg and v.spart = p.spart " +
+                cmd.CommandText = " select v.kdgrp from sapprd.knvv v, sapprd.knvp p where v.mandt = '900' and v.vtweg = '20' " +
+                                  " and v.spart = '11' and v.kdgrp in ('18','19') and v.mandt = p.mandt and v.kunnr = p.kunnr and v.vtweg = p.vtweg and v.spart = p.spart " +
                                   " and p.parvw = 'ZA' and v.kunnr = :codClient ";
 
 
@@ -36,7 +36,16 @@ namespace LiteSFATestWebService
                 oReader = cmd.ExecuteReader();
 
                 if (oReader.HasRows)
-                    isInstPublica = true;
+                {
+                    oReader.Read();
+
+                    dateClient.isClientInstPublica = true;
+
+                    if (oReader.GetString(0).Equals("18"))
+                        dateClient.tipClientInstPublica = "CONSTR";
+                    else
+                        dateClient.tipClientInstPublica = "NONCONSTR";
+                }
 
             }
             catch (Exception ex)
@@ -48,7 +57,7 @@ namespace LiteSFATestWebService
                 DatabaseConnections.CloseConnections(oReader, cmd);
             }
 
-            return isInstPublica;
+            return dateClient;
 
         }
 

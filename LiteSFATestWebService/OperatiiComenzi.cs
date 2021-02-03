@@ -1988,7 +1988,7 @@ namespace LiteSFATestWebService
                         totalComanda = 0;
                     }
 
-                    if (!comandaVanzare.nrCmdSap.Equals("-1") || comandaVanzare.nrCmdSap.Length < 4)
+                    if (!comandaVanzare.nrCmdSap.Equals("-1") || (!comandaVanzare.nrCmdSap.Equals("-1") && comandaVanzare.nrCmdSap.Length < 4))
                     {
                         totalComanda += (articol.pretUnit / articol.multiplu) * Double.Parse(articol.cantUmb, CultureInfo.InvariantCulture);
                     }

@@ -143,7 +143,6 @@ namespace LiteSFATestWebService
         public string getListClienti(string numeClient, string depart, string departAg, string unitLog, string codUser, string tipUserSap)
         {
 
-
             string serializedResult = "";
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand();
@@ -227,7 +226,7 @@ namespace LiteSFATestWebService
                                   " where rownum<=50 order by x.nume ";
 
 
-                
+                ErrorHandling.sendErrorToMail("getListClienti: " + cmd.CommandText);
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -1150,7 +1149,7 @@ namespace LiteSFATestWebService
         }
 
 
-        public string getListClientiInstPublice(string numeClient, string unitLog, string tipUser)
+        public string getListClientiInstPublice(string numeClient, string unitLog, string tipUser, string tipClient)
         {
 
             OracleConnection connection = new OracleConnection();
@@ -1159,14 +1158,13 @@ namespace LiteSFATestWebService
             List<Client> listClienti = new List<Client>();
 
 
-            string condFiliala = " and substr(p.kunn2,0,2) = :unitLog ";
-
-            if (tipUser != null && tipUser.Equals("SDIP"))
-                condFiliala = "";
-
-
             try
             {
+
+                string tipClientIP = "18";
+
+                if (tipClient != null && tipClient.Equals("NONCONSTR"))
+                    tipClientIP = "19";
 
                 string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
@@ -1176,22 +1174,18 @@ namespace LiteSFATestWebService
                 cmd = connection.CreateCommand();
 
 
-                cmd.CommandText = " select distinct c.nume, c.cod, c.tip_pers, k.stceg from websap.clienti c,  sapprd.knvv v, sapprd.knvp p, sapprd.kna1 k " +
+                cmd.CommandText = " select distinct c.nume, c.cod, c.tip_pers, k.stceg, v.kdgrp from websap.clienti c,  sapprd.knvv v, sapprd.knvp p, sapprd.kna1 k " +
                                   " where c.cod = v.kunnr and v.mandt = '900' and v.vtweg = '20' " + 
-                                  " and v.spart = '11' and v.kdgrp = '18' and v.mandt = p.mandt " +
+                                  " and v.spart = '11' and v.kdgrp=:tipClient and v.mandt = p.mandt " +
                                   " and v.kunnr = p.kunnr and v.vtweg = p.vtweg and v.spart = p.spart and k.mandt='900' and k.kunnr = c.cod " + 
-                                  " and p.parvw in ('ZA','ZS') " + condFiliala + " and lower(c.nume) like lower('" + numeClient + "%') order by nume ";
+                                  " and p.parvw in ('ZA','ZS')  and lower(c.nume) like lower('" + numeClient + "%') order by nume ";
 
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
 
-                if (tipUser == null || (tipUser != null && !tipUser.Equals("SDIP")))
-                {
-                    cmd.Parameters.Add(":unitLog", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
-                    cmd.Parameters[0].Value = unitLog.Substring(0, 2);
-                }
-
+                cmd.Parameters.Add(":tipClient", OracleType.VarChar, 6).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = tipClientIP;
 
                 oReader = cmd.ExecuteReader();
 
@@ -1199,11 +1193,12 @@ namespace LiteSFATestWebService
                 {
                     while (oReader.Read())
                     {
-                        Client unClient = new Client();
+                        ClientIP unClient = new ClientIP();
                         unClient.numeClient = oReader.GetString(0);
                         unClient.codClient = oReader.GetString(1);
                         unClient.tipClient = oReader.GetString(2);
                         unClient.codCUI = oReader.GetString(3);
+                        unClient.tipClientIP = oReader.GetString(4);
 
                         unClient.termenPlata = getTermenPlataInstPublic(connection, unClient.codClient);
 
