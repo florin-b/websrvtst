@@ -19,7 +19,11 @@ namespace LiteSFATestWebService
         public StarePlatitorTva verificaTVAService(string cuiClient)
         {
 
-            string serviceUrl = "https://www.verificaretva.ro/api/apiv4.aspx?key=z1dvZijKepDykHGS&cui=" + cuiClient.Replace("RO","") + "&data=" + AddressUtils.getCurrentDate_YY_MM_DD();
+            
+
+            string serviceUrl = "https://www.verificaretva.ro/api/apiv5.aspx?key=z1dvZijKepDykHGS&cui=" + cuiClient.Replace("RO","") + "&data=" + AddressUtils.getCurrentDate_YY_MM_DD();
+
+            ErrorHandling.sendErrorToMail(serviceUrl);
 
             System.Net.WebRequest req = System.Net.WebRequest.Create(serviceUrl);
             System.Net.WebResponse resp = req.GetResponse();

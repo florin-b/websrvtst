@@ -137,5 +137,24 @@ namespace LiteSFATestWebService
             return codExceptie;
         }
 
+
+        public static bool isComandaDistribAprobata(string accept1, string oraAccept1, string accept2, string oraAccept2)
+        {
+
+
+            bool isAprob1 = true;
+            bool isAprob2 = true;
+
+            if (accept1.Equals("X"))
+                isAprob1 = !oraAccept1.Equals("000000");
+
+
+            if (accept2.Equals("X"))
+                isAprob2 = !oraAccept2.Equals("000000");
+
+
+            return isAprob1 && isAprob2;
+        }
+
     }
 }

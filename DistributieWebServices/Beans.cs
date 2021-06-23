@@ -256,5 +256,30 @@ namespace DistributieTESTWebServices
         public int statusId;
     }
 
+    public class FoaieParcursItem
+    {
+        public string id;
+        public string locatie;
+        public string data;
+        public string ora;
+        public string minut;
+        public string km;
+        public string status;
+    }
 
+    public class FoaieParcurs
+    {
+        public string nrBorderou;
+        public List<FoaieParcursItem> items;
+    }
+
+    public class Alimentare
+    {
+        public string id;
+        public string nrAuto;
+        public string codSofer;
+        public string data;
+        public string litri;
+        public string kmBord;
+    }
 }

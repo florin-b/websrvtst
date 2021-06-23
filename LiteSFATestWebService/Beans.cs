@@ -47,6 +47,7 @@ namespace LiteSFATestWebService
     public class ClientIP : Client
     {
         public string tipClientIP;
+        public string filiala;
     }
 
     public class ClientAlocat
@@ -109,6 +110,9 @@ namespace LiteSFATestWebService
         public string codAdresa;
         public string tonaj;
         public string coords;
+        public bool isOras;
+        public int razaKm;
+        public string coordsCentru;
     }
 
 
@@ -397,6 +401,7 @@ namespace LiteSFATestWebService
         public string isCmdInstPublica;
         public double bazaSalariala = 0;
         public string tipClientInstPublica;
+        public bool isAprobatDistrib;
 
     }
 

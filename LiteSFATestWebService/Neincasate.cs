@@ -34,7 +34,7 @@ namespace LiteSFATestWebService
             {
                 listClienti = " and kunnr in ('" + clienti.Replace("#", "','") + "') and prctr = '" + filiala + "' ";
 
-                if (tipUserSap != null && (tipUserSap.Equals("CVIP") || tipUserSap.Equals("SDIP")))
+                if (tipUserSap != null && (tipUserSap.Equals("CVIP") || tipUserSap.Equals("SDIP") || filiala == "NN10"))
                     listClienti = " and kunnr in ('" + clienti.Replace("#", "','") + "') ";
 
                 tabAgenti = " , agenti ag ";
@@ -76,6 +76,8 @@ namespace LiteSFATestWebService
                 }
 
                 oReader = cmd.ExecuteReader();
+
+                
 
                 List<FacturaNeincasata> listaFacturi = new List<FacturaNeincasata>();
                 FacturaNeincasata oFactura = null;

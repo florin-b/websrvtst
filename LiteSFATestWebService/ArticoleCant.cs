@@ -25,7 +25,11 @@ namespace LiteSFATestWebService
             webService.Credentials = nc;
             webService.Timeout = 300000;
 
+            
+
             SAPWebServices.ZPalcant inParam = new SAPWebServices.ZPalcant();
+
+            
 
             SAPWebServices.Zmateriale[] artPal = new SAPWebServices.Zmateriale[1];
             artPal[0] = new SAPWebServices.Zmateriale();

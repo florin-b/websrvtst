@@ -23,7 +23,7 @@ namespace LiteSFATestWebService
             OracleConnection connection = new OracleConnection();
             OracleDataReader oReader = null;
 
-            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+            string connectionString = DatabaseConnections.ConnectToProdEnvironment();
 
             connection.ConnectionString = connectionString;
             connection.Open();
@@ -35,30 +35,37 @@ namespace LiteSFATestWebService
 
                 cmd.CommandText = " select upper(localitate) from sapprd.zlocalitati where bland=:codJudet order by localitate ";
 
+                cmd.CommandText = " select upper(a.localitate), nvl(b.oras,'-1') oras, nvl(b.razakm,-1) raza, nvl(c.latitudine,-1) lat, nvl(c.longitudine,-1) lon " +
+                                  " from sapprd.zlocalitati a, sapprd.zoraseromania b, sapprd.zcoordlocalitati c " +
+                                  " where a.mandt='900' and b.mandt(+) = '900' and c.mandt(+) = '900' and a.bland =:codJudet " +
+                                  " and a.bland = b.codjudet(+) and a.localitate = b.oras(+) and c.judet(+) =  b.numejudet and c.localitate(+) = b.oras " + 
+                                  " order by a.localitate ";
+
+
+
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
 
                 cmd.Parameters.Add(":codJudet", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
                 cmd.Parameters[0].Value = codJudet;
 
-
                 oReader = cmd.ExecuteReader();
 
-                List<string> listLocalitati = new List<string>();
+                List<Localitate> listLocalitati = new List<Localitate>();
 
                 if (oReader.HasRows)
                 {
-
                     while (oReader.Read())
                     {
-                        listLocalitati.Add(oReader.GetString(0));
+                        Localitate loc = new Localitate();
+                        loc.localitate = oReader.GetString(0);
+                        loc.isOras = !oReader.GetString(1).Equals("-1");
+                        loc.razaKm = oReader.GetInt32(2);
+                        loc.coordonate = oReader.GetString(3) + "," + oReader.GetString(4);
+                        listLocalitati.Add(loc);
                     }
 
-
                 }
-
-
-
 
 
                 if (oReader != null)
@@ -168,7 +175,6 @@ namespace LiteSFATestWebService
         public static void insereazaCoordonateAdresa(OracleConnection connection, string idComanda, string coordonate, string codJudet, string localitate)
         {
 
-            ErrorHandling.sendErrorToMail("insereazaCoordonateAdresa: " +  idComanda + " , " +  coordonate + " , " + codJudet + " , " + localitate);
 
             string[] coords = coordonate.Split('#');
 
@@ -780,11 +786,6 @@ namespace LiteSFATestWebService
 
                 cmd = connection.CreateCommand();
 
-                cmd.CommandText = " select a.telefon telefon, nvl(b.codclient,'-1') adresa , nvl(c.kunnr,'-1') tonaj from sapprd.zinformclmag a, sapprd.zadreseclienti b, sapprd.ztonajclient c " +
-                                  " where replace(name1,' ','')=:numeClient and a.regio=:codJudet and city1=:localitate and replace(street||nr,' ','')=:strada and " +
-                                  " a.telefon = b.codclient(+) and b.codadresa(+) =:codAdresa and a.telefon = c.kunnr(+) " + 
-                                  " and c.adrnr(+) = :codAdresa ";
-
 
                 cmd.CommandText = " select a.telefon from sapprd.zinformclmag a where replace(a.name1, ' ', '')= :numeClient and a.regio = :codJudet " + 
                                   " and a.city1 = :localitate and replace(a.street || a.nr, ' ', '')= :strada ";  
@@ -968,6 +969,53 @@ namespace LiteSFATestWebService
             {
 
             }
+
+        }
+
+        public string getFilialaJudetLivrare(string codJudet)
+        {
+
+            string filiala = "";
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " SELECT werks FROM sapprd.ZPDL_JUD WHERE mandt = '900' AND regio=:codJudet ";
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":codJudet", OracleType.VarChar, 6).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codJudet;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    filiala = oReader.GetString(0);
+                }
+
+            }
+
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return filiala;
 
         }
 

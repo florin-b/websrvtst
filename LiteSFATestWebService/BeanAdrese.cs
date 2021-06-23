@@ -28,6 +28,14 @@ namespace LiteSFATestWebService
 
     }
 
+    public class Localitate
+    {
+        public string localitate;
+        public bool isOras;
+        public int razaKm;
+        public string coordonate;
+    }
+
 
     public class DateLivrareClient
     {

@@ -79,6 +79,16 @@ namespace LiteSFATestWebService
 
         }
 
+        public static bool isMathausMare(string filiala)
+        {
+            return filiala.Equals("AG10") || filiala.Equals("BU10") || filiala.Equals("IS10");
+        }
+
+
+        public static bool isMathausMic(string filiala)
+        {
+            return filiala.Equals("GL10") || filiala.Equals("CT10") || filiala.Equals("DJ10") || filiala.Equals("BH10");
+        }
 
         public static string getYearFromStrDate(string strDate)
         {

@@ -143,6 +143,7 @@ namespace LiteSFATestWebService
         public string getListClienti(string numeClient, string depart, string departAg, string unitLog, string codUser, string tipUserSap)
         {
 
+
             string serializedResult = "";
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand();
@@ -179,8 +180,8 @@ namespace LiteSFATestWebService
                 if (unitLog.Substring(0, 2).Equals("BU"))
                     exceptieClient = " and p.kunn2 like 'BU%' ";
 
-                //pentru DV nu trebuie restrictie pe filiala
-                if (unitLog.Equals("NN10"))
+                //pentru DV si SSCM nu trebuie restrictie pe filiala
+                if (unitLog.Equals("NN10") || (tipUserSap != null && tipUserSap.Equals("SSCM")))
                     exceptieClient = "";
 
 
@@ -226,7 +227,7 @@ namespace LiteSFATestWebService
                                   " where rownum<=50 order by x.nume ";
 
 
-                ErrorHandling.sendErrorToMail("getListClienti: " + cmd.CommandText);
+               
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -1161,6 +1162,15 @@ namespace LiteSFATestWebService
             try
             {
 
+                int i = 0;
+                bool isCUI = int.TryParse(numeClient, out i);
+
+                string restrClient = " and lower(c.nume) like lower('" + numeClient + "%') ";
+
+                if (isCUI)
+                    restrClient = " and (k.stceg like '" + numeClient + "%' or upper(k.stceg) like 'RO" + numeClient + "%')";
+
+
                 string tipClientIP = "18";
 
                 if (tipClient != null && tipClient.Equals("NONCONSTR"))
@@ -1174,11 +1184,11 @@ namespace LiteSFATestWebService
                 cmd = connection.CreateCommand();
 
 
-                cmd.CommandText = " select distinct c.nume, c.cod, c.tip_pers, k.stceg, v.kdgrp from websap.clienti c,  sapprd.knvv v, sapprd.knvp p, sapprd.kna1 k " +
+                cmd.CommandText = " select distinct c.nume, c.cod, c.tip_pers, k.stceg, v.kdgrp, p.kunn2 from websap.clienti c,  sapprd.knvv v, sapprd.knvp p, sapprd.kna1 k " +
                                   " where c.cod = v.kunnr and v.mandt = '900' and v.vtweg = '20' " + 
                                   " and v.spart = '11' and v.kdgrp=:tipClient and v.mandt = p.mandt " +
                                   " and v.kunnr = p.kunnr and v.vtweg = p.vtweg and v.spart = p.spart and k.mandt='900' and k.kunnr = c.cod " + 
-                                  " and p.parvw in ('ZA','ZS')  and lower(c.nume) like lower('" + numeClient + "%') order by nume ";
+                                  " and p.parvw in ('ZA','ZS') " +  restrClient + " order by nume ";
 
 
                 cmd.CommandType = CommandType.Text;
@@ -1186,6 +1196,8 @@ namespace LiteSFATestWebService
 
                 cmd.Parameters.Add(":tipClient", OracleType.VarChar, 6).Direction = ParameterDirection.Input;
                 cmd.Parameters[0].Value = tipClientIP;
+
+                ErrorHandling.sendErrorToMail("getListClientiInstPublice: " + cmd.CommandText + " , " + tipClientIP);
 
                 oReader = cmd.ExecuteReader();
 
@@ -1199,6 +1211,7 @@ namespace LiteSFATestWebService
                         unClient.tipClient = oReader.GetString(2);
                         unClient.codCUI = oReader.GetString(3);
                         unClient.tipClientIP = oReader.GetString(4);
+                        unClient.filiala = oReader.GetString(5);
 
                         unClient.termenPlata = getTermenPlataInstPublic(connection, unClient.codClient);
 
@@ -1526,6 +1539,83 @@ namespace LiteSFATestWebService
 
         }
 
+        public string getInfoCreditClient(string codClient)
+        {
+
+            CreditClient creditClient = new CreditClient();
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+                string nowDate = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString("00"); 
+
+                cmd = connection.CreateCommand();
+                cmd.CommandText = " select distinct k.kunnr,k.klimk lcredit, " +
+                  " k.skfor,k.ssobl, nvl((select s2.olikw+s2.ofakw from sapprd.s067 s2 where s2.mandt='900' and " +
+                  " s2.kkber='1000' and s2.knkli=k.kunnr),0) olikw, nvl((select sum(s1.oeikw) from sapprd.s066 s1 " +
+                  " where s1.mandt='900' and s1.kkber='1000' and spmon=:l  and s1.knkli=k.kunnr),0) oeikw,  k.crblb " +
+                  " from sapprd.knkk k " +
+                  " where k.mandt='900' and k.kkber='1000' and k.kunnr=:k ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":l", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = nowDate;
+
+                cmd.Parameters.Add(":k", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = codClient;
+
+                oReader = cmd.ExecuteReader();
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    creditClient.limitaCredit = oReader.GetFloat(1);
+                    creditClient.restCredit = Math.Round(oReader.GetFloat(1) - (oReader.GetFloat(2) + oReader.GetFloat(3)) - (oReader.GetFloat(4) + oReader.GetFloat(5)),2);
+                    creditClient.isBlocat = oReader.GetString(6).Equals("X");
+                }
+
+
+                if (creditClient.isBlocat)
+                {
+                        cmd.CommandText = " select k.grupp, c.gtext from sapprd.knkk k, sapprd.zt691c c " +
+                                          " where k.mandt = '900' and c.mandt = '900' and k.kunnr =:k " +
+                                          " and k.mandt = c.mandt and k.grupp = c.grupp ";
+
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.Clear();
+
+                        cmd.Parameters.Add(":k", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                        cmd.Parameters[0].Value = codClient;
+
+                        oReader = cmd.ExecuteReader();
+                        if (oReader.HasRows)
+                        {
+                            oReader.Read();
+                            creditClient.motivBlocat = oReader.GetString(1).ToString();
+                        }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return new JavaScriptSerializer().Serialize(creditClient);
+
+        }
 
 
         private static string getTipClient(string codTip)

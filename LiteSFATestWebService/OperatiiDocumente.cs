@@ -264,6 +264,7 @@ namespace LiteSFATestWebService
 
             SAPWebServices.ZstareCurenta inParam = new ZstareCurenta();
             inParam.PVbeln = nrDocument;
+            
 
             System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Service1.getUser(), Service1.getPass());
             webService.Credentials = nc;
@@ -271,9 +272,15 @@ namespace LiteSFATestWebService
 
             SAPWebServices.ZstareCurentaResponse outParam = webService.ZstareCurenta(inParam);
 
-            stareResponse = outParam.EpStatus + ". " + outParam.EpStatusLong;
-            
-            
+
+            if (outParam.EtStatus.Length > 0)
+                stareResponse = "";
+
+            for (int i = 0; i < outParam.EtStatus.Length; i++)
+            {
+                stareResponse += "Cmd. " + outParam.EtStatus[i].Vbeln + " - " + outParam.EtStatus[i].StatusLong +  "." + System.Environment.NewLine;
+            }
+
 
             webService.Dispose();
 

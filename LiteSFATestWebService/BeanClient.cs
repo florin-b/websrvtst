@@ -43,6 +43,14 @@ namespace LiteSFATestWebService
         public string localitate;
         public string strada;
     }
+
+    public class CreditClient
+    {
+        public double limitaCredit;
+        public double restCredit;
+        public bool isBlocat;
+        public string motivBlocat;
+    }
    
 
 }

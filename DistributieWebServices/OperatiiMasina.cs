@@ -123,9 +123,7 @@ namespace DistributieTESTWebServices
 
                         double distEfectuataGps = kmGpsAstazi - kmGpsTrecut;
                         double distEfectuataDeclarat = Int32.Parse(kmNoi) - kmSalvati;
-
                         double difKmDistanta = Math.Abs(distEfectuataDeclarat - distEfectuataGps);
-
                         bool isDifProcent = Math.Abs(distEfectuataGps - distEfectuataDeclarat) > distEfectuataGps / 10;
 
                         if (difKmDistanta > 10 || isDifProcent)
@@ -135,13 +133,9 @@ namespace DistributieTESTWebServices
                             msgId = 3;
                         }
 
-
-
                     }
 
-
                 }
-
 
             }
             catch (Exception ex)
@@ -189,8 +183,6 @@ namespace DistributieTESTWebServices
         {
             string[] tokDate = strDate.Split('-');
             return tokDate[0] + "-" + tokDate[1] + "-20" + tokDate[2];
-
-
         }
 
 
@@ -263,11 +255,8 @@ namespace DistributieTESTWebServices
 
                 cmd = connection.CreateCommand();
 
-
-
                 cmd.CommandText = " select to_char(to_date(datac,'yyyymmdd')), km from sapprd.zkmmasini where nrauto =:nrAuto " +
                                   " and datac = (select max(datac) from sapprd.zkmmasini where nrauto =:nrAuto) ";
-
 
                 cmd.Parameters.Clear();
 
@@ -363,10 +352,500 @@ namespace DistributieTESTWebServices
 
         }
 
+        public int getKmInceputZi(string codSofer, string nrMasina, string data)
+        {
+            int km = 0;
 
- 
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+                connection.ConnectionString = DatabaseConnections.ConnectToTestEnvironment();
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select km from sapprd.zkmmasini where mandt = '900' and replace(nrauto,'-','') =:nrAuto and " +
+                                  " codangajat =:codSofer and datac=:data ";
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":nrAuto", OracleType.VarChar, 30).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[0].Value = nrMasina.Replace("-", "");
+
+                cmd.Parameters.Add(":codSofer", OracleType.VarChar, 24).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[1].Value = codSofer;
+
+                cmd.Parameters.Add(":data", OracleType.VarChar, 24).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[2].Value = data;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    km = oReader.GetInt32(0);
+                }
+
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+
+            return km;
+        }
+
+        public int getMaxKmFoaie(string codSofer, string nrMasina, string data)
+        {
+            int maxKm = 0;
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+                connection.ConnectionString = DatabaseConnections.ConnectToTestEnvironment();
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select max(to_number(kmbord)) from sapprd.zfoaieparcurs where mandt = '900' and replace(nrauto,'-','') =:nrAuto and " +
+                                  " codangajat =:codSofer and datac=:data ";
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":nrAuto", OracleType.VarChar, 30).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[0].Value = nrMasina.Replace("-", "");
+
+                cmd.Parameters.Add(":codSofer", OracleType.VarChar, 24).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[1].Value = codSofer;
+
+                cmd.Parameters.Add(":data", OracleType.VarChar, 24).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[2].Value = data;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    maxKm = oReader.GetInt32(0);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+
+            return maxKm;
+        }
 
 
+        public string adaugaSiroco(string sirocoData)
+        {
+            Alimentare siroco = new JavaScriptSerializer().Deserialize<Alimentare>(sirocoData);
+
+            if (siroco.id.Equals("null"))
+                return insereazaSiroco(siroco);
+            else
+                return actualizeazaSiroco(siroco);
+        }
+
+        public string getSiroco(string codSofer, string nrMasina, string data)
+        {
+            Alimentare alimentare = new Alimentare();
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                connection.ConnectionString = DatabaseConnections.ConnectToTestEnvironment();
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select id, litri from sapprd.zsiroco_tab where mandt = '900' and nrauto =:nrAuto and " +
+                                  " sofer =:codSofer and data=:data ";
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":nrAuto", OracleType.VarChar, 120).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[0].Value = nrMasina.Replace("-", "");
+
+                cmd.Parameters.Add(":codSofer", OracleType.VarChar, 24).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[1].Value = codSofer;
+
+                cmd.Parameters.Add(":data", OracleType.VarChar, 24).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[2].Value = data;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    alimentare.id = oReader.GetInt32(0).ToString();
+                    alimentare.litri = oReader.GetInt32(1).ToString();
+                }
+                
+            }
+
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return new JavaScriptSerializer().Serialize(alimentare);
+        }
+
+
+
+
+
+        public string insereazaSiroco(Alimentare siroco)
+        {
+            string retVal = "1";
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+
+            try
+            {
+
+                connection.ConnectionString = DatabaseConnections.ConnectToTestEnvironment();
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " insert into sapprd.zsiroco_tab(mandt, id, nrauto, sofer, data, litri) values ('900', pk_mas.nextval, :nrauto, :sofer, :data, :litri) ";
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":nrauto", OracleType.NVarChar, 120).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = siroco.nrAuto.Replace("-", "");
+
+                cmd.Parameters.Add(":sofer", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = siroco.codSofer;
+
+                cmd.Parameters.Add(":data", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = siroco.data;
+
+                cmd.Parameters.Add(":litri", OracleType.Number, 3).Direction = ParameterDirection.Input;
+                cmd.Parameters[3].Value = Int32.Parse(siroco.litri);
+
+                cmd.ExecuteNonQuery();
+
+
+            }
+            catch (Exception ex)
+            {
+                retVal = "-1";
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(cmd, connection);
+            }
+
+
+            return retVal;
+        }
+
+        private string actualizeazaSiroco(Alimentare siroco)
+        {
+            string retVal = "1";
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+
+            try
+            {
+
+                connection.ConnectionString = DatabaseConnections.ConnectToTestEnvironment();
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " update sapprd.zsiroco_tab set litri=:litri where mandt='900' and id=:id  ";
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":litri", OracleType.Number, 3).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = Int32.Parse(siroco.litri);
+
+                cmd.Parameters.Add(":id", OracleType.Number, 3).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = Int32.Parse(siroco.id);
+
+                cmd.ExecuteNonQuery();
+
+
+            }
+            catch (Exception ex)
+            {
+                retVal = "-1";
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(cmd, connection);
+            }
+
+            return retVal;
+        }
+
+
+
+        public string getAlimentare(string codSofer, string nrMasina, string data)
+        {
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            Alimentare alimentare = new Alimentare();
+
+            try
+            {
+
+                connection.ConnectionString = DatabaseConnections.ConnectToTestEnvironment();
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select id, kmbord, litri from sapprd.zalim_tab where mandt = '900' and nrauto =:nrAuto and " +
+                                  " sofer =:codSofer and data=:data ";
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":nrAuto", OracleType.VarChar, 120).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[0].Value = nrMasina.Replace("-", "");
+
+                cmd.Parameters.Add(":codSofer", OracleType.VarChar, 24).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[1].Value = codSofer;
+
+                cmd.Parameters.Add(":data", OracleType.VarChar, 24).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[2].Value = data;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    alimentare.id = oReader.GetInt32(0).ToString();
+                    alimentare.kmBord = oReader.GetString(1);
+                    alimentare.litri = oReader.GetInt32(2).ToString();
+                } else
+                    alimentare.kmBord = getKmMasina(nrMasina, data).ToString();
+            }
+
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return new JavaScriptSerializer().Serialize(alimentare);
+        }
+
+
+        private int getKmMasina(string nrMasina, string data)
+        {
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            int nrKm = 0;
+
+            try
+            {
+
+                connection.ConnectionString = DatabaseConnections.ConnectToProdEnvironment();
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select a.mileage from gps_index a, gps_masini b where b.nr_masina = :nrAuto and b.id = a.device_id " +
+                                  " and trunc(a.record_time) = to_date('" + data + "','YYYYMMDD') ";
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":nrAuto", OracleType.VarChar, 120).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[0].Value = nrMasina.Replace("-", "");
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    nrKm = oReader.GetInt32(0);
+                }
+
+
+                }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+
+            return nrKm;
+
+        }
+
+        public string adaugaAlimentare(string alimentareData)
+        {
+            Alimentare alimentare = new JavaScriptSerializer().Deserialize<Alimentare>(alimentareData);
+
+            string statusKm = verificaKmAlimentare(alimentare);
+            if (!statusKm.Equals(String.Empty))
+            {
+                return "INFO#" + statusKm;
+            }
+
+            if (alimentare.id.Equals("null"))
+                return insereazaAlimentare(alimentare);
+            else
+                return actualizeazaAlimentare(alimentare);
+
+        }
+
+        private string verificaKmAlimentare(Alimentare alimentare)
+        {
+            string status = "";
+            int kmInceputZi = getKmInceputZi(alimentare.codSofer, alimentare.nrAuto, alimentare.data);
+
+            if (Int32.Parse(alimentare.kmBord) < kmInceputZi)
+            {
+                return "Nr. de km este mai mic decat la inceput de zi.";
+            }
+
+            int kmFoaie = getMaxKmFoaie(alimentare.codSofer, alimentare.nrAuto, alimentare.data);
+
+            if (Int32.Parse(alimentare.kmBord) > kmFoaie && kmFoaie != 0)
+            {
+                return "Nr. de km este mai mare decat cel din foaia de parcurs.";
+            }
+
+
+            return status;
+        }
+
+        private string insereazaAlimentare(Alimentare alimentare)
+        {
+            string retVal = "1";
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+
+            try
+            {
+
+                connection.ConnectionString = DatabaseConnections.ConnectToTestEnvironment();
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " insert into sapprd.ZALIM_TAB(mandt, id, nrauto, sofer, data, kmbord, litri) values ('900', pk_mas.nextval, :nrauto, :sofer, :data, :kmbord, :litri) ";
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":nrauto", OracleType.NVarChar, 120).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = alimentare.nrAuto.Replace("-", "");
+
+                cmd.Parameters.Add(":sofer", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = alimentare.codSofer;
+
+                cmd.Parameters.Add(":data", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = alimentare.data;
+
+                cmd.Parameters.Add(":kmbord", OracleType.NVarChar, 45).Direction = ParameterDirection.Input;
+                cmd.Parameters[3].Value = alimentare.kmBord;
+
+                cmd.Parameters.Add(":litri", OracleType.Number, 3).Direction = ParameterDirection.Input;
+                cmd.Parameters[4].Value = Int32.Parse(alimentare.litri);
+
+                cmd.ExecuteNonQuery();
+
+
+            }
+            catch (Exception ex)
+            {
+                retVal = "-1";
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(cmd, connection);
+            }
+
+            return retVal;
+
+        }
+
+
+        private string actualizeazaAlimentare(Alimentare alimentare)
+        {
+            string retVal = "1";
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+
+            try
+            {
+
+                connection.ConnectionString = DatabaseConnections.ConnectToTestEnvironment();
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " update sapprd.ZALIM_TAB set kmbord=:kmbord, litri=:litri where mandt='900' and id=:id  ";
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":kmbord", OracleType.NVarChar, 45).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = alimentare.kmBord;
+
+                cmd.Parameters.Add(":litri", OracleType.Number, 3).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = Int32.Parse(alimentare.litri);
+
+                cmd.Parameters.Add(":id", OracleType.Number, 3).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = Int32.Parse(alimentare.id);
+
+
+
+                cmd.ExecuteNonQuery();
+
+
+            }
+            catch (Exception ex)
+            {
+                retVal = "-1";
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(cmd, connection);
+            }
+
+            return retVal;
+        }
 
 
     }

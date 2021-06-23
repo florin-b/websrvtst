@@ -37,13 +37,13 @@ namespace LiteSFATestWebService
             try
             {
 
-                string connectionString = DatabaseConnections.ConnectToProdEnvironment();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
                 connection.ConnectionString = connectionString;
                 connection.Open();
 
                 cmd = connection.CreateCommand();
 
-                cmd.CommandText = " select cod, nume, cod_hybris, nvl(cod_parinte,'') from sapprd.zcatmathaus order by cod ";
+                cmd.CommandText = " select cod, nume, cod_hybris, nvl(cod_parinte,'') from sapprd.zcatmathaus_b order by cod ";
                 cmd.Parameters.Clear();
 
                 oReader = cmd.ExecuteReader();
@@ -78,46 +78,85 @@ namespace LiteSFATestWebService
 
 
 
-        public string getMagazinMathaus(string filiala)
+        public string getArticoleCategorie(string codCategorie, string filiala, string depart)
         {
 
-            string mMathaus = filiala;
+            List<ArticolMathaus> listArticole;
 
-            string serviceUrl = "https://pcm.arabesque.ro/ws410/rest/arabesqueplants/" + filiala  + "/arabesquezones/Z" + filiala;
+            if (codCategorie.Equals("1"))
+                listArticole = getArticoleLocal(depart);
+            else
+                listArticole = getArticoleWebService(codCategorie, depart, "");
 
-            System.Net.ServicePointManager.Expect100Continue = false;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(serviceUrl);
+            if (listArticole.Count > 0)
+                addExtraData(listArticole, filiala);
 
-            string encoded = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes("wsorganizatie" + ":" + "uGwxpmxRK7e6k5fh"));
-            request.Headers.Add("Authorization", "Basic " + encoded);
+            return new JavaScriptSerializer().Serialize(listArticole);
+        }
 
-            System.Net.WebResponse response = request.GetResponse();
-            System.IO.StreamReader sr = new System.IO.StreamReader(response.GetResponseStream());
+        private List<ArticolMathaus> getArticoleLocal(string depart)
+        {
+            List<ArticolMathaus> listArticole = new List<ArticolMathaus>();
 
-            string xmlResponse = sr.ReadToEnd().Trim();
+            OracleConnection connection = new OracleConnection();
+            OracleDataReader oReader = null;
 
-            XDocument xdoc = XDocument.Parse(xmlResponse);
-            XElement result = xdoc.Element("arabesquezone").Element("associatedPlants");
-            XElement plant = result.Element("arabesquePlant");
+            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
-            if (plant != null)
+            connection.ConnectionString = connectionString;
+            connection.Open();
+
+            OracleCommand cmd = connection.CreateCommand();
+
+            try
             {
-                XAttribute plantName = plant.Attribute("name");
-                mMathaus = plantName.Value.ToString();
+                cmd.CommandText = " select cod, nume from articole where grup_vz=:depart and rownum<20 ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":depart", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = depart;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        ArticolMathaus articol = new ArticolMathaus();
+                        articol.cod = oReader.GetString(0);
+                        articol.nume = oReader.GetString(1);
+                        articol.isLocal = true;
+                        setDetaliiArticol(articol);
+                        listArticole.Add(articol);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
             }
 
-            return mMathaus;
 
+            return listArticole;
         }
 
 
-
-        public string getArticoleCategorie(string codCategorie, string filiala)
+        private List<ArticolMathaus> getArticoleWebService(string codCategorie, string depart, string urlService)
         {
 
-            string serviceUrl = "https://idx1.arabesque.ro/solr/master_erp_Product_default/select?q=categoryCode_string_mv:" + codCategorie;
+            List<ArticolMathaus> listArticole = new List<ArticolMathaus>();
+
+            string serviceUrl = "https://idx.arabesque.ro/solr/master_erp_Product_default/select?q=categoryCode_string_mv:" + codCategorie;
+
+            if (urlService != null && !urlService.Equals(""))
+                serviceUrl = urlService;
 
             System.Net.ServicePointManager.Expect100Continue = false;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -133,14 +172,12 @@ namespace LiteSFATestWebService
 
             string jsonResponse = sr.ReadToEnd().Trim();
 
-            List<ArticolMathaus> listArticole = new List<ArticolMathaus>();
-            
-
             int startResponse = jsonResponse.IndexOf("docs\":[") + 7;
 
             jsonResponse = jsonResponse.Substring(startResponse, jsonResponse.Length - startResponse - 1);
 
             string[] articole = Regex.Split(jsonResponse, "\"id\":");
+            string divizieArt = "";
 
             foreach (string art in articole)
             {
@@ -163,7 +200,7 @@ namespace LiteSFATestWebService
 
                     if (data.Contains("image_m_string"))
                     {
-                        articol.adresaImg = "https" +  Regex.Split(data, "https")[1].Replace("\"", "");
+                        articol.adresaImg = "https" + Regex.Split(data, "https")[1].Replace("\"", "");
                     }
 
                     if (data.Contains("image_l_string"))
@@ -173,25 +210,103 @@ namespace LiteSFATestWebService
 
                     if (data.Contains("description_text_ro"))
                     {
-                        articol.descriere = Regex.Replace(Regex.Split(data.Trim(), "\":\"")[1].Replace("\"", "").Replace("\\n", " ").Replace("\\t", " ").Replace("&nbsp;", " "), "<.*?>", String.Empty) ;
+                        articol.descriere = Regex.Replace(Regex.Split(data.Trim(), "\":\"")[1].Replace("\"", "").Replace("\\n", " ").Replace("\\t", " ").Replace("&nbsp;", " "), "<.*?>", String.Empty);
+                    }
+
+                    if (data.Contains("divizie_string"))
+                    {
+                        divizieArt = data.Split(':')[1].Replace("\"", "");
                     }
 
                 }
-                if (articol.nume != null)
+                if (articol.nume != null && (divizieArt.Equals(depart) || divizieArt.Equals("11")))
                 {
                     if (articol.descriere == null)
                         articol.descriere = " ";
 
+                    articol.isLocal = false;
                     listArticole.Add(articol);
                 }
 
             }
 
-            addExtraData(listArticole, filiala);
-
-            return new JavaScriptSerializer().Serialize(listArticole);
+            return listArticole;
         }
 
+        public string cautaArticoleMathaus(string codArticol, string tipCautare, string filiala, string depart) 
+        {
+            string serviceUrlCod = "https://idx.arabesque.ro/solr/master_erp_Product_default/select?q=code_string:";
+            string serviceUrlNume = "https://idx.arabesque.ro/solr/master_erp_Product_default/select?q=name_text_ro:";
+            string serviceUrl;
+            List<ArticolMathaus> listArticole;
+
+            if (tipCautare.Equals("c"))
+                serviceUrl = serviceUrlCod + codArticol + "*";
+            else
+                serviceUrl = serviceUrlNume + codArticol;
+
+            listArticole = getArticoleWebService("", depart, serviceUrl);
+
+            if (listArticole.Count > 0)
+                    addExtraData(listArticole, filiala);
+
+            return new JavaScriptSerializer().Serialize(listArticole);
+
+        }
+
+
+        private void setDetaliiArticol(ArticolMathaus articol)
+        {
+
+            string serviceUrl = "https://wse1-sap-prod.arabesque.ro/solr/master_erp_Product_default/select?q=code_string:" + articol.cod;
+
+            System.Net.ServicePointManager.Expect100Continue = false;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            System.Net.WebRequest request = System.Net.WebRequest.Create(serviceUrl);
+
+            CredentialCache credential = new CredentialCache();
+            credential.Add(new System.Uri(serviceUrl), "Basic", new System.Net.NetworkCredential("erpClient", "S3EjkNEm"));
+            request.Credentials = credential;
+
+            System.Net.WebResponse response = request.GetResponse();
+            System.IO.StreamReader sr = new System.IO.StreamReader(response.GetResponseStream());
+
+            string jsonResponse = sr.ReadToEnd().Trim();
+
+            int startResponse = jsonResponse.IndexOf("docs\":[") + 7;
+
+            jsonResponse = jsonResponse.Substring(startResponse, jsonResponse.Length - startResponse - 1);
+
+            string[] articole = Regex.Split(jsonResponse, "\"id\":");
+
+            foreach (string art in articole)
+            {
+
+                string[] artData = Regex.Split(art, "\",");
+
+                foreach (string data in artData)
+                {
+
+                    if (data.Contains("image_m_string"))
+                    {
+                        articol.adresaImg = "https" + Regex.Split(data, "https")[1].Replace("\"", "");
+                    }
+
+                    if (data.Contains("image_l_string"))
+                    {
+                        articol.adresaImgMare = "https" + Regex.Split(data, "https")[1].Replace("\"", "");
+                    }
+
+                    if (data.Contains("description_text_ro"))
+                    {
+                        articol.descriere = Regex.Replace(Regex.Split(data.Trim(), "\":\"")[1].Replace("\"", "").Replace("\\n", " ").Replace("\\t", " ").Replace("&nbsp;", " "), "<.*?>", String.Empty);
+                    }
+
+                }
+            }
+
+        }
 
 
         private void addExtraData(List<ArticolMathaus> listArticole, string filiala)
@@ -200,8 +315,7 @@ namespace LiteSFATestWebService
             string listCodArt = "";
             string filialaGed = filiala.Substring(0, 2) + "2" + filiala.Substring(3, 1);
 
-            string magMathaus = getMagazinMathaus(filiala);
-
+            string magMathaus = filiala;
 
             List<ArticolMathaus> eliminate = new List<ArticolMathaus>();
 
@@ -230,8 +344,8 @@ namespace LiteSFATestWebService
 
                 cmd.CommandText = " select distinct a.cod, a.sintetic, b.cod_nivel1, a.umvanz10, a.umvanz, nvl(a.tip_mat, ' '),  b.cod nume_sint, " +
                                   " decode(a.grup_vz, ' ', '-1', a.grup_vz), decode(trim(a.dep_aprobare), '', '00', a.dep_aprobare)  dep_aprobare, " +
-                                  " (select nvl((select 1 from sapprd.marm m where m.mandt = '900' " +
-                                  " and m.matnr = a.cod and m.meinh = 'EPA'),-1) palet from dual) palet  , -1 stoc , categ_mat, " +
+                                  " (select nvl((select 1 from sapprd.mara m where m.mandt = '900' and m.matnr = a.cod and m.categ_mat in ('PA','AM')),-1) " + 
+                                  " palet from dual) palet  , -1 stoc , categ_mat, " +
                                   " lungime, a.s_indicator from articole a, sintetice b, sapprd.marc c   where c.mandt = '900' and c.matnr = a.cod " +
                                   " and c.werks = :filiala and c.mmsta <> '01'  and a.sintetic = b.cod and a.cod != 'MAT GENERIC PROD' " +
                                   " and a.blocat <> '01' and a.cod in " + listCodArt + "   ";
@@ -279,8 +393,7 @@ namespace LiteSFATestWebService
                                 articol.categorie = strCat;
                                 articol.lungime = oReader.GetDouble(12).ToString();
                                 articol.catMathaus = oReader.GetString(13).Equals("Y") ? "S" : " ";
-                                articol.pretUnitar = "-1";
-                                //articol.pretUnitar = getPret("4110010417", codArtBrut, "1","11", articol.umVanz, "GL20","SD", "MAV1", "00083206", "10", "GL10", "") ;
+                                articol.pretUnitar = " ";
 
                                 if (!magMathaus.Equals(filiala) && oReader.GetString(13).Equals("N"))
                                     eliminate.Add(articol);
@@ -342,306 +455,123 @@ namespace LiteSFATestWebService
         }
 
 
+      
 
-        public string getPret(string client, string articol, string cantitate, string depart, string um, string ul, string tipUser, string depoz, string codUser, string canalDistrib, string filialaAlternativa, string filialaClp)
+
+        public string getLivrariComanda(string strComanda)
         {
 
-            string retVal = "";
-            SAPWebServicesPRD.ZTBL_WEBSERVICE webService = null;
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
 
-            OracleConnection connection = new OracleConnection();
-            OracleCommand cmd = new OracleCommand();
-            OracleDataReader oReader = null;
+            ComandaMathaus comandaMathaus = serializer.Deserialize<ComandaMathaus>(strComanda);
+            List<DateArticolMathaus> articole = comandaMathaus.deliveryEntryDataList;
 
-            string tipUserLocal;
+            ComandaMathaus comanda = new ComandaMathaus();
+            comanda.sellingPlant = comandaMathaus.sellingPlant;
+            List<DateArticolMathaus> deliveryEntryDataList = new List<DateArticolMathaus>();
 
-            if (tipUser == null || (tipUser != null && tipUser.Trim().Length == 0))
+            foreach (DateArticolMathaus dateArticol in articole)
             {
-                tipUserLocal = Service1.getTipUser(codUser);
-            }
-            else
-            {
-                tipUserLocal = tipUser;
-            }
-
-
-            try
-            {
-
-                webService = new SAPWebServicesPRD.ZTBL_WEBSERVICE();
-                SAPWebServicesPRD.ZgetPrice inParam = new SAPWebServicesPRD.ZgetPrice();
-
-                System.Net.NetworkCredential nc = new System.Net.NetworkCredential(DatabaseConnections.getUser(), DatabaseConnections.getPass());
-
-                webService.Credentials = nc;
-                webService.Timeout = 300000;
-
-                inParam.GvKunnr = client;
-                inParam.GvMatnr = articol;
-                inParam.GvSpart = depart;
-                inParam.GvVrkme = um;
-                inParam.GvWerks = ul;
-                inParam.GvLgort = depoz;
-                inParam.GvCant = Decimal.Parse(cantitate);
-                inParam.GvCantSpecified = true;
-                inParam.GvSite = " ";
-                inParam.TipPers = tipUserLocal;
-                inParam.Canal = canalDistrib;
-                inParam.UlStoc = filialaClp != null ? filialaClp : " ";
-
-
-                SAPWebServicesPRD.ZgetPriceResponse outParam = webService.ZgetPrice(inParam);
-
-                string pretOut = outParam.GvNetwr.ToString() != "" ? outParam.GvNetwr.ToString() : "-1";
-                string umOut = outParam.GvVrkme.ToString() != "" ? outParam.GvVrkme.ToString() : "-1";
-                string noDiscOut = outParam.GvNoDisc.ToString();
-                string codArtPromo = outParam.GvMatnrFree.ToString() != "" ? outParam.GvMatnrFree.ToString() : "-1";
-                string cantArtPromo = outParam.GvCantFree.ToString() != "" ? outParam.GvCantFree.ToString() : "-1";
-                string pretArtPromo = outParam.GvNetwrFree.ToString() != "" ? outParam.GvNetwrFree.ToString() : "-1";
-                string umArtPromo = outParam.GvVrkmeFree.ToString() != "" ? outParam.GvVrkmeFree.ToString() : "-1";
-                string pretLista = outParam.GvNetwrList.ToString() != "" ? outParam.GvNetwrList.ToString() : "-1";
-                string cantOut = outParam.GvCant.ToString() != "" ? outParam.GvCant.ToString() : "-1";
-                string condPret = outParam.GvCond.ToString() != "" ? outParam.GvCond.ToString() : "-1";
-                string multiplu = outParam.Multiplu.ToString() != "" ? outParam.Multiplu.ToString() : "-1";
-                string cantUmb = outParam.OutCantUmb.ToString() != "" ? outParam.OutCantUmb.ToString() : "-1";
-                string Umb = outParam.OutUmb.ToString() != "" ? outParam.OutUmb.ToString() : "-1";
-                string impachetare = outParam.Impachet.ToString() != "" ? outParam.Impachet.ToString() : " ";
-                string pretGed = outParam.GvNetwrFtva.ToString();
-
-
-                string extindere11 = outParam.ErrorCode.ToString();
-
-
-                if (depart.Equals("11") && extindere11.Equals("1"))
-                {
-                    if (Service1.extindeClient(client).Equals("0"))
-                    {
-                        return getPret(client, articol, cantitate, depart, um, ul, tipUserLocal, depoz, codUser, canalDistrib, filialaAlternativa, filialaClp);
-                    }
-                    else
-                    {
-                        return "-1";
-                    }
-                }
-
-
-                //---verificare cmp
-
-
-
-                string filialaCmp = filialaAlternativa;
-
-                if (depart.Equals("11"))
-                {
-                    if (filialaAlternativa.Equals("BV90"))
-                        filialaCmp = "BV92";
-                    else
-                        filialaCmp = filialaAlternativa.Substring(0, 2) + "2" + filialaAlternativa.Substring(3, 1);
-                }
-
-                string connectionString = DatabaseConnections.ConnectToProdEnvironment();
-
-
-                connection.ConnectionString = connectionString;
-                connection.Open();
-
-                cmd = connection.CreateCommand();
-
-                cmd.CommandText = " select nvl(to_char(decode(y.lbkum,0,y.verpr,y.salk3/y.lbkum),'999999.9999'),0) from sapprd.mbew y where " +
-                                  " y.mandt='900' and y.matnr=:matnr  and y.bwkey = :unitLog ";
-
-                cmd.CommandType = CommandType.Text;
-
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add(":matnr", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
-                cmd.Parameters[0].Value = articol;
-
-                cmd.Parameters.Add(":unitLog", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[1].Value = filialaCmp;
-
-
-
-                oReader = cmd.ExecuteReader();
-                double cmpArticol = 0;
-                double procRedCmp = 0;
-                if (oReader.HasRows)
-                {
-                    oReader.Read();
-                    cmpArticol = Convert.ToDouble(oReader.GetString(0));
-                    procRedCmp = 100;
-
-                    cmpArticol = cmpArticol * (100 - procRedCmp) / 100;
-                }
-
-                //---sf. verificare cmp
-
-
-                retVal = cantOut + "#" + pretOut + "#" + umOut + "#" + noDiscOut + "#" + codArtPromo + "#" +
-                         cantArtPromo + "#" + pretArtPromo + "#" + umArtPromo + "#" + pretLista + "#";
-
-
-
-                //descriere conditii pret
-                string[] codReduceri = condPret.Split(';');
-                string[] tokCod;
-
-
-
-                condPret = "";
-                for (int jj = 0; jj < codReduceri.Length; jj++)
-                {
-
-                    tokCod = codReduceri[jj].Split(':');
-
-
-                    cmd = connection.CreateCommand();
-
-                    //stoc la zi
-                    cmd.CommandText = " SELECT vtext FROM SAPPRD.T685t r where mandt = '900' and spras = '4' " +
-                                      " and r.kvewe = 'A' and r.kappl = 'V' and KSCHL=:codRed ";
-
-                    cmd.Parameters.Clear();
-                    cmd.Parameters.Add(":codRed", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
-                    cmd.Parameters[0].Value = tokCod[0];
-
-                    oReader = cmd.ExecuteReader();
-
-                    if (oReader.HasRows)
-                    {
-                        oReader.Read();
-
-                        condPret += oReader.GetString(0) + ":" + tokCod[1] + ";";
-                    }
-                    else
-                    {
-                        condPret += "Taxa verde:0,00;Pret net:0,00;TVA încasat:0,00;";
-                    }
-
-
-                }//sf. for
-
-                retVal += condPret + "#";
-
-                oReader.Close();
-                oReader.Dispose();
-
-
-                //
-
-                //discounturi maxime
-                string discMaxAV = "0", discMaxSD = "0", discMaxDV = "0", discMaxKA = "0";
-
-                cmd = connection.CreateCommand();
-
-                cmd.CommandText = " select distinct nvl(a.discount,0) av, " +
-                                  " nvl((select distinct discount from sapprd.zdisc_pers_sint where  functie='SD' and spart =:depart and werks =:filiala and inactiv <> 'X' and matkl = c.cod),0) sd, " +
-                                  " nvl((select distinct discount from sapprd.zdisc_pers_sint where  functie='DV' and spart =:depart and werks =:filiala and inactiv <> 'X' and matkl = c.cod),0) dv, " +
-                                  " nvl((select distinct discount from sapprd.zdisc_pers_sint where  functie='KA' and werks =:filiala and inactiv <> 'X' and matkl = c.cod),0) ka " +
-                                  " from sapprd.zdisc_pers_sint a, articole b, sintetice c where  a.functie='AV' and a.spart =:depart and a.werks =:filiala " +
-                                  " and b.sintetic = c.cod and inactiv <> 'X' and matkl = c.cod and b.cod =:cod ";
-
-
-
-
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add(":cod", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
-                cmd.Parameters[0].Value = articol;
-
-                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[1].Value = ul;
-
-                cmd.Parameters.Add(":depart", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[2].Value = depart;
-
-
-
-
-                oReader = cmd.ExecuteReader();
-
-                if (oReader.HasRows)
-                {
-                    oReader.Read();
-                    discMaxAV = oReader.GetDouble(0).ToString();
-                    discMaxSD = oReader.GetDouble(1).ToString();
-                    discMaxDV = oReader.GetDouble(2).ToString();
-                    discMaxKA = oReader.GetDouble(3).ToString();
-                }
-
-
-
-
-                //sf. disc.
-
-                //KA - la preturile promotionale nu se mai aplica alte discounturi
-                if (noDiscOut.Equals("X"))
-                {
-                    discMaxKA = "0";
-                }
-
-
-
-
-                //pret mediu oras
-                string pretMediu = "0";
-
-                if (tipUserLocal.Equals("KA"))
-                {
-                    cmd.CommandText = " select pret_med, adaos_med, cant from sapprd.zpret_mediu_oras where matnr =:articol and pdl=:ul ";
-
-                    cmd.Parameters.Clear();
-                    cmd.Parameters.Add(":articol", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
-                    cmd.Parameters[0].Value = articol;
-
-                    cmd.Parameters.Add(":ul", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
-                    cmd.Parameters[1].Value = ul;
-
-                    oReader = cmd.ExecuteReader();
-
-                    if (oReader.HasRows)
-                    {
-                        oReader.Read();
-                        double dblPretMediu = oReader.GetDouble(0) / oReader.GetDouble(2) + (oReader.GetDouble(1) / oReader.GetDouble(2)) * 0.15;
-                        pretMediu = dblPretMediu.ToString();
-
-                    }
-
-                }
-
-                string istoricPret = " ";
-
-               // if (canalDistrib.Equals("10"))
-               //     istoricPret = getIstoricPret(connection, articol, client);
-
-
-                retVal += discMaxAV + "#" + discMaxSD + "#" + discMaxDV + "#" +
-                         Convert.ToInt32(Double.Parse(multiplu)).ToString() + "#" +
-                         cantUmb + "#" + Umb + "#" + discMaxKA + "#" + cmpArticol.ToString() + "#" + pretMediu + "#" + impachetare + "#" + istoricPret + "#" + procRedCmp + "#" + pretGed + "#";
-
-                
-
-                if (pretOut.Equals("0.0"))
-                    retVal = "-1";
-
-
-
+                DateArticolMathaus articol = new DateArticolMathaus();
+                articol.productCode = "0000000000" + dateArticol.productCode;
+                articol.quantity = dateArticol.quantity;
+                articol.unit = dateArticol.unit;
+                deliveryEntryDataList.Add(articol);
 
             }
-            catch (Exception ex)
+
+            comanda.deliveryEntryDataList = deliveryEntryDataList;
+            return callDeliveryService(serializer.Serialize(comanda));
+
+        }
+
+
+        private string callDeliveryService(string jsonData)
+        {
+
+            System.Net.ServicePointManager.Expect100Continue = false;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://wt1.arabesque.ro/arbsqintegration/optimiseDelivery");
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            request.ContentLength = jsonData.Length;
+
+            string encoded = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes("arbsqservice" + ":" + "arbsqservice"));
+            request.Headers.Add("Authorization", "Basic " + encoded);
+
+            using (Stream webStream = request.GetRequestStream())
+            using (StreamWriter requestWriter = new StreamWriter(webStream, System.Text.Encoding.ASCII))
             {
-                string context = client + "\n " + articol + "\n " + cantitate + "\n " + depart + "\n " + um + "\n " + ul + "\n " + tipUser + "\n " + depoz + "\n " + codUser + "\n " + canalDistrib + "\n " + filialaAlternativa;
-                ErrorHandling.sendErrorToMail(ex.ToString() + " context: " + context);
-                retVal = "-1";
-            }
-            finally
-            {
-                webService.Dispose();
-                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+                requestWriter.Write(jsonData);
             }
 
-            if (retVal.Contains("#"))
-                return ((Double.Parse(retVal.Split('#')[1]) / Double.Parse(retVal.Split('#')[14])) * Double.Parse(retVal.Split('#')[13])).ToString() + " LEI";
-            else
-                return retVal;
+            System.Net.WebResponse response = request.GetResponse();
+            System.IO.StreamReader sr = new System.IO.StreamReader(response.GetResponseStream());
+
+            return sr.ReadToEnd().Trim();
+
+        }
+
+        public string getStocMathaus(string filiala, string codArticol, string um)
+        {
+            StockMathaus stockMathaus = new StockMathaus();
+
+            stockMathaus.plant = filiala;
+            List<StockEntryDataList> stockEntryDataList = new List<StockEntryDataList>();
+
+            StockEntryDataList stockEntry = new StockEntryDataList();
+            stockEntry.productCode = "0000000000" + codArticol;
+            stockEntry.warehouse = "";
+            stockEntry.availableQuantity = 0;
+            stockEntryDataList.Add(stockEntry);
+            stockMathaus.stockEntryDataList = stockEntryDataList;
+
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+
+            StockMathaus stockResponse = serializer.Deserialize<StockMathaus>(callStockService(serializer.Serialize(stockMathaus)));
+
+            ComandaMathaus comandaMathaus = new ComandaMathaus();
+            comandaMathaus.sellingPlant = stockResponse.plant;
+
+            List<DateArticolMathaus> deliveryEntryDataList = new List<DateArticolMathaus>();
+
+            DateArticolMathaus dateArticol = new DateArticolMathaus();
+            dateArticol.deliveryWarehouse = stockResponse.stockEntryDataList[0].warehouse;
+            dateArticol.quantity = stockResponse.stockEntryDataList[0].availableQuantity;
+            dateArticol.productCode = stockResponse.stockEntryDataList[0].productCode;
+            dateArticol.unit = um;
+            deliveryEntryDataList.Add(dateArticol);
+            comandaMathaus.deliveryEntryDataList = deliveryEntryDataList;
+
+            return serializer.Serialize(comandaMathaus);
+
+        }
+
+        private string callStockService(string jsonData)
+        {
+
+            System.Net.ServicePointManager.Expect100Continue = false;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://wt1.arabesque.ro/arbsqintegration/getStocks");
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            request.ContentLength = jsonData.Length;
+
+            string encoded = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes("arbsqservice" + ":" + "arbsqservice"));
+            request.Headers.Add("Authorization", "Basic " + encoded);
+
+            using (Stream webStream = request.GetRequestStream())
+            using (StreamWriter requestWriter = new StreamWriter(webStream, System.Text.Encoding.ASCII))
+            {
+                requestWriter.Write(jsonData);
+            }
+
+            System.Net.WebResponse response = request.GetResponse();
+            System.IO.StreamReader sr = new System.IO.StreamReader(response.GetResponseStream());
+
+            return sr.ReadToEnd().Trim();
 
         }
 

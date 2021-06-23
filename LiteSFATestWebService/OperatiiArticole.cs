@@ -569,6 +569,8 @@ namespace LiteSFATestWebService
         public string getListArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament, string afisStoc, string tipUser, string codUser, string modulCautare)
         {
 
+
+
             string condExtraDepart = " ";
             List<ArticolCautare> listArticole = new List<ArticolCautare>();
 
@@ -718,7 +720,6 @@ namespace LiteSFATestWebService
                     
 
                 }
-
 
                 cmd.CommandType = CommandType.Text;
 
@@ -971,6 +972,8 @@ namespace LiteSFATestWebService
         {
 
 
+            ErrorHandling.sendErrorToMail("getPretGed: " + parametruPret);
+
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             ParametruPretGed paramPret = serializer.Deserialize<ParametruPretGed>(parametruPret);
 
@@ -1013,7 +1016,7 @@ namespace LiteSFATestWebService
                 inParam.Dzterm = paramPret.termenPlata;
                 inParam.Regio = paramPret.codJudet;
                 inParam.City = paramPret.localitate == null ? " " : paramPret.localitate.Length <= 25 ? paramPret.localitate : paramPret.localitate.Substring(0,25);
-                inParam.UlStoc = paramPret.filialaClp != null ? paramPret.filialaClp : " ";
+                inParam.UlStoc = paramPret.filialaAlternativa.Equals("BV90") ? "BV90" : paramPret.filialaClp != null ? paramPret.filialaClp : " ";
                 
 
 
@@ -1537,7 +1540,6 @@ namespace LiteSFATestWebService
         public string getStocArticole(string listArticole)
         {
 
-            ErrorHandling.sendErrorToMail("getStocArticole: " + listArticole);
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             List<ArticolStoc> listArticoleStoc = serializer.Deserialize<List<ArticolStoc>>(listArticole);

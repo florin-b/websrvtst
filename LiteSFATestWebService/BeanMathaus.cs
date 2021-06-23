@@ -22,6 +22,34 @@ namespace LiteSFATestWebService
         public string descriere;
         public string catMathaus;
         public string pretUnitar;
+        public bool isLocal;
+    }
+
+    public class ComandaMathaus
+    {
+        public string sellingPlant;
+        public List<DateArticolMathaus> deliveryEntryDataList;
+    }
+
+    public class DateArticolMathaus
+    {
+        public string deliveryWarehouse;
+        public string productCode;
+        public double quantity;
+        public string unit;
+    }
+
+    public class StockMathaus
+    {
+        public string plant;
+        public List<StockEntryDataList> stockEntryDataList;
+    }
+
+    public class StockEntryDataList
+    {
+        public string productCode;
+        public double availableQuantity;
+        public string warehouse;
     }
 
 }

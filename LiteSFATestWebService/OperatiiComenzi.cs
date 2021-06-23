@@ -468,7 +468,7 @@ namespace LiteSFATestWebService
             serializedResult = serializer.Serialize(listComenzi);
 
 
-            ErrorHandling.sendErrorToMail("getComenziDeschise: " + serializedResult);
+            
 
             return serializedResult;
 
@@ -1291,7 +1291,7 @@ namespace LiteSFATestWebService
                         articol.unitLogAlt = " ";
                         articol.depart = " ";
                         articol.tipArt = "";
-                        articol.ponderare = -1;
+                        articol.ponderare = 1;
                         articol.departSintetic = " ";
                         articol.departAprob = " ";
                         articol.istoricPret = " ";
@@ -1916,9 +1916,6 @@ namespace LiteSFATestWebService
         public static string trateazaComenziGED(string comanda, bool alertSD, bool alertDV, bool cmdAngajament, string tipUser, string JSONArt, string JSONComanda, string JSONDateLivrare, string tipUserSap)
         {
 
-
-            ErrorHandling.sendErrorToMail("trateazaComenziGED: " + comanda + "\n\n" +  alertSD + "\n\n" + alertDV + "\n\n" + cmdAngajament + "\n\n" + tipUser + "\n\n" + JSONArt + "\n\n" + JSONComanda + "\n\n" + JSONDateLivrare + "\n\n" + tipUserSap);
-
             string retVal = "-1";
 
             var serializer = new JavaScriptSerializer();
@@ -1935,10 +1932,13 @@ namespace LiteSFATestWebService
                 DateLivrare dateLivrare = serializer.Deserialize<DateLivrare>(JSONDateLivrare);
                 List<ArticolComanda> articolComanda = serializer.Deserialize<List<ArticolComanda>>(JSONArt);
 
-                if (articolComanda[0].filialaSite == null || articolComanda[0].filialaSite.Trim().Equals(String.Empty))
+                bool isComandaCLP = dateLivrare.filialaCLP != null && dateLivrare.filialaCLP.Length == 4;
+
+                if (isComandaCLP || (!isComandaCLP && Utils.isMathausMic(comandaVanzare.filialaAlternativa)) || !tipUserSap.Contains("IP") || comandaVanzare.filialaAlternativa.Equals("BV90"))
                 {
                     return new Service1().saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, tipUser, JSONArt, JSONComanda, JSONDateLivrare, true, tipUserSap);
                 }
+
 
                 dateLivrareGed = dateLivrare;
                 dateLivrareDistrib = dateLivrare;
@@ -1957,20 +1957,26 @@ namespace LiteSFATestWebService
 
                 List<ArticolComanda> sortedArticoleDistrib = articoleGed.OrderBy(order => order.filialaSite).ToList();
 
+                if (!isComandaCLP && Utils.isMathausMare(comandaVanzare.filialaAlternativa))
+                    sortedArticoleDistrib = articoleGed.OrderBy(order => order.depozit).ToList();
+
                 bool calcTransport = dateLivrareGed.Transport.Equals("TRAP");
 
-                //mathaus
-
-                string ulStoc = sortedArticoleDistrib[0].filialaSite;
                 List<ArticolComanda> articoleAgenti = new List<ArticolComanda>();
                 double totalComanda = 0;
                 string comenziGed = "";
+                double valTransp = 0;
+                string depozitArt = "";
+
 
                 foreach (var articol in sortedArticoleDistrib)
                 {
 
-                    if ((ulStoc != null && articol.filialaSite != null && !ulStoc.Equals(articol.filialaSite)))
+                    bool condComandaNoua = !isComandaCLP && Utils.isMathausMare(comandaVanzare.filialaAlternativa) && !depozitArt.Equals(articol.depozit) && articol.depozit.Equals("MAV1");
+
+                    if (condComandaNoua && articoleAgenti.Count > 0)
                     {
+
                         dateLivrareDistrib.totalComanda = totalComanda.ToString();
                         retVal = new Service1().saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, tipUser, serializer.Serialize(articoleAgenti), serializer.Serialize(comandaVanzare), serializer.Serialize(dateLivrareDistrib), calcTransport, tipUserSap);
 
@@ -1982,11 +1988,15 @@ namespace LiteSFATestWebService
                                 comenziGed = varArrayI[2];
                             else
                                 comenziGed += "," + varArrayI[2];
+
+                            valTransp += Double.Parse(varArrayI[1]);
                         }
 
                         articoleAgenti.Clear();
                         totalComanda = 0;
                     }
+
+
 
                     if (!comandaVanzare.nrCmdSap.Equals("-1") || (!comandaVanzare.nrCmdSap.Equals("-1") && comandaVanzare.nrCmdSap.Length < 4))
                     {
@@ -1996,28 +2006,30 @@ namespace LiteSFATestWebService
                     {
                         totalComanda += articol.pretUnit * Double.Parse(articol.cantUmb, CultureInfo.InvariantCulture);
                     }
-
+                    
                     articoleAgenti.Add(articol);
-                    ulStoc = articol.filialaSite;
+                    depozitArt = articol.depozit;
                 }
 
                 dateLivrareDistrib.totalComanda = totalComanda.ToString();
                 retVal = new Service1().saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, tipUser, serializer.Serialize(articoleAgenti), serializer.Serialize(comandaVanzare), serializer.Serialize(dateLivrareDistrib), calcTransport, tipUserSap);
 
                 string[] varArray = retVal.Split('#');
-
+                
                 if (varArray.Length == 3)
                 {
                     if (comenziGed == String.Empty)
                         comenziGed = varArray[2];
-                    else
+                    else 
                         comenziGed += "," + varArray[2];
+
+                    valTransp += Double.Parse(varArray[1]);
+
                 }
 
                 if (comenziGed != String.Empty)
-                    retVal = "100#0#" + comenziGed;
+                    retVal = "100#"+ valTransp+"#" + comenziGed;
 
-                ErrorHandling.sendErrorToMail("trateazaComenziGED: " + retVal);
 
                 //sf. mathaus
 

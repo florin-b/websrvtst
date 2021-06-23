@@ -83,6 +83,7 @@
     <Compile Include="OperatiiAdresa.cs" />
     <Compile Include="OperatiiDocumente.cs" />
     <Compile Include="OperatiiEvenimente.cs" />
+    <Compile Include="OperatiiFoaieParcurs.cs" />
     <Compile Include="OperatiiMasina.cs" />
     <Compile Include="OperatiiPaleti.cs" />
     <Compile Include="OperatiiSoferi.cs" />
