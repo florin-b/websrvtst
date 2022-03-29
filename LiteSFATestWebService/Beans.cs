@@ -42,6 +42,8 @@ namespace LiteSFATestWebService
         public string numeAgent;
         public List<string> termenPlata;
         public string codCUI;
+        public bool clientBlocat;
+        public string tipPlata;
     }
 
     public class ClientIP : Client
@@ -84,6 +86,7 @@ namespace LiteSFATestWebService
         public string tipClient;
         public string isFurnizor;
         public string divizii;
+        public string tipPlata;
     }
 
 
@@ -161,6 +164,7 @@ namespace LiteSFATestWebService
         public string valTransport;
         public string procTransport;
         public string dataExp;
+        public string listCabluri;
        
 
         public override string ToString()
@@ -287,6 +291,7 @@ namespace LiteSFATestWebService
         public string ciDelegat = "";
         public string autoDelegat = "";
         public string refClient = "";
+        public string costTransportMathaus;
 
 
 
@@ -309,6 +314,7 @@ namespace LiteSFATestWebService
         public double marjaBrutaCantVal = 0;
         public double marjaBrutaPalProc = 0;
         public double marjaBrutaCantProc = 0;
+        public bool isClientBlocat = false;
 
     }
 
@@ -626,8 +632,20 @@ namespace LiteSFATestWebService
     {
         public string numar;
         public string data;
+        public string tipTransport;
+        public string dataLivrare;
+        public string extraDate;
     }
 
+    public class ExtraDate
+    {
+        public string codJudet;
+        public string localitate;
+        public string strada;
+        public string codAdresa;
+        public string telContact;
+        public string numeContact;
+    }
 
     public class ComandaReturAfis
     {
@@ -663,6 +681,7 @@ namespace LiteSFATestWebService
         public string dataCreare;
         public string status;
         public string transpBack;
+        public string inlocuire;
     }
 
     public class ArticolRetur
@@ -672,6 +691,16 @@ namespace LiteSFATestWebService
         public string cantitate;
         public string um;
         public string cantitateRetur;
+        public string pretUnitPalet;
+        public string motivRespingere;
+        public bool inlocuire;
+        public string pozeArticol;
+    }
+
+    public class PozaArticol
+    {
+        public string nume;
+        public string strData;
     }
 
     public class MotivRespingereRetur
@@ -753,6 +782,16 @@ namespace LiteSFATestWebService
         public string nrDocumentSap;
         public string dataLivrare;
         public string furnizor;
+    }
+
+
+    public class DeviceInfo
+    {
+        public string sdkVer;
+        public string man;
+        public string model;
+        public string appName;
+        public string appVer;
     }
 
 }

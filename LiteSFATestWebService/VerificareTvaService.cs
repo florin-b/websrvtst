@@ -32,7 +32,7 @@ namespace LiteSFATestWebService
             string jsonResponse = sr.ReadToEnd().Trim();
             StarePlatitorTva starePlatitor = new StarePlatitorTva();
 
-            if (jsonResponse != null && !jsonResponse.ToLower().Contains("error"))
+            if (jsonResponse != null && !jsonResponse.ToLower().Contains("error") && !jsonResponse.ToLower().Contains("invalid"))
             {
                 var serializer = new JavaScriptSerializer();
                 starePlatitor = serializer.Deserialize<StarePlatitorTva>(jsonResponse);

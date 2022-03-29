@@ -197,8 +197,6 @@ namespace LiteSFATestWebService
             costDescarcare.articolePaleti = getPaletiDistincti(listPaleti);
 
 
-            ErrorHandling.sendErrorToMail("getCostMacara: " + unitLog + " , " + codAgent + " , " + codClient + " , " + codFurnizor + " , " + listArt + " , " + new JavaScriptSerializer().Serialize(costDescarcare));
-
             return new JavaScriptSerializer().Serialize(costDescarcare);
 
         }

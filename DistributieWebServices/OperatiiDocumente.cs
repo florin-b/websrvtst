@@ -425,7 +425,7 @@ namespace DistributieTESTWebServices
             try
             {
 
-                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+                string connectionString = DatabaseConnections.ConnectToProdEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -461,7 +461,7 @@ namespace DistributieTESTWebServices
                                       " and a.cod = b.cod order by a.poz ";
                 }
 
-                if (tipBorderou.ToLower().Equals("aprovizionare") || tipBorderou.ToLower().Equals("inchiriere") || tipBorderou.ToLower().Equals("service"))
+                if (tipBorderou.ToLower().Equals("aprovizionare") || tipBorderou.ToLower().Equals("inchiriere") || tipBorderou.ToLower().Equals("service") || tipBorderou.ToLower().Equals("paleti"))
                 {
                     cmd.CommandText = " select a.nume, a.cod, " +
                                       " (select ad.region||','||ad.city1||', '||ad.street||', '||ad.house_num1 from sapprd.adrc ad where ad.client = '900' and ad.addrnumber = a.adresa) adresa, " +
@@ -516,7 +516,7 @@ namespace DistributieTESTWebServices
 
                         }
 
-                        if (tipBorderou.ToLower().Equals("aprovizionare") || tipBorderou.ToLower().Equals("inchiriere") || tipBorderou.ToLower().Equals("service"))
+                        if (tipBorderou.ToLower().Equals("aprovizionare") || tipBorderou.ToLower().Equals("inchiriere") || tipBorderou.ToLower().Equals("service") || tipBorderou.ToLower().Equals("paleti"))
                         {
                             oFactura = new FacturiBorderou();
                             oFactura.numeFurnizor = oReader.GetString(0);

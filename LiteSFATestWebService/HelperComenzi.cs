@@ -31,7 +31,13 @@ namespace LiteSFATestWebService
                 if (Array.IndexOf(listSinteticeCant, articol.sintetic) >= 0)
                 {
                     marjaBrutaCantVal += (articol.pretUnit - articol.cmp) * Double.Parse(articol.cantUmb);
-                    totalLungimeCant += articol.lungime;
+
+                    if (articol.Umb.ToLower().Equals("rol"))
+                        totalLungimeCant += 50 * Double.Parse(articol.cantUmb);
+                    else if (articol.Umb.ToLower().Equals("m"))
+                        totalLungimeCant += Double.Parse(articol.cantUmb);
+                    else
+                        totalLungimeCant += articol.lungime;
                 }
 
 
@@ -155,6 +161,18 @@ namespace LiteSFATestWebService
 
             return isAprob1 && isAprob2;
         }
+
+        public static string setTipPlata(string tipPlata)
+        {
+            if (tipPlata.Equals("R"))
+                return "E1";
+
+            return tipPlata;
+        }
+
+
+
+
 
     }
 }

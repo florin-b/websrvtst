@@ -22,7 +22,33 @@ namespace LiteSFATestWebService
         public string descriere;
         public string catMathaus;
         public string pretUnitar;
+        public string tip1;
+        public string tip2;
         public bool isLocal;
+        public bool isArticolSite;
+    }
+
+    public class RezultatArtMathaus
+    {
+        public string nrTotalArticole;
+        public List<ArticolMathaus> listArticole;
+    }
+
+    public class AntetCmdMathaus
+    {
+        public string localitate;
+        public string codJudet;
+        public string codClient;
+        public string tipPers;
+        public string depart;
+    }
+
+    public class CostTransportMathaus
+    {
+        public string filiala;
+        public string tipTransp;
+        public string valTransp;
+        public string codArtTransp;
     }
 
     public class ComandaMathaus
@@ -31,12 +57,20 @@ namespace LiteSFATestWebService
         public List<DateArticolMathaus> deliveryEntryDataList;
     }
 
+    public class LivrareMathaus
+    {
+        public ComandaMathaus comandaMathaus;
+        public List<CostTransportMathaus> costTransport;
+    }
+
     public class DateArticolMathaus
     {
         public string deliveryWarehouse;
         public string productCode;
         public double quantity;
         public string unit;
+        public double valPoz;
+        public string tip2;
     }
 
     public class StockMathaus

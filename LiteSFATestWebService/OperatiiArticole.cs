@@ -71,7 +71,10 @@ namespace LiteSFATestWebService
 
 
                 string conditieDepart = "";
-                if (!codDepart.Equals("00"))
+
+
+
+                if (!codDepart.Equals("00") && !codDepart.Trim().Equals(""))
                     conditieDepart = " b.grup_vz =:depart and ";
 
                 if (codDepart.StartsWith("04"))
@@ -89,14 +92,13 @@ namespace LiteSFATestWebService
                                   " c.cod = b.sintetic and e.lifnr=:furniz and  " + conditieDepart  + conditie + " ) x where rownum < 50 order by x.nume ";
 
 
-
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
 
                 cmd.Parameters.Add(":furniz", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
                 cmd.Parameters[0].Value = furnizor;
 
-                if (!codDepart.Equals("00"))
+                if (!codDepart.Equals("00") && !codDepart.Trim().Equals(""))
                 {
                     cmd.Parameters.Add(":depart", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
                     cmd.Parameters[1].Value = codDepart;
@@ -721,6 +723,8 @@ namespace LiteSFATestWebService
 
                 }
 
+                
+
                 cmd.CommandType = CommandType.Text;
 
                 cmd.Parameters.Clear();
@@ -970,9 +974,6 @@ namespace LiteSFATestWebService
 
         public string getPretGed(string parametruPret)
         {
-
-
-            ErrorHandling.sendErrorToMail("getPretGed: " + parametruPret);
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             ParametruPretGed paramPret = serializer.Deserialize<ParametruPretGed>(parametruPret);

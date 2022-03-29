@@ -61,7 +61,88 @@ namespace LiteSFATestWebService
 
         }
 
+        public static bool isClientBlocat(OracleConnection connection, string codClient)
+        {
+            bool isBlocat = false;
 
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                cmd = connection.CreateCommand();
+                cmd.CommandText = " select k.crblb from sapprd.knkk k where k.mandt = '900' and k.kkber = '1000' and k.kunnr = :codClient ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codClient;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+
+                    if (oReader.GetString(0).Equals("X"))
+                        isBlocat = true;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+            return isBlocat;
+        }
+
+
+        public static bool hasClientLimCredit(OracleConnection connection, string codClient)
+        {
+            bool limCredit = false;
+
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                cmd = connection.CreateCommand();
+                cmd.CommandText = " select 1 from sapprd.knkk where mandt='900' and kunnr = :codClient ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codClient;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    limCredit = true;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+            return limCredit;
+        }
 
     }
 }

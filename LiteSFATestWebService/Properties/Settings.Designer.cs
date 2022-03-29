@@ -175,5 +175,16 @@ namespace LiteSFATestWebService.Properties {
                 return ((string)(this["LiteSFATestWebService_SapWSPierderiVanzri_ZWS_CL_FACT_AVSD"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zwms_ul10_get_stock_arab/90" +
+            "0/zwms_ul10_get_stock_arab/zwms_ul10_get_stock_arab")]
+        public string LiteSFATestWebService_SapWsCabluri05_ZWMS_UL10_GET_STOCK_ARAB {
+            get {
+                return ((string)(this["LiteSFATestWebService_SapWsCabluri05_ZWMS_UL10_GET_STOCK_ARAB"]));
+            }
+        }
     }
 }

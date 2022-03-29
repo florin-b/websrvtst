@@ -282,4 +282,13 @@ namespace DistributieTESTWebServices
         public string litri;
         public string kmBord;
     }
+
+    public class AfisFoaieParcurs
+    {
+        public FoaieParcurs foaieParcurs;
+        public string kmStart;
+        public string kmStop;
+        public List<Alimentare> alimentariComb;
+        public List<Alimentare> consumSiroco;
+    }
 }

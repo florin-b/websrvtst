@@ -187,8 +187,6 @@ namespace LiteSFATestWebService
             {
                 double distantaAdr = getDistanceMeters(Double.Parse(coordsLoc[0]), Double.Parse(coordsLoc[1]), Double.Parse(coords[0]), Double.Parse(coords[1]));
 
-                ErrorHandling.sendErrorToMail("distanta adrese : " + distantaAdr + " , coords loc " +coordsLoc[0] + "," + coordsLoc[1]);
-
                 if (distantaAdr > 5000)
                 {
                     coords[0] = coordsLoc[0];

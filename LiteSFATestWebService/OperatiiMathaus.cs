@@ -1,4 +1,5 @@
 ﻿
+using LiteSFATestWebService.SAPWebServices;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -16,9 +17,6 @@ using System.Xml.Linq;
 
 namespace LiteSFATestWebService
 {
-
-
-      
 
 
     public class OperatiiMathaus
@@ -62,6 +60,13 @@ namespace LiteSFATestWebService
                     }
                 }
 
+                CategorieMathaus cat1 = new CategorieMathaus();
+                cat1.cod = "0";
+                cat1.nume = "Diverse";
+                cat1.codHybris = "0";
+                cat1.codParinte = "1";
+                listCategorii.Add(cat1);
+
 
             }
             catch(Exception ex)
@@ -78,26 +83,235 @@ namespace LiteSFATestWebService
 
 
 
-        public string getArticoleCategorie(string codCategorie, string filiala, string depart)
+        public string getArticoleCategorie(string codCategorie, string filiala, string depart, string pagina, string tipArticol)
         {
 
-            List<ArticolMathaus> listArticole;
+            RezultatArtMathaus rezultat = new RezultatArtMathaus();
+            
 
-            if (codCategorie.Equals("1"))
-                listArticole = getArticoleLocal(depart);
-            else
-                listArticole = getArticoleWebService(codCategorie, depart, "");
+            if (codCategorie.Equals("0"))
+                rezultat = getArticoleLocal(filiala, depart, pagina);
+            else {
+                if (tipArticol == null || (tipArticol != null && tipArticol.Equals("SITE")))
+                    //rezultat = getArticoleWebService(codCategorie, depart, "", pagina);
+                    rezultat = getArticoleCategorie(codCategorie, filiala, depart, pagina);
+                else
+                    rezultat = getArticoleND(filiala, codCategorie, pagina);
+            }
 
 
-            if (listArticole.Count > 0)
-                addExtraData(listArticole, filiala);
+            if (rezultat.listArticole.Count > 0)
+                addExtraData(rezultat.listArticole, filiala);
 
-            return new JavaScriptSerializer().Serialize(listArticole);
+            return new JavaScriptSerializer().Serialize(rezultat);
         }
 
-        private List<ArticolMathaus> getArticoleLocal(string depart)
+
+        private int getNrArticoleCategorie(string codCategorie, string filiala, string depart)
         {
+            int nrArticole = 0;
+
+            OracleConnection connection = new OracleConnection();
+            OracleDataReader oReader = null;
+
+            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+            connection.ConnectionString = connectionString;
+            connection.Open();
+
+            OracleCommand cmd = connection.CreateCommand();
+            try
+            {
+                cmd.CommandText = " select count(distinct s.matnr)  " +
+                                  " from sapprd.zpath_hybris s, sapprd.marc c, articole ar " +
+                                  " where(s.nivel_0 = :codCateg or s.nivel_1 = :codCateg or s.nivel_2 = :codCateg or s.nivel_3 = :codCateg or s.nivel_4 = :codCateg or s.nivel_5 = :codCateg or s.nivel_6 = :codCateg) " +
+                                  " and (substr(ar.grup_vz,0,2) =:depart or ar.grup_vz = '11' ) " +
+                                  " and ar.cod = s.matnr and s.mandt = c.mandt and s.matnr = c.matnr and c.werks = :filiala ";
+                                  
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codCateg", OracleType.VarChar, 60).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codCategorie;
+
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = filiala;
+
+                cmd.Parameters.Add(":depart", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = depart;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        nrArticole = oReader.GetInt32(0);
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return nrArticole;
+        }
+
+        public RezultatArtMathaus getArticoleCategorie(string codCategorie, string filiala, string depart, string pagina)
+        {
+            RezultatArtMathaus rezultat = new RezultatArtMathaus();
+
+            string paginaCrt = ((Int32.Parse(pagina) - 1) * 10).ToString();
+
             List<ArticolMathaus> listArticole = new List<ArticolMathaus>();
+
+            rezultat.nrTotalArticole = getNrArticoleCategorie(codCategorie, filiala, depart).ToString();
+
+            OracleConnection connection = new OracleConnection();
+            OracleDataReader oReader = null;
+
+            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+            connection.ConnectionString = connectionString;
+            connection.Open();
+
+            OracleCommand cmd = connection.CreateCommand();
+            try
+            {
+                cmd.CommandText = " select distinct s.matnr, ar.nume, c.dismm, " +
+                                  " (select e.versg from sapprd.mvke e where e.mandt = '900' and e.matnr = s.matnr and e.vtweg = '20') par_s " +
+                                  " from sapprd.zpath_hybris s, sapprd.marc c, articole ar " +
+                                  " where(s.nivel_0 = :codCateg or s.nivel_1 = :codCateg or s.nivel_2 = :codCateg or s.nivel_3 = :codCateg or s.nivel_4 = :codCateg or s.nivel_5 = :codCateg or s.nivel_6 = :codCateg) " +
+                                  " and (substr(ar.grup_vz,0,2) =:depart or ar.grup_vz = '11' ) " + 
+                                  " and ar.cod = s.matnr and s.mandt = c.mandt and s.matnr = c.matnr and c.werks = :filiala order by s.matnr  " +
+                                  " OFFSET :paginaCrt ROWS FETCH NEXT 10 ROWS ONLY ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codCateg", OracleType.VarChar, 60).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codCategorie;
+
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = filiala;
+
+                cmd.Parameters.Add(":depart", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = depart;
+
+                cmd.Parameters.Add(":paginaCrt", OracleType.VarChar, 3).Direction = ParameterDirection.Input;
+                cmd.Parameters[3].Value = paginaCrt;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        ArticolMathaus articol = new ArticolMathaus();
+                        articol.cod = oReader.GetString(0);
+                        articol.nume = oReader.GetString(1);
+                        articol.tip1 = oReader.GetString(2);
+                        articol.tip2 = oReader.GetString(3);
+                        articol.isLocal = true;
+                        articol.isArticolSite = false;
+                        setDetaliiArticol(articol);
+                        listArticole.Add(articol);
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            rezultat.listArticole = listArticole;
+
+
+            return rezultat;
+        }
+
+
+        //de sters
+        private int getNrArticoleND(string filiala, string codCategorie)
+        {
+            int nrArticole = 0;
+
+            OracleConnection connection = new OracleConnection();
+            OracleDataReader oReader = null;
+
+            string connectionString = DatabaseConnections.ConnectToProdEnvironment();
+
+            connection.ConnectionString = connectionString;
+            connection.Open();
+
+            OracleCommand cmd = connection.CreateCommand();
+
+            try
+            {
+                cmd.CommandText = " select count(distinct s.matnr) from sapprd.zpath_hybris s, sapprd.marc c, sapprd.zstoc_job b, websap.articole a " +
+                                  " where(s.nivel_0 = :codCateg or s.nivel_1 = :codCateg or s.nivel_2 = :codCateg or s.nivel_3 = :codCateg or s.nivel_4 = :codCateg or s.nivel_5 = :codCateg or s.nivel_6 = :codCateg) " +
+                                  " and s.mandt = c.mandt and s.matnr = c.matnr and c.werks = :filiala and c.dismm = 'ND' and b.mandt = c.mandt " +
+                                  " and b.matnr = s.matnr and b.werks = c.werks and b.stocne > 0 and c.matnr = a.cod ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codCateg", OracleType.VarChar, 60).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codCategorie;
+
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = filiala;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        nrArticole = oReader.GetInt32(0);
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+
+            return nrArticole;
+        }
+
+        //de sters
+        private RezultatArtMathaus getArticoleND(string filiala, string codCategorie, string pagina)
+        {
+            RezultatArtMathaus rezultat = new RezultatArtMathaus();
+
+            string paginaMin = ((Int32.Parse(pagina) - 1) * 10).ToString();
+            string paginaMax = (Int32.Parse(pagina) * 10).ToString();
+
+            List<ArticolMathaus> listArticole = new List<ArticolMathaus>();
+
+            rezultat.nrTotalArticole = getNrArticoleND(filiala, codCategorie).ToString();
 
             OracleConnection connection = new OracleConnection();
             OracleDataReader oReader = null;
@@ -111,13 +325,28 @@ namespace LiteSFATestWebService
 
             try
             {
-                cmd.CommandText = " select cod, nume from articole where grup_vz=:depart and rownum<20 ";
+                cmd.CommandText = " select * from (" +
+                                  " select distinct s.matnr, a.nume, row_number() over (ORDER BY s.matnr ASC) line_number from sapprd.zpath_hybris s, sapprd.marc c, sapprd.zstoc_job b, websap.articole a " +
+                                  " where(s.nivel_0 = :codCateg or s.nivel_1 = :codCateg or s.nivel_2 = :codCateg or s.nivel_3 = :codCateg or s.nivel_4 = :codCateg or s.nivel_5 = :codCateg or s.nivel_6 = :codCateg) " +
+                                  " and s.mandt = c.mandt and s.matnr = c.matnr and c.werks = :filiala and c.dismm = 'ND' and b.mandt = c.mandt " +
+                                  " and b.matnr = s.matnr and b.werks = c.werks and b.stocne > 0 and c.matnr = a.cod order by s.matnr ) " +
+                                  " where line_number between :pageMin and :pageMax order by line_number ";
+
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
 
-                cmd.Parameters.Add(":depart", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
-                cmd.Parameters[0].Value = depart;
+                cmd.Parameters.Add(":codCateg", OracleType.VarChar, 60).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codCategorie;
+
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = filiala;
+
+                cmd.Parameters.Add(":pageMin", OracleType.VarChar, 2).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = paginaMin;
+
+                cmd.Parameters.Add(":pageMax", OracleType.VarChar, 2).Direction = ParameterDirection.Input;
+                cmd.Parameters[3].Value = paginaMax;
 
                 oReader = cmd.ExecuteReader();
 
@@ -129,6 +358,146 @@ namespace LiteSFATestWebService
                         articol.cod = oReader.GetString(0);
                         articol.nume = oReader.GetString(1);
                         articol.isLocal = true;
+                        articol.isArticolSite = false;
+                        setDetaliiArticol(articol);
+                        listArticole.Add(articol);
+                    }
+                }
+
+
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            rezultat.listArticole = listArticole;
+
+            return rezultat;
+        }
+
+
+        private int getNrArticoleLocal(string filiala, string depart, string pagina)
+        {
+
+            int nrArticole = 0;
+
+            OracleConnection connection = new OracleConnection();
+            OracleDataReader oReader = null;
+
+            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+            connection.ConnectionString = connectionString;
+            connection.Open();
+
+            OracleCommand cmd = connection.CreateCommand();
+
+            try
+            {
+
+                cmd.CommandText = " select count(distinct c.matnr) from sapprd.marc c, sapprd.zstoc_job b, websap.articole a, websap.sintetice g " +
+                                  " where c.mandt = '900' and c.werks = :filiala and c.dismm = 'ND' and b.mandt = c.mandt and b.matnr = c.matnr " +
+                                  " and b.werks = c.werks and b.stocne > 0 and not exists " +
+                                  " (select * from sapprd.zpath_hybris s where s.mandt = '900' and s.matnr = c.matnr) and c.matnr = a.cod " +
+                                  " and a.sintetic = g.cod and (substr(a.grup_vz,0,2) =:depart or a.grup_vz = '11' ) order by c.matnr ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = filiala;
+
+                cmd.Parameters.Add(":depart", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = depart.Substring(0, 2);
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        nrArticole = oReader.GetInt32(0);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return nrArticole;
+        }
+
+        //neclasificate
+        private RezultatArtMathaus getArticoleLocal(string filiala, string depart, string pagina)
+        {
+
+            RezultatArtMathaus rezultat = new RezultatArtMathaus();
+            rezultat.nrTotalArticole = getNrArticoleLocal(filiala, depart, pagina).ToString();
+
+            List<ArticolMathaus> listArticole = new List<ArticolMathaus>();
+
+            string paginaMin = ((Int32.Parse(pagina) - 1) * 10).ToString();
+            string paginaMax = (Int32.Parse(pagina) * 10).ToString();
+
+
+            OracleConnection connection = new OracleConnection();
+            OracleDataReader oReader = null;
+
+            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+            connection.ConnectionString = connectionString;
+            connection.Open();
+
+            OracleCommand cmd = connection.CreateCommand();
+
+            try
+            {
+
+                cmd.CommandText = " select * from (" +
+                                  " select distinct c.matnr, a.nume, row_number() over (ORDER BY c.matnr ASC) line_number from sapprd.marc c, sapprd.zstoc_job b, websap.articole a, websap.sintetice g " + 
+                                  " where c.mandt = '900' and c.werks = :filiala and c.dismm = 'ND' and b.mandt = c.mandt and b.matnr = c.matnr " +
+                                  " and b.werks = c.werks and b.stocne > 0 and not exists " + 
+                                  " (select * from sapprd.zpath_hybris s where s.mandt = '900' and s.matnr = c.matnr) and c.matnr = a.cod " + 
+                                  " and a.sintetic = g.cod and (substr(a.grup_vz,0,2) =:depart or a.grup_vz = '11' ) order by c.matnr ) " +
+                                  " where line_number between :pageMin and :pageMax order by line_number ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = filiala;
+
+                cmd.Parameters.Add(":depart", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = depart.Substring(0,2);
+
+                
+                cmd.Parameters.Add(":pageMin", OracleType.VarChar, 3).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = paginaMin;
+
+                cmd.Parameters.Add(":pageMax", OracleType.VarChar, 3).Direction = ParameterDirection.Input;
+                cmd.Parameters[3].Value = paginaMax;
+                
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        ArticolMathaus articol = new ArticolMathaus();
+                        articol.cod = oReader.GetString(0);
+                        articol.nume = oReader.GetString(1);
+                        articol.isLocal = true;
+                        articol.isArticolSite = false;
                         setDetaliiArticol(articol);
                         listArticole.Add(articol);
                     }
@@ -143,20 +512,27 @@ namespace LiteSFATestWebService
                 DatabaseConnections.CloseConnections(oReader, cmd, connection);
             }
 
+            rezultat.listArticole = listArticole;
 
-            return listArticole;
+            return rezultat;
         }
 
 
-        private List<ArticolMathaus> getArticoleWebService(string codCategorie, string depart, string urlService)
+        private RezultatArtMathaus getArticoleWebService(string codCategorie, string depart, string urlService, string pagina)
         {
+
+            RezultatArtMathaus rezultat = new RezultatArtMathaus();
 
             List<ArticolMathaus> listArticole = new List<ArticolMathaus>();
 
-            string serviceUrl = "https://idx.arabesque.ro/solr/master_erp_Product_default/select?q=categoryCode_string_mv:" + codCategorie;
+            int paginaCurenta = (Int32.Parse(pagina) - 1) * 10;
+
+            string paginare = "&rows=10&start=" + paginaCurenta;
+
+            string serviceUrl = "https://idx.arabesque.ro/solr/master_erp_Product_default/select?q=categoryCode_string_mv:" + codCategorie + paginare;
 
             if (urlService != null && !urlService.Equals(""))
-                serviceUrl = urlService;
+                serviceUrl = urlService + paginare;
 
             System.Net.ServicePointManager.Expect100Continue = false;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -171,6 +547,14 @@ namespace LiteSFATestWebService
             System.IO.StreamReader sr = new System.IO.StreamReader(response.GetResponseStream());
 
             string jsonResponse = sr.ReadToEnd().Trim();
+
+            int docsFoundStart = jsonResponse.IndexOf("numFound\":");
+
+            int docsFoundStop = jsonResponse.IndexOf("start\":", docsFoundStart) - 1;
+
+            string nrDocs = jsonResponse.Substring(docsFoundStart, docsFoundStop- docsFoundStart - 1).Split(':')[1];
+
+            rezultat.nrTotalArticole = nrDocs;
 
             int startResponse = jsonResponse.IndexOf("docs\":[") + 7;
 
@@ -225,34 +609,354 @@ namespace LiteSFATestWebService
                         articol.descriere = " ";
 
                     articol.isLocal = false;
+                    articol.isArticolSite = true;
                     listArticole.Add(articol);
                 }
 
             }
 
-            return listArticole;
+            rezultat.listArticole = listArticole;
+
+            return rezultat;
         }
 
-        public string cautaArticoleMathaus(string codArticol, string tipCautare, string filiala, string depart) 
+
+
+        public int getNrArticoleCautare(string codArticol, string tipCautare, string filiala, string depart)
         {
+
+            int nrArticole = 0;
+
+            RezultatArtMathaus rezultat = new RezultatArtMathaus();
+
+
+            List<ArticolMathaus> listArticole = new List<ArticolMathaus>();
+
+            string cautare;
+            if (tipCautare.Equals("c"))
+                cautare = " and lower(ar.cod) like '0000000000" + codArticol.ToLower() + "%'";
+            else
+                cautare = " and lower(ar.nume) like '" + codArticol.ToLower() + "%'";
+
+
+
+            OracleConnection connection = new OracleConnection();
+            OracleDataReader oReader = null;
+
+            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+            connection.ConnectionString = connectionString;
+            connection.Open();
+
+            OracleCommand cmd = connection.CreateCommand();
+            try
+            {
+                cmd.CommandText = " select count (distinct s.matnr) " +
+                                  " from sapprd.zpath_hybris s, sapprd.marc c, articole ar " +
+                                  " where (substr(ar.grup_vz,0,2) =:depart or ar.grup_vz = '11' ) " +
+                                  " and ar.cod = s.matnr and s.mandt = c.mandt and s.matnr = c.matnr and c.werks = :filiala " + cautare + "  ";
+                                  
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = filiala;
+
+                cmd.Parameters.Add(":depart", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = depart;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        nrArticole = oReader.GetInt32(0);
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            rezultat.listArticole = listArticole;
+
+            return nrArticole;
+        }
+
+
+
+
+        public string cautaArticoleMathaus(string codArticol, string tipCautare, string filiala, string depart, string pagina)
+        {
+
+            RezultatArtMathaus rezultat = new RezultatArtMathaus();
+
+            string paginaCrt = ((Int32.Parse(pagina) - 1) * 10).ToString();
+
+            List<ArticolMathaus> listArticole = new List<ArticolMathaus>();
+
+            string cautare;
+            if (tipCautare.Equals("c"))
+                cautare = " and lower(ar.cod) like '0000000000" + codArticol.ToLower() + "%'";
+            else
+                cautare = " and lower(ar.nume) like '" + codArticol.ToLower() + "%'";
+
+            rezultat.nrTotalArticole = getNrArticoleCautare( codArticol,  tipCautare, filiala, depart).ToString();
+
+            OracleConnection connection = new OracleConnection();
+            OracleDataReader oReader = null;
+
+            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+            connection.ConnectionString = connectionString;
+            connection.Open();
+
+            OracleCommand cmd = connection.CreateCommand();
+            try
+            {
+                cmd.CommandText = " select distinct s.matnr, ar.nume, c.dismm, " +
+                                  " (select e.versg from sapprd.mvke e where e.mandt = '900' and e.matnr = s.matnr and e.vtweg = '20') par_s " +
+                                  " from sapprd.zpath_hybris s, sapprd.marc c, articole ar " +
+                                  " where (substr(ar.grup_vz,0,2) =:depart or ar.grup_vz = '11' ) " +
+                                  " and ar.cod = s.matnr and s.mandt = c.mandt and s.matnr = c.matnr and c.werks = :filiala " + cautare + " order by s.matnr  " +
+                                  " OFFSET :paginaCrt ROWS FETCH NEXT 10 ROWS ONLY ";
+
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = filiala;
+
+                cmd.Parameters.Add(":depart", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = depart.Substring(0,2);
+
+                cmd.Parameters.Add(":paginaCrt", OracleType.VarChar, 3).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = paginaCrt;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        ArticolMathaus articol = new ArticolMathaus();
+                        articol.cod = oReader.GetString(0);
+                        articol.nume = oReader.GetString(1);
+                        articol.tip1 = oReader.GetString(2);
+                        articol.tip2 = oReader.GetString(3);
+                        articol.isLocal = true;
+                        articol.isArticolSite = false;
+                        setDetaliiArticol(articol);
+                        listArticole.Add(articol);
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            rezultat.listArticole = listArticole;
+
+            if (rezultat.listArticole.Count > 0)
+                addExtraData(rezultat.listArticole, filiala);
+
+
+            return new JavaScriptSerializer().Serialize(rezultat);
+        }
+
+
+
+        public string cautaArticoleMathaus_old(string codArticol, string tipCautare, string filiala, string depart, string pagina) 
+        {
+            
+
             string serviceUrlCod = "https://idx.arabesque.ro/solr/master_erp_Product_default/select?q=code_string:";
             string serviceUrlNume = "https://idx.arabesque.ro/solr/master_erp_Product_default/select?q=name_text_ro:";
             string serviceUrl;
-            List<ArticolMathaus> listArticole;
+           
 
             if (tipCautare.Equals("c"))
                 serviceUrl = serviceUrlCod + codArticol + "*";
             else
                 serviceUrl = serviceUrlNume + codArticol;
 
-            listArticole = getArticoleWebService("", depart, serviceUrl);
+            RezultatArtMathaus rezultat = getArticoleWebService("", depart, serviceUrl, pagina);
 
-            if (listArticole.Count > 0)
-                    addExtraData(listArticole, filiala);
+            if (rezultat.listArticole.Count > 0)
+                    addExtraData(rezultat.listArticole, filiala);
 
-            return new JavaScriptSerializer().Serialize(listArticole);
+            return new JavaScriptSerializer().Serialize(rezultat);
 
         }
+
+
+        
+
+        private int getNrCautaArticoleLocal(string codArticol, string tipCautare, string filiala, string depart)
+        {
+            int nrArticole = 0;
+
+            OracleConnection connection = new OracleConnection();
+            OracleDataReader oReader = null;
+
+            string cautare ;
+
+            if (tipCautare.Equals("c"))
+                cautare = " and lower(a.cod) like '0000000000" + codArticol.ToLower() + "%'";
+            else
+                cautare = " and lower(a.nume) like '" + codArticol.ToLower() + "%'";
+
+            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+            connection.ConnectionString = connectionString;
+            connection.Open();
+
+            OracleCommand cmd = connection.CreateCommand();
+
+            try
+            {
+
+                cmd.CommandText = " select count(distinct c.matnr) from sapprd.marc c, sapprd.zstoc_job b, websap.articole a, websap.sintetice g " +
+                                  " where c.mandt = '900' and c.werks = :filiala and c.dismm = 'ND' and b.mandt = c.mandt and b.matnr = c.matnr " +
+                                  " and b.werks = c.werks and b.stocne > 0 and not exists " +
+                                  " (select * from sapprd.zpath_hybris s where s.mandt = '900' and s.matnr = c.matnr) and c.matnr = a.cod " + cautare +
+                                  " and a.sintetic = g.cod and (substr(a.grup_vz,0,2) =:depart or a.grup_vz = '11' ) order by c.matnr ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = filiala;
+
+                cmd.Parameters.Add(":depart", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = depart.Substring(0, 2);
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        nrArticole = oReader.GetInt32(0);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return nrArticole;
+        }
+
+
+
+        public string cautaArticoleLocal(string codArticol, string tipCautare, string filiala, string depart, string pagina)
+        {
+
+            RezultatArtMathaus rezultat = new RezultatArtMathaus();
+            rezultat.nrTotalArticole = getNrCautaArticoleLocal(codArticol, tipCautare, filiala, depart).ToString().ToString();
+
+            List<ArticolMathaus> listArticole = new List<ArticolMathaus>();
+
+            string paginaMin = ((Int32.Parse(pagina) - 1) * 10).ToString();
+            string paginaMax = (Int32.Parse(pagina) * 10).ToString();
+
+            string cautare;
+            if (tipCautare.Equals("c"))
+                cautare = " and lower(a.cod) like '0000000000" + codArticol.ToLower() + "%'";
+            else
+                cautare = " and lower(a.nume) like '" + codArticol.ToLower() + "%'";
+
+            OracleConnection connection = new OracleConnection();
+            OracleDataReader oReader = null;
+
+            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+            connection.ConnectionString = connectionString;
+            connection.Open();
+
+            OracleCommand cmd = connection.CreateCommand();
+
+            try
+            {
+
+                cmd.CommandText = " select * from (" +
+                                  " select distinct c.matnr, a.nume, row_number() over (ORDER BY c.matnr ASC) line_number from sapprd.marc c, sapprd.zstoc_job b, websap.articole a, websap.sintetice g " +
+                                  " where c.mandt = '900' and c.werks = :filiala and c.dismm = 'ND' and b.mandt = c.mandt and b.matnr = c.matnr " +
+                                  " and b.werks = c.werks and b.stocne > 0 and not exists " +
+                                  " (select * from sapprd.zpath_hybris s where s.mandt = '900' and s.matnr = c.matnr) and c.matnr = a.cod " + cautare +
+                                  " and a.sintetic = g.cod and (substr(a.grup_vz,0,2) =:depart or a.grup_vz = '11' ) order by c.matnr ) " +
+                                  " where line_number between :pageMin and :pageMax order by line_number ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = filiala;
+
+                cmd.Parameters.Add(":depart", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = depart.Substring(0, 2);
+
+
+                cmd.Parameters.Add(":pageMin", OracleType.VarChar, 3).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = paginaMin;
+
+                cmd.Parameters.Add(":pageMax", OracleType.VarChar, 3).Direction = ParameterDirection.Input;
+                cmd.Parameters[3].Value = paginaMax;
+
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        ArticolMathaus articol = new ArticolMathaus();
+                        articol.cod = oReader.GetString(0);
+                        articol.nume = oReader.GetString(1);
+                        articol.isLocal = true;
+                        articol.isArticolSite = false;
+                        setDetaliiArticol(articol);
+                        listArticole.Add(articol);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            rezultat.listArticole = listArticole;
+
+            return new JavaScriptSerializer().Serialize(rezultat);
+        }
+
 
 
         private void setDetaliiArticol(ArticolMathaus articol)
@@ -346,7 +1050,7 @@ namespace LiteSFATestWebService
                                   " decode(a.grup_vz, ' ', '-1', a.grup_vz), decode(trim(a.dep_aprobare), '', '00', a.dep_aprobare)  dep_aprobare, " +
                                   " (select nvl((select 1 from sapprd.mara m where m.mandt = '900' and m.matnr = a.cod and m.categ_mat in ('PA','AM')),-1) " + 
                                   " palet from dual) palet  , -1 stoc , categ_mat, " +
-                                  " lungime, a.s_indicator from articole a, sintetice b, sapprd.marc c   where c.mandt = '900' and c.matnr = a.cod " +
+                                  " nvl(lungime,0), a.s_indicator from articole a, sintetice b, sapprd.marc c   where c.mandt = '900' and c.matnr = a.cod " +
                                   " and c.werks = :filiala and c.mmsta <> '01'  and a.sintetic = b.cod and a.cod != 'MAT GENERIC PROD' " +
                                   " and a.blocat <> '01' and a.cod in " + listCodArt + "   ";
 
@@ -356,6 +1060,8 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
                 cmd.Parameters[0].Value = filialaGed;
 
+
+                
 
                 oReader = cmd.ExecuteReader();
                 string strCat;
@@ -382,7 +1088,11 @@ namespace LiteSFATestWebService
                                 articol.depart = oReader.GetString(7);
                                 articol.departAprob = oReader.GetString(8);
                                 articol.umPalet = oReader.GetInt32(9).ToString();
-                                articol.stoc = oReader.GetDouble(10).ToString();
+
+                                if (articol.isArticolSite)
+                                    articol.stoc = getStocSite(oReader.GetString(0), filiala);
+                                else
+                                    articol.stoc = oReader.GetDouble(10).ToString();
 
                                 strCat = oReader.GetString(11);
                                 if (strCat.ToUpper().Equals("AM") || strCat.ToUpper().Equals("PA"))
@@ -395,10 +1105,14 @@ namespace LiteSFATestWebService
                                 articol.catMathaus = oReader.GetString(13).Equals("Y") ? "S" : " ";
                                 articol.pretUnitar = " ";
 
+                                /*
                                 if (!magMathaus.Equals(filiala) && oReader.GetString(13).Equals("N"))
                                     eliminate.Add(articol);
+                                    */
 
                                 break;
+                                
+                                
 
                             }
 
@@ -417,10 +1131,66 @@ namespace LiteSFATestWebService
                 DatabaseConnections.CloseConnections(oReader, cmd, connection);
             }
 
-            listArticole.RemoveAll(x => eliminate.Contains(x));
+            //listArticole.RemoveAll(x => eliminate.Contains(x));
+            
 
         }
 
+
+        public string getStocSite(string codArticol, string filiala)
+        {
+            string stocSite = "0";
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = null;
+            OracleDataReader oReader = null;
+
+            
+
+            try
+            {
+
+                string connectionString = DatabaseConnections.ConnectToProdEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                string query = " select  labst from SAPPRD.zhybris_zhstock where mandt = '900' and matnr = :matnr and werks = :werks ";
+                cmd = connection.CreateCommand();
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":matnr", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codArticol;
+
+                cmd.Parameters.Add(":werks", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = filiala;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    stocSite = oReader.GetDouble(0).ToString();
+                }
+
+
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+
+            return stocSite;
+        }
 
 
         private byte[] GetImage(string url)
@@ -458,10 +1228,17 @@ namespace LiteSFATestWebService
       
 
 
-        public string getLivrariComanda(string strComanda)
+        public string getLivrariComanda(string antetComanda, string strComanda)
         {
 
+
+            
+
             JavaScriptSerializer serializer = new JavaScriptSerializer();
+
+            AntetCmdMathaus antetCmdMathaus = null;
+            if (antetComanda != null)
+                antetCmdMathaus = serializer.Deserialize<AntetCmdMathaus>(antetComanda);
 
             ComandaMathaus comandaMathaus = serializer.Deserialize<ComandaMathaus>(strComanda);
             List<DateArticolMathaus> articole = comandaMathaus.deliveryEntryDataList;
@@ -472,6 +1249,9 @@ namespace LiteSFATestWebService
 
             foreach (DateArticolMathaus dateArticol in articole)
             {
+                if (!dateArticol.tip2.Equals("S"))
+                    continue;
+
                 DateArticolMathaus articol = new DateArticolMathaus();
                 articol.productCode = "0000000000" + dateArticol.productCode;
                 articol.quantity = dateArticol.quantity;
@@ -481,35 +1261,99 @@ namespace LiteSFATestWebService
             }
 
             comanda.deliveryEntryDataList = deliveryEntryDataList;
-            return callDeliveryService(serializer.Serialize(comanda));
+
+            
+            string strComandaRezultat = callDeliveryService(serializer.Serialize(comanda));
+
+
+            ComandaMathaus comandaRezultat = serializer.Deserialize<ComandaMathaus>(strComandaRezultat);
+
+            bool artFound = false;
+            foreach (DateArticolMathaus dateArticol in articole)
+            {
+
+                //string codArticol = "0000000000" + dateArticol.productCode;
+
+                dateArticol.productCode = "0000000000" + dateArticol.productCode;
+
+
+                artFound = false;
+                foreach (DateArticolMathaus dateArticolRez in comandaRezultat.deliveryEntryDataList)
+                {
+                    if (dateArticolRez.productCode.Equals(dateArticol.productCode) && dateArticol.tip2.Equals("S"))
+                    {
+                        dateArticol.deliveryWarehouse = dateArticolRez.deliveryWarehouse;
+                        artFound = true;
+                        break;
+                    }
+
+                }
+
+                if (!artFound)
+                    dateArticol.deliveryWarehouse = dateArticol.productCode.StartsWith("0000000000111") ? getULGed(comanda.sellingPlant) : comanda.sellingPlant;
+
+            }
+
+            List<CostTransportMathaus> listCostTransport = null;
+
+            if (antetCmdMathaus != null)
+                listCostTransport = getTransportService(antetCmdMathaus, comandaMathaus);
+
+            LivrareMathaus livrareMathaus = new LivrareMathaus();
+            livrareMathaus.comandaMathaus = comandaMathaus;
+            livrareMathaus.costTransport = listCostTransport;
+
+            //return callDeliveryService(serializer.Serialize(comandaMathaus));
+
+            return serializer.Serialize(livrareMathaus);
+
 
         }
+
+
+
 
 
         private string callDeliveryService(string jsonData)
         {
 
-            System.Net.ServicePointManager.Expect100Continue = false;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            string result = "";
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://wt1.arabesque.ro/arbsqintegration/optimiseDelivery");
-            request.Method = "POST";
-            request.ContentType = "application/json";
-            request.ContentLength = jsonData.Length;
+            try {
 
-            string encoded = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes("arbsqservice" + ":" + "arbsqservice"));
-            request.Headers.Add("Authorization", "Basic " + encoded);
+                System.Net.ServicePointManager.Expect100Continue = false;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-            using (Stream webStream = request.GetRequestStream())
-            using (StreamWriter requestWriter = new StreamWriter(webStream, System.Text.Encoding.ASCII))
+                //HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://wt1.arabesque.ro/arbsqintegration/optimiseDelivery");
+
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://wt1.arabesque.ro/arbsqintegration/optimiseDeliveryB2B");
+
+
+
+                request.Method = "POST";
+                request.ContentType = "application/json";
+                request.ContentLength = jsonData.Length;
+
+                string encoded = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes("arbsqservice" + ":" + "arbsqservice"));
+                request.Headers.Add("Authorization", "Basic " + encoded);
+
+                using (Stream webStream = request.GetRequestStream())
+                using (StreamWriter requestWriter = new StreamWriter(webStream, System.Text.Encoding.ASCII))
+                {
+                    requestWriter.Write(jsonData);
+                }
+
+                System.Net.WebResponse response = request.GetResponse();
+                System.IO.StreamReader sr = new System.IO.StreamReader(response.GetResponseStream());
+
+                result = sr.ReadToEnd().Trim();
+            }
+            catch(Exception ex)
             {
-                requestWriter.Write(jsonData);
+                ErrorHandling.sendErrorToMail("callDeliveryService: " + ex.ToString());
             }
 
-            System.Net.WebResponse response = request.GetResponse();
-            System.IO.StreamReader sr = new System.IO.StreamReader(response.GetResponseStream());
-
-            return sr.ReadToEnd().Trim();
+            return result;
 
         }
 
@@ -573,6 +1417,128 @@ namespace LiteSFATestWebService
 
             return sr.ReadToEnd().Trim();
 
+        }
+
+        private string getULGed(string unitLog)
+        {
+            return unitLog.Substring(0, 2) + "2" + unitLog.Substring(3, 1);
+        }
+
+
+        private List<CostTransportMathaus> getTransportService(AntetCmdMathaus antetCmd, ComandaMathaus comandaMathaus)
+        {
+            SAPWebServices.ZTBL_WEBSERVICE webService = new ZTBL_WEBSERVICE();
+
+            SAPWebServices.ZdetTransport inParam = new ZdetTransport();
+            System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Auth.getUser(), Auth.getPass());
+            webService.Credentials = nc;
+            webService.Timeout = 300000;
+
+            inParam.IpCity = antetCmd.localitate;
+            inParam.IpRegio = antetCmd.codJudet;
+            inParam.IpKunnr = antetCmd.codClient;
+            inParam.IpTippers = antetCmd.tipPers;
+            inParam.IpWerks = comandaMathaus.sellingPlant;
+            inParam.IpVkgrp = antetCmd.depart;
+
+            SAPWebServices.ZsitemsComanda[] items = new ZsitemsComanda[comandaMathaus.deliveryEntryDataList.Count];
+
+            int ii = 0;
+            foreach(DateArticolMathaus dateArticol in comandaMathaus.deliveryEntryDataList)
+            {
+                items[ii] = new ZsitemsComanda();
+                items[ii].Matnr = dateArticol.productCode;
+                items[ii].Kwmeng = Decimal.Parse(dateArticol.quantity.ToString());
+                items[ii].Vrkme = dateArticol.unit;
+                items[ii].ValPoz = Decimal.Parse(dateArticol.valPoz.ToString());
+                items[ii].Werks = dateArticol.deliveryWarehouse;
+                ii++;
+            }
+
+            inParam.ItItems = items;
+            SAPWebServices.ZsfilTransp[] filCost = new SAPWebServices.ZsfilTransp[1];
+            inParam.ItFilCost = filCost;
+
+            SAPWebServices.ZdetTransportResponse resp = webService.ZdetTransport(inParam);
+
+            List<CostTransportMathaus> listCostTransp = new List<CostTransportMathaus>();
+
+            int nrItems = resp.ItItems.Count();
+
+            bool artFound = false;
+            foreach(SAPWebServices.ZsitemsComanda itemCmd in resp.ItItems)
+            {
+                if (listCostTransp.Count == 0)
+                {
+                    CostTransportMathaus cost = new CostTransportMathaus();
+                    cost.filiala = itemCmd.Werks;
+                    cost.tipTransp = itemCmd.Traty;
+                    listCostTransp.Add(cost);
+                }
+                else
+                {
+                    artFound = false;
+                    foreach(CostTransportMathaus costTransp in listCostTransp)
+                    {
+                        if (costTransp.filiala.Equals(itemCmd.Werks))
+                        {
+                            artFound = true;
+                            break;
+                        }
+                    }
+
+                    if (!artFound)
+                    {
+                        CostTransportMathaus cost = new CostTransportMathaus();
+                        cost.filiala = itemCmd.Werks;
+                        cost.tipTransp = itemCmd.Traty;
+                        listCostTransp.Add(cost);
+                    }
+
+                }
+
+
+            }
+
+            nrItems = resp.ItFilCost.Count();
+
+            foreach (SAPWebServices.ZsfilTransp itemCost in resp.ItFilCost)
+            {
+
+                foreach(CostTransportMathaus costTransp in listCostTransp)
+                {
+                    if (costTransp.filiala.Equals(itemCost.Werks))
+                    {
+                        costTransp.valTransp = itemCost.ValTr.ToString();
+                        costTransp.codArtTransp = itemCost.Matnr;
+                        break;
+                    }
+                }
+
+            }
+
+            return listCostTransp;
+
+        }
+        
+
+
+        public static string getTipTransportMathaus(List<CostTransportMathaus> costTransport, string filiala, string tipTransport)
+        {
+
+            if (costTransport == null)
+                return tipTransport;
+            else if (costTransport.Count == 0)
+                return tipTransport;
+            else
+            {
+                foreach (CostTransportMathaus transp in costTransport)
+                {
+                    if (transp.filiala.Equals(filiala))
+                        return transp.tipTransp;
+                }
+            }
+            return tipTransport;
         }
 
     }

@@ -39,7 +39,7 @@ namespace DistributieTESTWebServices
                 cmd = connection.CreateCommand();
 
                 cmd.CommandText = " select id, locatie, data, ora, minut, kmbord from sapprd.zfoaieparcurs where mandt = '900' and nrauto =:nrAuto and " +
-                                  " sofer = :codSofer and substr(data,0,6)=:dataf order by data, ora ";
+                                  " sofer = :codSofer and substr(data,0,6)=:dataf order by to_date(data||' '||ora||':'||minut,'yyyymmdd hh24:mi') ";
 
                 cmd.Parameters.Clear();
 
@@ -87,6 +87,26 @@ namespace DistributieTESTWebServices
 
         }
 
+
+        public string afisFoaieParcurs(string codSofer, string nrMasina, string an, string luna)
+        {
+
+            AfisFoaieParcurs afisFoaieParcurs = new AfisFoaieParcurs();
+
+            FoaieParcurs foaieParcurs = new JavaScriptSerializer().Deserialize<FoaieParcurs>(getFoaieParcurs(codSofer, nrMasina, an, luna));
+            afisFoaieParcurs.foaieParcurs = foaieParcurs;
+
+            OperatiiMasina opMasina = new OperatiiMasina();
+            afisFoaieParcurs.alimentariComb = opMasina.getAlimentariLuna(codSofer, nrMasina, an + luna.PadLeft(2,'0'));
+            afisFoaieParcurs.consumSiroco = opMasina.getSirocoLuna(codSofer, nrMasina, an + luna.PadLeft(2, '0'));
+
+            string[] kmLuna = opMasina.getKmLuna(codSofer, nrMasina, an + luna.PadLeft(2,'0')).Split('#');
+            afisFoaieParcurs.kmStart = kmLuna[0];
+            afisFoaieParcurs.kmStop = kmLuna[1];
+
+            return new JavaScriptSerializer().Serialize(afisFoaieParcurs);
+
+        }
 
         private bool isLunaDeschisa(OracleConnection connection, string codSofer, string nrMasina, string an, string luna)
         {

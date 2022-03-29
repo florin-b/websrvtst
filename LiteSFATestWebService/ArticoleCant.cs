@@ -16,7 +16,6 @@ namespace LiteSFATestWebService
         public string getArticoleCant(string unitLog, string codArtPal)
         {
 
-            ErrorHandling.sendErrorToMail("getArticoleCant: " + unitLog + " , " + codArtPal);
 
             List<ArticolCant> listArticole = new List<ArticolCant>();
             SAPWebServices.ZTBL_WEBSERVICE webService = new ZTBL_WEBSERVICE();

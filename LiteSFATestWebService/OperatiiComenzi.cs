@@ -985,6 +985,7 @@ namespace LiteSFATestWebService
 
                 OperatiiAdresa.insereazaCoordonateAdresa(connection, idCmd.Value.ToString(), dateLivrare.coordonateGps, dateLivrare.codJudet, dateLivrare.Oras);
                 OperatiiSuplimentare.saveTonajComanda(connection, idCmd.Value.ToString(), dateLivrare.tonaj);
+                new OperatiiSuplimentare().savePrelucrare04(connection, idCmd.Value.ToString(), dateLivrare.prelucrare);
 
                 if (dateLivrare.addrNumber.Trim() != "" && dateLivrare.adrLivrNoua)
                     OperatiiSuplimentare.saveTonajAdresa(connection, comandaVanzare.codClient, dateLivrare.addrNumber, dateLivrare.tonaj);
@@ -1932,7 +1933,7 @@ namespace LiteSFATestWebService
                 DateLivrare dateLivrare = serializer.Deserialize<DateLivrare>(JSONDateLivrare);
                 List<ArticolComanda> articolComanda = serializer.Deserialize<List<ArticolComanda>>(JSONArt);
 
-                bool isComandaCLP = dateLivrare.filialaCLP != null && dateLivrare.filialaCLP.Length == 4;
+                bool isComandaCLP = dateLivrare.filialaCLP != null && dateLivrare.filialaCLP.Trim().Length == 4;
 
                 if (isComandaCLP || (!isComandaCLP && Utils.isMathausMic(comandaVanzare.filialaAlternativa)) || !tipUserSap.Contains("IP") || comandaVanzare.filialaAlternativa.Equals("BV90"))
                 {

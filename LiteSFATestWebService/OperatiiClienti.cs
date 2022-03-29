@@ -143,7 +143,6 @@ namespace LiteSFATestWebService
         public string getListClienti(string numeClient, string depart, string departAg, string unitLog, string codUser, string tipUserSap)
         {
 
-
             string serializedResult = "";
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand();
@@ -264,6 +263,19 @@ namespace LiteSFATestWebService
                         unClient.codAgent = "0";
                         unClient.numeAgent = "0";
                         unClient.termenPlata = getTermenPlataClient(connection, unClient.codClient);
+                        unClient.clientBlocat = HelperClienti.isClientBlocat(connection, unClient.codClient);
+
+                        string tipPlataContract = getTipPlataContract(connection, unClient.codClient);
+
+                        if (tipPlataContract.Trim().Equals(String.Empty))
+                        {
+                            unClient.tipPlata = " ";
+                            unClient.termenPlata = new List<string>() { "C000" };
+                        }
+                        else
+                        {
+                             unClient.tipPlata = tipPlataContract;
+                        }
 
                         if (unClient.agenti.Contains("@"))
                             listaClienti.Add(unClient);
@@ -291,6 +303,8 @@ namespace LiteSFATestWebService
 
             }
 
+
+            
 
             return serializedResult;
         }
@@ -562,7 +576,6 @@ namespace LiteSFATestWebService
                       " where k.mandt='900' and k.kkber='1000' and k.kunnr=:k ";
 
 
-
                     cmd.CommandType = CommandType.Text;
                     cmd.Parameters.Clear();
 
@@ -754,6 +767,8 @@ namespace LiteSFATestWebService
                                       " and p.kunnr =:k " + condClient2 + " ) order by u.zterm ";
 
 
+                  
+
                     cmd.CommandType = CommandType.Text;
                     cmd.Parameters.Clear();
 
@@ -779,6 +794,70 @@ namespace LiteSFATestWebService
                     //TEST
                     detaliiClient.divizii = "01;02;03;04;05;06;07;08;09;";
 
+
+                    //contract activ
+                    bool contractActiv = false;
+                    cmd = connection.CreateCommand();
+
+                    cmd.CommandText = " select 1 from sapprd.kna1 k where k.mandt = '900' and k.kunnr = :codClient " +
+                                      " and k.ZDATAEXPCTR !='00000000' and to_date(k.ZDATAEXPCTR, 'yyyymmdd') >= sysdate ";
+
+                    cmd.CommandType = CommandType.Text;
+                    cmd.Parameters.Clear();
+
+                    cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                    cmd.Parameters[0].Value = codClient;
+
+                    oReader = cmd.ExecuteReader();
+                    if (oReader.HasRows)
+                    {
+                        contractActiv = true;
+                    }
+
+
+
+                    if (!contractActiv)
+                    {
+                        detaliiClient.tipPlata = "";
+                        detaliiClient.termenPlata = "C000";
+                    }
+                    else {
+
+                        //limita de credit definita si tip plata contract
+                        cmd = connection.CreateCommand();
+
+                        cmd.CommandText = " select k.klimk, b.zwels from sapprd.knkk k, sapprd.knb1 b where k.mandt='900' and b.mandt = k.mandt " +
+                                          " and k.kunnr = :codClient and b.kunnr = k.kunnr ";
+
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.Clear();
+
+                        cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                        cmd.Parameters[0].Value = codClient;
+
+                        oReader = cmd.ExecuteReader();
+                        if (oReader.HasRows)
+                        {
+                            oReader.Read();
+                            detaliiClient.tipPlata = oReader.GetString(1);
+                        }
+                        else {
+                            detaliiClient.tipPlata = " ";
+                            detaliiClient.termenPlata = "C000";
+                        }
+
+
+                    }
+
+
+
+                    if (codClient.Equals("4110035342"))
+                    {
+                        detaliiClient.tipPlata = "C";
+                        detaliiClient.termenPlata = "C000;C001;C005;C010;C015;C020;C030";
+                        
+                    }
+
                     oReader.Close();
                     oReader.Dispose();
 
@@ -801,6 +880,8 @@ namespace LiteSFATestWebService
                 connection.Dispose();
             }
 
+            if (codClient.Equals("4110035342"))
+                ErrorHandling.sendErrorToMail("getDetaliiClient:" + serializedResult + " , " + depart + " , " + codUser);
 
             return serializedResult;
 
@@ -1037,8 +1118,6 @@ namespace LiteSFATestWebService
         public string getDatePersonaleClient(string numeClient, string tipClient)
         {
 
-            ErrorHandling.sendErrorToMail("getDatePersonale:" +  numeClient + "\n" + tipClient);
-
 
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand();
@@ -1083,6 +1162,31 @@ namespace LiteSFATestWebService
                         datePersonale.codjudet = oReader.GetString(2);
                         datePersonale.localitate = oReader.GetString(3);
                         datePersonale.strada = oReader.GetString(4);
+
+                        if (tipClient.Equals("PF"))
+                        {
+                            datePersonale.clientBlocat = false;
+                            datePersonale.tipPlata = " ";
+                            datePersonale.termenPlata = new List<string>() { "C000" };
+                        }
+                        else {
+
+                            datePersonale.termenPlata = getTermenPlataClient(connection, datePersonale.cnp);
+                            datePersonale.clientBlocat = HelperClienti.isClientBlocat(connection, datePersonale.cnp);
+
+                            string tipPlataContract = getTipPlataContract(connection, datePersonale.cnp);
+
+                            if (tipPlataContract.Trim().Equals(String.Empty))
+                            {
+                                datePersonale.tipPlata = " ";
+                                datePersonale.termenPlata = new List<string>() { "C000" };
+                            }
+                            else
+                            {
+                                 datePersonale.tipPlata = tipPlataContract;
+                            }
+                        }
+
 
                         listDatePersonale.Add(datePersonale);
 
@@ -1153,6 +1257,7 @@ namespace LiteSFATestWebService
         public string getListClientiInstPublice(string numeClient, string unitLog, string tipUser, string tipClient)
         {
 
+
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand();
             OracleDataReader oReader = null;
@@ -1197,8 +1302,6 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Add(":tipClient", OracleType.VarChar, 6).Direction = ParameterDirection.Input;
                 cmd.Parameters[0].Value = tipClientIP;
 
-                ErrorHandling.sendErrorToMail("getListClientiInstPublice: " + cmd.CommandText + " , " + tipClientIP);
-
                 oReader = cmd.ExecuteReader();
 
                 if (oReader.HasRows)
@@ -1206,7 +1309,7 @@ namespace LiteSFATestWebService
                     while (oReader.Read())
                     {
                         ClientIP unClient = new ClientIP();
-                        unClient.numeClient = oReader.GetString(0);
+                        unClient.numeClient = oReader.GetString(0) + " (" + oReader.GetString(5) + ")";
                         unClient.codClient = oReader.GetString(1);
                         unClient.tipClient = oReader.GetString(2);
                         unClient.codCUI = oReader.GetString(3);
@@ -1214,6 +1317,24 @@ namespace LiteSFATestWebService
                         unClient.filiala = oReader.GetString(5);
 
                         unClient.termenPlata = getTermenPlataInstPublic(connection, unClient.codClient);
+                        unClient.clientBlocat = HelperClienti.isClientBlocat(connection, unClient.codClient);
+
+                        string tipPlataContract;
+
+                        if (tipClientIP.Equals("18"))
+                            tipPlataContract = getTipPlataContractIP18(connection, unClient.codClient);
+                        else
+                            tipPlataContract = getTipPlataContract(connection, unClient.codClient);
+
+                        if (tipPlataContract.Trim().Equals(String.Empty))
+                        {
+                            unClient.tipPlata = " ";
+                            unClient.termenPlata = new List<string>() { "C000" };
+                        }
+                        else
+                        {
+                            unClient.tipPlata = tipPlataContract;
+                        }
 
                         listClienti.Add(unClient);
                     }
@@ -1229,6 +1350,7 @@ namespace LiteSFATestWebService
             {
                 ErrorHandling.sendErrorToMail(ex.ToString());
             }
+
 
             return new JavaScriptSerializer().Serialize(listClienti);
 
@@ -1615,6 +1737,98 @@ namespace LiteSFATestWebService
 
             return new JavaScriptSerializer().Serialize(creditClient);
 
+        }
+
+        private string getTipPlataContract(OracleConnection connection, string codClient)
+        {
+            
+            OracleDataReader oReader = null;
+            OracleCommand cmd = new OracleCommand();
+            string tipPlata = "";
+
+            try
+            {
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select k.klimk, b.zwels from sapprd.knkk k, sapprd.knb1 b, sapprd.kna1 c " +
+                                  " where k.mandt = '900' and b.mandt = '900' and c.mandt = '900' and c.kunnr = k.kunnr " +
+                                  " and k.kunnr = :codClient and b.kunnr = k.kunnr " +
+                                  " and c.ZDATAEXPCTR != '00000000' and to_date(c.ZDATAEXPCTR, 'yyyymmdd') >= sysdate";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codClient;
+
+                oReader = cmd.ExecuteReader();
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    tipPlata = oReader.GetString(1);
+                   
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString() + " , " + codClient);
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+
+
+                    
+
+            return tipPlata;
+
+
+        }
+
+
+        private string getTipPlataContractIP18(OracleConnection connection, string codClient)
+        {
+
+            OracleDataReader oReader = null;
+            OracleCommand cmd = new OracleCommand();
+            string tipPlata = "";
+
+            try
+            {
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select k.klimk, b.zwels from sapprd.knkk k, sapprd.knb1 b, sapprd.kna1 c " +
+                                  " where k.mandt = '900' and b.mandt = '900' and c.mandt = '900' and c.kunnr = k.kunnr " +
+                                  " and k.kunnr = :codClient and b.kunnr = k.kunnr " +
+                                  " and (exists (select 1 from sapprd.knvv v where v.mandt = '900' and v.kunnr = b.kunnr and v.vtweg = '20' and v.spart = '11' and v.kdgrp = '18') " +
+                                  " or ( c.ZDATAEXPCTR != '00000000' and to_date(c.ZDATAEXPCTR, 'yyyymmdd') >= sysdate )) ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codClient;
+
+                oReader = cmd.ExecuteReader();
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    tipPlata = oReader.GetString(1);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString() + " , " + codClient);
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+            return tipPlata;
         }
 
 

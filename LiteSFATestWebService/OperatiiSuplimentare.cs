@@ -724,7 +724,68 @@ namespace LiteSFATestWebService
         }
 
 
+        public static void saveDeviceInfo(string userCode, string strDeviceInfo)
+        {
 
+            DeviceInfo deviceInfo = new JavaScriptSerializer().Deserialize<DeviceInfo>(strDeviceInfo);
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+
+            try
+            {
+
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                string query = " insert into sapprd.zlogtbl (mandt, coduser, datalog, oralog, sdkver, man, model, appname, appver) values " +
+                               " ('900', :coduser, :datalog, :oralog, :sdkver, :man, :model, :appname, :appver) ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":coduser", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = userCode;
+
+                cmd.Parameters.Add(":datalog", OracleType.NVarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = General.GeneralUtils.getCurrentDate();
+
+                cmd.Parameters.Add(":oralog", OracleType.NVarChar, 18).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = General.GeneralUtils.getCurrentTime();
+
+                cmd.Parameters.Add(":sdkver", OracleType.NVarChar, 15).Direction = ParameterDirection.Input;
+                cmd.Parameters[3].Value = deviceInfo.sdkVer;
+
+                cmd.Parameters.Add(":man", OracleType.NVarChar, 60).Direction = ParameterDirection.Input;
+                cmd.Parameters[4].Value = deviceInfo.man.ToUpper();
+
+                cmd.Parameters.Add(":model", OracleType.NVarChar, 60).Direction = ParameterDirection.Input;
+                cmd.Parameters[5].Value = deviceInfo.model.ToUpper();
+
+                cmd.Parameters.Add(":appname", OracleType.NVarChar, 60).Direction = ParameterDirection.Input;
+                cmd.Parameters[6].Value = deviceInfo.appName;
+
+                cmd.Parameters.Add(":appver", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[7].Value = deviceInfo.appVer;
+
+                cmd.ExecuteNonQuery();
+
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(cmd, connection);
+            }
+
+        }
 
 
 

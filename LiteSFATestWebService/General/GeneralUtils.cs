@@ -96,6 +96,16 @@ namespace LiteSFATestWebService.General
         }
 
 
+        public static string getTipPlata(string tipPlata)
+        {
+
+            if (tipPlata.ToUpper().Equals("ING") || tipPlata.ToUpper().Equals("BRD") || tipPlata.ToUpper().Equals("UNI") || tipPlata.ToUpper().Equals("CBTR") || tipPlata.ToUpper().Equals("CGRB") || tipPlata.ToUpper().Equals("CRFZ") || tipPlata.ToUpper().Equals("CCTL") || tipPlata.ToUpper().Equals("CAVJ") || tipPlata.ToUpper().Equals("INS"))
+                return "CB";
+            else
+                return tipPlata;
+        }
+
+
         public static bool isFilialaExtensie02(string filiala)
         {
             string fil = filiala.ToUpper();

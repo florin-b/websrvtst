@@ -34,6 +34,9 @@ namespace LiteSFATestWebService
         public string codjudet;
         public string localitate;
         public string strada;
+        public List<string> termenPlata;
+        public bool clientBlocat;
+        public string tipPlata;
     }
 
     public class AdresaClientGed

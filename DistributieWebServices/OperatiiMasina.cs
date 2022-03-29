@@ -362,7 +362,7 @@ namespace DistributieTESTWebServices
 
             try
             {
-                connection.ConnectionString = DatabaseConnections.ConnectToTestEnvironment();
+                connection.ConnectionString = DatabaseConnections.ConnectToProdEnvironment();
                 connection.Open();
 
                 cmd = connection.CreateCommand();
@@ -509,6 +509,64 @@ namespace DistributieTESTWebServices
         }
 
 
+
+        public List<Alimentare> getSirocoLuna(string codSofer, string nrMasina, string luna)
+        {
+            List<Alimentare> listAlimentari = new List<Alimentare>();
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                connection.ConnectionString = DatabaseConnections.ConnectToProdEnvironment();
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select id, litri, data from sapprd.zsiroco_tab where mandt = '900' and nrauto =:nrAuto and " +
+                                  " sofer =:codSofer and substr(data,0,6)=:data order by data ";
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":nrAuto", OracleType.VarChar, 120).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[0].Value = nrMasina.Replace("-", "");
+
+                cmd.Parameters.Add(":codSofer", OracleType.VarChar, 24).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[1].Value = codSofer;
+
+                cmd.Parameters.Add(":data", OracleType.VarChar, 24).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[2].Value = luna;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        Alimentare alimentare = new Alimentare();
+                        alimentare.id = oReader.GetInt32(0).ToString();
+                        alimentare.litri = oReader.GetInt32(1).ToString();
+                        alimentare.data = oReader.GetString(2);
+                        listAlimentari.Add(alimentare);
+                    }
+                }
+
+            }
+
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return listAlimentari;
+        }
 
 
 
@@ -661,6 +719,68 @@ namespace DistributieTESTWebServices
         }
 
 
+
+        public List<Alimentare> getAlimentariLuna(string codSofer, string nrMasina, string luna)
+        {
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            List<Alimentare> listAlimentari = new List<Alimentare>();
+
+            try
+            {
+
+                connection.ConnectionString = DatabaseConnections.ConnectToProdEnvironment();
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select id, kmbord, litri, data from sapprd.zalim_tab where mandt = '900' and nrauto =:nrAuto and " +
+                                  " sofer =:codSofer and substr(data,0,6) = :data order by data ";
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":nrAuto", OracleType.VarChar, 120).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[0].Value = nrMasina.Replace("-", "");
+
+                cmd.Parameters.Add(":codSofer", OracleType.VarChar, 24).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[1].Value = codSofer;
+
+                cmd.Parameters.Add(":data", OracleType.VarChar, 24).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[2].Value = luna;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        Alimentare alimentare = new Alimentare();
+                        alimentare.id = oReader.GetInt32(0).ToString();
+                        alimentare.kmBord = oReader.GetString(1);
+                        alimentare.litri = oReader.GetInt32(2).ToString();
+                        alimentare.data = oReader.GetString(3);
+                        listAlimentari.Add(alimentare);
+                    }
+                }
+               
+            }
+
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return listAlimentari;
+        }
+
+
         private int getKmMasina(string nrMasina, string data)
         {
             OracleConnection connection = new OracleConnection();
@@ -707,6 +827,66 @@ namespace DistributieTESTWebServices
 
             return nrKm;
 
+        }
+
+        public string getKmLuna(string codSofer, string nrMasina, string data)
+        {
+            string nrMinKm = "0";
+            string nrMaxKm = "0";
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+                connection.ConnectionString = DatabaseConnections.ConnectToProdEnvironment();
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select kmbord, datac from ( " +
+                                  " select kmbord, to_date(data||' '||ora||':'||minut,'yyyymmdd hh24:mi') datac From  sapprd.zfoaieparcurs where sofer = :codSofer and nrauto = :nrAuto " +
+                                  " and to_char(to_date(data || ' ' || ora || ':' || minut, 'yyyymmdd hh24:mi'), 'yyyymmdd hh24:mi') = " +
+                                  " (select min(to_char(to_date(data || ' ' || ora || ':' || minut, 'yyyymmdd hh24:mi'), 'yyyymmdd hh24:mi')) from sapprd.zfoaieparcurs " +
+                                  " where sofer = :codSofer and nrauto = :nrAuto and substr(data,0, 6) = :data) " +
+                                  " union " +
+                                  " select kmbord, to_date(data||' '||ora||':'||minut,'yyyymmdd hh24:mi') datac From  sapprd.zfoaieparcurs where sofer = :codSofer and nrauto = :nrAuto " +
+                                  " and to_char(to_date(data || ' ' || ora || ':' || minut, 'yyyymmdd hh24:mi'), 'yyyymmdd hh24:mi') = " +
+                                  " (select max(to_char(to_date(data || ' ' || ora || ':' || minut, 'yyyymmdd hh24:mi'), 'yyyymmdd hh24:mi')) from sapprd.zfoaieparcurs " +
+                                  " where sofer = :codSofer and nrauto = :nrAuto and substr(data,0, 6) = :data) ) order by datac ";
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":nrAuto", OracleType.VarChar, 120).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[0].Value = nrMasina.Replace("-", "");
+
+                cmd.Parameters.Add(":codSofer", OracleType.VarChar, 24).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[1].Value = codSofer;
+
+                cmd.Parameters.Add(":data", OracleType.VarChar, 24).Direction = System.Data.ParameterDirection.Input;
+                cmd.Parameters[2].Value = data;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    nrMinKm = oReader.GetString(0);
+
+                    oReader.Read();
+                    nrMaxKm = oReader.GetString(0);
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+
+
+            return nrMinKm + "#" + nrMaxKm;
         }
 
         public string adaugaAlimentare(string alimentareData)
