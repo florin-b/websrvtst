@@ -315,6 +315,7 @@ namespace LiteSFATestWebService
         public double marjaBrutaPalProc = 0;
         public double marjaBrutaCantProc = 0;
         public bool isClientBlocat = false;
+        public double limitaCredit = 0;
 
     }
 

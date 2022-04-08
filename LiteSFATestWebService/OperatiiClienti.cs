@@ -143,6 +143,8 @@ namespace LiteSFATestWebService
         public string getListClienti(string numeClient, string depart, string departAg, string unitLog, string codUser, string tipUserSap)
         {
 
+            ErrorHandling.sendErrorToMail("getListClienti: " + numeClient + " , " + depart + " , " + departAg + " , " + unitLog + " , " + codUser + " , " + tipUserSap);
+
             string serializedResult = "";
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand();
@@ -436,6 +438,8 @@ namespace LiteSFATestWebService
 
         public string getDetaliiClient(string codClient, string depart, string codUser)
         {
+
+           
 
             string retVal = "-1";
 
@@ -815,7 +819,6 @@ namespace LiteSFATestWebService
                     }
 
 
-
                     if (!contractActiv)
                     {
                         detaliiClient.tipPlata = "";
@@ -826,7 +829,7 @@ namespace LiteSFATestWebService
                         //limita de credit definita si tip plata contract
                         cmd = connection.CreateCommand();
 
-                        cmd.CommandText = " select k.klimk, b.zwels from sapprd.knkk k, sapprd.knb1 b where k.mandt='900' and b.mandt = k.mandt " +
+                        cmd.CommandText = " select k.klimk, b.zwels  from sapprd.knkk k, sapprd.knb1 b where k.mandt='900' and b.mandt = k.mandt " +
                                           " and k.kunnr = :codClient and b.kunnr = k.kunnr ";
 
                         cmd.CommandType = CommandType.Text;
@@ -839,10 +842,20 @@ namespace LiteSFATestWebService
                         if (oReader.HasRows)
                         {
                             oReader.Read();
-                            detaliiClient.tipPlata = oReader.GetString(1);
+
+                            if (oReader.GetDouble(0) > 1)
+                            {
+                                if (oReader.GetString(1) != null && oReader.GetString(1).Trim() != "")
+                                    detaliiClient.tipPlata = oReader.GetString(1);
+                                else
+                                    detaliiClient.tipPlata = "O";
+                            }
+                            else
+                                detaliiClient.tipPlata = "";
+
                         }
                         else {
-                            detaliiClient.tipPlata = " ";
+                            detaliiClient.tipPlata = "";
                             detaliiClient.termenPlata = "C000";
                         }
 
@@ -853,7 +866,7 @@ namespace LiteSFATestWebService
 
                     if (codClient.Equals("4110035342"))
                     {
-                        detaliiClient.tipPlata = "C";
+                        detaliiClient.tipPlata = "O";
                         detaliiClient.termenPlata = "C000;C001;C005;C010;C015;C020;C030";
                         
                     }
@@ -880,8 +893,7 @@ namespace LiteSFATestWebService
                 connection.Dispose();
             }
 
-            if (codClient.Equals("4110035342"))
-                ErrorHandling.sendErrorToMail("getDetaliiClient:" + serializedResult + " , " + depart + " , " + codUser);
+            
 
             return serializedResult;
 
@@ -1257,6 +1269,7 @@ namespace LiteSFATestWebService
         public string getListClientiInstPublice(string numeClient, string unitLog, string tipUser, string tipClient)
         {
 
+            ErrorHandling.sendErrorToMail("getListClientiInstPublice: " + numeClient + " , " +  unitLog + " , " + tipUser + " , " + tipClient);
 
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand();
@@ -1324,7 +1337,7 @@ namespace LiteSFATestWebService
                         if (tipClientIP.Equals("18"))
                             tipPlataContract = getTipPlataContractIP18(connection, unClient.codClient);
                         else
-                            tipPlataContract = getTipPlataContract(connection, unClient.codClient);
+                            tipPlataContract = getTipPlataContractIP19(connection, unClient.codClient);
 
                         if (tipPlataContract.Trim().Equals(String.Empty))
                         {
@@ -1753,7 +1766,7 @@ namespace LiteSFATestWebService
                 cmd.CommandText = " select k.klimk, b.zwels from sapprd.knkk k, sapprd.knb1 b, sapprd.kna1 c " +
                                   " where k.mandt = '900' and b.mandt = '900' and c.mandt = '900' and c.kunnr = k.kunnr " +
                                   " and k.kunnr = :codClient and b.kunnr = k.kunnr " +
-                                  " and c.ZDATAEXPCTR != '00000000' and to_date(c.ZDATAEXPCTR, 'yyyymmdd') >= sysdate";
+                                  " and c.ZDATAEXPCTR != '00000000' and to_date(c.ZDATAEXPCTR, 'yyyymmdd') >= sysdate ";
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -1765,7 +1778,14 @@ namespace LiteSFATestWebService
                 if (oReader.HasRows)
                 {
                     oReader.Read();
-                    tipPlata = oReader.GetString(1);
+
+                    if (oReader.GetDouble(0) > 1)
+                    {
+                        if (oReader.GetString(1) != null && oReader.GetString(1).Trim() != "")
+                            tipPlata = oReader.GetString(1);
+                        else
+                            tipPlata = "O";
+                    }
                    
                 }
             }
@@ -1779,11 +1799,7 @@ namespace LiteSFATestWebService
             }
 
 
-
-                    
-
             return tipPlata;
-
 
         }
 
@@ -1815,7 +1831,14 @@ namespace LiteSFATestWebService
                 if (oReader.HasRows)
                 {
                     oReader.Read();
-                    tipPlata = oReader.GetString(1);
+
+                    if (oReader.GetDouble(0) > 1)
+                    {
+                        if (oReader.GetString(1) != null && oReader.GetString(1).Trim() != "")
+                            tipPlata = oReader.GetString(1);
+                        else
+                            tipPlata = "O";
+                    }
 
                 }
             }
@@ -1831,6 +1854,56 @@ namespace LiteSFATestWebService
             return tipPlata;
         }
 
+
+        private string getTipPlataContractIP19(OracleConnection connection, string codClient)
+        {
+
+            OracleDataReader oReader = null;
+            OracleCommand cmd = new OracleCommand();
+            string tipPlata = "";
+
+            try
+            {
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select k.klimk, b.zwels from sapprd.knkk k, sapprd.knb1 b, sapprd.kna1 c " +
+                                  " where k.mandt = '900' and b.mandt = '900' and c.mandt = '900' and c.kunnr = k.kunnr " +
+                                  " and k.kunnr = :codClient and b.kunnr = k.kunnr " +
+                                  " and(exists(select * from sapprd.knvv v where v.mandt = '900' and v.kunnr = b.kunnr and v.vtweg = '20' and v.spart = '11' and v.kdgrp = '19') " +
+                                  " or(c.ZDATAEXPCTR != '00000000' and to_date(c.ZDATAEXPCTR, 'yyyymmdd') >= sysdate)) ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codClient;
+
+                oReader = cmd.ExecuteReader();
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+
+                    if (oReader.GetDouble(0) > 1)
+                    {
+                        if (oReader.GetString(1) != null && oReader.GetString(1).Trim() != "")
+                            tipPlata = oReader.GetString(1);
+                        else
+                            tipPlata = "O";
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString() + " , " + codClient);
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+            return tipPlata;
+        }
 
         private static string getTipClient(string codTip)
         {
