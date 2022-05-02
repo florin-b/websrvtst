@@ -234,6 +234,8 @@ namespace LiteSFATestWebService
                 DatabaseConnections.CloseConnections(oReader, cmd);
             }
 
+
+
             return limitaCredit;
 
         }

@@ -143,7 +143,7 @@ namespace LiteSFATestWebService
         public string getListClienti(string numeClient, string depart, string departAg, string unitLog, string codUser, string tipUserSap)
         {
 
-            ErrorHandling.sendErrorToMail("getListClienti: " + numeClient + " , " + depart + " , " + departAg + " , " + unitLog + " , " + codUser + " , " + tipUserSap);
+            
 
             string serializedResult = "";
             OracleConnection connection = new OracleConnection();
@@ -801,6 +801,9 @@ namespace LiteSFATestWebService
 
                     //contract activ
                     bool contractActiv = false;
+
+                    /*
+                    //nu se mai verifica
                     cmd = connection.CreateCommand();
 
                     cmd.CommandText = " select 1 from sapprd.kna1 k where k.mandt = '900' and k.kunnr = :codClient " +
@@ -817,6 +820,9 @@ namespace LiteSFATestWebService
                     {
                         contractActiv = true;
                     }
+                    */
+
+                    contractActiv = true;
 
 
                     if (!contractActiv)
@@ -1388,7 +1394,7 @@ namespace LiteSFATestWebService
                 cmd.CommandText = " select u.zterm from sapprd.T052u u, sapprd.TVZBT t where u.mandt = '900' and  u.spras = '4' " +
                                   " and u.mandt = t.mandt and u.spras = t.spras and u.zterm = t.zterm  and u.zterm " +
                                   " <= (select max(p.zterm) from sapprd.knvv p where p.mandt = '900' " +
-                                  " and p.kunnr = :codClient and p.vtweg = '20'  and p.spart = '11' ) and u.zterm != 'C000' order by u.zterm ";
+                                  " and p.kunnr = :codClient and p.vtweg = '20'  and p.spart = '11' ) order by u.zterm ";
 
 
                 cmd.CommandType = CommandType.Text;

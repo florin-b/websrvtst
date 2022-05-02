@@ -350,7 +350,7 @@ namespace LiteSFATestWebService
 
             Adresa adresaComanda = new Adresa();
 
-            ErrorHandling.sendErrorToMail("adaugaAdresaClient: " + idComanda + " , " + dateLivrare);
+            
 
             try
             {

@@ -23,7 +23,7 @@ namespace LiteSFATestWebService
         private static double TONES = 1000;
 
 
-        public string getListArticoleFurnizor(string codArticol, string tip1, string tip2, string furnizor, string codDepart)
+        public string getListArticoleFurnizor(string codArticol, string tip1, string tip2, string furnizor, string codDepart, string filiala, string aczc)
         {
 
             string serializedResult = "";
@@ -68,11 +68,13 @@ namespace LiteSFATestWebService
 
                 }
 
-
+                string condArtFurn = " and c.dismm not in ('AC','ZC') ";
+                if (aczc.Equals("true"))
+                {
+                     condArtFurn = " and c.dismm in ('AC','ZC') ";
+                }
 
                 string conditieDepart = "";
-
-
 
                 if (!codDepart.Equals("00") && !codDepart.Trim().Equals(""))
                     conditieDepart = " b.grup_vz =:depart and ";
@@ -80,16 +82,19 @@ namespace LiteSFATestWebService
                 if (codDepart.StartsWith("04"))
                     conditieDepart = " substr(b.grup_vz,0,2) = substr(:depart,0,2) and ";
 
-                cmd.CommandText = " select x.cod_art, x.nume, nvl(x.meins,'-') meins, x.umvanz10, x.sintetic, x.cod_nivel1, x.umvanz10, x.tip_mat, x.grup_vz, x.dep_aprobare, " +
-                                  " x.palet, x.categ_mat, x.lungime " +
-                                  " from (select decode(length(e.matnr),18,substr(e.matnr,-8),e.matnr) " +
-                                  " cod_art, b.nume, e.meins, b.umvanz10, b.sintetic, c.cod_nivel1, nvl(b.tip_mat,' ') tip_mat, b.grup_vz, " +
-                                  " decode(trim(b.dep_aprobare),'','00', b.dep_aprobare)  dep_aprobare, " +
-                                  " (select nvl( " +
-                                  " (select 1 from sapprd.mara m where m.mandt = '900' and m.matnr = e.matnr and m.categ_mat in ('PA','AM')),-1) palet from dual) palet, " +
-                                  " b.categ_mat, b.lungime " +
-                                  " from sapprd.eina e, articole b, sintetice c where e.mandt = '900' and e.matnr = b.cod and b.blocat <> '01' and e.loekz <> 'X' and   " +
-                                  " c.cod = b.sintetic and e.lifnr=:furniz and  " + conditieDepart  + conditie + " ) x where rownum < 50 order by x.nume ";
+                
+
+
+                cmd.CommandText = " select x.cod_art, x.nume, nvl(x.meins,'-') meins, x.umvanz10, x.sintetic, x.cod_nivel1, x.umvanz10, x.tip_mat, x.grup_vz, x.dep_aprobare, " + 
+                                  " x.palet, x.categ_mat, x.lungime " + 
+                                  " from (select decode(length(e.matnr), 18, substr(e.matnr, -8), e.matnr) cod_art, " + 
+                                  " b.nume, e.meins, b.umvanz10, b.sintetic, c.cod_nivel1,  nvl(b.tip_mat, ' ') tip_mat, b.grup_vz, " + 
+                                  " decode(trim(b.dep_aprobare), '', '00', b.dep_aprobare) dep_aprobare, " + 
+                                  " (select nvl((select 1 from sapprd.mara m where m.mandt = '900'and m.matnr = e.matnr and m.categ_mat in ('PA', 'AM')), -1) palet from dual) palet, " + 
+                                  " b.categ_mat,b.lungime " + 
+                                  " from sapprd.eina e, websap.articole b, websap.sintetice c, sapprd.marc c where e.mandt = '900' and e.matnr = b.cod and b.blocat <> '01' and e.loekz <> 'X' " +
+                                  " and c.mandt = '900' and b.cod = c.matnr and c.werks = :filiala and " + 
+                                  " c.cod = b.sintetic and e.lifnr = :furniz and " + conditieDepart + conditie + condArtFurn + " ) x where rownum < 50 order by x.nume ";
 
 
                 cmd.CommandType = CommandType.Text;
@@ -98,10 +103,13 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Add(":furniz", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
                 cmd.Parameters[0].Value = furnizor;
 
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = codDepart.Equals("11") ? Utils.getFilialaGed(filiala) : filiala;
+
                 if (!codDepart.Equals("00") && !codDepart.Trim().Equals(""))
                 {
                     cmd.Parameters.Add(":depart", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
-                    cmd.Parameters[1].Value = codDepart;
+                    cmd.Parameters[2].Value = codDepart;
                 }
 
 

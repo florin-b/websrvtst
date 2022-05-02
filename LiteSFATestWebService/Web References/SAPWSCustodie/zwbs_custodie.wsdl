@@ -305,10 +305,10 @@
   </wsdl:binding>
   <wsdl:service name="zwbs_custodie">
     <wsdl:port name="zwbs_custodie" binding="tns:zwbs_custodie">
-      <soap:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zws_custodie/900/zwbs_custodie/zwbs_custodie" />
+      <soap:address location="http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/zws_custodie/900/zwbs_custodie/zwbs_custodie" />
     </wsdl:port>
     <wsdl:port name="zwbs_custodie_soap12" binding="tns:zwbs_custodie_soap12">
-      <wsoap12:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zws_custodie/900/zwbs_custodie/zwbs_custodie" />
+      <wsoap12:address location="http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/zws_custodie/900/zwbs_custodie/zwbs_custodie" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

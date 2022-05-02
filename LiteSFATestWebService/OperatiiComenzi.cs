@@ -1404,12 +1404,12 @@ namespace LiteSFATestWebService
 
 
 
-        public string setCmdVanzDataLivrare(string idComanda, string dataLivrare)
+        public string setCmdVanzDataLivrare(string idComanda, string dataLivrare, string livrareFinala)
         {
 
-            ErrorHandling.sendErrorToMail("setCmdVanzDataLivrare: " + idComanda + " , " + dataLivrare);
+            ErrorHandling.sendErrorToMail("setCmdVanzDataLivrare: " + idComanda + " , " + dataLivrare + " , " + livrareFinala);
 
-
+    
             
 
 
@@ -1420,7 +1420,7 @@ namespace LiteSFATestWebService
             OracleCommand cmd = null;
 
             try {
-                /*
+                
                 System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Service1.getUser(), Service1.getPass());
                 webService.Credentials = nc;
                 webService.Timeout = 300000;
@@ -1429,13 +1429,15 @@ namespace LiteSFATestWebService
 
                 inParam.IpComanda = idComanda;
                 inParam.IpDlivr = dataLivrare;
+                inParam.IpLivrFin = livrareFinala;
+                
 
                 SAPWebServices.ZmodificaLivrareResponse response = webService.ZmodificaLivrare(inParam);
                 
                 retVal = response.EpOk + "#" + response.EpMess;
 
                 webService.Dispose();
-                */
+                
 
                 bool isLivrareSambata = isDataSambata(dataLivrare);
 
@@ -1452,7 +1454,6 @@ namespace LiteSFATestWebService
                 else
                     query = " update sapprd.zcomhead_tableta set ketdat=:dataLivrare where nrcmdsap=:idComanda ";
 
-                ErrorHandling.sendErrorToMail("setCmdVanzDataLivrare : " + query);
 
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandText = query;

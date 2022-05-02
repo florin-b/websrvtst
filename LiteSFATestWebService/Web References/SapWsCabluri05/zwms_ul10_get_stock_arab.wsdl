@@ -255,6 +255,37 @@
           <xsd:element name="Verme" type="n0:quantum13.3" />
         </xsd:sequence>
       </xsd:complexType>
+      <xsd:complexType name="ZwmsShortLqua">
+        <xsd:sequence>
+          <xsd:element name="Mandt" type="n0:clnt3" />
+          <xsd:element name="Lgnum" type="n0:char3" />
+          <xsd:element name="Matnr" type="n0:char18" />
+          <xsd:element name="Werks" type="n0:char4" />
+          <xsd:element name="Charg" type="n0:char10" />
+          <xsd:element name="Bestq" type="n0:char1" />
+          <xsd:element name="Sobkz" type="n0:char1" />
+          <xsd:element name="Sonum" type="n0:char16" />
+          <xsd:element name="Lgtyp" type="n0:char3" />
+          <xsd:element name="Lgpla" type="n0:char10" />
+          <xsd:element name="Letyp" type="n0:char3" />
+          <xsd:element name="Meins" type="n0:unit3" />
+          <xsd:element name="Gesme" type="n0:quantum13.3" />
+          <xsd:element name="Verme" type="n0:quantum13.3" />
+          <xsd:element name="Einme" type="n0:quantum13.3" />
+          <xsd:element name="Ausme" type="n0:quantum13.3" />
+          <xsd:element name="Betyp" type="n0:char1" />
+          <xsd:element name="Benum" type="n0:char10" />
+          <xsd:element name="Lenum" type="n0:char20" />
+          <xsd:element name="Vfdat" type="n0:date10" />
+          <xsd:element name="Lgort" type="n0:char4" />
+          <xsd:element name="Matkl" type="n0:char9" />
+          <xsd:element name="Spart" type="n0:char2" />
+          <xsd:element name="Maktx" type="n0:char40" />
+          <xsd:element name="Name1" type="n0:char40" />
+          <xsd:element name="Ltypt" type="n0:char25" />
+          <xsd:element name="Letyt" type="n0:char20" />
+        </xsd:sequence>
+      </xsd:complexType>
       <xsd:complexType name="RfcException.Message">
         <xsd:sequence>
           <xsd:element name="ID" type="xsd:string" />
@@ -273,6 +304,11 @@
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZstWmsLqua" />
         </xsd:sequence>
       </xsd:complexType>
+      <xsd:complexType name="TableOfZwmsShortLqua">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZwmsShortLqua" />
+        </xsd:sequence>
+      </xsd:complexType>
       <xsd:simpleType name="ZwmsUl10GetStockArab.RfcExceptions">
         <xsd:restriction base="xsd:string">
           <xsd:enumeration value="WrongParameters" />
@@ -286,6 +322,7 @@
             <xsd:element minOccurs="0" name="MatGroup" type="n0:char9" />
             <xsd:element minOccurs="0" name="Material" type="n0:char18" />
             <xsd:element minOccurs="0" name="PersonalNo" type="n0:numeric8" />
+            <xsd:element minOccurs="0" name="Stock" type="tns:TableOfZwmsShortLqua" />
             <xsd:element name="StockFinal" type="tns:ZttWmsLqua" />
             <xsd:element name="Warehouse" type="n0:char3" />
           </xsd:sequence>
@@ -294,6 +331,7 @@
       <xsd:element name="ZwmsUl10GetStockArabResponse">
         <xsd:complexType>
           <xsd:sequence>
+            <xsd:element minOccurs="0" name="Stock" type="tns:TableOfZwmsShortLqua" />
             <xsd:element name="StockFinal" type="tns:ZttWmsLqua" />
           </xsd:sequence>
         </xsd:complexType>
@@ -360,10 +398,10 @@
   </wsdl:binding>
   <wsdl:service name="ZWMS_UL10_GET_STOCK_ARAB">
     <wsdl:port name="ZWMS_UL10_GET_STOCK_ARAB" binding="tns:ZWMS_UL10_GET_STOCK_ARAB">
-      <soap:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zwms_ul10_get_stock_arab/900/zwms_ul10_get_stock_arab/zwms_ul10_get_stock_arab" />
+      <soap:address location="http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/zwms_ul10_get_stock_arab/900/zwms_ul10_get_stock_arab/zwms_ul10_get_stock_arab" />
     </wsdl:port>
     <wsdl:port name="ZWMS_UL10_GET_STOCK_ARAB_soap12" binding="tns:ZWMS_UL10_GET_STOCK_ARAB_soap12">
-      <wsoap12:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zwms_ul10_get_stock_arab/900/zwms_ul10_get_stock_arab/zwms_ul10_get_stock_arab" />
+      <wsoap12:address location="http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/zwms_ul10_get_stock_arab/900/zwms_ul10_get_stock_arab/zwms_ul10_get_stock_arab" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

@@ -205,6 +205,8 @@ namespace LiteSFATestWebService
         public string sintetic;
         public double lungime = 0;
         public string umPalet;
+        public double aczcDeLivrat = 0;
+        public double aczcLivrat = 0;
     }
 
 
@@ -238,6 +240,7 @@ namespace LiteSFATestWebService
         public string valTransportSap;
         public string parrentId;
         public string nrDocumentClp;
+
 
     }
 
@@ -292,6 +295,7 @@ namespace LiteSFATestWebService
         public string autoDelegat = "";
         public string refClient = "";
         public string costTransportMathaus;
+        public bool isComandaACZC;
 
 
 
@@ -316,6 +320,7 @@ namespace LiteSFATestWebService
         public double marjaBrutaCantProc = 0;
         public bool isClientBlocat = false;
         public double limitaCredit = 0;
+        public string nrCmdClp;
 
     }
 
@@ -409,6 +414,8 @@ namespace LiteSFATestWebService
         public double bazaSalariala = 0;
         public string tipClientInstPublica;
         public bool isAprobatDistrib;
+        public bool isComandaACZC;
+        
 
     }
 
@@ -636,6 +643,7 @@ namespace LiteSFATestWebService
         public string tipTransport;
         public string dataLivrare;
         public string extraDate;
+        public bool isCmdACZC;
     }
 
     public class ExtraDate

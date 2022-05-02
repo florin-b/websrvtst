@@ -26,7 +26,7 @@ namespace LiteSFATestWebService
 
             
 
-            SAPWebServices.ZPalcant inParam = new SAPWebServices.ZPalcant();
+            SAPWebServices.Zpalcant inParam = new SAPWebServices.Zpalcant();
 
             
 
@@ -38,7 +38,7 @@ namespace LiteSFATestWebService
             inParam.GtMateriale = artPal;
             inParam.GtRezultat = new SAPWebServices.ZpalcantRez[1];
 
-            SAPWebServices.ZPalcantResponse response = webService.ZPalcant(inParam);
+            SAPWebServices.ZpalcantResponse response = webService.Zpalcant(inParam);
 
             for (int i = 0; i < response.GtRezultat.Length; i++)
             {

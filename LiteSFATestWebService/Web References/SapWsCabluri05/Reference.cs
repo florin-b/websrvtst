@@ -139,6 +139,8 @@ namespace LiteSFATestWebService.SapWsCabluri05 {
         
         private string personalNoField;
         
+        private ZwmsShortLqua[] stockField;
+        
         private ZstWmsLqua[] stockFinalField;
         
         private string warehouseField;
@@ -190,6 +192,18 @@ namespace LiteSFATestWebService.SapWsCabluri05 {
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
         [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
+        public ZwmsShortLqua[] Stock {
+            get {
+                return this.stockField;
+            }
+            set {
+                this.stockField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
         public ZstWmsLqua[] StockFinal {
             get {
                 return this.stockFinalField;
@@ -207,6 +221,366 @@ namespace LiteSFATestWebService.SapWsCabluri05 {
             }
             set {
                 this.warehouseField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZwmsShortLqua {
+        
+        private string mandtField;
+        
+        private string lgnumField;
+        
+        private string matnrField;
+        
+        private string werksField;
+        
+        private string chargField;
+        
+        private string bestqField;
+        
+        private string sobkzField;
+        
+        private string sonumField;
+        
+        private string lgtypField;
+        
+        private string lgplaField;
+        
+        private string letypField;
+        
+        private string meinsField;
+        
+        private decimal gesmeField;
+        
+        private decimal vermeField;
+        
+        private decimal einmeField;
+        
+        private decimal ausmeField;
+        
+        private string betypField;
+        
+        private string benumField;
+        
+        private string lenumField;
+        
+        private string vfdatField;
+        
+        private string lgortField;
+        
+        private string matklField;
+        
+        private string spartField;
+        
+        private string maktxField;
+        
+        private string name1Field;
+        
+        private string ltyptField;
+        
+        private string letytField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Mandt {
+            get {
+                return this.mandtField;
+            }
+            set {
+                this.mandtField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Lgnum {
+            get {
+                return this.lgnumField;
+            }
+            set {
+                this.lgnumField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Matnr {
+            get {
+                return this.matnrField;
+            }
+            set {
+                this.matnrField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Werks {
+            get {
+                return this.werksField;
+            }
+            set {
+                this.werksField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Charg {
+            get {
+                return this.chargField;
+            }
+            set {
+                this.chargField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Bestq {
+            get {
+                return this.bestqField;
+            }
+            set {
+                this.bestqField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Sobkz {
+            get {
+                return this.sobkzField;
+            }
+            set {
+                this.sobkzField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Sonum {
+            get {
+                return this.sonumField;
+            }
+            set {
+                this.sonumField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Lgtyp {
+            get {
+                return this.lgtypField;
+            }
+            set {
+                this.lgtypField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Lgpla {
+            get {
+                return this.lgplaField;
+            }
+            set {
+                this.lgplaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Letyp {
+            get {
+                return this.letypField;
+            }
+            set {
+                this.letypField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Meins {
+            get {
+                return this.meinsField;
+            }
+            set {
+                this.meinsField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal Gesme {
+            get {
+                return this.gesmeField;
+            }
+            set {
+                this.gesmeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal Verme {
+            get {
+                return this.vermeField;
+            }
+            set {
+                this.vermeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal Einme {
+            get {
+                return this.einmeField;
+            }
+            set {
+                this.einmeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal Ausme {
+            get {
+                return this.ausmeField;
+            }
+            set {
+                this.ausmeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Betyp {
+            get {
+                return this.betypField;
+            }
+            set {
+                this.betypField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Benum {
+            get {
+                return this.benumField;
+            }
+            set {
+                this.benumField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Lenum {
+            get {
+                return this.lenumField;
+            }
+            set {
+                this.lenumField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Vfdat {
+            get {
+                return this.vfdatField;
+            }
+            set {
+                this.vfdatField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Lgort {
+            get {
+                return this.lgortField;
+            }
+            set {
+                this.lgortField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Matkl {
+            get {
+                return this.matklField;
+            }
+            set {
+                this.matklField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Spart {
+            get {
+                return this.spartField;
+            }
+            set {
+                this.spartField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Maktx {
+            get {
+                return this.maktxField;
+            }
+            set {
+                this.maktxField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Name1 {
+            get {
+                return this.name1Field;
+            }
+            set {
+                this.name1Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Ltypt {
+            get {
+                return this.ltyptField;
+            }
+            set {
+                this.ltyptField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Letyt {
+            get {
+                return this.letytField;
+            }
+            set {
+                this.letytField = value;
             }
         }
     }
@@ -267,7 +641,21 @@ namespace LiteSFATestWebService.SapWsCabluri05 {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
     public partial class ZwmsUl10GetStockArabResponse {
         
+        private ZwmsShortLqua[] stockField;
+        
         private ZstWmsLqua[] stockFinalField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
+        public ZwmsShortLqua[] Stock {
+            get {
+                return this.stockField;
+            }
+            set {
+                this.stockField = value;
+            }
+        }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
