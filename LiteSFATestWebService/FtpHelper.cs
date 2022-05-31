@@ -84,6 +84,7 @@ namespace LiteSFATestWebService
 
             }
 
+            ftpIp = "0.0.0.0";
 
             return ftpIp;
         }

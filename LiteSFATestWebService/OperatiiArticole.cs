@@ -68,7 +68,7 @@ namespace LiteSFATestWebService
 
                 }
 
-                string condArtFurn = " and c.dismm not in ('AC','ZC') ";
+                string condArtFurn = " ";
                 if (aczc.Equals("true"))
                 {
                      condArtFurn = " and c.dismm in ('AC','ZC') ";
@@ -96,6 +96,8 @@ namespace LiteSFATestWebService
                                   " and c.mandt = '900' and b.cod = c.matnr and c.werks = :filiala and " + 
                                   " c.cod = b.sintetic and e.lifnr = :furniz and " + conditieDepart + conditie + condArtFurn + " ) x where rownum < 50 order by x.nume ";
 
+                
+
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -104,7 +106,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters[0].Value = furnizor;
 
                 cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[1].Value = codDepart.Equals("11") ? Utils.getFilialaGed(filiala) : filiala;
+                cmd.Parameters[1].Value = codDepart.Equals("11") || codDepart.Trim().Equals(String.Empty) ? Utils.getFilialaGed(filiala) : filiala;
 
                 if (!codDepart.Equals("00") && !codDepart.Trim().Equals(""))
                 {
@@ -578,7 +580,6 @@ namespace LiteSFATestWebService
 
         public string getListArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament, string afisStoc, string tipUser, string codUser, string modulCautare)
         {
-
 
 
             string condExtraDepart = " ";
@@ -1753,133 +1754,143 @@ namespace LiteSFATestWebService
         public string getStocMathaus(string codArt, string filiala, string depozit, string depart, string catMathaus, string filialeMathaus)
         {
 
-
-            string[] toateMathaus = { "GL20", "AG20", "BU20", "BH20", "CT20", "DJ20", "IS20" };
-
-            List<string> listFilMathaus = new List<string> { "GL20", "AG20", "BU20", "BH20", "CT20", "DJ20", "IS20" };
-            int nrFilialeMathaus = 2;
-
-            if (filialeMathaus.Equals(String.Empty) && !listFilMathaus.Contains(filiala))
-                listFilMathaus.Insert(0, filiala);
-            else if (filialeMathaus.Split(',').Length == nrFilialeMathaus)
-            {
-                listFilMathaus = new List<string>();
-                listFilMathaus.AddRange(filialeMathaus.Split(','));
-            }
-
+            ErrorHandling.sendErrorToMail("getStocMathaus: " + codArt + " , " + filiala + " , " + depozit + " , " + depart + " , " + catMathaus + " , " + filialeMathaus);
 
             string stocMag = "";
-            string localMag ;
+            string localMag;
             string tempMag;
 
-            List<StocMathaus> listMathaus = new List<StocMathaus>();
+            try {
 
+                string[] toateMathaus = { "GL20", "AG20", "BU20", "BH20", "CT20", "DJ20", "IS20" };
 
-            if (catMathaus.Equals("S"))
-            {
+                List<string> listFilMathaus = new List<string> { "GL20", "AG20", "BU20", "BH20", "CT20", "DJ20", "IS20" };
+                int nrFilialeMathaus = 2;
 
-                foreach (string mathaus in listFilMathaus)
+                if (filialeMathaus.Equals(String.Empty) && !listFilMathaus.Contains(filiala))
+                    listFilMathaus.Insert(0, filiala);
+                else if (filialeMathaus.Split(',').Length == nrFilialeMathaus)
                 {
-                    tempMag = getUnitLogGed(mathaus);
+                    listFilMathaus = new List<string>();
+                    listFilMathaus.AddRange(filialeMathaus.Split(','));
+                }
 
-                    localMag = new Service1().getStocDepozit(codArt, mathaus, depozit, depart);
 
-                    if (Double.Parse(localMag.Split('#')[0]) > 0)
+
+
+                List<StocMathaus> listMathaus = new List<StocMathaus>();
+
+
+                if (catMathaus.Equals("S"))
+                {
+
+                    foreach (string mathaus in listFilMathaus)
                     {
+                        tempMag = getUnitLogGed(mathaus);
 
+                        localMag = new Service1().getStocDepozit(codArt, mathaus, depozit, depart);
+
+                        if (Double.Parse(localMag.Split('#')[0]) > 0)
                         {
-                            StocMathaus stocMathaus = new StocMathaus();
-                            stocMathaus.filiala = tempMag;
-                            stocMathaus.stoc = Double.Parse(localMag.Split('#')[0]);
-                            stocMathaus.strService = "@" + localMag + tempMag;
-                            listMathaus.Add(stocMathaus);
-                        }
 
-                    }
-
-                }
-
-            }
-
-
-            List<StocMathaus> sortedStocMathaus = listMathaus.OrderByDescending(order => order.stoc).ToList();
-
-            if (filialeMathaus.Equals(String.Empty))
-            {
-                foreach(StocMathaus stocMathaus in listMathaus)
-                {
-                    stocMag += stocMathaus.strService ;
-                }
-            }
-            else if (filialeMathaus.Split(',').Length < nrFilialeMathaus)
-            {
-
-                int localFilialeMat = nrFilialeMathaus;
-                bool isLocalFil = false;
-
-                foreach (StocMathaus stocMathaus in sortedStocMathaus)
-                {
-                    if (filiala.Equals(stocMathaus.filiala))
-                    {
-                        stocMag += stocMathaus.strService ;
-                        localFilialeMat--;
-                        isLocalFil = true;
-                    }
-
-                    if (filialeMathaus.Contains(stocMathaus.filiala) && !filiala.Equals(stocMathaus.filiala) && localFilialeMat > 0)
-                    {
-                        stocMag += stocMathaus.strService ;
-                        localFilialeMat--;
-                    }
-
-                }
-
-                while (localFilialeMat > 0)
-                {
-                    if (isLocalFil)
-                    {
-                        foreach (StocMathaus stocMathaus in sortedStocMathaus)
-                        {
-                            if (!filiala.Equals(stocMathaus.filiala) && localFilialeMat > 0)
                             {
-                                stocMag += stocMathaus.strService;
-                                localFilialeMat--;
+                                StocMathaus stocMathaus = new StocMathaus();
+                                stocMathaus.filiala = tempMag;
+                                stocMathaus.stoc = Double.Parse(localMag.Split('#')[0]);
+                                stocMathaus.strService = "@" + localMag + tempMag;
+                                listMathaus.Add(stocMathaus);
                             }
+
                         }
-                    }
-                    else
-                    {
-                        foreach (StocMathaus stocMathaus in sortedStocMathaus)
-                        {
-                            if (!filialeMathaus.Contains(stocMathaus.filiala) && localFilialeMat > 0)
-                            {
-                                stocMag += stocMathaus.strService;
-                                localFilialeMat--;
-                            }
-                        }
+
                     }
 
                 }
 
-            }
-            else if (filialeMathaus.Split(',').Length == nrFilialeMathaus)
-            {
-                foreach (StocMathaus stocMathaus in listMathaus)
+
+                List<StocMathaus> sortedStocMathaus = listMathaus.OrderByDescending(order => order.stoc).ToList();
+
+                if (filialeMathaus.Equals(String.Empty))
                 {
-                    if (filialeMathaus.Contains(stocMathaus.filiala))
+                    foreach (StocMathaus stocMathaus in listMathaus)
                     {
                         stocMag += stocMathaus.strService;
                     }
                 }
+                else if (filialeMathaus.Split(',').Length < nrFilialeMathaus)
+                {
+
+                    int localFilialeMat = nrFilialeMathaus;
+                    bool isLocalFil = false;
+
+                    foreach (StocMathaus stocMathaus in sortedStocMathaus)
+                    {
+                        if (filiala.Equals(stocMathaus.filiala))
+                        {
+                            stocMag += stocMathaus.strService;
+                            localFilialeMat--;
+                            isLocalFil = true;
+                        }
+
+                        if (filialeMathaus.Contains(stocMathaus.filiala) && !filiala.Equals(stocMathaus.filiala) && localFilialeMat > 0)
+                        {
+                            stocMag += stocMathaus.strService;
+                            localFilialeMat--;
+                        }
+
+                    }
+
+                    while (localFilialeMat > 0)
+                    {
+                        if (isLocalFil)
+                        {
+                            foreach (StocMathaus stocMathaus in sortedStocMathaus)
+                            {
+                                if (!filiala.Equals(stocMathaus.filiala) && localFilialeMat > 0)
+                                {
+                                    stocMag += stocMathaus.strService;
+                                    localFilialeMat--;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            foreach (StocMathaus stocMathaus in sortedStocMathaus)
+                            {
+                                if (!filialeMathaus.Contains(stocMathaus.filiala) && localFilialeMat > 0)
+                                {
+                                    stocMag += stocMathaus.strService;
+                                    localFilialeMat--;
+                                }
+                            }
+                        }
+
+                    }
+
+                }
+                else if (filialeMathaus.Split(',').Length == nrFilialeMathaus)
+                {
+                    foreach (StocMathaus stocMathaus in listMathaus)
+                    {
+                        if (filialeMathaus.Contains(stocMathaus.filiala))
+                        {
+                            stocMag += stocMathaus.strService;
+                        }
+                    }
+                }
+
+
+                stocMag = stocMag.Substring(1);
+
+                if (!stocMag.Contains(filiala))
+                    stocMag += "@0#" + stocMag.Split('@')[0].Split('#')[1] + "#1#" + filiala;
+
+                
+
+            }catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail("getStocMathaus: " + ex.ToString() + " : " + codArt + ":" + filiala + ":" + depozit + ":" + depart + ":" + catMathaus + " , " + stocMag + " , " + filialeMathaus);
             }
-
-
-            stocMag = stocMag.Substring(1);
-
-            if (!stocMag.Contains(filiala))
-                stocMag += "@0#" + stocMag.Split('@')[0].Split('#')[1] + "#1#" + filiala;
-
-            ErrorHandling.sendErrorToMail("getStocMathaus: " + codArt + ":" + filiala + ":" + depozit + ":" + depart + ":" + catMathaus + " , " + stocMag + " , " + filialeMathaus);
 
             return stocMag;
         }

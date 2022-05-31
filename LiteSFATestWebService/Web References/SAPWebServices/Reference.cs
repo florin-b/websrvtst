@@ -210,8 +210,7 @@ namespace LiteSFATestWebService.SAPWebServices {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZdetTransportReq" +
-            "uest", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
         [return: System.Xml.Serialization.XmlElementAttribute("ZdetTransportResponse", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
         public ZdetTransportResponse ZdetTransport([System.Xml.Serialization.XmlElementAttribute("ZdetTransport", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")] ZdetTransport ZdetTransport1) {
             object[] results = this.Invoke("ZdetTransport", new object[] {

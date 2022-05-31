@@ -398,10 +398,10 @@
   </wsdl:binding>
   <wsdl:service name="ZWMS_UL10_GET_STOCK_ARAB">
     <wsdl:port name="ZWMS_UL10_GET_STOCK_ARAB" binding="tns:ZWMS_UL10_GET_STOCK_ARAB">
-      <soap:address location="http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/zwms_ul10_get_stock_arab/900/zwms_ul10_get_stock_arab/zwms_ul10_get_stock_arab" />
+      <soap:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zwms_ul10_get_stock_arab/900/zwms_ul10_get_stock_arab/zwms_ul10_get_stock_arab" />
     </wsdl:port>
     <wsdl:port name="ZWMS_UL10_GET_STOCK_ARAB_soap12" binding="tns:ZWMS_UL10_GET_STOCK_ARAB_soap12">
-      <wsoap12:address location="http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/zwms_ul10_get_stock_arab/900/zwms_ul10_get_stock_arab/zwms_ul10_get_stock_arab" />
+      <wsoap12:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zwms_ul10_get_stock_arab/900/zwms_ul10_get_stock_arab/zwms_ul10_get_stock_arab" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

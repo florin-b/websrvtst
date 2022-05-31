@@ -382,10 +382,10 @@
   </wsdl:binding>
   <wsdl:service name="ZFG_INSTR_PLATA">
     <wsdl:port name="ZFG_INSTR_PLATA" binding="tns:ZFG_INSTR_PLATA">
-      <soap:address location="http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/zfg_instr_plata/900/zfg_instr_plata/zfg_instr_plata" />
+      <soap:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zfg_instr_plata/900/zfg_instr_plata/zfg_instr_plata" />
     </wsdl:port>
     <wsdl:port name="ZFG_INSTR_PLATA_soap12" binding="tns:ZFG_INSTR_PLATA_soap12">
-      <wsoap12:address location="http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/zfg_instr_plata/900/zfg_instr_plata/zfg_instr_plata" />
+      <wsoap12:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zfg_instr_plata/900/zfg_instr_plata/zfg_instr_plata" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

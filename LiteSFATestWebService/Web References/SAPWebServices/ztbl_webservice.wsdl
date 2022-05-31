@@ -154,16 +154,6 @@
       </wsp:All>
     </wsp:ExactlyOne>
   </wsp:Policy>
-  <wsp:Policy wsu:Id="OP__ZdetTransport">
-    <wsp:ExactlyOne>
-      <wsp:All>
-        <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
-        <sapcomhnd:enableCommit xmlns:sapcomhnd="http://www.sap.com/NW05/soap/features/commit/">false</sapcomhnd:enableCommit>
-        <sapblock:enableBlocking xmlns:sapblock="http://www.sap.com/NW05/soap/features/blocking/">true</sapblock:enableBlocking>
-        <saprmnw05:enableWSRM xmlns:saprmnw05="http://www.sap.com/NW05/soap/features/wsrm/">false</saprmnw05:enableWSRM>
-      </wsp:All>
-    </wsp:ExactlyOne>
-  </wsp:Policy>
   <wsp:Policy wsu:Id="OP__ZextindeClient">
     <wsp:ExactlyOne>
       <wsp:All>
@@ -3834,9 +3824,6 @@
       <wsdl:output message="tns:ZcalcTrapResponse" />
     </wsdl:operation>
     <wsdl:operation name="ZdetTransport">
-      <wsp:Policy>
-        <wsp:PolicyReference URI="#OP__ZdetTransport" />
-      </wsp:Policy>
       <wsdl:input message="tns:ZdetTransport" />
       <wsdl:output message="tns:ZdetTransportResponse" />
     </wsdl:operation>
@@ -3996,7 +3983,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ZdetTransport">
-      <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZdetTransportRequest" style="document" />
+      <soap:operation soapAction="" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4200,7 +4187,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ZdetTransport">
-      <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZdetTransportRequest" style="document" />
+      <wsoap12:operation soapAction="" style="document" />
       <wsdl:input>
         <wsoap12:body use="literal" />
       </wsdl:input>
@@ -4391,10 +4378,10 @@
   </wsdl:binding>
   <wsdl:service name="ZTBL_WEBSERVICE">
     <wsdl:port name="ZTBL_WEBSERVICE" binding="tns:ZTBL_WEBSERVICE">
-      <soap:address location="http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/ztbl_webservice/900/ztbl_webservice/ztbl_webservice" />
+      <soap:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/ztbl_webservice/900/ztbl_webservice/ztbl_webservice" />
     </wsdl:port>
     <wsdl:port name="ZTBL_WEBSERVICE_soap12" binding="tns:ZTBL_WEBSERVICE_soap12">
-      <wsoap12:address location="http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/ztbl_webservice/900/ztbl_webservice/ztbl_webservice" />
+      <wsoap12:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/ztbl_webservice/900/ztbl_webservice/ztbl_webservice" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

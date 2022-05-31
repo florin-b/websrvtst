@@ -639,6 +639,8 @@ namespace LiteSFATestWebService
 
         public string getDocumenteRetur(string codClient, string codDepartament, string unitLog, string tipDocument, string interval, string tipUserSap)
         {
+
+
             string serializedResult = "";
 
             OracleConnection connection = new OracleConnection();
@@ -685,7 +687,8 @@ namespace LiteSFATestWebService
 
                     cmd.CommandText = " select distinct k.vbeln, to_date(k.fkdat,'yyyymmdd'),  " +
                                       " nvl((select traty from sapprd.ekko e, sapprd.vbfa f where e.mandt = '900' and e.mandt = f.mandt and " + 
-                                      " e.ebeln = f.vbeln and f.vbelv = p.aubel and f.vbtyp_v = 'C' and f.vbtyp_n = 'V' and rownum = 1),k.traty) traty" +
+                                      " e.ebeln = f.vbeln and f.vbelv = p.aubel and f.vbtyp_v = 'C' and f.vbtyp_n = 'V' and rownum = 1),k.traty) traty, " +
+                                      " nvl((select t.ac_zc from sapprd.zcomhead_Tableta t where t.mandt = '900' and t.nrcmdsap = p.aubel ),' ') ac_zc " +
                                       " from sapprd.vbrk k, sapprd.vbrp p, sapprd.vbpa a, sapprd.adrc c where k.mandt = p.mandt " +
                                       " and k.vbeln = p.vbeln  and k.mandt = '900'  and k.fkart in " + tipDocuRetur +
                                       " and k.fksto <> 'X'  and k.fkdat >= to_char(" + nrZileRetur + ",'yyyymmdd') " +
@@ -695,13 +698,15 @@ namespace LiteSFATestWebService
                                       condData +
                                       " and lower(c.name1) like lower('%" + codClient + "%')  order by to_date(k.fkdat,'yyyymmdd') ";
 
+
                 }
                 else
                 {
 
                     cmd.CommandText = " select distinct k.vbeln, to_date(k.fkdat,'yyyymmdd'), " +
                                       " nvl((select traty from sapprd.ekko e, sapprd.vbfa f where e.mandt = '900' and e.mandt = f.mandt and " + 
-                                      " e.ebeln = f.vbeln and f.vbelv = p.aubel and f.vbtyp_v = 'C' and f.vbtyp_n = 'V' and rownum = 1),k.traty) traty " +
+                                      " e.ebeln = f.vbeln and f.vbelv = p.aubel and f.vbtyp_v = 'C' and f.vbtyp_n = 'V' and rownum = 1),k.traty) traty, " +
+                                      " nvl((select t.ac_zc from sapprd.zcomhead_Tableta t where t.mandt = '900' and t.nrcmdsap = p.aubel ),' ') ac_zc " +
                                       " from sapprd.vbrk k, " +
                                       " sapprd.vbrp p, sapprd.mara m where k.mandt = p.mandt and k.vbeln = p.vbeln " + condDepart +
                                       " and k.mandt = '900' and k.fkdat >= to_char(" + nrZileRetur + ", 'yyyymmdd') " +
@@ -755,7 +760,7 @@ namespace LiteSFATestWebService
                             docRetur.dataLivrare = "20000101";
 
                         docRetur.extraDate = getExtraDateRetur(connection, docRetur.numar);
-                        docRetur.isCmdACZC = true;
+                        docRetur.isCmdACZC = oReader.GetString(oReader.GetOrdinal("ac_zc")).Equals("X");
 
                         listDocumente.Add(docRetur);
                     }
@@ -901,13 +906,13 @@ namespace LiteSFATestWebService
                     oReader.Read();
                     dataLivrare = oReader.GetString(0);
                 }
-                else if (tipTransport.Equals("TCLI") || tipTransport.Equals("TFRN"))
+                else 
                 {
 
                     cmd.CommandText = " select nvl((select k.daten from sapprd.vbfa f, sapprd.vttp p, sapprd.vttk k " + 
                                       " where f.mandt = '900' and f.vbeln = :nrDoc and f.vbtyp_v = 'J' and f.vbtyp_n = 'M' " +
                                       " and f.mandt = p.mandt and f.vbelv = p.vbeln and p.mandt = k.mandt and p.tknum = k.tknum and rownum = 1), " + 
-                                      " (select v.fkdat from sapprd.vbrk v where v.mandt = '900' and v.vbeln = :nrDoc and v.traty in ('TCLI','TFRN')   )) daten from dual ";
+                                      " (select v.fkdat from sapprd.vbrk v where v.mandt = '900' and v.vbeln = :nrDoc and v.traty in ('TCLI','TFRN') )) daten from dual ";
 
                     cmd.CommandType = CommandType.Text;
                     cmd.Parameters.Clear();
@@ -1650,6 +1655,11 @@ namespace LiteSFATestWebService
             if (tipUserSap != null && (tipUserSap.Equals("CVIP") || tipUserSap.Equals("SDIP")))
                 critFiliala = "";
 
+            string tipDocuRetur = " ('ZFM','ZFMC','ZFS','ZFSC','ZFPA', 'ZFVS','ZFCS') ";
+
+            if (tipUserSap != null && tipUserSap.Equals("CVO"))
+                tipDocuRetur = " ('ZFM','ZFMC','ZFS','ZFSC','ZFPA', 'ZFVS','ZFCS', 'ZFHC', 'ZF2H') ";
+
             try
             {
                 string connectionString = DatabaseConnections.ConnectToTestEnvironment();
@@ -1658,12 +1668,16 @@ namespace LiteSFATestWebService
                 connection.ConnectionString = connectionString;
                 connection.Open();
 
+
+
                 cmd.CommandText = " select distinct c.name1, k.kunrg from sapprd.vbrk k, sapprd.vbrp p, sapprd.vbpa a, sapprd.adrc c " +
-                                  " where k.mandt = p.mandt and k.vbeln = p.vbeln and k.mandt = '900' and k.fkart in ('ZFM','ZFMC','ZFS','ZFSC','ZFPA', 'ZFVS','ZFCS') " +
+                                  " where k.mandt = p.mandt and k.vbeln = p.vbeln and k.mandt = '900' and k.fkart in " + tipDocuRetur +
                                   " and k.fksto <> 'X' and k.fkdat >= to_char(sysdate-345,'yyyymmdd') " + sintPaleti + 
                                   " and k.mandt = a.mandt and k.vbeln = a.vbeln and a.parvw = 'WE' " + critFiliala + 
                                   " and a.mandt = c.client and a.adrnr = c.addrnumber  and " + criteriuCautare + " order by c.name1 ";
 
+
+                
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();

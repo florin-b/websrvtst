@@ -16,6 +16,8 @@ namespace LiteSFATestWebService
         public String getCostMacara(string unitLog, string codAgent, string codClient, string codFurnizor, string listArt)
         {
 
+            ErrorHandling.sendErrorToMail("getCostMacara: " +  unitLog + " , " +  codAgent + " , " + codClient + " , " + codFurnizor + " , " + listArt);
+
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             List<ArticolCalculDesc> listArtCmd = serializer.Deserialize<List<ArticolCalculDesc>>(listArt);
 

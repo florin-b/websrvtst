@@ -165,6 +165,7 @@ namespace LiteSFATestWebService
         public string procTransport;
         public string dataExp;
         public string listCabluri;
+        public string tipTransport;
        
 
         public override string ToString()

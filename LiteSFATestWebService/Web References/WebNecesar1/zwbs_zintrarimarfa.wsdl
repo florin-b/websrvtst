@@ -378,10 +378,10 @@
   </wsdl:binding>
   <wsdl:service name="ZWBS_ZINTRARIMARFA">
     <wsdl:port name="ZWBS_ZINTRARIMARFA" binding="tns:ZWBS_ZINTRARIMARFA">
-      <soap:address location="http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/zwbs_zintrarimarfa/900/zwbs_zintrarimarfa/zwbs_zintrarimarfa" />
+      <soap:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zwbs_zintrarimarfa/900/zwbs_zintrarimarfa/zwbs_zintrarimarfa" />
     </wsdl:port>
     <wsdl:port name="ZWBS_ZINTRARIMARFA_soap12" binding="tns:ZWBS_ZINTRARIMARFA_soap12">
-      <wsoap12:address location="http://SAP-TEST1A.arabesque.ro:8081/sap/bc/srt/rfc/sap/zwbs_zintrarimarfa/900/zwbs_zintrarimarfa/zwbs_zintrarimarfa" />
+      <wsoap12:address location="http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zwbs_zintrarimarfa/900/zwbs_zintrarimarfa/zwbs_zintrarimarfa" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
