@@ -6,12 +6,18 @@ using System.Web.Script.Serialization;
 using System.Data.OracleClient;
 using System.Data;
 
+
+using System.Threading.Tasks;
+using System.Web;
+
 namespace LiteSFATestWebService
 {
     public class OperatiiSuplimentare
     {
 
-       
+
+      
+
         public static void saveTonajAdresa(OracleConnection connection, string codClient, string codAdresa, string tonaj)
         {
             JavaScriptSerializer serializer = new JavaScriptSerializer();

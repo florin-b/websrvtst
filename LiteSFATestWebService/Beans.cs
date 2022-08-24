@@ -166,7 +166,7 @@ namespace LiteSFATestWebService
         public string dataExp;
         public string listCabluri;
         public string tipTransport;
-       
+
 
         public override string ToString()
         {
@@ -322,6 +322,8 @@ namespace LiteSFATestWebService
         public bool isClientBlocat = false;
         public double limitaCredit = 0;
         public string nrCmdClp;
+        public double marjaBruta = 0;
+        public double procMarjaBruta = 0;
 
     }
 
@@ -416,7 +418,7 @@ namespace LiteSFATestWebService
         public string tipClientInstPublica;
         public bool isAprobatDistrib;
         public bool isComandaACZC;
-        
+
 
     }
 
@@ -693,6 +695,38 @@ namespace LiteSFATestWebService
         public string transpBack;
         public string inlocuire;
     }
+
+    public class ComandaReturStare
+    {
+        public string vbeln;
+        public string kunnr;
+        public string auart;
+        public string audat;
+        public string referinta;
+        public string traty;
+        public string name1;
+        public string transpzone;
+        public string city1;
+        public string street;
+        public string pers_contact;
+        public string tel_contact;
+
+
+    }
+
+
+    public class ArticolReturStare
+    {
+        public string matnr;
+        public string arktx;
+        public double kwmeng;
+        public string vrkme;
+        public double valoare_pozitie;
+
+    }
+
+
+        
 
     public class ArticolRetur
     {

@@ -40,8 +40,7 @@ namespace LiteSFATestWebService
                 connection.Open();
 
                 cmd = connection.CreateCommand();
-
-                //cmd.CommandText = " select cod, nume, cod_hybris, nvl(cod_parinte,'') from sapprd.zcatmathaus_b order by cod ";
+                
                 cmd.CommandText = " select cod, nume, cod_hybris, nvl(cod_parinte,'') from sapprd.zcatmathaus order by cod ";
                 cmd.Parameters.Clear();
 
@@ -87,6 +86,7 @@ namespace LiteSFATestWebService
         public string getArticoleCategorie(string codCategorie, string filiala, string depart, string pagina, string tipArticol)
         {
 
+
             RezultatArtMathaus rezultat = new RezultatArtMathaus();
             
 
@@ -94,7 +94,6 @@ namespace LiteSFATestWebService
                 rezultat = getArticoleLocal(filiala, depart, pagina);
             else {
                 if (tipArticol == null || (tipArticol != null && tipArticol.Equals("SITE")))
-                    //rezultat = getArticoleWebService(codCategorie, depart, "", pagina);
                     rezultat = getArticoleCategorie(codCategorie, filiala, depart, pagina);
                 else
                     rezultat = getArticoleND(filiala, codCategorie, pagina);
@@ -111,6 +110,7 @@ namespace LiteSFATestWebService
         private int getNrArticoleCategorie(string codCategorie, string filiala, string depart)
         {
 
+            
 
             int nrArticole = 0;
 
@@ -119,26 +119,23 @@ namespace LiteSFATestWebService
 
             string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
+            string condDepart = " and (substr(ar.grup_vz, 0, 2) in " + HelperComenzi.getDepartExtra(depart) + " or ar.grup_vz = '11') ";
+
+            if (depart != null && (depart.Equals("00") || depart.Equals("11")))
+                condDepart = "";
+
             connection.ConnectionString = connectionString;
             connection.Open();
 
             OracleCommand cmd = connection.CreateCommand();
             try
             {
-                /*
-                cmd.CommandText = " select count(distinct s.matnr)  " +
-                                  " from sapprd.zpath_hybris s, sapprd.marc c, articole ar " +
-                                  " where(s.nivel_0 = :codCateg or s.nivel_1 = :codCateg or s.nivel_2 = :codCateg or s.nivel_3 = :codCateg or s.nivel_4 = :codCateg or s.nivel_5 = :codCateg or s.nivel_6 = :codCateg) " +
-                                  " and (substr(ar.grup_vz,0,2) =:depart or ar.grup_vz = '11' ) " +
-                                  " and ar.cod = s.matnr and s.mandt = c.mandt and s.matnr = c.matnr and c.werks = :filiala ";
-                                  */
-
 
                 cmd.CommandText = " select count(distinct s.matnr)  " +
                                   " from sapprd.zpath_hybris s, sapprd.marc c, websap.articole ar, sapprd.mvke e " +
                                   " where (s.nivel_0 = :codCateg or s.nivel_1 = :codCateg or s.nivel_2 = :codCateg or " +
                                   " s.nivel_3 = :codCateg or s.nivel_4 = :codCateg or s.nivel_5 = :codCateg or s.nivel_6 = :codCateg) " +
-                                  " and (substr(ar.grup_vz, 0, 2) = :depart or ar.grup_vz = '11') " +
+                                  condDepart +
                                   " and ar.cod = s.matnr and s.mandt = c.mandt and s.matnr = c.matnr " +
                                   " and e.mandt = '900' and e.matnr = s.matnr and e.vtweg = '20' ";
                                   
@@ -197,6 +194,11 @@ namespace LiteSFATestWebService
 
             string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
+            string condDepart = " and (substr(ar.grup_vz, 0, 2) in " + HelperComenzi.getDepartExtra(depart) + " or ar.grup_vz = '11') ";
+
+            if (depart != null && (depart.Equals("00") || depart.Equals("11")))
+                condDepart = "";
+
             connection.ConnectionString = connectionString;
             connection.Open();
 
@@ -210,7 +212,7 @@ namespace LiteSFATestWebService
                                   " from sapprd.zpath_hybris s, sapprd.marc c, websap.articole ar, sapprd.mvke e " +
                                   " where (s.nivel_0 = :codCateg or s.nivel_1 = :codCateg or s.nivel_2 = :codCateg or " +
                                   " s.nivel_3 = :codCateg or s.nivel_4 = :codCateg or s.nivel_5 = :codCateg or s.nivel_6 = :codCateg) " + 
-                                  " and (substr(ar.grup_vz, 0, 2) = :depart or ar.grup_vz = '11') " + 
+                                  condDepart + 
                                   " and ar.cod = s.matnr and s.mandt = c.mandt and s.matnr = c.matnr " + 
                                   " and e.mandt = '900' and e.matnr = s.matnr and e.vtweg = '20' " + 
                                   " order by s.matnr OFFSET :paginaCrt ROWS FETCH NEXT 10 ROWS ONLY ";
@@ -222,11 +224,8 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Add(":codCateg", OracleType.VarChar, 60).Direction = ParameterDirection.Input;
                 cmd.Parameters[0].Value = codCategorie;
 
-                cmd.Parameters.Add(":depart", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[1].Value = depart;
-
                 cmd.Parameters.Add(":paginaCrt", OracleType.VarChar, 3).Direction = ParameterDirection.Input;
-                cmd.Parameters[2].Value = paginaCrt;
+                cmd.Parameters[1].Value = paginaCrt;
 
                 oReader = cmd.ExecuteReader();
 
@@ -553,7 +552,6 @@ namespace LiteSFATestWebService
             if (urlService != null && !urlService.Equals(""))
                 serviceUrl = urlService + paginare;
 
-            ErrorHandling.sendErrorToMail("getArticoleWebService: " + serviceUrl);
 
             System.Net.ServicePointManager.Expect100Continue = false;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -747,9 +745,11 @@ namespace LiteSFATestWebService
                 cmd.CommandText = " select distinct s.matnr, ar.nume, c.dismm, " +
                                   " (select e.versg from sapprd.mvke e where e.mandt = '900' and e.matnr = s.matnr and e.vtweg = '20') par_s " +
                                   " from sapprd.zpath_hybris s, sapprd.marc c, articole ar " +
-                                  " where (substr(ar.grup_vz,0,2) =:depart or ar.grup_vz = '11' ) " +
+                                  " where (substr(ar.grup_vz,0,2) in " + HelperComenzi.getDepartExtra(depart) + " or ar.grup_vz = '11' ) " +
                                   " and ar.cod = s.matnr and s.mandt = c.mandt and s.matnr = c.matnr and c.werks = :filiala " + cautare + " order by s.matnr  " +
                                   " OFFSET :paginaCrt ROWS FETCH NEXT 10 ROWS ONLY ";
+
+                
 
 
                 cmd.CommandType = CommandType.Text;
@@ -758,11 +758,8 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
                 cmd.Parameters[0].Value = filiala;
 
-                cmd.Parameters.Add(":depart", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[1].Value = depart.Substring(0,2);
-
                 cmd.Parameters.Add(":paginaCrt", OracleType.VarChar, 3).Direction = ParameterDirection.Input;
-                cmd.Parameters[2].Value = paginaCrt;
+                cmd.Parameters[1].Value = paginaCrt;
 
                 oReader = cmd.ExecuteReader();
 
@@ -804,28 +801,7 @@ namespace LiteSFATestWebService
 
 
 
-        public string cautaArticoleMathaus_old(string codArticol, string tipCautare, string filiala, string depart, string pagina) 
-        {
-            
-
-            string serviceUrlCod = "https://idx.arabesque.ro/solr/master_erp_Product_default/select?q=code_string:";
-            string serviceUrlNume = "https://idx.arabesque.ro/solr/master_erp_Product_default/select?q=name_text_ro:";
-            string serviceUrl;
-           
-
-            if (tipCautare.Equals("c"))
-                serviceUrl = serviceUrlCod + codArticol + "*";
-            else
-                serviceUrl = serviceUrlNume + codArticol;
-
-            RezultatArtMathaus rezultat = getArticoleWebService("", depart, serviceUrl, pagina);
-
-            if (rezultat.listArticole.Count > 0)
-                    addExtraData(rezultat.listArticole, filiala);
-
-            return new JavaScriptSerializer().Serialize(rezultat);
-
-        }
+        
 
 
         
@@ -983,7 +959,9 @@ namespace LiteSFATestWebService
         private void setDetaliiArticol(ArticolMathaus articol)
         {
 
-            string serviceUrl = "https://wse1-sap-prod.arabesque.ro/solr/master_erp_Product_default/select?q=code_string:" + articol.cod;
+
+
+            string serviceUrl = "https://wse1-sap-hybris-prod.arabesque.ro/solr/master_erp_Product_default/select?q=code_string:" + articol.cod;
 
             System.Net.ServicePointManager.Expect100Continue = false;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -1112,10 +1090,8 @@ namespace LiteSFATestWebService
                                 articol.departAprob = oReader.GetString(8);
                                 articol.umPalet = oReader.GetInt32(9).ToString();
 
-                                if (articol.isArticolSite)
-                                    articol.stoc = getStocSite(oReader.GetString(0), filiala);
-                                else
-                                    articol.stoc = oReader.GetDouble(10).ToString();
+
+                                articol.stoc = "0";
 
                                 strCat = oReader.GetString(11);
                                 if (strCat.ToUpper().Equals("AM") || strCat.ToUpper().Equals("PA"))
@@ -1128,10 +1104,6 @@ namespace LiteSFATestWebService
                                 articol.catMathaus = oReader.GetString(13).Equals("Y") ? "S" : " ";
                                 articol.pretUnitar = " ";
 
-                                /*
-                                if (!magMathaus.Equals(filiala) && oReader.GetString(13).Equals("N"))
-                                    eliminate.Add(articol);
-                                    */
 
                                 break;
                                 
@@ -1154,8 +1126,6 @@ namespace LiteSFATestWebService
                 DatabaseConnections.CloseConnections(oReader, cmd, connection);
             }
 
-            //listArticole.RemoveAll(x => eliminate.Contains(x));
-            
 
         }
 
@@ -1261,9 +1231,6 @@ namespace LiteSFATestWebService
 
             try {
 
-
-                
-
                 AntetCmdMathaus antetCmdMathaus = null;
                 if (antetComanda != null)
                     antetCmdMathaus = serializer.Deserialize<AntetCmdMathaus>(antetComanda);
@@ -1277,6 +1244,7 @@ namespace LiteSFATestWebService
 
                 foreach (DateArticolMathaus dateArticol in articole)
                 {
+
                     if (!dateArticol.tip2.Equals("S"))
                         continue;
 
@@ -1300,15 +1268,13 @@ namespace LiteSFATestWebService
                 foreach (DateArticolMathaus dateArticol in articole)
                 {
 
-                    //string codArticol = "0000000000" + dateArticol.productCode;
-
-                    dateArticol.productCode = "0000000000" + dateArticol.productCode;
-
+                    if (!dateArticol.productCode.StartsWith("0000000000"))
+                        dateArticol.productCode = "0000000000" + dateArticol.productCode;
 
                     artFound = false;
                     foreach (DateArticolMathaus dateArticolRez in comandaRezultat.deliveryEntryDataList)
                     {
-                        if (dateArticolRez.productCode.Equals(dateArticol.productCode) && dateArticol.tip2.Equals("S"))
+                        if (dateArticolRez.productCode.Equals(dateArticol.productCode) && !dateArticolRez.deliveryWarehouse.Trim().Equals(String.Empty))
                         {
                             dateArticol.deliveryWarehouse = dateArticolRez.deliveryWarehouse;
                             artFound = true;
@@ -1326,12 +1292,10 @@ namespace LiteSFATestWebService
 
                 if (antetCmdMathaus != null)
                     listCostTransport = getTransportService(antetCmdMathaus, comandaMathaus);
-
                 
                 livrareMathaus.comandaMathaus = comandaMathaus;
                 livrareMathaus.costTransport = listCostTransport;
 
-                //return callDeliveryService(serializer.Serialize(comandaMathaus));
 
             }
             catch(Exception ex)
@@ -1358,11 +1322,7 @@ namespace LiteSFATestWebService
                 System.Net.ServicePointManager.Expect100Continue = false;
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-                //HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://wt1.arabesque.ro/arbsqintegration/optimiseDelivery");
-
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://wt1.arabesque.ro/arbsqintegration/optimiseDeliveryB2B");
-
-
 
                 request.Method = "POST";
                 request.ContentType = "application/json";
@@ -1494,7 +1454,7 @@ namespace LiteSFATestWebService
                     items[ii].Matnr = dateArticol.productCode;
                     items[ii].Kwmeng = Decimal.Parse(dateArticol.quantity.ToString());
                     items[ii].Vrkme = dateArticol.unit;
-                    items[ii].ValPoz = Decimal.Parse(dateArticol.valPoz.ToString());
+                    items[ii].ValPoz = Decimal.Parse(String.Format("{0:0.00}", dateArticol.valPoz));
                     items[ii].Werks = dateArticol.deliveryWarehouse;
                     ii++;
                 }

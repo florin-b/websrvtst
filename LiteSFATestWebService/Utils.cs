@@ -203,6 +203,95 @@ namespace LiteSFATestWebService
         }
 
 
+        public static bool isFilialaMicaDep04(OracleConnection connection, string filiala, string depart)
+        {
+
+            bool isFilialaMica = false;
+
+            if (filiala == null || !depart.StartsWith("04"))
+                return false;
+            else
+            {
+                OracleCommand cmd = new OracleCommand();
+                OracleDataReader oReader = null;
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select count(distinct cod) from agenti where activ = 1 and divizie like '04%' and tip = 'SD' and filiala = :filiala ";
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = filiala;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+
+                    if (oReader.GetInt32(0) == 1)
+                        isFilialaMica = true;
+                    else
+                        isFilialaMica = false;
+
+                }
+                else
+                    isFilialaMica = false;
+
+                DatabaseConnections.CloseConnections(oReader, cmd);
+
+                return isFilialaMica;
+            }
+        }
+
+        public static bool isFilialaMicaDep04(string filiala, string depart)
+        {
+
+            bool isFilialaMica = false;
+
+            if (filiala == null || !depart.StartsWith("04"))
+                return false;
+            else
+            {
+                OracleConnection connection = new OracleConnection();
+                OracleCommand cmd = new OracleCommand();
+                OracleDataReader oReader = null;
+
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select count(distinct cod) from agenti where activ = 1 and divizie like '04%' and  tip = 'SD' and filiala = :filiala ";
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = filiala;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+
+                    if (oReader.GetInt32(0) == 1)
+                        isFilialaMica = true;
+                    else
+                        isFilialaMica = false;
+
+                }
+                else
+                    isFilialaMica = false;
+
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+
+                return isFilialaMica;
+            }
+        }
+
+
         public static string getTipConsilier(OracleConnection connection, string codConsilier)
         {
             string tipConsilier = "NN";

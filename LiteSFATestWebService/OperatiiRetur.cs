@@ -20,21 +20,7 @@ namespace LiteSFATestWebService
 
         public string getListDocumenteSalvate(string codAgent, string filiala, string tipUser, string depart, string interval, string stare)
         {
-
-            
-            /*
-            if ((tipUser.Equals("SD") && (stare.Equals("1") || stare.Equals("3")) || tipUser.Contains("AV")))
-            {
-                return getListDocumenteSalvateToDb(codAgent, filiala, tipUser, depart, interval, stare);
-            }
-            else
-            {
-                return getListDocumenteSAP(codAgent, filiala, tipUser, depart, interval, stare);
-            }
-            */
-
             return getListDocumenteSalvateToDb(codAgent, filiala, tipUser, depart, interval, stare);
-
         }
 
 
@@ -1824,6 +1810,148 @@ namespace LiteSFATestWebService
             return stocDisp;
             
         }
+
+        public string getListDocReturStare(string codAgent, string tipAgent, string data)
+        {
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            List<ComandaReturStare> listComenzi = new List<ComandaReturStare>();
+
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select k.vbeln, k.kunnr, k.auart, k.audat, k.vgbel referinta, d.traty, c.name1, c1.transpzone, c1.city1, c1.street, " +
+                                  " c2.name1 pers_contact, c2.tel_number tel_contact " + 
+                                  " from sapprd.vbak k " + 
+                                  " inner " + 
+                                  " join sapprd.vbkd d on k.mandt = d.mandt and k.vbeln = d.vbeln " + 
+                                  " inner join sapprd.vbpa p on k.mandt = p.mandt and k.vbeln = p.vbeln " + 
+                                  " inner join sapprd.vbpa ad on k.mandt = ad.mandt and k.vbeln = ad.vbeln " + 
+                                  " inner join sapprd.adrc c on ad.mandt = c.client and ad.adrnr = c.addrnumber " + 
+                                  " inner join sapprd.vbpa li on k.mandt = li.mandt and k.vbeln = li.vbeln " + 
+                                  " inner join sapprd.adrc c1 on li.mandt = c1.client and li.adrnr = c1.addrnumber " + 
+                                  " inner join sapprd.vbpa pc on k.mandt = pc.mandt and k.vbeln = pc.vbeln " + 
+                                  " inner join sapprd.adrc c2 on pc.mandt = c2.client and pc.adrnr = c2.addrnumber " + 
+                                  " where k.mandt = '900' " + 
+                                  " and k.audat = :datad and k.vbtyp = 'H' and d.posnr = '000000' and p.parvw in ('VE','ZC') " +
+                                  " and p.pernr = :codAgent and ad.parvw = :tipAgent and li.parvw = 'WE' and pc.parvw = 'AP' ";
+
+
+                cmd.Parameters.Add(":datad", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = data;
+
+                cmd.Parameters.Add(":codAgent", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = codAgent;
+
+                cmd.Parameters.Add(":tipAgent", OracleType.VarChar, 6).Direction = ParameterDirection.Input;
+                cmd.Parameters[2].Value = tipAgent;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        ComandaReturStare comanda = new ComandaReturStare();
+                        comanda.vbeln = oReader.GetString(0);
+                        comanda.kunnr = oReader.GetString(1);
+                        comanda.auart = oReader.GetString(2);
+                        comanda.audat = oReader.GetString(3);
+                        comanda.referinta = oReader.GetString(4);
+                        comanda.traty = oReader.GetString(5);
+                        comanda.name1 = oReader.GetString(6);
+                        comanda.transpzone = oReader.GetString(7);
+                        comanda.city1 = oReader.GetString(8);
+                        comanda.street = oReader.GetString(9);
+                        comanda.pers_contact = oReader.GetString(10);
+                        comanda.tel_contact = oReader.GetString(11);
+
+
+                        listComenzi.Add(comanda);
+
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally{
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+
+
+            return new JavaScriptSerializer().Serialize(listComenzi);
+        }
+
+
+        public string getArtDocReturStare(string nrDocument)
+        {
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            List<ArticolReturStare> listArticole = new List<ArticolReturStare>();
+
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select z.matnr, z.arktx, z.kwmeng, z.vrkme, z.netwr valoare_pozitie from sapprd.vbap z where z.mandt = '900' and z.vbeln = :nrDoc ";
+ 
+                cmd.Parameters.Add(":nrDoc", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = nrDocument;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        ArticolReturStare articol = new ArticolReturStare();
+                        articol.matnr = oReader.GetString(0);
+                        articol.arktx = oReader.GetString(1);
+                        articol.kwmeng = oReader.GetDouble(2);
+                        articol.vrkme = oReader.GetString(3);
+                        articol.valoare_pozitie = oReader.GetDouble(4);
+                        listArticole.Add(articol);
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+
+
+            return new JavaScriptSerializer().Serialize(listArticole);
+        }
+
 
 
     }

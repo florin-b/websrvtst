@@ -16,8 +16,6 @@ namespace LiteSFATestWebService
         public String getCostMacara(string unitLog, string codAgent, string codClient, string codFurnizor, string listArt)
         {
 
-            ErrorHandling.sendErrorToMail("getCostMacara: " +  unitLog + " , " +  codAgent + " , " + codClient + " , " + codFurnizor + " , " + listArt);
-
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             List<ArticolCalculDesc> listArtCmd = serializer.Deserialize<List<ArticolCalculDesc>>(listArt);
 
@@ -66,7 +64,7 @@ namespace LiteSFATestWebService
 
             CostDescarcare costDescarcare = new CostDescarcare();
             costDescarcare.sePermite = !resp.EpMacara.Equals("X");
-
+            costDescarcare.filiala = unitLog;
 
             List<ArticolDescarcare> listArticole = new List<ArticolDescarcare>();
 
@@ -75,7 +73,7 @@ namespace LiteSFATestWebService
             for (int i = 0; i < valPaleti.Length; i++)
             {
                 articol = new ArticolDescarcare();
-                articol.cod = valPaleti[i].Matnr;
+                articol.cod = valPaleti[i].Matnr.TrimStart('0');
                 articol.depart = valPaleti[i].Spart.Equals("04") ? "041" : valPaleti[i].Spart;
                 articol.valoare = valPaleti[i].Valpal.Trim();
                 articol.cantitate = valPaleti[i].Nrpal.ToString();
@@ -116,91 +114,33 @@ namespace LiteSFATestWebService
                 
             }
 
-           
-            
-
-            if (codAgent.Equals("00083313__"))
-            {
-
-                //test
-                ArticolDescarcare articol1 = new ArticolDescarcare();
-                articol1.cod = "30102013";
-                articol1.depart = "09";
-                articol1.valoare = "100";
-                articol1.cantitate = "2";
-                articol1.valoareMin = "70";
-                listArticole.Add(articol1);
-
-                costDescarcare.sePermite = true;
-
-
-
-                ArticolPalet artPalet1 = new ArticolPalet();
-                artPalet1.codPalet = "10900897";
-                artPalet1.cantitate = "2";
-                artPalet1.numePalet = "AMBALAJ LEMN PT TIGLA 10 PASI(PALET)";
-                artPalet1.pretUnit = "13.3";
-                artPalet1.depart = "09";
-                artPalet1.furnizor = "Furnizor tigla";
-                artPalet1.codArticol = listArtCmd[0].cod;
-                artPalet1.numeArticol = getNumeArticol(connection, "0000000000" + listArtCmd[0].cod);
-                artPalet1.cantArticol = listArtCmd[0].cant.ToString();
-                artPalet1.umArticol = listArtCmd[0].um;
-                listPaleti.Add(artPalet1);
-
-                artPalet1 = new ArticolPalet();
-                artPalet1.codPalet = "10900897";
-                artPalet1.cantitate = "5";
-                artPalet1.numePalet = "AMBALAJ LEMN PT TIGLA 10 PASI(PALET)";
-                artPalet1.pretUnit = "29.99";
-                artPalet1.depart = "09";
-                artPalet1.furnizor = "Furnizor tigla";
-                artPalet1.codArticol = listArtCmd[0].cod;
-                artPalet1.numeArticol = getNumeArticol(connection, "0000000000" + listArtCmd[0].cod);
-                artPalet1.cantArticol = listArtCmd[0].cant.ToString();
-                artPalet1.umArticol = listArtCmd[0].um;
-                listPaleti.Add(artPalet1);
-
-
-                artPalet1 = new ArticolPalet();
-                artPalet1.codPalet = "10901521";
-                artPalet1.cantitate = "1";
-                artPalet1.numePalet = "AMBALAJ LEMN PT TIGLA 5 PASI(PALET)";
-                artPalet1.pretUnit = "29.99";
-                artPalet1.depart = "09";
-                artPalet1.furnizor = "Furnizor tigla";
-                artPalet1.codArticol = listArtCmd[0].cod;
-                artPalet1.numeArticol = getNumeArticol(connection, "0000000000" + listArtCmd[0].cod);
-                artPalet1.cantArticol = listArtCmd[0].cant.ToString();
-                artPalet1.umArticol = listArtCmd[0].um;
-                listPaleti.Add(artPalet1);
-
-
-                artPalet1 = new ArticolPalet();
-                artPalet1.codPalet = "10901531";
-                artPalet1.cantitate = "2";
-                artPalet1.numePalet = "AMBALAJ LEMN PT TIGLA ";
-                artPalet1.pretUnit = "44.00";
-                artPalet1.depart = "09";
-                artPalet1.furnizor = "Furnizor tigla";
-                artPalet1.codArticol = listArtCmd[0].cod;
-                artPalet1.numeArticol = getNumeArticol(connection, "0000000000" + listArtCmd[0].cod);
-                artPalet1.cantArticol = listArtCmd[0].cant.ToString();
-                artPalet1.umArticol = listArtCmd[0].um;
-                listPaleti.Add(artPalet1);
-
-            }
-            //test
-
 
             connection.Close();
 
             costDescarcare.articoleDescarcare = listArticole;
             costDescarcare.articolePaleti = getPaletiDistincti(listPaleti);
 
-
             return new JavaScriptSerializer().Serialize(costDescarcare);
 
+        }
+
+
+        public string getCostMacaraComenzi(string codAgent, string codClient, string codFurnizor, string listComenzi)
+        {
+            List<CostDescarcare> costDescarcare = new List<CostDescarcare>();
+
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            List<ComandaCalculDescarcare> listCom = serializer.Deserialize<List<ComandaCalculDescarcare>>(listComenzi);
+            
+            foreach (ComandaCalculDescarcare comanda in listCom)
+            {
+                string costDescComanda = getCostMacara(comanda.filiala, codAgent, codClient, codFurnizor, comanda.listArticole);
+                costDescarcare.Add(serializer.Deserialize<CostDescarcare>(costDescComanda));
+            }
+
+           
+
+            return serializer.Serialize(costDescarcare);
         }
 
 

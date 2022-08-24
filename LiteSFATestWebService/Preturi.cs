@@ -16,6 +16,8 @@ namespace LiteSFATestWebService
         public string getPret(string client, string articol, string cantitate, string depart, string um, string ul, string tipUser, string depoz, string codUser, string canalDistrib, string filialaAlternativa, string filialaClp)
         {
 
+       
+
             string retVal = "";
             SAPWebServices.ZTBL_WEBSERVICE webService = null;
 
@@ -304,6 +306,9 @@ namespace LiteSFATestWebService
                 webService.Dispose();
                 DatabaseConnections.CloseConnections(oReader, cmd, connection);
             }
+
+
+            
 
             return retVal;
         }
