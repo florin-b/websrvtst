@@ -16,7 +16,6 @@ namespace LiteSFATestWebService
         public string getPret(string client, string articol, string cantitate, string depart, string um, string ul, string tipUser, string depoz, string codUser, string canalDistrib, string filialaAlternativa, string filialaClp)
         {
 
-       
 
             string retVal = "";
             SAPWebServices.ZTBL_WEBSERVICE webService = null;
@@ -38,6 +37,9 @@ namespace LiteSFATestWebService
 
             try
             {
+
+                if (depoz != null && (depoz.Equals("040V1") || depoz.Equals("041V1")))
+                    depoz = "04V1";
 
                 webService = new ZTBL_WEBSERVICE();
                 SAPWebServices.ZgetPrice inParam = new SAPWebServices.ZgetPrice();
@@ -79,6 +81,9 @@ namespace LiteSFATestWebService
                 string impachetare = outParam.Impachet.ToString() != "" ? outParam.Impachet.ToString() : " ";
                 string pretGed = outParam.GvNetwrFtva.ToString();
                 string dataExp = outParam.GvDatbi;
+
+                string greutateArt = outParam.GvBrgew.ToString();
+               
 
                 string extindere11 = outParam.ErrorCode.ToString();
 
@@ -288,7 +293,7 @@ namespace LiteSFATestWebService
                 retVal += discMaxAV + "#" + discMaxSD + "#" + discMaxDV + "#" +
                          Convert.ToInt32(Double.Parse(multiplu)).ToString() + "#" +
                          cantUmb + "#" + Umb + "#" + discMaxKA + "#" + cmpArticol.ToString() + "#" + pretMediu + "#" + 
-                         impachetare + "#" + istoricPret + "#" + procRedCmp + "#" + pretGed + "#" + dataExp + "#";
+                         impachetare + "#" + istoricPret + "#" + procRedCmp + "#" + pretGed + "#" + dataExp + "#" + greutateArt + "#";
 
 
                 if (pretOut.Equals("0.0"))

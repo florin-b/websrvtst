@@ -60,6 +60,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         private System.Threading.SendOrPostCallback ZstareCurentaOperationCompleted;
         
+        private System.Threading.SendOrPostCallback ZstareCurentaReturOperationCompleted;
+        
         private System.Threading.SendOrPostCallback ZstocReturAvansatOperationCompleted;
         
         private System.Threading.SendOrPostCallback ZcreazaComandaOperationCompleted;
@@ -156,6 +158,9 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         /// <remarks/>
         public event ZstareCurentaCompletedEventHandler ZstareCurentaCompleted;
+        
+        /// <remarks/>
+        public event ZstareCurentaReturCompletedEventHandler ZstareCurentaReturCompleted;
         
         /// <remarks/>
         public event ZstocReturAvansatCompletedEventHandler ZstocReturAvansatCompleted;
@@ -639,6 +644,37 @@ namespace LiteSFATestWebService.SAPWebServices {
             if ((this.ZstareCurentaCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.ZstareCurentaCompleted(this, new ZstareCurentaCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZstareCurentaRet" +
+            "urRequest", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
+        [return: System.Xml.Serialization.XmlElementAttribute("ZstareCurentaReturResponse", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+        public ZstareCurentaReturResponse ZstareCurentaRetur([System.Xml.Serialization.XmlElementAttribute("ZstareCurentaRetur", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")] ZstareCurentaRetur ZstareCurentaRetur1) {
+            object[] results = this.Invoke("ZstareCurentaRetur", new object[] {
+                        ZstareCurentaRetur1});
+            return ((ZstareCurentaReturResponse)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void ZstareCurentaReturAsync(ZstareCurentaRetur ZstareCurentaRetur1) {
+            this.ZstareCurentaReturAsync(ZstareCurentaRetur1, null);
+        }
+        
+        /// <remarks/>
+        public void ZstareCurentaReturAsync(ZstareCurentaRetur ZstareCurentaRetur1, object userState) {
+            if ((this.ZstareCurentaReturOperationCompleted == null)) {
+                this.ZstareCurentaReturOperationCompleted = new System.Threading.SendOrPostCallback(this.OnZstareCurentaReturOperationCompleted);
+            }
+            this.InvokeAsync("ZstareCurentaRetur", new object[] {
+                        ZstareCurentaRetur1}, this.ZstareCurentaReturOperationCompleted, userState);
+        }
+        
+        private void OnZstareCurentaReturOperationCompleted(object arg) {
+            if ((this.ZstareCurentaReturCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.ZstareCurentaReturCompleted(this, new ZstareCurentaReturCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -26279,6 +26315,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         private string matnrField;
         
+        private string spartField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public string Werks {
@@ -26320,6 +26358,17 @@ namespace LiteSFATestWebService.SAPWebServices {
             }
             set {
                 this.matnrField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Spart {
+            get {
+                return this.spartField;
+            }
+            set {
+                this.spartField = value;
             }
         }
     }
@@ -26808,6 +26857,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         private byte errorCodeField;
         
+        private decimal gvBrgewField;
+        
         private decimal gvCantField;
         
         private bool gvCantFieldSpecified;
@@ -26858,6 +26909,17 @@ namespace LiteSFATestWebService.SAPWebServices {
             }
             set {
                 this.errorCodeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal GvBrgew {
+            get {
+                return this.gvBrgewField;
+            }
+            set {
+                this.gvBrgewField = value;
             }
         }
         
@@ -29458,6 +29520,51 @@ namespace LiteSFATestWebService.SAPWebServices {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZstareCurentaRetur {
+        
+        private string ipVbelnField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string IpVbeln {
+            get {
+                return this.ipVbelnField;
+            }
+            set {
+                this.ipVbelnField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZstareCurentaReturResponse {
+        
+        private ZstStareCurenta[] etStatusField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
+        public ZstStareCurenta[] EtStatus {
+            get {
+                return this.etStatusField;
+            }
+            set {
+                this.etStatusField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.3752.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
     public partial class ZstocReturAvansat {
         
         private string ipMatnrField;
@@ -30491,6 +30598,32 @@ namespace LiteSFATestWebService.SAPWebServices {
             get {
                 this.RaiseExceptionIfNecessary();
                 return ((ZstareCurentaResponse)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
+    public delegate void ZstareCurentaReturCompletedEventHandler(object sender, ZstareCurentaReturCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.3752.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class ZstareCurentaReturCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal ZstareCurentaReturCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public ZstareCurentaReturResponse Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((ZstareCurentaReturResponse)(this.results[0]));
             }
         }
     }

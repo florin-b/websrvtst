@@ -530,12 +530,13 @@ namespace LiteSFATestWebService
             connection.Open();
 
             OracleCommand cmd = connection.CreateCommand();
+            string nrDocument = "";
 
             try
             {
 
                 cmd.CommandText = " select datalivrare, tiptransport, numeperscontact, telperscontact, codjudet, localitate, strada,  " +
-                                  " nrdocument, codagent, tipagent, motivretur, inlocuire " +
+                                  " nrdocument, codagent, tipagent, motivretur, inlocuire, nrDocument " +
                                   " from sapprd.zreturhead where id =:idComanda ";
 
                 cmd.CommandType = CommandType.Text;
@@ -564,6 +565,7 @@ namespace LiteSFATestWebService
                         retur.tipAgent = oReader.GetString(9);
                         retur.motivRetur = oReader.GetString(10);
                         retur.inlocuire = oReader.GetString(11);
+                        nrDocument = oReader.GetString(11);
                     }
 
                 }
@@ -600,9 +602,11 @@ namespace LiteSFATestWebService
                 oReader.Dispose();
 
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
-                String listaArticoleSer = serializer.Serialize(listArticole);
+                string listaArticoleSer = serializer.Serialize(listArticole);
+                string listStariSer = serializer.Serialize(new OperatiiRetur().getStareRetur(nrDocument));
 
                 retur.listaArticole = listaArticoleSer;
+                retur.listStari = listStariSer;
                 serializedResult = serializer.Serialize(retur);
 
             }
@@ -616,6 +620,8 @@ namespace LiteSFATestWebService
                 connection.Close();
                 connection.Dispose();
             }
+
+            ErrorHandling.sendErrorToMail("getArtDocSalvat: " + serializedResult);
 
             return serializedResult;
         }
@@ -865,17 +871,14 @@ namespace LiteSFATestWebService
 
 
                 }
-                else if (tipTransport.Equals("TERT"))
+                else if (tipTransport.Equals("TERT") || tipTransport.Equals("TFRN"))
                 {
                     cmd.CommandText = " select to_char(to_date(s.eventdate,'yyyy-mm-dd HH24:mi:ss'),'yyyymmdd') " +
                                       " from sapprd.vbfa f, sapprd.ZPOSTIS_EVENTS s where f.mandt = '900' " +
                                       " and f.vbeln = :nrDoc and f.vbtyp_v = 'C' and f.vbtyp_n = 'M' " +
                                       " and f.vbelv = s.vbeln and s.defaultclientid = 5 and rownum = 1 ";
                 }
-                else {
-                    cmd.Dispose();
-                    return dataLivrare;
-                }
+                
 
 
 
@@ -1811,7 +1814,8 @@ namespace LiteSFATestWebService
             
         }
 
-        public string getListDocReturStare(string codAgent, string tipAgent, string data)
+
+        public string getListDocReturStare(string codAgent, string tipAgent, string interval)
         {
 
             OracleConnection connection = new OracleConnection();
@@ -1820,11 +1824,40 @@ namespace LiteSFATestWebService
 
             List<ComandaReturStare> listComenzi = new List<ComandaReturStare>();
 
-
             try
             {
-                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+                string condData = "";
 
+                if (interval == "0") //astazi
+                {
+                    string dateInterval = DateTime.Today.ToString("yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                    condData = " and k.audat = '" + dateInterval + "' ";
+                }
+
+                if (interval == "1") //ultimele 7 zile
+                {
+                    string dateInterval = DateTime.Today.AddDays(-7).ToString("yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                    condData = " and k.audat >= '" + dateInterval + "' ";
+                }
+
+                if (interval == "2") //ultimele 30 zile
+                {
+                    string dateInterval = DateTime.Today.AddDays(-30).ToString("yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                    condData = " and k.audat >= '" + dateInterval + "' ";
+                }
+
+                if (interval.Length > 1) //interval
+                {
+                    string[] intervalSel = interval.Split('#');
+                    string[] data1 = intervalSel[0].Split('.');
+                    string[] data2 = intervalSel[1].Split('.');
+                    string dataStart = data1[2] + data1[1] + data1[0];
+                    string dataStop = data2[2] + data2[1] + data2[0];
+                    condData = " and k.audat between '" + dataStart + "' and '" + dataStop + "' ";
+                }
+
+
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -1832,30 +1865,26 @@ namespace LiteSFATestWebService
                 cmd = connection.CreateCommand();
 
                 cmd.CommandText = " select k.vbeln, k.kunnr, k.auart, k.audat, k.vgbel referinta, d.traty, c.name1, c1.transpzone, c1.city1, c1.street, " +
-                                  " c2.name1 pers_contact, c2.tel_number tel_contact " + 
-                                  " from sapprd.vbak k " + 
-                                  " inner " + 
-                                  " join sapprd.vbkd d on k.mandt = d.mandt and k.vbeln = d.vbeln " + 
-                                  " inner join sapprd.vbpa p on k.mandt = p.mandt and k.vbeln = p.vbeln " + 
-                                  " inner join sapprd.vbpa ad on k.mandt = ad.mandt and k.vbeln = ad.vbeln " + 
-                                  " inner join sapprd.adrc c on ad.mandt = c.client and ad.adrnr = c.addrnumber " + 
-                                  " inner join sapprd.vbpa li on k.mandt = li.mandt and k.vbeln = li.vbeln " + 
-                                  " inner join sapprd.adrc c1 on li.mandt = c1.client and li.adrnr = c1.addrnumber " + 
-                                  " inner join sapprd.vbpa pc on k.mandt = pc.mandt and k.vbeln = pc.vbeln " + 
-                                  " inner join sapprd.adrc c2 on pc.mandt = c2.client and pc.adrnr = c2.addrnumber " + 
-                                  " where k.mandt = '900' " + 
-                                  " and k.audat = :datad and k.vbtyp = 'H' and d.posnr = '000000' and p.parvw in ('VE','ZC') " +
+                                  " c2.name1 pers_contact, c2.tel_number tel_contact " +
+                                  " from sapprd.vbak k " +
+                                  " inner " +
+                                  " join sapprd.vbkd d on k.mandt = d.mandt and k.vbeln = d.vbeln " +
+                                  " inner join sapprd.vbpa p on k.mandt = p.mandt and k.vbeln = p.vbeln " +
+                                  " inner join sapprd.vbpa ad on k.mandt = ad.mandt and k.vbeln = ad.vbeln " +
+                                  " inner join sapprd.adrc c on ad.mandt = c.client and ad.adrnr = c.addrnumber " +
+                                  " inner join sapprd.vbpa li on k.mandt = li.mandt and k.vbeln = li.vbeln " +
+                                  " inner join sapprd.adrc c1 on li.mandt = c1.client and li.adrnr = c1.addrnumber " +
+                                  " inner join sapprd.vbpa pc on k.mandt = pc.mandt and k.vbeln = pc.vbeln " +
+                                  " inner join sapprd.adrc c2 on pc.mandt = c2.client and pc.adrnr = c2.addrnumber " +
+                                  " where k.mandt = '900' " + condData + 
+                                  " and k.vbtyp = 'H' and d.posnr = '000000' and p.parvw in ('VE','ZC') " +
                                   " and p.pernr = :codAgent and ad.parvw = :tipAgent and li.parvw = 'WE' and pc.parvw = 'AP' ";
 
-
-                cmd.Parameters.Add(":datad", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
-                cmd.Parameters[0].Value = data;
-
                 cmd.Parameters.Add(":codAgent", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
-                cmd.Parameters[1].Value = codAgent;
+                cmd.Parameters[0].Value = codAgent;
 
                 cmd.Parameters.Add(":tipAgent", OracleType.VarChar, 6).Direction = ParameterDirection.Input;
-                cmd.Parameters[2].Value = tipAgent;
+                cmd.Parameters[1].Value = tipAgent;
 
                 oReader = cmd.ExecuteReader();
 
@@ -1883,17 +1912,70 @@ namespace LiteSFATestWebService
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ErrorHandling.sendErrorToMail(ex.ToString());
             }
-            finally{
+            finally
+            {
                 DatabaseConnections.CloseConnections(oReader, cmd, connection);
             }
 
-
-
             return new JavaScriptSerializer().Serialize(listComenzi);
+        }
+
+  
+
+        public string getStareDocumentRetur(string nrDocument)
+        {
+            List<StareDocumentRetur> listStari = new List<StareDocumentRetur>();
+
+            SAPWebServices.ZTBL_WEBSERVICE webService = new ZTBL_WEBSERVICE();
+
+            SAPWebServices.ZstareCurentaRetur inParam = new ZstareCurentaRetur();
+            System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Auth.getUser(), Auth.getPass());
+            webService.Credentials = nc;
+            webService.Timeout = 300000;
+
+            inParam.IpVbeln = nrDocument;
+
+            SAPWebServices.ZstareCurentaReturResponse resp = webService.ZstareCurentaRetur(inParam);
+
+            foreach(ZstStareCurenta stare in resp.EtStatus)
+            {
+                StareDocumentRetur stareDoc = new StareDocumentRetur();
+                stareDoc.nrDocument = stare.Vbeln;
+                stareDoc.stare = stare.StatusLong;
+                listStari.Add(stareDoc);
+            }
+
+            return new JavaScriptSerializer().Serialize(listStari);
+        }
+
+        public List<StareDocumentRetur> getStareRetur(string nrDocument)
+        {
+            List<StareDocumentRetur> listStari = new List<StareDocumentRetur>();
+
+            SAPWebServices.ZTBL_WEBSERVICE webService = new ZTBL_WEBSERVICE();
+
+            SAPWebServices.ZstareCurentaRetur inParam = new ZstareCurentaRetur();
+            System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Auth.getUser(), Auth.getPass());
+            webService.Credentials = nc;
+            webService.Timeout = 300000;
+
+            inParam.IpVbeln = nrDocument;
+
+            SAPWebServices.ZstareCurentaReturResponse resp = webService.ZstareCurentaRetur(inParam);
+
+            foreach (ZstStareCurenta stare in resp.EtStatus)
+            {
+                StareDocumentRetur stareDoc = new StareDocumentRetur();
+                stareDoc.nrDocument = stare.Vbeln;
+                stareDoc.stare = stare.StatusLong;
+                listStari.Add(stareDoc);
+            }
+
+            return listStari;
         }
 
 

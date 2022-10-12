@@ -55,7 +55,24 @@ namespace LiteSFATestWebService
             return year;
         }
 
+        public static bool isMatTransport(string codArt)
+        {
+            bool isMat = false;
 
+            string[] articolePermise = { "000000000030101220", "000000000030101221", "000000000030101223", "000000000030101224", "000000000030101225", "000000000030101226", "000000000030101227", "000000000030101228", "000000000030101230", "000000000030101222", "000000000030101111", "000000000030101240" };
+
+            for (int i = 0; i < articolePermise.Length; i++)
+            {
+                if (articolePermise[i].Equals(codArt))
+                {
+                    isMat = true;
+                    break;
+                }
+            }
+
+
+            return isMat;
+        }
 
         public static string getDescTipTransport(string codTransport)
         {

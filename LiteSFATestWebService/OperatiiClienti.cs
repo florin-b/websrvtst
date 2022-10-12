@@ -1061,15 +1061,6 @@ namespace LiteSFATestWebService
                                 " and p.vtweg = '20' and p.parvw in ('ZC') and p.pernr =:codAgent ) order by c.name1 ";
                 else {
 
-                    /*
-                    //tipConsilier = Utils.getTipConsilier(connection, codUser);
-
-                    if (tipConsilier.ToUpper().StartsWith("CAG") || tipConsilier.ToUpper().Equals("CVG"))
-                        sqlString = " select c.name1 nume, c.kunnr cod from sapprd.kna1 c where  c.ktokd = '1180' and c.sperr != 'X' and exists " +
-                                    " (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.kunnr  and p.vtweg = '20' and p.parvw in ('ZC') and p.pernr =:codAgent )  " +
-                                    " order by c.name1 ";
-                    else 
-                    */
                         sqlString = " select c.name1 nume, c.kunnr cod from sapprd.kna1 c where c.ktokd = '1180' and c.sperr != 'X' " + 
                                     " and exists (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.kunnr and p.vtweg = '20' " +
                                     " and p.parvw in ('ZA', 'ZS') and p.kunn2 = :filiala ) " + 
@@ -1077,9 +1068,9 @@ namespace LiteSFATestWebService
                                     " and p.parvw in ('ZC', 'VE') and p.pernr = :codAgent) " +
                                     " or exists (select 1 from websap.agenti a where a.tip in ('SMR', 'CVR', 'CVS') and a.cod = :codAgent )) " + 
                                     " order by c.name1 ";
-                    
-
                 }
+
+               
 
                 cmd.CommandText = sqlString;
 

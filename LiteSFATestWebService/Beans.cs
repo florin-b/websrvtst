@@ -166,6 +166,7 @@ namespace LiteSFATestWebService
         public string dataExp;
         public string listCabluri;
         public string tipTransport;
+        public string greutate;
 
 
         public override string ToString()
@@ -297,6 +298,7 @@ namespace LiteSFATestWebService
         public string refClient = "";
         public string costTransportMathaus;
         public bool isComandaACZC;
+        public string prelucrareLemn;
 
 
 
@@ -694,6 +696,7 @@ namespace LiteSFATestWebService
         public string status;
         public string transpBack;
         public string inlocuire;
+        public string listStari;
     }
 
     public class ComandaReturStare
@@ -712,6 +715,12 @@ namespace LiteSFATestWebService
         public string tel_contact;
 
 
+    }
+
+    public class StareDocumentRetur
+    {
+        public string nrDocument;
+        public string stare;
     }
 
 
@@ -803,6 +812,7 @@ namespace LiteSFATestWebService
         public string procReducereCmp;
         public string pretFaraTva;
         public string dataExp;
+        public string greutate;
 
     }
 

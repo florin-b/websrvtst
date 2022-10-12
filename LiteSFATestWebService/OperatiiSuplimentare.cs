@@ -388,7 +388,7 @@ namespace LiteSFATestWebService
 
             ClientComanda clientComanda = OperatiiComenzi.getClientComanda(connection, idComanda);
 
-            if (clientComanda != null)
+            if (clientComanda.codClient != null)
                 saveTonajAdresa(connection, clientComanda.codClient, clientComanda.codAdresa, tonaj);
 
         }
@@ -453,6 +453,47 @@ namespace LiteSFATestWebService
                 cmd.ExecuteNonQuery();
 
 
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                if (cmd != null)
+                    cmd.Dispose();
+            }
+
+
+        }
+
+
+        public static void saveCnpPF(OracleConnection connection, Int32 idComanda, string cnp)
+        {
+
+            OracleCommand cmd = null;
+
+            try
+            {
+
+
+                cmd = connection.CreateCommand();
+
+                string query = " insert into sapprd.ZSFA_ID_CNP(mandt, id, stceg) " +
+                               " values ('900', :idCmd, :stceg) ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = query;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":idCmd", OracleType.Int32, 10).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = idComanda;
+
+                cmd.Parameters.Add(":stceg", OracleType.NChar, 60).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = cnp;
+
+                cmd.ExecuteNonQuery();
 
             }
             catch (Exception ex)
