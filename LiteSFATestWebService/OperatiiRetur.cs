@@ -565,7 +565,7 @@ namespace LiteSFATestWebService
                         retur.tipAgent = oReader.GetString(9);
                         retur.motivRetur = oReader.GetString(10);
                         retur.inlocuire = oReader.GetString(11);
-                        nrDocument = oReader.GetString(11);
+                        nrDocument = oReader.GetString(12);
                     }
 
                 }
@@ -621,7 +621,6 @@ namespace LiteSFATestWebService
                 connection.Dispose();
             }
 
-            ErrorHandling.sendErrorToMail("getArtDocSalvat: " + serializedResult);
 
             return serializedResult;
         }
@@ -859,6 +858,7 @@ namespace LiteSFATestWebService
             OracleDataReader oReader = null;
             OracleCommand cmd = new OracleCommand();
             cmd.Connection = connection;
+
 
             try
             {

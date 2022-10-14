@@ -728,9 +728,8 @@ namespace LiteSFATestWebService
                                       " sintetice b, sapprd.marc c " + condTabCodBare + " where c.mandt = '900' and c.matnr = a.cod and c.werks = '" + filGed + "' and c.mmsta <> '01'" +
                                       " and a.sintetic = b.cod and a.cod != 'MAT GENERIC PROD' and a.blocat <> '01' and " + condCautare + condDepart + " and " + condLimit + "  order by a.nume ";
 
-                    
-
                 }
+
 
                 
 
@@ -2013,8 +2012,6 @@ namespace LiteSFATestWebService
         public string getStocDepozit(string codArt, string filiala, string depozit, string depart, string isArtMathaus)
         {
 
-            
-
 
             string retVal = "";
             OracleConnection connection = new OracleConnection();
@@ -2041,11 +2038,11 @@ namespace LiteSFATestWebService
                     localDepozit = "02V2";
 
                 string condDepozit1 = "lgort=:dep";
-                if (isArtMathausExceptieStoc(filiala, isArtMathaus, depart))
-                    condDepozit1 = "lgort in (select lgort from sapprd.zhybris_lgort h where h.mandt = '900' and h.werks = :fil and h.spart = '" + depart + "')";
-                
+                if (isArtMathausExceptieStoc(isArtMathaus))
+                    condDepozit1 = "lgort in (select lgort from sapprd.zhybris_lgort h, articole ar where h.mandt = '900' and h.werks = :fil and h.spart = ar.spart and ar.cod=:art)";
 
-                cmd = connection.CreateCommand();
+
+                 cmd = connection.CreateCommand();
 
                 cmd.CommandText = " select nvl(sum(labst),0) stoc, meins, ar.sintetic from " +
                                   " (select m.labst , mn.meins, mn.matnr  from sapprd.mard m, sapprd.mara mn " +
@@ -2061,6 +2058,7 @@ namespace LiteSFATestWebService
                                   " and b.matnr = :art and b.werks = :fil and b." + condDepozit1 +
                                   " group by b.meins, b.matnr ), articole ar where ar.cod = matnr group by meins, ar.sintetic ";
 
+
                 cmd.CommandType = CommandType.Text;
 
                 cmd.Parameters.Clear();
@@ -2070,7 +2068,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Add(":fil", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
                 cmd.Parameters[1].Value = depozit.Equals("MAV2") || depozit.Equals("DSCM") ? getUnitLogGed(filiala) : filiala;
 
-                if (!isArtMathausExceptieStoc(filiala, isArtMathaus, depart)) {
+                if (!isArtMathausExceptieStoc(isArtMathaus)) {
                     cmd.Parameters.Add(":dep", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
                     cmd.Parameters[2].Value = localDepozit;
                 }
@@ -2097,14 +2095,17 @@ namespace LiteSFATestWebService
 
 
                 string condDepozit2 = "reslo=:dep";
-                if (isArtMathausExceptieStoc(filiala, isArtMathaus, depart))
-                    condDepozit2 = "reslo in (select lgort from sapprd.zhybris_lgort h where h.mandt = '900' and h.werks = :fil and h.spart = '" + depart + "')";
+                if (isArtMathausExceptieStoc(isArtMathaus))
+                    condDepozit2 = "reslo in (select lgort from sapprd.zhybris_lgort h, articole ar where h.mandt = '900' and h.werks = :fil and h.spart = ar.spart and ar.cod=:art)";
 
                 cmd.CommandText = " select nvl(sum(w.menge - w.wamng),0) from sapprd.eket w, sapprd.ekpo o, sapprd.ekko q where w.menge <> w.wamng " +
                                   " and w.mandt = '900' and w.mandt = o.mandt and w.ebeln = o.ebeln and w.ebelp = o.ebelp and o.loekz <> 'L' and o.elikz <> 'X' " +
                                   " and o.matnr =:art and o.mandt = q.mandt and o.ebeln = q.ebeln and q.loekz <> 'L' and q.reswk =:fil and o." + condDepozit2 + 
                                   " and not exists (select * from sapprd.ekbe e where e.mandt = '900' and e.ebeln = q.ebeln and e.ebelp = o.ebelp and bewtp = 'L') " +
                                   " and q.aedat >= to_char(sysdate-30,'yyyymmyy')";
+
+
+                
 
                 cmd.CommandType = CommandType.Text;
 
@@ -2115,7 +2116,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Add(":fil", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
                 cmd.Parameters[1].Value = depozit.Equals("MAV2") || depozit.Equals("DSCM") ? getUnitLogGed(filiala) : filiala;
 
-                if (!isArtMathausExceptieStoc(filiala, isArtMathaus, depart))
+                if (!isArtMathausExceptieStoc( isArtMathaus))
                 {
                     cmd.Parameters.Add(":dep", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
                     cmd.Parameters[2].Value = depozit;
@@ -2197,15 +2198,13 @@ namespace LiteSFATestWebService
 
         }
 
-        private static bool isArtMathausExceptieStoc(string filiala, string isArtMathaus, string depart)
+        private static bool isArtMathausExceptieStoc(string isArtMathaus)
         {
             if (isArtMathaus == null || !isArtMathaus.Equals("true"))
                 return false;
 
-            if (filiala.Equals("BV90"))
-                return depart.Equals("01") || depart.Equals("02") || depart.Equals("05");
-            else
-                return true;
+            
+            return true;
         }
 
 

@@ -8731,13 +8731,12 @@ namespace LiteSFATestWebService
 
 
                 sqlString = " select distinct a.id,nvl(b.nume,' '),nvl(c.nume,' '), nvl(to_char(to_date(a.datac,'yyyymmdd')),' '), a.ul, decode(a.nrcmdsap,' ','-1',a.nrcmdsap) cmdsap, " +
-                            " a.status_aprov, a.depoz_dest,a.ul_dest, a.name1, a.obs, a.status, c.nrtel  " +
+                            " a.status_aprov, (select p.depoz from sapprd.zclpdet p where p.mandt = '900' and p.id = a.id and p.depoz <> ' ' and rownum = 1) depoz_dest ,a.ul_dest, a.name1, a.obs, a.status, c.nrtel  " +
                             " from sapprd.zclphead a, " +
                             " clienti b, agenti c, sapprd.zcomsuperav sav  where " + statusCmd +
                             " and a.cod_client = b.cod(+) and a.dl <> 'X' and c.cod(+) = a.cod_agent " + tipComanda + condData + " order by a.id desc ";
 
-                
-
+              
                 cmd.CommandText = sqlString;
                 cmd.Parameters.Clear();
                 oReader = cmd.ExecuteReader();
