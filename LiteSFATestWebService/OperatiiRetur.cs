@@ -536,7 +536,7 @@ namespace LiteSFATestWebService
             {
 
                 cmd.CommandText = " select datalivrare, tiptransport, numeperscontact, telperscontact, codjudet, localitate, strada,  " +
-                                  " nrdocument, codagent, tipagent, motivretur, inlocuire, nrDocument " +
+                                  " nrdocument, codagent, tipagent, motivretur, inlocuire, nvl(trim(com_retur),'0') " +
                                   " from sapprd.zreturhead where id =:idComanda ";
 
                 cmd.CommandType = CommandType.Text;

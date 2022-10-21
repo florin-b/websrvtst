@@ -12794,7 +12794,10 @@ namespace LiteSFATestWebService
 
                     bool paramAlertDVGed = alertDV;
                     if ((tipUser.Equals("AV") || tipUser.Equals("SD") || tipUser.Equals("KA")) && comandaVanzare.canalDistrib.Equals("10"))
+                    {
                         paramAlertDVGed = false;
+                        comandaVanzare.comandaBlocata = "0";
+                    }
 
                     if (!dateLivrareGed.unitLog.Contains("40"))
                         dateLivrareGed.unitLog = dateLivrareGed.unitLog.Substring(0, 2) + "2" + dateLivrareGed.unitLog.Substring(3, 1);
