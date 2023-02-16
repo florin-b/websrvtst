@@ -299,6 +299,8 @@ namespace LiteSFATestWebService
         public string costTransportMathaus;
         public bool isComandaACZC;
         public string prelucrareLemn;
+        public string tipPersAgent;
+        public string filialaPlata;
 
 
 
@@ -813,6 +815,7 @@ namespace LiteSFATestWebService
         public string pretFaraTva;
         public string dataExp;
         public string greutate;
+        public string articoleRecomandate;
 
     }
 
@@ -846,6 +849,12 @@ namespace LiteSFATestWebService
         public string model;
         public string appName;
         public string appVer;
+    }
+
+    public class Articol
+    {
+        public string cod;
+        public string nume;
     }
 
 }

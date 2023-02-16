@@ -48,6 +48,13 @@ namespace Flota
 
 
         [WebMethod]
+        public string getProduct(string nrDocument)
+        {
+            FlotaTESTWS.HelloWorld hello = new FlotaTESTWS.HelloWorld();
+            return hello.getProductData(nrDocument).ToString();
+        }
+
+        [WebMethod]
         public string getRutaDocument(string nrDocument)
         {
             OperatiiSofer opSofer = new OperatiiSofer();

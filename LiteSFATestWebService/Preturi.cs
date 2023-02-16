@@ -290,10 +290,12 @@ namespace LiteSFATestWebService
                 if (canalDistrib.Equals("10"))
                     istoricPret = getIstoricPret(connection, articol, client);
 
+                string articoleRecom = new OperatiiArticole().getArticoleRecomandate(connection, articol, depart);
+
                 retVal += discMaxAV + "#" + discMaxSD + "#" + discMaxDV + "#" +
                          Convert.ToInt32(Double.Parse(multiplu)).ToString() + "#" +
                          cantUmb + "#" + Umb + "#" + discMaxKA + "#" + cmpArticol.ToString() + "#" + pretMediu + "#" + 
-                         impachetare + "#" + istoricPret + "#" + procRedCmp + "#" + pretGed + "#" + dataExp + "#" + greutateArt + "#";
+                         impachetare + "#" + istoricPret + "#" + procRedCmp + "#" + pretGed + "#" + dataExp + "#" + greutateArt + "#" + articoleRecom + "#";
 
 
                 if (pretOut.Equals("0.0"))
@@ -311,9 +313,6 @@ namespace LiteSFATestWebService
                 webService.Dispose();
                 DatabaseConnections.CloseConnections(oReader, cmd, connection);
             }
-
-
-            
 
             return retVal;
         }

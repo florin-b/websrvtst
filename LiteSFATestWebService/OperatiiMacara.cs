@@ -13,7 +13,7 @@ namespace LiteSFATestWebService
     {
 
 
-        public String getCostMacara(string unitLog, string codAgent, string codClient, string codFurnizor, string listArt)
+        public String getCostMacara(string unitLog, string codAgent, string codClient, string codFurnizor, string listArt, string canal)
         {
 
             
@@ -53,9 +53,13 @@ namespace LiteSFATestWebService
 
             }
 
+            string unitLogParam = unitLog;
+
+            if (canal != null && canal.Equals("20"))
+                unitLogParam = Utils.getFilialaGed(unitLog);
 
             inParam.ItTable = nrpal;
-            inParam.IpWerks = unitLog;
+            inParam.IpWerks = unitLogParam;
             inParam.IpPernr = codAgent;
             inParam.IpKunnr = codClient;
             inParam.IpLifnr = codFurnizor;
@@ -122,15 +126,19 @@ namespace LiteSFATestWebService
             costDescarcare.articoleDescarcare = listArticole;
             costDescarcare.articolePaleti = getPaletiDistincti(listPaleti);
 
-            ErrorHandling.sendErrorToMail("getCostMacara: " + unitLog + " , " + codAgent + " , " + codClient + " , " + codFurnizor + " , " + listArt + " \n\n" + new JavaScriptSerializer().Serialize(costDescarcare));
+
+            ErrorHandling.sendErrorToMail("getCostMacara: " + unitLog + " , " + codAgent + " , " + codClient + " , " + codFurnizor + " , " + listArt + "\n" + new JavaScriptSerializer().Serialize(costDescarcare));
+
 
             return new JavaScriptSerializer().Serialize(costDescarcare);
 
         }
 
 
-        public string getCostMacaraComenzi(string codAgent, string codClient, string codFurnizor, string listComenzi)
+        public string getCostMacaraComenzi(string codAgent, string codClient, string codFurnizor, string listComenzi, string canal)
         {
+
+
             List<CostDescarcare> costDescarcare = new List<CostDescarcare>();
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();
@@ -138,7 +146,7 @@ namespace LiteSFATestWebService
             
             foreach (ComandaCalculDescarcare comanda in listCom)
             {
-                string costDescComanda = getCostMacara(comanda.filiala, codAgent, codClient, codFurnizor, comanda.listArticole);
+                string costDescComanda = getCostMacara(comanda.filiala, codAgent, codClient, codFurnizor, comanda.listArticole, canal);
                 costDescarcare.Add(serializer.Deserialize<CostDescarcare>(costDescComanda));
             }
 

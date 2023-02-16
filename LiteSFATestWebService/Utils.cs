@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 
+
+
 namespace LiteSFATestWebService
 {
     public class Utils
@@ -16,6 +18,20 @@ namespace LiteSFATestWebService
             return filiala.Substring(0, 2) + "2" + filiala.Substring(3, 1);
         }
 
+        public static string getFilialaDistib(string filiala)
+        {
+            return filiala.Substring(0, 2) + "1" + filiala.Substring(3, 1);
+        }
+
+        public static bool isUnitLogGed(string unitLog)
+        {
+
+            if (unitLog.Substring(2, 1).Equals("2") || unitLog.Substring(2, 1).Equals("4"))
+                return true;
+            else
+                return false;
+
+        }
 
         public static string getCurrentDate()
         {
@@ -612,6 +628,82 @@ namespace LiteSFATestWebService
             return codAngajat;
         }
 
+
+        public string getAdresaFiliala(string unitLog)
+        {
+
+            string retVal = "Str. Principala nr. 1#Galati#17#Galati#45.67#23.81";
+            switch (unitLog)
+            {
+                case "BC10":
+                    retVal = "Str. Constantin Musat nr. 1#Bacau#04#Bacau#45.67#23.81";
+                    break;
+                case "MM10":
+                    retVal = "Str. Independentei nr. 80#Baia Mare#24#Maramures#45.67#23.81";
+                    break;
+                case "BV10":
+                    retVal = "Str. Bucegi nr. 1#Brasov#08#Brasov#45.67#23.81";
+                    break;
+                case "CJ10":
+                    retVal = "Str. Calea Floresti nr. 147-153#Cluj Napoca#12#Cluj#45.67#23.81";
+                    break;
+                case "CT10":
+                    retVal = "B-dul Aurel Vlaicu nr. 171#Constanta#13#Constanta#45.67#23.81";
+                    break;
+                case "DJ10":
+                    retVal = "B-dul Decebal nr. 111A#Craiova#16#Dolj#45.67#23.81";
+                    break;
+                case "VN10":
+                    retVal = "B-dul Bucuresti nr. 12#Focsani#39#Vrancea#45.67#23.81";
+                    break;
+                case "GL10":
+                    retVal = "Str. Drumul de Centura nr. 39#Galati#17#Galati#45.67#23.81";
+                    break;
+                case "IS10":
+                    retVal = "Comuna Miroslava, Sat Uricani, Trup Izolat, nr. 1#Iasi#22#Iasi#45.67#23.81";
+                    break;
+                case "NT10":
+                    retVal = "Comuna Savinesti, Str. Uzinei, nr. 1#Piatra Neamt#27#Neamt#45.67#23.81";
+                    break;
+                case "BH10":
+                    retVal = "Str. Calea Santandrei nr. 3A#Oradea#05#Bihor#45.67#23.81";
+                    break;
+                case "AG10":
+                    retVal = "Comuna Bradu DN 65B#Pitesti#03#Arges#45.67#23.81";
+                    break;
+                case "PH10":
+                    retVal = "Str. Poligonului nr. 5#Ploiesti#29#Prahova#45.67#23.81";
+                    break;
+                case "MS10":
+                    retVal = "Str. Depozitelor nr. 26#Targu Mures#26#Mures#45.67#23.81";
+                    break;
+                case "TM10":
+                    retVal = "Str. Calea Sagului nr. 205#Timisoara#35#Timis#45.67#23.81";
+                    break;
+                case "BU13":
+                    retVal = "Soseaua Andronache nr. 203, Sector 2#Bucuresti#40#Bucuresti#45.67#23.81";
+                    break;
+                case "BU10":
+                    retVal = "Str. Drumul intre Tarlale, nr. 61A, sector 3#Bucuresti#40#Bucuresti#45.67#23.81";
+                    break;
+                case "BU12":
+                    retVal = "Str. Aleea Teisani, nr. 3-21, Sector 1#Bucuresti#40#Bucuresti#45.67#23.81";
+                    break;
+                case "BU11":
+                    retVal = "Str. Drumul Osiei, nr. 8-16, Sector 6#Bucuresti#40#Bucuresti#45.67#23.81";
+                    break;
+            }
+
+
+            return retVal;
+
+        }
+
+
+        public static bool isUserTest(string codUser)
+        {
+            return true;
+        }
 
 
     }

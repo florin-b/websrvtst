@@ -687,7 +687,7 @@ namespace LiteSFATestWebService
                                       " and k.mandt = a.mandt  and k.vbeln = a.vbeln  and a.parvw = 'WE' " +
                                       " and p.prctr =:unitLog  and a.mandt = c.client and a.adrnr = c.addrnumber " +
                                       condData +
-                                      " and lower(c.name1) like lower('%" + codClient + "%')  order by to_date(k.fkdat,'yyyymmdd') ";
+                                      " and c.name1 =  :numeClient  order by to_date(k.fkdat,'yyyymmdd') ";
 
 
                 }
@@ -718,6 +718,9 @@ namespace LiteSFATestWebService
                 {
                     cmd.Parameters.Add(":unitLog", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
                     cmd.Parameters[0].Value = unitLog;
+
+                    cmd.Parameters.Add(":numeClient", OracleType.VarChar, 120).Direction = ParameterDirection.Input;
+                    cmd.Parameters[1].Value = codClient;
                 }
                 else
                 {
@@ -1665,8 +1668,6 @@ namespace LiteSFATestWebService
                                   " and k.mandt = a.mandt and k.vbeln = a.vbeln and a.parvw = 'WE' " + critFiliala + 
                                   " and a.mandt = c.client and a.adrnr = c.addrnumber  and " + criteriuCautare + " order by c.name1 ";
 
-
-                
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();

@@ -90,7 +90,7 @@ namespace LiteSFATestWebService
                 double procentReducere = getProcentReducereComanda(connection, idComanda);
 
                 cmd.CommandText = " select decode(length(a.cod),18,substr(a.cod,-8),a.cod) cod_art, a.depozit, a.cantitate, a.um, a.valoare, b.nume, " + 
-                                  " b.umvanz10, b.grup_vz, b.tip_mat from sapprd.zcom_amob_det a, articole b " + 
+                                  " b.umvanz10, b.grup_vz, 'A' from sapprd.zcom_amob_det a, articole b " + 
                                   " where  a.cod = b.cod and id = :idComanda ";
 
                 cmd.CommandType = CommandType.Text;

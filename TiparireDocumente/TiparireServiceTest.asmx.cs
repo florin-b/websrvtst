@@ -8,7 +8,9 @@ using System.Data.Common;
 using System.Data;
 using System.Net.Mail;
 using System.Web.Script.Serialization;
-
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace TiparireDocumenteTest
 {

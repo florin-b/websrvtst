@@ -581,6 +581,7 @@ namespace LiteSFATestWebService
         public string getListArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament, string afisStoc, string tipUser, string codUser, string modulCautare)
         {
 
+            
 
             string condExtraDepart = " ";
             List<ArticolCautare> listArticole = new List<ArticolCautare>();
@@ -731,7 +732,6 @@ namespace LiteSFATestWebService
                 }
 
 
-                
 
                 cmd.CommandType = CommandType.Text;
 
@@ -983,6 +983,7 @@ namespace LiteSFATestWebService
         public string getPretGed(string parametruPret)
         {
 
+
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             ParametruPretGed paramPret = serializer.Deserialize<ParametruPretGed>(parametruPret);
 
@@ -1085,11 +1086,8 @@ namespace LiteSFATestWebService
                 pretArticolGed.dataExp = outParam.GvDatbi;
                 pretArticolGed.greutate = outParam.GvBrgew.ToString();
 
-                //pretArticolGed.valTrap = "150";
-
                 pretArticolGed.errMsg = outParam.VMess;
                 
-
 
                 //---verificare cmp
 
@@ -1297,6 +1295,7 @@ namespace LiteSFATestWebService
                 if (paramPret.codClientParavan != null && paramPret.codClientParavan.Trim().Length > 0 )
                     istoricPret = new Preturi().getIstoricPret(connection,  paramPret.articol, paramPret.codClientParavan);
 
+                pretArticolGed.articoleRecomandate = new OperatiiArticole().getArticoleRecomandate(connection, paramPret.articol, "11");
 
                 DatabaseConnections.CloseConnections(oReader, cmd, connection);
 
@@ -1305,6 +1304,7 @@ namespace LiteSFATestWebService
                 pretArticolGed.adaosMediu = adaosMediu;
                 pretArticolGed.umPretMediu = unitMasPretMediu;
                 pretArticolGed.istoricPret = istoricPret;
+                
 
 
             }
@@ -1319,7 +1319,6 @@ namespace LiteSFATestWebService
             }
 
             serializedResult = serializer.Serialize(pretArticolGed);
-
 
             return serializedResult;
 
@@ -2012,6 +2011,7 @@ namespace LiteSFATestWebService
         public string getStocDepozit(string codArt, string filiala, string depozit, string depart, string isArtMathaus)
         {
 
+            
 
             string retVal = "";
             OracleConnection connection = new OracleConnection();
@@ -2037,6 +2037,9 @@ namespace LiteSFATestWebService
                 else if ((depozit.Equals("01V2")) && OperatiiArticole.isArticolExceptie02(connection, codArt))
                     localDepozit = "02V2";
 
+                if (depozit.Contains("D1"))
+                    isArtMathaus = "false";
+
                 string condDepozit1 = "lgort=:dep";
                 if (isArtMathausExceptieStoc(isArtMathaus))
                     condDepozit1 = "lgort in (select lgort from sapprd.zhybris_lgort h, articole ar where h.mandt = '900' and h.werks = :fil and h.spart = ar.spart and ar.cod=:art)";
@@ -2058,6 +2061,7 @@ namespace LiteSFATestWebService
                                   " and b.matnr = :art and b.werks = :fil and b." + condDepozit1 +
                                   " group by b.meins, b.matnr ), articole ar where ar.cod = matnr group by meins, ar.sintetic ";
 
+                
 
                 cmd.CommandType = CommandType.Text;
 
@@ -2160,8 +2164,7 @@ namespace LiteSFATestWebService
 
                 retVal = cant + "#" + umArt + "#" + showStocVal + "#";
 
-
-                //retVal =  "1000#" + umArt + "#" + showStocVal + "#";
+                // retVal =  "1000#" + umArt + "#" + showStocVal + "#";
 
 
                 //exceptie material transport
@@ -2207,7 +2210,54 @@ namespace LiteSFATestWebService
             return true;
         }
 
+        public string getArticoleRecomandate(OracleConnection conn, string codArticol, string depart)
+        {
 
+            List<Articol> listArticole = new List<Articol>();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+                cmd = conn.CreateCommand();
+
+                cmd.CommandText = " select b.cod, b.nume from sapprd.zrecomart a, articole b where a.produs = :produs and trim(a.coprodus) = b.cod "
+                                + " and a.depart=:depart ";
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":produs", OracleType.NVarChar, 54).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codArticol;
+
+                cmd.Parameters.Add(":depart", OracleType.NVarChar, 6).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = depart;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        Articol articol = new Articol();
+                        articol.cod = oReader.GetString(0);
+                        articol.nume = oReader.GetString(1);
+                        listArticole.Add(articol);
+                    }
+                }
+
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+            return new JavaScriptSerializer().Serialize(listArticole);
+
+        }
 
     }
 }

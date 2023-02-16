@@ -180,9 +180,11 @@ namespace LiteSFATestWebService
                     message.From = new MailAddress("Oferta.materiale@arabesque.ro");
                     message.To.Add(new MailAddress(mailAddress));
 
+                    //var memoryStream = new MemoryStream();
+                    //message.Attachments.Add(new Attachment(memoryStream, "filename.csv", "text/csv"));
 
                     message.Subject = "Oferta materiale si servicii SC Arabesque SRL";
-
+                    
                     message.AlternateViews.Add(htmlView);
                     SmtpClient client = new SmtpClient("mail.arabesque.ro");
                     client.Send(message);
@@ -201,6 +203,8 @@ namespace LiteSFATestWebService
 
 
         }
+
+       
 
 
         private string getCurrentDate()

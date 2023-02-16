@@ -1915,7 +1915,7 @@ namespace LiteSFATestWebService
 
 
 
-        public static string trateazaComenziGED(string comanda, bool alertSD, bool alertDV, bool cmdAngajament, string tipUser, string JSONArt, string JSONComanda, string JSONDateLivrare, string tipUserSap)
+        public static string trateazaComenziGED(string comanda, bool alertSD, bool alertDV, bool cmdAngajament, string tipUser, string JSONArt, string JSONComanda, string JSONDateLivrare, string tipUserSap, string idCmdAmob)
         {
 
             string retVal = "-1";
@@ -1938,7 +1938,7 @@ namespace LiteSFATestWebService
 
                 if (isComandaCLP || (!isComandaCLP && Utils.isMathausMic(comandaVanzare.filialaAlternativa)) || !tipUserSap.Contains("IP") || comandaVanzare.filialaAlternativa.Equals("BV90"))
                 {
-                    return new Service1().saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, tipUser, JSONArt, JSONComanda, JSONDateLivrare, true, tipUserSap);
+                    return new Service1().saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, tipUser, JSONArt, JSONComanda, JSONDateLivrare, true, tipUserSap,idCmdAmob);
                 }
 
 
@@ -1980,7 +1980,7 @@ namespace LiteSFATestWebService
                     {
 
                         dateLivrareDistrib.totalComanda = totalComanda.ToString();
-                        retVal = new Service1().saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, tipUser, serializer.Serialize(articoleAgenti), serializer.Serialize(comandaVanzare), serializer.Serialize(dateLivrareDistrib), calcTransport, tipUserSap);
+                        retVal = new Service1().saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, tipUser, serializer.Serialize(articoleAgenti), serializer.Serialize(comandaVanzare), serializer.Serialize(dateLivrareDistrib), calcTransport, tipUserSap, idCmdAmob);
 
                         string[] varArrayI = retVal.Split('#');
 
@@ -2014,7 +2014,7 @@ namespace LiteSFATestWebService
                 }
 
                 dateLivrareDistrib.totalComanda = totalComanda.ToString();
-                retVal = new Service1().saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, tipUser, serializer.Serialize(articoleAgenti), serializer.Serialize(comandaVanzare), serializer.Serialize(dateLivrareDistrib), calcTransport, tipUserSap);
+                retVal = new Service1().saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, tipUser, serializer.Serialize(articoleAgenti), serializer.Serialize(comandaVanzare), serializer.Serialize(dateLivrareDistrib), calcTransport, tipUserSap, idCmdAmob);
 
                 string[] varArray = retVal.Split('#');
                 
@@ -2046,6 +2046,11 @@ namespace LiteSFATestWebService
         }
 
 
+        public string getProcMarjaComenziIP(string codAgent, string codClient)
+        {
+            //procent + blocare comanda
+            return "10#false";
+        }
 
 
     }
