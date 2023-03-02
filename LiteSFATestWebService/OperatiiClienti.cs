@@ -1123,6 +1123,7 @@ namespace LiteSFATestWebService
         public string getDatePersonaleClient(string numeClient, string tipClient)
         {
 
+            ErrorHandling.sendErrorToMail("getDatePersonaleClient: " + numeClient + " , " + tipClient);
 
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand();
@@ -1173,6 +1174,7 @@ namespace LiteSFATestWebService
                             datePersonale.clientBlocat = false;
                             datePersonale.tipPlata = " ";
                             datePersonale.termenPlata = new List<string>() { "C000" };
+                            datePersonale.cnp = "";
                         }
                         else {
 

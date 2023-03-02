@@ -660,6 +660,7 @@ namespace LiteSFATestWebService
                     retVal = "Str. Drumul de Centura nr. 39#Galati#17#Galati#45.67#23.81";
                     break;
                 case "IS10":
+                case "IS20":
                     retVal = "Comuna Miroslava, Sat Uricani, Trup Izolat, nr. 1#Iasi#22#Iasi#45.67#23.81";
                     break;
                 case "NT10":
@@ -669,6 +670,7 @@ namespace LiteSFATestWebService
                     retVal = "Str. Calea Santandrei nr. 3A#Oradea#05#Bihor#45.67#23.81";
                     break;
                 case "AG10":
+                case "AG20":
                     retVal = "Comuna Bradu DN 65B#Pitesti#03#Arges#45.67#23.81";
                     break;
                 case "PH10":
@@ -684,6 +686,7 @@ namespace LiteSFATestWebService
                     retVal = "Soseaua Andronache nr. 203, Sector 2#Bucuresti#40#Bucuresti#45.67#23.81";
                     break;
                 case "BU10":
+                case "BU20":
                     retVal = "Str. Drumul intre Tarlale, nr. 61A, sector 3#Bucuresti#40#Bucuresti#45.67#23.81";
                     break;
                 case "BU12":
@@ -702,6 +705,7 @@ namespace LiteSFATestWebService
 
         public static bool isUserTest(string codUser)
         {
+
             return true;
         }
 

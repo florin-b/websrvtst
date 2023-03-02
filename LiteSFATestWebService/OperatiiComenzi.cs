@@ -1173,6 +1173,8 @@ namespace LiteSFATestWebService
             DateLivrareCmd dateLivrare = new DateLivrareCmd();
             List<ArticolComandaRap> listArticole = new List<ArticolComandaRap>();
             Conditii conditii = new Conditii();
+            conditii.header = new ConditiiHeader();
+            conditii.articole = new List<ConditiiArticole>();
 
             try
             {
@@ -1235,7 +1237,10 @@ namespace LiteSFATestWebService
                     dateLivrare.furnizorProduse = " ";
                     dateLivrare.isCamionDescoperit = oReader.GetString(11).Equals("X") ? true : false;
                     dateLivrare.diviziiClient = " ";
-                   
+                    dateLivrare.filialaCLP = " ";
+                    dateLivrare.nrCmdClp = " ";
+                    dateLivrare.tipPlata = " ";
+
 
 
                 }
@@ -1305,6 +1310,9 @@ namespace LiteSFATestWebService
                         articol.adaosMediu = "0.0";
                         articol.unitMasPretMediu = "0.0";
                         articol.coefCorectie = "0.0";
+                        articol.dataExp = "00000000";
+                        articol.greutate = "0";
+                        articol.listCabluri = new JavaScriptSerializer().Serialize(new List<CantCablu>());
 
                         listArticole.Add(articol);
 
@@ -1742,6 +1750,56 @@ namespace LiteSFATestWebService
             }
 
             return nrCmdSap;
+        }
+
+        public static List<string> getComenziParrentID(string idComanda)
+        {
+            List<string> listComenziSap = new List<string>();
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+            string nrCmdSap = "-1";
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                string sqlString = " select nrcmdsap from sapprd.zcomhead_tableta where parent_id = " + 
+                                   " (select parent_id from sapprd.zcomhead_tableta where id = :idComanda) and status = 2 ";
+
+                cmd.CommandText = sqlString;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":idComanda", OracleType.Number, 11).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = idComanda;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        listComenziSap.Add(oReader.GetString(0));
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString() + " , " + idComanda);
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return listComenziSap;
         }
 
 

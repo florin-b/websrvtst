@@ -317,6 +317,8 @@ namespace LiteSFATestWebService
         public string cnpClient;
         public double marjaT1 = 0;
         public double procentT1 = 0;
+        public double marjaT1Tot = 0;
+        public double procentT1Tot = 0;
         public double mCantCmd = 0;
         public double mCant30 = 0;
         public double marjaBrutaPalVal = 0;
@@ -328,6 +330,8 @@ namespace LiteSFATestWebService
         public string nrCmdClp;
         public double marjaBruta = 0;
         public double procMarjaBruta = 0;
+        public double marjaBrutaTot = 0;
+        public double procMarjaBrutaTot = 0;
 
     }
 

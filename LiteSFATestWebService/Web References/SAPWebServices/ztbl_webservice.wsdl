@@ -1427,86 +1427,6 @@
           <xsd:element name="FormatCol" type="n0:char2" />
         </xsd:sequence>
       </xsd:complexType>
-      <xsd:complexType name="Bapiaddr1">
-        <xsd:sequence>
-          <xsd:element name="AddrNo" type="n0:char10" />
-          <xsd:element name="Formofaddr" type="n0:char20" />
-          <xsd:element name="Name" type="n0:char40" />
-          <xsd:element name="Name2" type="n0:char40" />
-          <xsd:element name="Name3" type="n0:char40" />
-          <xsd:element name="Name4" type="n0:char40" />
-          <xsd:element name="COName" type="n0:char40" />
-          <xsd:element name="City" type="n0:char40" />
-          <xsd:element name="District" type="n0:char40" />
-          <xsd:element name="CityNo" type="n0:char12" />
-          <xsd:element name="PostlCod1" type="n0:char10" />
-          <xsd:element name="PostlCod2" type="n0:char10" />
-          <xsd:element name="PostlCod3" type="n0:char10" />
-          <xsd:element name="PoBox" type="n0:char10" />
-          <xsd:element name="PoBoxCit" type="n0:char40" />
-          <xsd:element name="DelivDis" type="n0:char15" />
-          <xsd:element name="Street" type="n0:char40" />
-          <xsd:element name="StreetNo" type="n0:char12" />
-          <xsd:element name="StrAbbr" type="n0:char2" />
-          <xsd:element name="HouseNo" type="n0:char10" />
-          <xsd:element name="StrSuppl1" type="n0:char40" />
-          <xsd:element name="StrSuppl2" type="n0:char40" />
-          <xsd:element name="Location" type="n0:char40" />
-          <xsd:element name="Building" type="n0:char10" />
-          <xsd:element name="Floor" type="n0:char10" />
-          <xsd:element name="RoomNo" type="n0:char10" />
-          <xsd:element name="Country" type="n0:char3" />
-          <xsd:element name="Langu" type="n0:lang" />
-          <xsd:element name="Region" type="n0:char3" />
-          <xsd:element name="Sort1" type="n0:char20" />
-          <xsd:element name="Sort2" type="n0:char20" />
-          <xsd:element name="TimeZone" type="n0:char6" />
-          <xsd:element name="Taxjurcode" type="n0:char15" />
-          <xsd:element name="AdrNotes" type="n0:char50" />
-          <xsd:element name="CommType" type="n0:char3" />
-          <xsd:element name="Tel1Numbr" type="n0:char30" />
-          <xsd:element name="Tel1Ext" type="n0:char10" />
-          <xsd:element name="FaxNumber" type="n0:char30" />
-          <xsd:element name="FaxExtens" type="n0:char10" />
-          <xsd:element name="StreetLng" type="n0:char60" />
-          <xsd:element name="DistrctNo" type="n0:char8" />
-          <xsd:element name="Chckstatus" type="n0:char1" />
-          <xsd:element name="PboxcitNo" type="n0:char12" />
-          <xsd:element name="Transpzone" type="n0:char10" />
-          <xsd:element name="HouseNo2" type="n0:char10" />
-          <xsd:element name="EMail" type="n0:char241" />
-          <xsd:element name="StrSuppl3" type="n0:char40" />
-          <xsd:element name="Title" type="n0:char30" />
-          <xsd:element name="Countryiso" type="n0:char2" />
-          <xsd:element name="LanguIso" type="n0:char2" />
-          <xsd:element name="BuildLong" type="n0:char20" />
-          <xsd:element name="Regiogroup" type="n0:char8" />
-          <xsd:element name="HomeCity" type="n0:char40" />
-          <xsd:element name="Homecityno" type="n0:char12" />
-          <xsd:element name="Pcode1Ext" type="n0:char10" />
-          <xsd:element name="Pcode2Ext" type="n0:char10" />
-          <xsd:element name="Pcode3Ext" type="n0:char10" />
-          <xsd:element name="PoWONo" type="n0:char1" />
-          <xsd:element name="PoBoxReg" type="n0:char3" />
-          <xsd:element name="PoboxCtry" type="n0:char3" />
-          <xsd:element name="PoCtryiso" type="n0:char2" />
-          <xsd:element name="Homepage" type="n0:char132" />
-          <xsd:element name="DontUseS" type="n0:char4" />
-          <xsd:element name="DontUseP" type="n0:char4" />
-          <xsd:element name="HouseNo3" type="n0:char10" />
-          <xsd:element name="LanguCr" type="n0:lang" />
-          <xsd:element name="Langucriso" type="n0:char2" />
-          <xsd:element name="PoBoxLobby" type="n0:char40" />
-          <xsd:element name="DeliServType" type="n0:char4" />
-          <xsd:element name="DeliServNumber" type="n0:char10" />
-          <xsd:element name="UriType" type="n0:char3" />
-          <xsd:element name="CountyCode" type="n0:char8" />
-          <xsd:element name="County" type="n0:char40" />
-          <xsd:element name="TownshipCode" type="n0:char8" />
-          <xsd:element name="Township" type="n0:char40" />
-          <xsd:element name="Xpcpt" type="tns:char1" />
-        </xsd:sequence>
-      </xsd:complexType>
       <xsd:complexType name="Bapisdpart">
         <xsd:sequence>
           <xsd:element name="Operation" type="n0:char3" />
@@ -1708,6 +1628,86 @@
           <xsd:element name="GiDate" type="n0:date10" />
           <xsd:element name="GiTime" type="n0:time" />
           <xsd:element name="SchedLine" type="n0:numeric4" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="Bapiaddr1">
+        <xsd:sequence>
+          <xsd:element name="AddrNo" type="n0:char10" />
+          <xsd:element name="Formofaddr" type="n0:char20" />
+          <xsd:element name="Name" type="n0:char40" />
+          <xsd:element name="Name2" type="n0:char40" />
+          <xsd:element name="Name3" type="n0:char40" />
+          <xsd:element name="Name4" type="n0:char40" />
+          <xsd:element name="COName" type="n0:char40" />
+          <xsd:element name="City" type="n0:char40" />
+          <xsd:element name="District" type="n0:char40" />
+          <xsd:element name="CityNo" type="n0:char12" />
+          <xsd:element name="PostlCod1" type="n0:char10" />
+          <xsd:element name="PostlCod2" type="n0:char10" />
+          <xsd:element name="PostlCod3" type="n0:char10" />
+          <xsd:element name="PoBox" type="n0:char10" />
+          <xsd:element name="PoBoxCit" type="n0:char40" />
+          <xsd:element name="DelivDis" type="n0:char15" />
+          <xsd:element name="Street" type="n0:char40" />
+          <xsd:element name="StreetNo" type="n0:char12" />
+          <xsd:element name="StrAbbr" type="n0:char2" />
+          <xsd:element name="HouseNo" type="n0:char10" />
+          <xsd:element name="StrSuppl1" type="n0:char40" />
+          <xsd:element name="StrSuppl2" type="n0:char40" />
+          <xsd:element name="Location" type="n0:char40" />
+          <xsd:element name="Building" type="n0:char10" />
+          <xsd:element name="Floor" type="n0:char10" />
+          <xsd:element name="RoomNo" type="n0:char10" />
+          <xsd:element name="Country" type="n0:char3" />
+          <xsd:element name="Langu" type="n0:lang" />
+          <xsd:element name="Region" type="n0:char3" />
+          <xsd:element name="Sort1" type="n0:char20" />
+          <xsd:element name="Sort2" type="n0:char20" />
+          <xsd:element name="TimeZone" type="n0:char6" />
+          <xsd:element name="Taxjurcode" type="n0:char15" />
+          <xsd:element name="AdrNotes" type="n0:char50" />
+          <xsd:element name="CommType" type="n0:char3" />
+          <xsd:element name="Tel1Numbr" type="n0:char30" />
+          <xsd:element name="Tel1Ext" type="n0:char10" />
+          <xsd:element name="FaxNumber" type="n0:char30" />
+          <xsd:element name="FaxExtens" type="n0:char10" />
+          <xsd:element name="StreetLng" type="n0:char60" />
+          <xsd:element name="DistrctNo" type="n0:char8" />
+          <xsd:element name="Chckstatus" type="n0:char1" />
+          <xsd:element name="PboxcitNo" type="n0:char12" />
+          <xsd:element name="Transpzone" type="n0:char10" />
+          <xsd:element name="HouseNo2" type="n0:char10" />
+          <xsd:element name="EMail" type="n0:char241" />
+          <xsd:element name="StrSuppl3" type="n0:char40" />
+          <xsd:element name="Title" type="n0:char30" />
+          <xsd:element name="Countryiso" type="n0:char2" />
+          <xsd:element name="LanguIso" type="n0:char2" />
+          <xsd:element name="BuildLong" type="n0:char20" />
+          <xsd:element name="Regiogroup" type="n0:char8" />
+          <xsd:element name="HomeCity" type="n0:char40" />
+          <xsd:element name="Homecityno" type="n0:char12" />
+          <xsd:element name="Pcode1Ext" type="n0:char10" />
+          <xsd:element name="Pcode2Ext" type="n0:char10" />
+          <xsd:element name="Pcode3Ext" type="n0:char10" />
+          <xsd:element name="PoWONo" type="n0:char1" />
+          <xsd:element name="PoBoxReg" type="n0:char3" />
+          <xsd:element name="PoboxCtry" type="n0:char3" />
+          <xsd:element name="PoCtryiso" type="n0:char2" />
+          <xsd:element name="Homepage" type="n0:char132" />
+          <xsd:element name="DontUseS" type="n0:char4" />
+          <xsd:element name="DontUseP" type="n0:char4" />
+          <xsd:element name="HouseNo3" type="n0:char10" />
+          <xsd:element name="LanguCr" type="n0:lang" />
+          <xsd:element name="Langucriso" type="n0:char2" />
+          <xsd:element name="PoBoxLobby" type="n0:char40" />
+          <xsd:element name="DeliServType" type="n0:char4" />
+          <xsd:element name="DeliServNumber" type="n0:char10" />
+          <xsd:element name="UriType" type="n0:char3" />
+          <xsd:element name="CountyCode" type="n0:char8" />
+          <xsd:element name="County" type="n0:char40" />
+          <xsd:element name="TownshipCode" type="n0:char8" />
+          <xsd:element name="Township" type="n0:char40" />
+          <xsd:element name="Xpcpt" type="tns:char1" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="Bapicond">
@@ -2922,6 +2922,10 @@
           <xsd:element name="t0" type="n0:curr15.2" />
           <xsd:element name="T0Proc" type="n0:curr15.2" />
           <xsd:element name="Waers" type="n0:cuky5" />
+          <xsd:element name="T1Tot" type="n0:curr15.2" />
+          <xsd:element name="T1TotProc" type="n0:curr15.2" />
+          <xsd:element name="T0Tot" type="n0:curr15.2" />
+          <xsd:element name="T0TotProc" type="n0:curr15.2" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="ZdetInfocv">
@@ -3044,11 +3048,6 @@
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapitextli" />
         </xsd:sequence>
       </xsd:complexType>
-      <xsd:complexType name="TableOfBapiaddr1">
-        <xsd:sequence>
-          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapiaddr1" />
-        </xsd:sequence>
-      </xsd:complexType>
       <xsd:complexType name="TableOfBapisdpart">
         <xsd:sequence>
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapisdpart" />
@@ -3062,6 +3061,11 @@
       <xsd:complexType name="TableOfBapischdl2">
         <xsd:sequence>
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapischdl2" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="TableOfBapiaddr1">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapiaddr1" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="TableOfBapicond">

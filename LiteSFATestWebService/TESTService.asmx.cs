@@ -23,6 +23,7 @@ using System.Web.Script.Serialization;
 using LiteSFATestWebService.WEBTable;
 
 
+
 using LiteSFATestWebService.WebNecesar1;
 
 using LiteSFATestWebService.WebServiceSalarizareAV;
@@ -33,6 +34,7 @@ using System.Text;
 using LiteSFATestWebService.General;
 using System.Diagnostics;
 using System.Security.Cryptography;
+using System.Data.Odbc;
 
 namespace LiteSFATestWebService
 {
@@ -68,7 +70,26 @@ namespace LiteSFATestWebService
         public string HelloWorld(string message)
         {
             //System.Threading.Thread.Sleep(3000);
+
             return "Hello World from test" + message;
+        }
+
+
+        [WebMethod]
+        public string testDocumente()
+        {
+            //System.Net.ServicePointManager.Expect100Continue = false;
+            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://10.1.3.72:8080/documente/documente/test");
+            WebResponse response = request.GetResponse();
+
+            StreamReader reader = new StreamReader(response.GetResponseStream());
+
+            return reader.ReadToEnd();
+
+
+
         }
 
 
@@ -4009,6 +4030,7 @@ namespace LiteSFATestWebService
 
                     dateLivrare.tipPersAgent = oReader.GetString(oReader.GetOrdinal("tip_pers_av"));
                     dateLivrare.filialaPlata = oReader.GetString(oReader.GetOrdinal("fil_plata"));
+                    dateLivrare.tonaj = OperatiiSuplimentare.getTonajComanda(connection, nrCmd);
 
                     if ((dateLivrare.tipPersAgent.Equals("CV") || dateLivrare.tipPersAgent.Equals("SITE")) && Utils.isUserTest(oReader.GetString(oReader.GetOrdinal("cod_agent"))))
                     {

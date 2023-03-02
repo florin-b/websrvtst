@@ -2041,7 +2041,7 @@ namespace LiteSFATestWebService
                     isArtMathaus = "false";
 
                 string condDepozit1 = "lgort=:dep";
-                if (isArtMathausExceptieStoc(isArtMathaus))
+                if (isArtMathausExceptieStoc(isArtMathaus) && !depozit.StartsWith("MA"))
                     condDepozit1 = "lgort in (select lgort from sapprd.zhybris_lgort h, articole ar where h.mandt = '900' and h.werks = :fil and h.spart = ar.spart and ar.cod=:art)";
 
 
@@ -2070,9 +2070,9 @@ namespace LiteSFATestWebService
                 cmd.Parameters[0].Value = codArt;
 
                 cmd.Parameters.Add(":fil", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[1].Value = depozit.Equals("MAV2") || depozit.Equals("DSCM") ? getUnitLogGed(filiala) : filiala;
+                cmd.Parameters[1].Value = depozit.Equals("MAD1") || depozit.Equals("MAV2") || depozit.Equals("DSCM") ? getUnitLogGed(filiala) : filiala;
 
-                if (!isArtMathausExceptieStoc(isArtMathaus)) {
+                if (!isArtMathausExceptieStoc(isArtMathaus) || depozit.StartsWith("MA")) {
                     cmd.Parameters.Add(":dep", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
                     cmd.Parameters[2].Value = localDepozit;
                 }
@@ -2118,7 +2118,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters[0].Value = codArt;
 
                 cmd.Parameters.Add(":fil", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[1].Value = depozit.Equals("MAV2") || depozit.Equals("DSCM") ? getUnitLogGed(filiala) : filiala;
+                cmd.Parameters[1].Value = depozit.Equals("MAD1") || depozit.Equals("MAV2") || depozit.Equals("DSCM") ? getUnitLogGed(filiala) : filiala;
 
                 if (!isArtMathausExceptieStoc( isArtMathaus))
                 {
