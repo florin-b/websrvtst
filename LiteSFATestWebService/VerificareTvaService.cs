@@ -63,7 +63,8 @@ namespace LiteSFATestWebService
                 connection = DatabaseConnections.createTESTConnection();
                 cmd = connection.CreateCommand();
 
-                cmd.CommandText = " select data_update, tva, numefirma, nr_inmatric from sapprd.zverifcui where mandt = '900' and (cui=:cui or cui=replace(:cui,'RO',''))  ";
+                cmd.CommandText = " select data_update, tva, numefirma, nr_inmatric, judet, localitate, adresa||' '||nr " + 
+                                  " from sapprd.zverifcui where mandt = '900' and (cui=:cui or cui=replace(:cui,'RO',''))  ";
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -80,7 +81,10 @@ namespace LiteSFATestWebService
                     if (oReader.GetString(0).Equals(AddressUtils.getCurrentDate_YYDDMM()))
                     {
                         platitorResponse.numeClient = oReader.GetString(2);
-                        platitorResponse.nrInreg = oReader.GetString(3); 
+                        platitorResponse.nrInreg = oReader.GetString(3);
+                        platitorResponse.codJudet = oReader.GetString(4);
+                        platitorResponse.localitate = oReader.GetString(5);
+                        platitorResponse.strada = oReader.GetString(6);
 
                         if (oReader.GetString(1).Equals("0"))
                             platitorResponse.isPlatitor = false;
@@ -264,6 +268,9 @@ namespace LiteSFATestWebService
                 tvaResponse.isPlatitor = platitorTva.TVA.Equals("0") ? false : true;
                 tvaResponse.numeClient = platitorTva.Nume;
                 tvaResponse.nrInreg = platitorTva.NrInmatr;
+                tvaResponse.codJudet = getCodJudet(platitorTva.NrInmatr.Trim());
+                tvaResponse.localitate = platitorTva.Localitate;
+                tvaResponse.strada = platitorTva.Adresa + " " + platitorTva.Nr;
             }
             else
             {

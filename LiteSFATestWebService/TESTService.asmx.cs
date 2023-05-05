@@ -74,6 +74,14 @@ namespace LiteSFATestWebService
             return "Hello World from test" + message;
         }
 
+        [WebMethod]
+        public void testMail(string message)
+        {
+
+            ErrorHandling.sendErrorToMail("Mail sent from test server!");
+            
+        }
+
 
         [WebMethod]
         public string testDocumente()
@@ -7870,6 +7878,8 @@ namespace LiteSFATestWebService
 
                 }
 
+                
+
 
                 cmd.CommandText = sqlString;
                 cmd.Parameters.Clear();
@@ -8109,7 +8119,7 @@ namespace LiteSFATestWebService
                                " a.aprob_cv_necesar, nvl(a.aprob_cv_realiz,' ') aprob_cv_realiz, nvl(ag.nrtel,'-1') telAgent, a.client_raft, a.ac_zc, a.lifnr " +
                                " from sapprd.zcomhead_tableta a, " +
                                " clienti b, agenti ag " + tabDV +
-                               " where a.cod_client=b.cod and ag.cod = a.cod_agent and a.tip_pers in ('CV','CVS') " +
+                               " where a.cod_client=b.cod and ag.cod = a.cod_agent and a.tip_pers in ('CV','CVS','SITE') " +
                                " and a.status_aprov in ('1','4','6','21') and a.status in ('2','11') " +
                                " and v.pernr = '" + codUser + "' and v.spart = '" + localDepart + "' and substr(v.prctr,0,2) = substr(a.ul,0,2) and substr(a.ul,3,1) != 4 and a.depart='11' " +
                                " and decode(decode(a.accept1,'X',a.ora_accept1,'1'),'000000',1,0)=0 and decode(a.status_aprov,'21',decode(a.accept2,'X',a.ora_accept2,'000000'),'000000') = '000000' " + 
@@ -8130,8 +8140,6 @@ namespace LiteSFATestWebService
                                     " from ( " + sqlString + " ) x where rownum<=100 ";
                     }
 
-
-                    
 
 
                     cmd.CommandText = sqlString;
@@ -13070,6 +13078,10 @@ namespace LiteSFATestWebService
             List<ArticolComanda> articolComanda = serializer.Deserialize<List<ArticolComanda>>(JSONArt);
 
 
+            if (tipUser.Equals("SITE"))
+                HelperComenzi.tansformaCLPinCV(articolComanda, dateLivrare);
+
+
             SAPWebServices.ZTBL_WEBSERVICE webService = null;
             OracleConnection connection = new OracleConnection();
             OracleTransaction transaction = null;
@@ -13125,7 +13137,7 @@ namespace LiteSFATestWebService
                 string depart = "00";
                 string tempDepart = "00";  //pentru comenzile ged facute de agenti
                 //consilieri
-                if (tipUser.Equals("CV"))
+                if (tipUser.Equals("CV") || tipUser.Equals("SITE"))
                 {
                     depart = "11";
 
@@ -13133,11 +13145,9 @@ namespace LiteSFATestWebService
 
                     codClient = comandaVanzare.codClient;
                     numeClient = comandaVanzare.numeClient;
-                    cnpClient = comandaVanzare.cnpClient;
 
-                    if (cnpClient == null)
-                        cnpClient = getCnpFromComanda(comanda);
-
+                    if (comandaVanzare.cnpClient != null)
+                        cnpClient = comandaVanzare.cnpClient;
 
 
                 }
@@ -13147,9 +13157,7 @@ namespace LiteSFATestWebService
 
                     codClient = comandaVanzare.codClient;
 
-                    cnpClient = getCnpFromComanda(comanda);
-
-                    if (comandaVanzare.cnpClient!= null && comandaVanzare.cnpClient.Length == 13)
+                    if (comandaVanzare.cnpClient != null)
                         cnpClient = comandaVanzare.cnpClient;
 
 
@@ -13244,19 +13252,26 @@ namespace LiteSFATestWebService
                     JavaScriptSerializer ser = new JavaScriptSerializer();
                     AdresaLivrareCV oAdrLivrare = ser.Deserialize<AdresaLivrareCV>(comandaVanzare.adresaLivrareGed);
 
-                    codJudetLivrare = oAdrLivrare.codJudet;
-                    orasLivrare = oAdrLivrare.oras;
-                    stradaLivrare = oAdrLivrare.strada;
-
-                    if (Utils.isUserTest(dateLivrare.codAgent))
+                    if (oAdrLivrare.codJudet == null || oAdrLivrare.codJudet.Trim().Length == 0)
                     {
-                        codJudetLivrareComanda = oAdrLivrare.codJudet;
-                        orasLivrareComanda = oAdrLivrare.oras;
-                        stradaLivrareComanda = oAdrLivrare.strada + " ";
 
-                        codJudetLivrare = dateLivrare.codJudet;
-                        orasLivrare = dateLivrare.Oras;
-                        stradaLivrare = dateLivrare.Strada;
+                    }
+                    else {
+
+                        codJudetLivrare = oAdrLivrare.codJudet;
+                        orasLivrare = oAdrLivrare.oras;
+                        stradaLivrare = oAdrLivrare.strada;
+
+                        if (Utils.isUserTest(dateLivrare.codAgent))
+                        {
+                            codJudetLivrareComanda = oAdrLivrare.codJudet;
+                            orasLivrareComanda = oAdrLivrare.oras;
+                            stradaLivrareComanda = oAdrLivrare.strada + " ";
+
+                            codJudetLivrare = dateLivrare.codJudet;
+                            orasLivrare = dateLivrare.Oras;
+                            stradaLivrare = dateLivrare.Strada;
+                        }
                     }
 
                 }
@@ -13879,7 +13894,7 @@ namespace LiteSFATestWebService
 
                 }
 
-                if (!cnpClient.Equals("-1") )
+                if (!cnpClient.Equals("-1") && cnpClient.Trim().Length > 0)
                 {
                     OperatiiSuplimentare.saveDatePersonale(connection, dateLivrare, comandaVanzare);
                 }
@@ -16136,9 +16151,9 @@ namespace LiteSFATestWebService
         }
 
         [WebMethod]
-        public string getStocMathaus(string filiala, string codArticol, string um)
+        public string getStocMathaus(string filiala, string codArticol, string um, string tipCmd, string tipUserSap, string codUser)
         {
-            return new OperatiiMathaus().getStocMathaus(filiala, codArticol, um);
+            return new OperatiiMathaus().getStocMathaus(filiala, codArticol, um, tipCmd, tipUserSap, codUser);
         }
 
         [WebMethod]

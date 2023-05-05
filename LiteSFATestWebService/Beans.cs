@@ -44,6 +44,9 @@ namespace LiteSFATestWebService
         public string codCUI;
         public bool clientBlocat;
         public string tipPlata;
+        public string codJudet;
+        public string localitate;
+        public string strada;
     }
 
     public class ClientIP : Client

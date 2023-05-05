@@ -37,6 +37,7 @@ namespace LiteSFATestWebService
         public List<string> termenPlata;
         public bool clientBlocat;
         public string tipPlata;
+        public string codClient;
     }
 
     public class AdresaClientGed

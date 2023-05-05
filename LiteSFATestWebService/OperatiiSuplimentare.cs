@@ -639,6 +639,9 @@ namespace LiteSFATestWebService
 
         public static bool existaDatePersonale(OracleConnection connection, DateLivrare dateLivrare, ComandaVanzare comandaVanzare)
         {
+            if (comandaVanzare.cnpClient == null)
+                return true;
+
             bool existaDatePers = false;
 
             OracleDataReader oReader = null;

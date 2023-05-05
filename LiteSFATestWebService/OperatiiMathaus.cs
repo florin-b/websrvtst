@@ -204,31 +204,27 @@ namespace LiteSFATestWebService
                 
 
 
-                cmd.CommandText = " select distinct s.matnr, ar.nume,  e.versg " +
-                                  " from sapprd.zpath_hybris s, sapprd.marc c, websap.articole ar, sapprd.mvke e " +
-                                  " where (s.nivel_0 = :codCateg or s.nivel_1 = :codCateg or s.nivel_2 = :codCateg or " +
-                                  " s.nivel_3 = :codCateg or s.nivel_4 = :codCateg or s.nivel_5 = :codCateg or s.nivel_6 = :codCateg) " + 
-                                  condDepart + 
-                                  " and ar.cod = s.matnr and s.mandt = c.mandt and s.matnr = c.matnr " + 
-                                  " and e.mandt = '900' and e.matnr = s.matnr and e.vtweg = '20' " + 
-                                  " order by s.matnr OFFSET :paginaCrt ROWS FETCH NEXT 10 ROWS ONLY ";
-
                 cmd.CommandText = " select distinct s.matnr, ar.nume,  e.versg, " +
                                   " (select c.dismm from sapprd.marc c, articole ar where c.mandt = '900' and c.matnr = s.matnr " + 
-                                  " and ar.cod = c.matnr and c.werks = decode(ar.spart, 11, :filialaGed, :filiala)) planif1, " +
+                                  " and ar.cod = c.matnr and c.werks = decode(ar.spart, '11', :filialaGed, :filiala)) planif1, " +
                                   " decode((select c.dismm from sapprd.marc c, articole ar where c.mandt = '900' and c.matnr = s.matnr " +
-                                  " and ar.cod = c.matnr and c.werks = decode(ar.spart, 11, :filialaGed, :filiala)), " +
-                                  " 'AR',1,'ZM',2,'AC',3,'ND',4,'ZM',5,'VM',6,7) cod_planif " +
+                                  " and ar.cod = c.matnr and c.werks = decode(ar.spart, '11', :filialaGed, :filiala)), " +
+                                  " 'AR',1,'ZM',2,'AC',3,'ND',4,'ZM',5,'VM',6,7) cod_planif, " +
+                                   " (select e.versg from sapprd.mvke e where e.mandt = '900' and " +
+                                  " e.matnr = s.matnr and e.vtweg = '20') par_s, " +
+                                  " nvl((select z.labst from sapprd.zhybris_zhstock z, sapprd.zhybris_artmas a, articole ar where " +
+                                  " a.mandt = z.mandt and a.matnr = z.matnr and a.valid = 'X' and ar.cod = z.matnr " +
+                                  " and z.matnr = s.matnr and z.b2b <> 'X' and z.werks = decode(ar.spart, '11', :filialaGed, :filiala)),0) stoc_art " +
                                   " from sapprd.zpath_hybris s, sapprd.marc c, websap.articole ar, sapprd.mvke e " +
                                   " where (s.nivel_0 = :codCateg or s.nivel_1 = :codCateg or s.nivel_2 = :codCateg or " +
                                   " s.nivel_3 = :codCateg or s.nivel_4 = :codCateg or s.nivel_5 = :codCateg or s.nivel_6 = :codCateg) " +
                                   condDepart +
                                   " and ar.cod = s.matnr and s.mandt = c.mandt and s.matnr = c.matnr " +
                                   " and e.mandt = '900' and e.matnr = s.matnr and e.vtweg = '20' " +
-                                  " order by cod_planif, s.matnr OFFSET :paginaCrt ROWS FETCH NEXT 10 ROWS ONLY ";
+                                  " order by cod_planif, stoc_art desc, s.matnr OFFSET :paginaCrt ROWS FETCH NEXT 10 ROWS ONLY ";
 
 
-                ErrorHandling.sendErrorToMail("getArticoleCategorie:");
+               
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -852,27 +848,23 @@ namespace LiteSFATestWebService
             try
             {
 
-                cmd.CommandText = " select a.cod ,a.nume, c.dismm, " +
-                                  " (select e.versg from sapprd.mvke e where e.mandt = '900' and e.matnr = a.cod and e.vtweg = '20') par_s " + 
-                                  " from articole a, sintetice b, sapprd.marc c where c.mandt = '900' " + 
-                                  " and c.matnr = a.cod and c.werks = :filiala and c.mmsta <> '01'  and a.sintetic = b.cod and a.cod != 'MAT GENERIC PROD' " + 
-                                  " and a.blocat <> '01' " + cautare +  condDepart + "  order by a.cod " +
-                                  " OFFSET :paginaCrt ROWS FETCH NEXT 10 ROWS ONLY  ";
-
-
 
                 cmd.CommandText = " select a.cod ,a.nume, " + 
                                   " (select c.dismm from sapprd.marc c, articole ar where c.mandt = '900' and c.matnr = a.cod " + 
-                                  " and ar.cod = c.matnr and c.werks = decode(ar.spart, 11, :filialaGed, :filiala)) planif, " + 
+                                  " and ar.cod = c.matnr and c.werks = decode(ar.spart, '11', :filialaGed, :filiala)) planif, " + 
                                   " decode((select c.dismm from sapprd.marc c, articole ar where c.mandt = '900' and c.matnr = a.cod " + 
-                                  " and ar.cod = c.matnr and c.werks = decode(ar.spart, 11, :filialaGed, :filiala)), " +
+                                  " and ar.cod = c.matnr and c.werks = decode(ar.spart, '11', :filialaGed, :filiala)), " +
                                   " 'AR',1,'ZM',2,'AC',3,'ND',4,'ZM',5,'VM',6,7) cod_planif, " +
                                   " (select e.versg from sapprd.mvke e where e.mandt = '900' and " +
-                                  " e.matnr = a.cod and e.vtweg = '20') par_s from articole a, sintetice b, sapprd.marc c " +
+                                  " e.matnr = a.cod and e.vtweg = '20') par_s, " +
+                                  " nvl((select z.labst from sapprd.zhybris_zhstock z, sapprd.zhybris_artmas a, articole ar where " + 
+                                  " a.mandt = z.mandt and a.matnr = z.matnr and a.valid = 'X' and ar.cod = z.matnr " +
+                                  " and z.matnr = a.cod and z.b2b <> 'X' and z.werks = decode(ar.spart, '11', :filialaGed, :filiala)),0) stoc_art " + 
+                                  " from articole a, sintetice b, sapprd.marc c " +
                                   " where c.mandt = '900'  and c.matnr = a.cod and c.werks = :filiala and c.mmsta <> '01' " +
                                   " and a.sintetic = b.cod and a.cod != 'MAT GENERIC PROD'  and a.blocat <> '01' " +
                                     cautare +  condDepart +
-                                  " order by cod_planif, a.nume  OFFSET :paginaCrt ROWS FETCH NEXT 10 ROWS ONLY ";
+                                  " order by cod_planif, stoc_art desc, a.nume  OFFSET :paginaCrt ROWS FETCH NEXT 10 ROWS ONLY ";
 
 
                 cmd.CommandType = CommandType.Text;
@@ -1357,6 +1349,7 @@ namespace LiteSFATestWebService
         public string getLivrariComanda(string antetComanda, string strComanda, string canal)
         {
 
+            ErrorHandling.sendErrorToMail("getLivrariComanda: " + antetComanda + " , " + strComanda + " , " + canal);
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             LivrareMathaus livrareMathaus = new LivrareMathaus();
@@ -1372,6 +1365,7 @@ namespace LiteSFATestWebService
 
                 ComandaMathaus comanda = new ComandaMathaus();
                 comanda.sellingPlant = comandaMathaus.sellingPlant;
+                comanda.countyCode = antetCmdMathaus.codJudet;
 
                 List<DateArticolMathaus> deliveryEntryDataList = new List<DateArticolMathaus>();
 
@@ -1394,7 +1388,7 @@ namespace LiteSFATestWebService
                 ComandaMathaus comandaRezultat;
                 if (comanda.deliveryEntryDataList.Count > 0)
                 {
-                    string strComandaRezultat = callDeliveryService(serializer.Serialize(comanda));
+                    string strComandaRezultat = callDeliveryService(serializer.Serialize(comanda), canal, antetCmdMathaus.tipPers, antetCmdMathaus.codPers);
                     comandaRezultat = serializer.Deserialize<ComandaMathaus>(strComandaRezultat);
                 }
                  else
@@ -1482,17 +1476,31 @@ namespace LiteSFATestWebService
 
 
 
-        private string callDeliveryService(string jsonData)
+        private string callDeliveryService(string jsonData, string canal, string tipPers, string codPers)
         {
+
 
             string result = "";
 
             try {
 
+                string urlDeliveryService = "https://wt1.arabesque.ro/arbsqintegration/optimiseDeliveryB2B";
+
+                if (canal.Equals("10"))
+                    urlDeliveryService = "https://wt1.arabesque.ro/arbsqintegration/cumulativeOptimiseDeliveryB2B"; 
+                else
+                {
+                    if (tipPers.Equals("AV") || tipPers.Equals("SD"))
+                        urlDeliveryService = "https://wt1.arabesque.ro/arbsqintegration/cumulativeOptimiseDeliveryB2B";
+                    else
+                        urlDeliveryService = "https://wt1.arabesque.ro/arbsqintegration/cumulativeOptimiseDeliveryB2C";
+
+                }
+
                 System.Net.ServicePointManager.Expect100Continue = false;
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://wt1.arabesque.ro/arbsqintegration/optimiseDeliveryB2B");
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlDeliveryService);
 
                 request.Method = "POST";
                 request.ContentType = "application/json";
@@ -1510,7 +1518,11 @@ namespace LiteSFATestWebService
                 System.Net.WebResponse response = request.GetResponse();
                 System.IO.StreamReader sr = new System.IO.StreamReader(response.GetResponseStream());
 
-                result = sr.ReadToEnd().Trim();
+                string deliveryResponse = sr.ReadToEnd().Trim();
+
+                ErrorHandling.sendErrorToMail("callDeliveryService: " + urlDeliveryService + " , " + canal + " , " + tipPers + " , " + codPers + " , " + deliveryResponse);
+
+                result = deliveryResponse;
             }
             catch(Exception ex)
             {
@@ -1521,42 +1533,49 @@ namespace LiteSFATestWebService
 
         }
 
-        public string getStocMathaus(string filiala, string codArticol, string um)
+        public string getStocMathaus(string filiala, string codArticol, string um, string tipCmd, string tipUserSap, string codUser)
         {
 
-            StockMathaus stockMathaus = new StockMathaus();
-
-            stockMathaus.plant = filiala;
-            List<StockEntryDataList> stockEntryDataList = new List<StockEntryDataList>();
-
-            StockEntryDataList stockEntry = new StockEntryDataList();
-
-            if (codArticol.StartsWith("0000000000"))
-                stockEntry.productCode = codArticol;
-            else
-                stockEntry.productCode = "0000000000" + codArticol;
-
-            stockEntry.warehouse = "";
-            stockEntry.availableQuantity = 0;
-            stockEntryDataList.Add(stockEntry);
-            stockMathaus.stockEntryDataList = stockEntryDataList;
-
+            
+            ComandaMathaus comandaMathaus = new ComandaMathaus();
             JavaScriptSerializer serializer = new JavaScriptSerializer();
 
-            StockMathaus stockResponse = serializer.Deserialize<StockMathaus>(callStockService(serializer.Serialize(stockMathaus)));
+            try {
 
-            ComandaMathaus comandaMathaus = new ComandaMathaus();
-            comandaMathaus.sellingPlant = stockResponse.plant;
+                StockMathaus stockMathaus = new StockMathaus();
+                stockMathaus.plant = filiala;
+                List<StockEntryDataList> stockEntryDataList = new List<StockEntryDataList>();
 
-            List<DateArticolMathaus> deliveryEntryDataList = new List<DateArticolMathaus>();
+                StockEntryDataList stockEntry = new StockEntryDataList();
 
-            DateArticolMathaus dateArticol = new DateArticolMathaus();
-            dateArticol.deliveryWarehouse = stockResponse.stockEntryDataList[0].warehouse;
-            dateArticol.quantity = stockResponse.stockEntryDataList[0].availableQuantity;
-            dateArticol.productCode = stockResponse.stockEntryDataList[0].productCode;
-            dateArticol.unit = getUmBaza(stockEntry.productCode);
-            deliveryEntryDataList.Add(dateArticol);
-            comandaMathaus.deliveryEntryDataList = deliveryEntryDataList;
+                if (codArticol.StartsWith("0000000000"))
+                    stockEntry.productCode = codArticol;
+                else
+                    stockEntry.productCode = "0000000000" + codArticol;
+
+                stockEntry.warehouse = "";
+                stockEntry.availableQuantity = 0;
+                stockEntryDataList.Add(stockEntry);
+                stockMathaus.stockEntryDataList = stockEntryDataList;
+
+                StockMathaus stockResponse = serializer.Deserialize<StockMathaus>(callStockService(serializer.Serialize(stockMathaus), tipCmd, tipUserSap, codUser));
+
+                comandaMathaus.sellingPlant = stockResponse.plant;
+
+                List<DateArticolMathaus> deliveryEntryDataList = new List<DateArticolMathaus>();
+
+                DateArticolMathaus dateArticol = new DateArticolMathaus();
+                dateArticol.deliveryWarehouse = stockResponse.stockEntryDataList[0].warehouse.Split(';')[0].Split(':')[0];
+                dateArticol.quantity = stockResponse.stockEntryDataList[0].availableQuantity;
+                dateArticol.productCode = stockResponse.stockEntryDataList[0].productCode;
+                dateArticol.unit = getUmBaza(stockEntry.productCode);
+                deliveryEntryDataList.Add(dateArticol);
+                comandaMathaus.deliveryEntryDataList = deliveryEntryDataList;
+
+            }catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail("getStocMathaus: " + ex.ToString());
+            }
 
             return serializer.Serialize(comandaMathaus);
 
@@ -1608,13 +1627,27 @@ namespace LiteSFATestWebService
             
         }
 
-        private string callStockService(string jsonData)
+        private string callStockService(string jsonData, string tipCmd, string tipUserSap, string codUser)
         {
 
             System.Net.ServicePointManager.Expect100Continue = false;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://wt1.arabesque.ro/arbsqintegration/getStocks");
+            string urlStockService = "https://wt1.arabesque.ro/arbsqintegration/getStocks";
+
+            if (tipCmd != null && tipCmd.Equals("D")){
+                urlStockService = "https://wt1.arabesque.ro/arbsqintegration/getCumulativeStocksB2B";
+            }
+            else if (tipCmd != null && tipCmd.Equals("G"))
+            {
+                if (tipUserSap.Equals("AV") || tipUserSap.Equals("SD"))
+                    urlStockService = "https://wt1.arabesque.ro/arbsqintegration/getCumulativeStocksB2B";
+                else
+                    urlStockService = "https://wt1.arabesque.ro/arbsqintegration/getCumulativeStocksB2C";
+            }
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlStockService);
+
             request.Method = "POST";
             request.ContentType = "application/json";
             request.ContentLength = jsonData.Length;
@@ -1631,7 +1664,9 @@ namespace LiteSFATestWebService
             System.Net.WebResponse response = request.GetResponse();
             System.IO.StreamReader sr = new System.IO.StreamReader(response.GetResponseStream());
 
-            return sr.ReadToEnd().Trim();
+            string stockResponse = sr.ReadToEnd().Trim();
+
+            return stockResponse;
 
         }
 
