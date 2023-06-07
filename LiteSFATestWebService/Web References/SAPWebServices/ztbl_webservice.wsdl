@@ -838,6 +838,14 @@
           <xsd:element name="Traty" type="n0:char4" />
         </xsd:sequence>
       </xsd:complexType>
+      <xsd:complexType name="ZileIncarc">
+        <xsd:sequence>
+          <xsd:element name="Data" type="n0:date10" />
+          <xsd:element name="I813" type="n0:char1" />
+          <xsd:element name="I1318" type="n0:char1" />
+          <xsd:element name="ToataZiua" type="n0:char1" />
+        </xsd:sequence>
+      </xsd:complexType>
       <xsd:complexType name="Zmateriale">
         <xsd:sequence>
           <xsd:element name="Matnr" type="n0:char18" />
@@ -2958,6 +2966,11 @@
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZsitemsComanda" />
         </xsd:sequence>
       </xsd:complexType>
+      <xsd:complexType name="TableOfZileIncarc">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZileIncarc" />
+        </xsd:sequence>
+      </xsd:complexType>
       <xsd:complexType name="TableOfZmateriale">
         <xsd:sequence>
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Zmateriale" />
@@ -3311,6 +3324,24 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="VOk" type="n0:char2" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ZcheckZileLivrare">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="IpCity" type="n0:char40" />
+            <xsd:element name="IpRegio" type="n0:char4" />
+            <xsd:element name="IpVstel" type="n0:char4" />
+            <xsd:element name="IpWerks" type="n0:char4" />
+            <xsd:element name="ItZile" type="tns:TableOfZileIncarc" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ZcheckZileLivrareResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ItZile" type="tns:TableOfZileIncarc" />
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -3753,6 +3784,12 @@
   <wsdl:message name="ZactDiscMaximResponse">
     <wsdl:part name="parameter" element="tns:ZactDiscMaximResponse" />
   </wsdl:message>
+  <wsdl:message name="ZcheckZileLivrare">
+    <wsdl:part name="parameters" element="tns:ZcheckZileLivrare" />
+  </wsdl:message>
+  <wsdl:message name="ZcheckZileLivrareResponse">
+    <wsdl:part name="parameter" element="tns:ZcheckZileLivrareResponse" />
+  </wsdl:message>
   <wsdl:message name="Zpalcant">
     <wsdl:part name="parameters" element="tns:Zpalcant" />
   </wsdl:message>
@@ -3900,6 +3937,10 @@
       </wsp:Policy>
       <wsdl:input message="tns:ZactDiscMaxim" />
       <wsdl:output message="tns:ZactDiscMaximResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="ZcheckZileLivrare">
+      <wsdl:input message="tns:ZcheckZileLivrare" />
+      <wsdl:output message="tns:ZcheckZileLivrareResponse" />
     </wsdl:operation>
     <wsdl:operation name="Zpalcant">
       <wsp:Policy>
@@ -4073,6 +4114,15 @@
     </wsdl:operation>
     <wsdl:operation name="ZactDiscMaxim">
       <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZactDiscMaximRequest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ZcheckZileLivrare">
+      <soap:operation soapAction="" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -4286,6 +4336,15 @@
     </wsdl:operation>
     <wsdl:operation name="ZactDiscMaxim">
       <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZactDiscMaximRequest" style="document" />
+      <wsdl:input>
+        <wsoap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <wsoap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ZcheckZileLivrare">
+      <wsoap12:operation soapAction="" style="document" />
       <wsdl:input>
         <wsoap12:body use="literal" />
       </wsdl:input>

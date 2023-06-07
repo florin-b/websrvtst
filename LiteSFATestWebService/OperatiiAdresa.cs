@@ -33,7 +33,6 @@ namespace LiteSFATestWebService
             try
             {
 
-                cmd.CommandText = " select upper(localitate) from sapprd.zlocalitati where bland=:codJudet order by localitate ";
 
                 cmd.CommandText = " select upper(a.localitate), nvl(b.oras,'-1') oras, nvl(b.razakm,-1) raza, nvl(c.latitudine,-1) lat, nvl(c.longitudine,-1) lon " +
                                   " from sapprd.zlocalitati a, sapprd.zoraseromania b, sapprd.zcoordlocalitati c " +

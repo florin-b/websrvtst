@@ -136,6 +136,7 @@
     <Compile Include="BeanPierderi.cs" />
     <Compile Include="BeanRecomandari.cs" />
     <Compile Include="Cabluri05.cs" />
+    <Compile Include="DocumentatieProduse.cs" />
     <Compile Include="HelperComenzi.cs" />
     <Compile Include="InfoComenziSap.cs" />
     <Compile Include="JurnalAprobari.cs" />
@@ -591,6 +592,9 @@
       <DependentUpon>Reference.map</DependentUpon>
     </Content>
     <Content Include="Web References\SAPWebServices\ZstareCurentaReturResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\SAPWebServices\ZcheckZileLivrareResponse.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </Content>
     <None Include="Web References\SAPWebServices\ztbl_webservice.wsdl" />

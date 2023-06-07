@@ -82,6 +82,12 @@ namespace LiteSFATestWebService
             
         }
 
+        [WebMethod]
+        public string testDocService()
+        {
+            return new DocumentatieProduse().testDocService();
+        }
+
 
         [WebMethod]
         public string testDocumente()
@@ -7225,6 +7231,10 @@ namespace LiteSFATestWebService
                     {
                         condTipAg = " and a.tip in ('SMG', 'CAG', 'CAG1', 'CAG2', 'CAG3', 'CVG', 'CVA')";
                     }
+                    else if (tipUserSap != null && tipUserSap.Equals("SDCVA"))
+                    {
+                        condTipAg = " and a.tip in ('SDCVA', 'CVA')";
+                    }
                     else
                         condTipAg = " and a.tip in ('CONS-GED','SM','CAG', 'CAG1', 'CAG2', 'SMG', 'SDCVA', 'CVIP', 'SDIP') ";
                 }
@@ -7343,7 +7353,7 @@ namespace LiteSFATestWebService
                     {
                         if (tipAgent != null && tipAgent.Equals("SDCVA"))
                         {
-                            condTipAg = " and a.tip in ('SDCVA','CAG', 'CAG1', 'CAG2') ";
+                            condTipAg = " and a.tip in ('SDCVA','CAG', 'CAG1', 'CAG2', 'CVA') ";
                         }
                         else if (tipAgent != null && tipAgent.Equals("SDIP") && codAgent != null)
                         {
@@ -12805,7 +12815,7 @@ namespace LiteSFATestWebService
                             {
                                 dateLivrareDistrib.totalComanda = totalComanda.ToString();
 
-                                if (!articol.filialaSite.Equals(dateLivrareDistrib.unitLog) && !articol.filialaSite.Equals("BV90") && !ulStoc.Equals("BV90"))
+                                if (!HelperComenzi.isUlEquals(ulStoc, dateLivrareDistrib.unitLog) && !articol.filialaSite.Equals("BV90") && !ulStoc.Equals("BV90"))
                                     dateLivrareDistrib.filialaCLP = ulStoc;
 
 
@@ -12839,7 +12849,7 @@ namespace LiteSFATestWebService
 
                         dateLivrareDistrib.totalComanda = totalComanda.ToString();
 
-                        if (ulStoc != null && !ulStoc.Equals(dateLivrareDistrib.unitLog) && !ulStoc.Equals("BV90"))
+                        if (ulStoc != null && !HelperComenzi.isUlEquals(ulStoc, dateLivrareDistrib.unitLog) && !ulStoc.Equals("BV90"))
                             dateLivrareDistrib.filialaCLP = ulStoc;
 
 
@@ -13807,7 +13817,7 @@ namespace LiteSFATestWebService
                         paramCmd = "C";
                     }
 
-
+                    
                     
                     if (idCmdAmob != null && !idCmdAmob.Equals("-1") && !idCmdAmob.Trim().Equals(String.Empty))
                         paramCmd = "S";
@@ -14959,9 +14969,6 @@ namespace LiteSFATestWebService
 
                 if (tipAgent.Equals("DZ"))
                     tipAgent = "DV";
-
-                //if (tipAgent.Equals("SDIP"))
-                //    tipAgent = "SDCVA";
 
 
                 retVal += "#" + filiale + "#" + tipAgent + "#" + getExtraFiliale(idAg.Value.ToString(), tipAcces.Value.ToString(), localComp) + "#" + filialaHome + "#" + FtpHelper.getLocalFtpIp(localComp) + "#" + initDivizie + "#" + MeniuTableta.stareMeniuTableta(idAg.Value.ToString()) + "#";
@@ -16157,9 +16164,15 @@ namespace LiteSFATestWebService
         }
 
         [WebMethod]
+        public string getLivrariCumulativeMathaus(string antetComanda, string comandaMathaus, string canal)
+        {
+            return new OperatiiMathaus().getLivrariComandaCumulative(antetComanda, comandaMathaus, canal);
+        }
+
+        [WebMethod]
         public string getLivrariMathaus(string antetComanda, string comandaMathaus, string canal)
         {
-            return new OperatiiMathaus().getLivrariComanda(antetComanda, comandaMathaus, canal);
+            return new OperatiiMathaus().getLivrariComandaCumulative(antetComanda, comandaMathaus, canal);
         }
 
         [WebMethod]
