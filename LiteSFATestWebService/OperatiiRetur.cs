@@ -672,7 +672,7 @@ namespace LiteSFATestWebService
                 {
                     string tipDocuRetur = " ('ZFM','ZFMC','ZFS','ZFSC','ZFPA','ZFVS') ";
 
-                    if (tipUserSap != null && tipUserSap.Equals("CVO"))
+                    if (tipUserSap != null && (tipUserSap.Equals("CVO") || tipUserSap.Equals("SVO")))
                         tipDocuRetur = " ('ZFHC','ZF2H','ZFVS','ZFCS','ZFVS') "; 
 
 
@@ -1649,7 +1649,7 @@ namespace LiteSFATestWebService
 
             string tipDocuRetur = " ('ZFM','ZFMC','ZFS','ZFSC','ZFPA', 'ZFVS','ZFCS') ";
 
-            if (tipUserSap != null && tipUserSap.Equals("CVO"))
+            if (tipUserSap != null && (tipUserSap.Equals("CVO") || tipUserSap.Equals("SVO")))
                 tipDocuRetur = " ('ZFM','ZFMC','ZFS','ZFSC','ZFPA', 'ZFVS','ZFCS', 'ZFHC', 'ZF2H') ";
 
             try

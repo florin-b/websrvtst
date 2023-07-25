@@ -983,6 +983,7 @@ namespace LiteSFATestWebService
         public string getPretGed(string parametruPret)
         {
 
+            
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             ParametruPretGed paramPret = serializer.Deserialize<ParametruPretGed>(parametruPret);
@@ -1027,7 +1028,7 @@ namespace LiteSFATestWebService
                 inParam.Regio = paramPret.codJudet;
                 inParam.City = paramPret.localitate == null ? " " : paramPret.localitate.Length <= 25 ? paramPret.localitate : paramPret.localitate.Substring(0,25);
                 inParam.UlStoc = paramPret.filialaAlternativa.Equals("BV90") ? "BV90" : paramPret.filialaClp != null ? paramPret.filialaClp : " ";
-                
+                inParam.Traty = paramPret.tipTransport != null ? paramPret.tipTransport : " ";
 
 
                 SAPWebServices.ZgetPriceResponse outParam = webService.ZgetPrice(inParam);
@@ -1064,7 +1065,8 @@ namespace LiteSFATestWebService
                 string procentTransport = outParam.ProcTrap.ToString();
                 string impachetare = outParam.Impachet.ToString() != "" ? outParam.Impachet.ToString() : " ";
                 string pretFaraTva = outParam.GvNetwrFtva.ToString();
-                
+
+                string greutateBruta = outParam.GvBrgewMatnr.ToString();
 
                 pretArticolGed.pret = pretOut;
                 pretArticolGed.um = umOut;
@@ -1296,14 +1298,18 @@ namespace LiteSFATestWebService
                     istoricPret = new Preturi().getIstoricPret(connection,  paramPret.articol, paramPret.codClientParavan);
 
                 pretArticolGed.articoleRecomandate = new OperatiiArticole().getArticoleRecomandate(connection, paramPret.articol, "11");
+                ArticolProps articolProps = new OperatiiArticole().getPropsArticol(connection, paramPret.articol);
 
                 DatabaseConnections.CloseConnections(oReader, cmd, connection);
-
 
                 pretArticolGed.pretMediu = pretMediu;
                 pretArticolGed.adaosMediu = adaosMediu;
                 pretArticolGed.umPretMediu = unitMasPretMediu;
                 pretArticolGed.istoricPret = istoricPret;
+
+                pretArticolGed.tipMarfa = articolProps.tipMarfa;
+                pretArticolGed.greutateBruta = greutateBruta;
+                pretArticolGed.lungime = articolProps.lungime;
                 
 
 
@@ -2257,6 +2263,68 @@ namespace LiteSFATestWebService
 
             return new JavaScriptSerializer().Serialize(listArticole);
 
+        }
+
+
+        public ArticolProps getPropsArticol(OracleConnection conn, string codArticol)
+        {
+            /*
+            0001     Marfa normala
+            0002     Marfa fragila
+            0003     Marfa energofaga
+            */
+
+            ArticolProps articolProps = new ArticolProps("","");
+
+            string tipMarfa = "";
+            
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                cmd = conn.CreateCommand();
+
+                cmd.CommandText = " select tip_marfa, nvl(lungime_trans,' ') from articole where cod =:codArticol ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+
+                if (codArticol.Length == 8)
+                    codArticol = "0000000000" + codArticol;
+
+                cmd.Parameters.Add(":codArticol", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codArticol;
+
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    articolProps.tipMarfa = oReader.GetString(0).Trim();
+                    articolProps.lungime = oReader.GetString(1).ToLower();
+
+                }
+
+                oReader.Close();
+                oReader.Dispose();
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                cmd.Dispose();
+            }
+
+
+            return articolProps;
         }
 
     }

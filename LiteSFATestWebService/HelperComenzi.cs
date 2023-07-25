@@ -11,7 +11,7 @@ namespace LiteSFATestWebService
     {
 
         public static string[] listSinteticeCant = { "200", "201", "202", "204", "205", "206", "207", "236", "237", "238", "240", "204_01", "204_02" };
-        private static string[] listSinteticePal = { "100", "102" , "103" , "104", "105", "107", "142", "143" };
+        private static string[] listSinteticePal = { "100", "102", "103", "104", "105", "107", "142", "143" };
 
 
         public static void setMarjaCantPal(List<ArticolComandaRap> listArticole, DateLivrareCmd dateLivrare)
@@ -102,7 +102,7 @@ namespace LiteSFATestWebService
                     cmd.Parameters.Add(":codArticol", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
                     cmd.Parameters[0].Value = "0000000000" + articol.codArticol;
 
-                    if (transaction != null )
+                    if (transaction != null)
                         cmd.Transaction = transaction;
 
                     oReader = cmd.ExecuteReader();
@@ -111,7 +111,8 @@ namespace LiteSFATestWebService
                     {
                         while (oReader.Read())
                         {
-                            if (sintCherestea.Contains(oReader.GetString(0))){
+                            if (sintCherestea.Contains(oReader.GetString(0)))
+                            {
                                 isComandaCherestea = true;
                             }
                         }
@@ -130,7 +131,7 @@ namespace LiteSFATestWebService
                 }
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ErrorHandling.sendErrorToMail(ex.ToString());
             }
@@ -171,7 +172,7 @@ namespace LiteSFATestWebService
         }
 
 
-        public static void setLivrariArtACZC(OracleConnection connection, string nrComanda,  ArticolComandaRap articol)
+        public static void setLivrariArtACZC(OracleConnection connection, string nrComanda, ArticolComandaRap articol)
         {
 
             OracleCommand cmd = new OracleCommand();
@@ -188,7 +189,7 @@ namespace LiteSFATestWebService
             {
                 cmd = connection.CreateCommand();
 
-                cmd.CommandText = " select nvl(sum(e.vmeng),0) qty_de_livrat from sapprd.vbbe e where " + 
+                cmd.CommandText = " select nvl(sum(e.vmeng),0) qty_de_livrat from sapprd.vbbe e where " +
                                   " e.mandt = '900' and e.vbeln = :nrComanda and matnr = :codArticol ";
 
                 cmd.CommandType = CommandType.Text;
@@ -207,15 +208,15 @@ namespace LiteSFATestWebService
                 {
                     oReader.Read();
                     articol.aczcDeLivrat = oReader.GetDouble(0);
-                    
+
                 }
                 else
                     articol.aczcDeLivrat = 0;
 
 
 
-                cmd.CommandText = " select  nvl(sum(rfmng),0) qty_livr from sapprd.vbfa f, sapprd.vbap p " + 
-                                   " where f.mandt = '900' and f.vbelv = :nrComanda  and p.matnr = :codArticol " + 
+                cmd.CommandText = " select  nvl(sum(rfmng),0) qty_livr from sapprd.vbfa f, sapprd.vbap p " +
+                                   " where f.mandt = '900' and f.vbelv = :nrComanda  and p.matnr = :codArticol " +
                                    " and f.vbtyp_v = 'C' and f.vbtyp_n = 'J' and f.mandt = p.mandt and f.vbelv = p.vbeln and f.posnv = p.posnr ";
 
                 cmd.CommandType = CommandType.Text;
@@ -226,7 +227,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters[0].Value = nrComanda;
 
                 cmd.Parameters.Add(":codArticol", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
-                cmd.Parameters[1].Value = "0000000000" +  articol.codArticol;
+                cmd.Parameters[1].Value = "0000000000" + articol.codArticol;
 
                 oReader = cmd.ExecuteReader();
 
@@ -234,13 +235,13 @@ namespace LiteSFATestWebService
                 {
                     oReader.Read();
                     articol.aczcLivrat = oReader.GetDouble(0);
-                   
+
                 }
                 else
                     articol.aczcLivrat = 0;
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ErrorHandling.sendErrorToMail(ex.ToString() + " , " + nrComanda + " , " + articol.codArticol);
             }
@@ -263,7 +264,7 @@ namespace LiteSFATestWebService
             {
                 cmd = connection.CreateCommand();
 
-                cmd.CommandText = " select distinct vbeln from sapprd.vbfa f, sapprd.zcomhead_tableta b where f.mandt = '900' and b.mandt = '900' " + 
+                cmd.CommandText = " select distinct vbeln from sapprd.vbfa f, sapprd.zcomhead_tableta b where f.mandt = '900' and b.mandt = '900' " +
                                   " and b.id =:idCmd and f.vbelv = b.nrcmdsap and f.vbtyp_v = 'C' and f.vbtyp_n = 'V' ";
 
                 cmd.CommandType = CommandType.Text;
@@ -288,7 +289,7 @@ namespace LiteSFATestWebService
 
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ErrorHandling.sendErrorToMail(ex.ToString() + " , " + nrCmd);
             }
@@ -297,7 +298,7 @@ namespace LiteSFATestWebService
                 DatabaseConnections.CloseConnections(oReader, cmd);
             }
 
-                return nrCmdClp;
+            return nrCmdClp;
         }
 
 
@@ -330,7 +331,7 @@ namespace LiteSFATestWebService
 
         }
 
-        
+
 
 
         public static bool isUlEquals(string ul1, string ul2)
@@ -347,7 +348,7 @@ namespace LiteSFATestWebService
         {
             string depExtra = null;
 
-           
+
             if (divizie.Equals("01"))
                 depExtra = "'02'";
 
@@ -392,6 +393,88 @@ namespace LiteSFATestWebService
 
             return depExtra;
 
+        }
+
+        public static Dictionary<string, string> getDictionarUmIso(List<DateArticolMathaus> listArticole)
+        {
+
+            Dictionary<string, string> dictionarUmIso = new Dictionary<string, string>();
+
+            string umArt = "";
+
+            foreach (DateArticolMathaus articol in listArticole)
+            {
+                if (umArt == "")
+                    umArt = "'" + articol.unit + "'";
+                else
+                    umArt += "," + "'" + articol.unit + "'";
+            }
+
+            OracleConnection connection = new OracleConnection();
+            OracleDataReader oReader = null;
+
+            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+            connection.ConnectionString = connectionString;
+            connection.Open();
+            OracleCommand cmd = connection.CreateCommand();
+
+            try
+            {
+                cmd.CommandText = " select distinct t.msehi, t.isocode from sapprd.t006 t where t.mandt = '900' and t.msehi in (" + umArt + ") ";
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        dictionarUmIso.Add(oReader.GetString(0), oReader.GetString(1));
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+
+            return dictionarUmIso;
+
+        }
+
+
+        public static void convertUmFromIso(Dictionary<string, string> dictionarUmIso, List<DateArticolMathaus> listArticole)
+        {
+            foreach(DateArticolMathaus articol in listArticole)
+            {
+                articol.unit = dictionarUmIso[articol.unit];
+            }
+        }
+
+        public static string getOptiuneCamion(List<OptiuneCamion> listOptiuni, string tipCamion)
+        {
+            string optiune = "n/a";
+
+            if (listOptiuni == null)
+                return optiune;
+
+            foreach(OptiuneCamion optCamion in listOptiuni)
+            {
+                if (optCamion.nume.ToLower().Equals(tipCamion.ToLower()))
+                {
+                    if (!optCamion.exista)
+                        optiune = "n/a";
+                    else
+                        optiune = optCamion.selectat ? "y" : "n";
+                            
+                }
+            }
+
+            return optiune;
         }
 
 

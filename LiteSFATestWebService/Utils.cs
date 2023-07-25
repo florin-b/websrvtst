@@ -18,7 +18,7 @@ namespace LiteSFATestWebService
             return filiala.Substring(0, 2) + "2" + filiala.Substring(3, 1);
         }
 
-        public static string getFilialaDistib(string filiala)
+        public static string getFilialaDistrib(string filiala)
         {
             return filiala.Substring(0, 2) + "1" + filiala.Substring(3, 1);
         }

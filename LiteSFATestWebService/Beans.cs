@@ -170,6 +170,10 @@ namespace LiteSFATestWebService
         public string listCabluri;
         public string tipTransport;
         public string greutate;
+        public string greutateBruta;
+        public string lungimeArt;
+        public string tipMarfa;
+        public string cantitateInit;
 
 
         public override string ToString()
@@ -823,6 +827,9 @@ namespace LiteSFATestWebService
         public string dataExp;
         public string greutate;
         public string articoleRecomandate;
+        public string tipMarfa;
+        public string greutateBruta;
+        public string lungime;
 
     }
 
@@ -862,6 +869,23 @@ namespace LiteSFATestWebService
     {
         public string cod;
         public string nume;
+    }
+
+    public class ArticolProps
+    {
+        public string tipMarfa;
+        public string lungime;
+
+        public ArticolProps()
+        {
+
+        }
+
+        public ArticolProps(string tipMarfa, string lungime)
+        {
+            this.tipMarfa = tipMarfa;
+            this.lungime = lungime;
+        }
     }
 
 }

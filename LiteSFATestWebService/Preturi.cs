@@ -13,7 +13,7 @@ namespace LiteSFATestWebService
     public class Preturi
     {
 
-        public string getPret(string client, string articol, string cantitate, string depart, string um, string ul, string tipUser, string depoz, string codUser, string canalDistrib, string filialaAlternativa, string filialaClp)
+        public string getPret(string client, string articol, string cantitate, string depart, string um, string ul, string tipUser, string depoz, string codUser, string canalDistrib, string filialaAlternativa, string filialaClp, string tipTransport)
         {
 
 
@@ -60,7 +60,9 @@ namespace LiteSFATestWebService
                 inParam.GvSite = " ";
                 inParam.TipPers = tipUserLocal;
                 inParam.Canal = canalDistrib;
-                inParam.UlStoc = filialaClp != null ? filialaClp : " ";
+                inParam.UlStoc = filialaAlternativa.Equals("BV90") ? "BV90" : filialaClp != null ? filialaClp : " ";
+                inParam.Traty = tipTransport != null ? tipTransport : " ";
+                
 
 
                 SAPWebServices.ZgetPriceResponse outParam = webService.ZgetPrice(inParam);
@@ -83,6 +85,7 @@ namespace LiteSFATestWebService
                 string dataExp = outParam.GvDatbi;
 
                 string greutateArt = outParam.GvBrgew.ToString();
+                string greutateBruta = outParam.GvBrgewMatnr.ToString();
                
 
                 string extindere11 = outParam.ErrorCode.ToString();
@@ -92,11 +95,11 @@ namespace LiteSFATestWebService
                 {
                     if (Service1.extindeClient(client).Equals("0"))
                     {
-                        return getPret(client, articol, cantitate, depart, um, ul, tipUserLocal, depoz, codUser, canalDistrib, filialaAlternativa, filialaClp);
+                        return getPret(client, articol, cantitate, depart, um, ul, tipUserLocal, depoz, codUser, canalDistrib, filialaAlternativa, filialaClp, tipTransport);
                     }
                     else
                     {
-                        return "-1";
+                        return "Eroare extindere client.";
                     }
                 }
 
@@ -292,21 +295,25 @@ namespace LiteSFATestWebService
 
                 string articoleRecom = new OperatiiArticole().getArticoleRecomandate(connection, articol, depart);
 
+                //aici
+                ArticolProps articolProps = new OperatiiArticole().getPropsArticol(connection, articol);
+
                 retVal += discMaxAV + "#" + discMaxSD + "#" + discMaxDV + "#" +
                          Convert.ToInt32(Double.Parse(multiplu)).ToString() + "#" +
                          cantUmb + "#" + Umb + "#" + discMaxKA + "#" + cmpArticol.ToString() + "#" + pretMediu + "#" + 
-                         impachetare + "#" + istoricPret + "#" + procRedCmp + "#" + pretGed + "#" + dataExp + "#" + greutateArt + "#" + articoleRecom + "#";
+                         impachetare + "#" + istoricPret + "#" + procRedCmp + "#" + pretGed + "#" + dataExp + "#" + greutateArt + "#" + 
+                         articoleRecom + "#" + articolProps.tipMarfa + "#" + greutateBruta + "#" + articolProps.lungime + "#";
 
 
                 if (pretOut.Equals("0.0"))
-                    retVal = "-1";
+                    retVal = outParam.VMess + ".";
 
 
             }
             catch (Exception ex)
             {
                 ErrorHandling.sendErrorToMail(ex.ToString());
-                retVal = "-1";
+                retVal = "Eroare interogare preturi.";
             }
             finally
             {

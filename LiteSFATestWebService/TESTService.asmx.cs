@@ -3860,17 +3860,6 @@ namespace LiteSFATestWebService
         public string getArticoleComandaVanzare(string nrCmd, string afisCond, string tipUser, string departament)
         {
 
-
-            if (tipUser.Equals("DV"))
-            {
-                OperatiiComenziBG operatiiBg = new OperatiiComenziBG();
-
-                if (OperatiiComenziBG.isComandaBG(nrCmd))
-                    return operatiiBg.getArticoleComandaVanzare(nrCmd, afisCond, tipUser, departament);
-
-            }
-
-
             string serializedResult = "", retVal = "";
             string unitLog1 = "", termenPlata = "", obsLivrare = "", tipPersClient = "";
             string cmp = "";
@@ -4109,8 +4098,8 @@ namespace LiteSFATestWebService
                                   " ,nvl(a.cant_umb,0) cant_umb , nvl(a.umb,' ') umb, a.ul_stoc, z.depart, nvl(b.tip_mat,' '), nvl(a.ponderat,'-1'), nvl(b.spart,' '), " +
                                   " decode(trim(b.dep_aprobare),'','00', b.dep_aprobare)  dep_aprobare " + condBlocAprov + istoricPret + vechime + infoPretTransp + sinteticArt +
                                   lungimeArt + " , a.data_exp_pret, " +
-                                  " (select nvl((select 1 from sapprd.mara m where m.mandt = '900' and m.matnr = a.cod and m.categ_mat in ('PA','AM')),-1) palet from dual) palet, nvl(a.brgew,0) greutate " +
-                                  " from sapprd.zcomdet_tableta a, sapprd.zdisc_pers_sint a1,  sintetice c," +
+                                  " (select nvl((select 1 from sapprd.mara m where m.mandt = '900' and m.matnr = a.cod and m.categ_mat in ('PA','AM')),-1) palet from dual) palet, nvl(a.brgew,0) greutate, " +
+                                  " nvl(a.brgew_matnr,0) greutate_bruta, a.cant_pret from sapprd.zcomdet_tableta a, sapprd.zdisc_pers_sint a1,  sintetice c," +
                                   " articole b, sapprd.zpretsubcmp s " + condTabKA + " where a.cod = b.cod(+) " + condIdKA + " and " +
                                   " a1.inactiv(+) <> 'X' and a1.functie(+)='AV' and a1.spart(+)=substr(c.COD_NIVEL1,2,2) and a1.werks(+) ='" + unitLog1 + "' " +
                                   " and b.sintetic = c.cod(+) and a1.matkl(+) = c.cod " + conditieDepart +
@@ -4198,6 +4187,13 @@ namespace LiteSFATestWebService
                         articol.dataExp = oReader1.GetString(34);
                         articol.umPalet = oReader1.GetInt32(35).ToString();
                         articol.greutate = oReader1.GetDouble(36).ToString();
+                        articol.greutateBruta = oReader1.GetDouble(37).ToString();
+                        articol.cantitateInit = oReader1.GetDouble(38).ToString();
+
+                        ArticolProps articolProps = new OperatiiArticole().getPropsArticol(connection, articol.codArticol);
+
+                        articol.tipMarfa = articolProps.tipMarfa;
+                        articol.lungimeArt = articolProps.lungime;
 
                         //verificare factori conversie
 
@@ -10508,11 +10504,11 @@ namespace LiteSFATestWebService
 
 
         [WebMethod]
-        public string getPret(string client, string articol, string cantitate, string depart, string um, string ul, string tipUser, string depoz, string codUser, string canalDistrib, string filialaAlternativa, string filialaClp)
+        public string getPret(string client, string articol, string cantitate, string depart, string um, string ul, string tipUser, string depoz, string codUser, string canalDistrib, string filialaAlternativa, string filialaClp, string tipTransport)
         {
 
             Preturi preturi = new Preturi();
-            return preturi.getPret(client, articol, cantitate, depart, um, ul, tipUser, depoz, codUser, canalDistrib, filialaAlternativa, filialaClp);
+            return preturi.getPret(client, articol, cantitate, depart, um, ul, tipUser, depoz, codUser, canalDistrib, filialaAlternativa, filialaClp, tipTransport);
 
         }
 
@@ -11110,16 +11106,19 @@ namespace LiteSFATestWebService
                         dataExpPret = articolComanda[i].dataExp;
 
                     string greutateArticol = articolComanda[i].greutate == null ? "0" : articolComanda[i].greutate;
+                    string greutateBrutaArticol = articolComanda[i].greutateBruta == null ? "0" : articolComanda[i].greutateBruta;
+                    string cantitateInit = articolComanda[i].cantitateInit == null ? "0" : articolComanda[i].cantitateInit;
 
                     query = " insert into sapprd.zcomdet_tableta(mandt,id,poz,status,cod,cantitate,valoare,depoz, " +
                             " transfer,valoaresap,ppoz,procent,um,procent_fc,conditie,disclient,procent_aprob,multiplu, " +
-                            " val_poz,inf_pret,cant_umb,umb,ul_stoc, istoric_pret, data_exp_pret, brgew) " +
+                            " val_poz,inf_pret,cant_umb,umb,ul_stoc, istoric_pret, data_exp_pret, brgew, brgew_matnr, cant_pret ) " +
                             " values ('900'," + idCmd.Value + ",'" + pozArt + "','" + cmdStatus + "','" + codArticol + "'," + articolComanda[i].cantitate.ToString(nfi) + ", " +
                             "" + pretUnitarArt.ToString(nfi) + ",'" + articolComanda[i].depozit + "','0',0,'0'," + articolComanda[i].procent.ToString(nfi) + ",'" +
                             articolComanda[i].um + "'," + articolComanda[i].procentFact.ToString(nfi) + ",' '," +
                             articolComanda[i].discClient.ToString(nfi) + "," + articolComanda[i].procAprob.ToString(nfi) + "," + articolComanda[i].multiplu.ToString(nfi) + "," +
                             valPoz.ToString(nfi) + ",'" + articolComanda[i].infoArticol + "'," + articolComanda[i].cantUmb + ",'" +
-                            articolComanda[i].Umb + "', '" + ulStoc + "', '" + articolComanda[i].istoricPret + "','" + dataExpPret + "'" + greutateArticol + " ) ";
+                            articolComanda[i].Umb + "', '" + ulStoc + "', '" + articolComanda[i].istoricPret + "','" + dataExpPret + "'" + greutateArticol + 
+                            "," + greutateBrutaArticol + ", " + cantitateInit + ") ";
 
 
                     cmd.CommandText = query;
@@ -13673,6 +13672,9 @@ namespace LiteSFATestWebService
 
                     string greutateArticol = articolComanda[i].greutate == null ? "0" : articolComanda[i].greutate;
 
+                    string greutateBrutaArticol = articolComanda[i].greutateBruta == null ? "0" : articolComanda[i].greutateBruta;
+                    string cantitateInit = articolComanda[i].cantitateInit == null ? "0" : articolComanda[i].cantitateInit;
+
                     if (tipUser.Equals("CV"))
                     {
 
@@ -13697,14 +13699,14 @@ namespace LiteSFATestWebService
 
                         query = " insert into sapprd.zcomdet_tableta(mandt,id,poz,status,cod,cantitate,valoare,depoz, " +
                                 " transfer,valoaresap,ppoz,procent,um,pret_cl,conditie,disclient,procent_aprob,multiplu, " +
-                                " val_poz,inf_pret,cant_umb,umb, ul_stoc, fake, ponderat, istoric_pret, val_transp, data_exp_pret, brgew) " +
+                                " val_poz,inf_pret,cant_umb,umb, ul_stoc, fake, ponderat, istoric_pret, val_transp, data_exp_pret, brgew, brgew_matnr, cant_pret) " +
                                 " values ('900'," + idCmd.Value + ",'" + pozArt + "','" + cmdStatus + "','" + codArt + "'," + articolComanda[i].cantitate.ToString(nfi) + ", " +
                                 "" + pretUnit.ToString(nfi) + ",'" + articolComanda[i].depozit + "','0',0,'0'," + articolComanda[i].procent.ToString(nfi) + ",'" +
                                 articolComanda[i].um + "'," + articolComanda[i].pretUnitarClient.ToString(nfi) + ",' '," +
                                 articolComanda[i].discClient.ToString(nfi) + "," + articolComanda[i].procAprob.ToString(nfi) + "," + articolComanda[i].multiplu.ToString(nfi) + "," +
                                 valPoz.ToString(nfi) + ",'" + articolComanda[i].infoArticol + "'," + articolComanda[i].cantUmb + ",'" +
                                 articolComanda[i].Umb + "','" + ulStoc + "', '" + fakeArt + "','" + ponderareArt + "','" + articolComanda[i].istoricPret + "', " +
-                                valTransportArt +  ", '" + dataExp +"'," + greutateArticol + " ) ";
+                                valTransportArt +  ", '" + dataExp +"'," + greutateArticol + "," + greutateBrutaArticol + ", " + cantitateInit + " ) ";
 
                     }
                     else
@@ -13736,13 +13738,14 @@ namespace LiteSFATestWebService
 
                         query = " insert into sapprd.zcomdet_tableta(mandt,id,poz,status,cod,cantitate,valoare,depoz, " +
                                 " transfer,valoaresap,ppoz,procent,um,procent_fc,conditie,disclient,procent_aprob,multiplu, " +
-                                " val_poz,inf_pret,cant_umb,umb, ul_stoc, fake,istoric_pret, data_exp_pret, brgew) " +
+                                " val_poz,inf_pret,cant_umb,umb, ul_stoc, fake,istoric_pret, data_exp_pret, brgew, brgew_matnr, cant_pret) " +
                                 " values ('900'," + idCmd.Value + ",'" + pozArt + "','" + cmdStatus + "','" + codArt + "'," + articolComanda[i].cantitate.ToString(nfi) + ", " +
                                 "" + pretUnit.ToString(nfi) + ",'" + articolComanda[i].depozit + "','0',0,'0'," + articolComanda[i].procent.ToString(nfi) + ",'" +
                                 articolComanda[i].um + "'," + articolComanda[i].procentFact.ToString(nfi) + ",' '," +
                                 articolComanda[i].discClient.ToString(nfi) + "," + articolComanda[i].procAprob.ToString(nfi) + "," + articolComanda[i].multiplu.ToString(nfi) + "," +
                                 valPoz.ToString(nfi) + ",'" + articolComanda[i].infoArticol + "'," + articolComanda[i].cantUmb + ",'" +
-                                articolComanda[i].Umb + "','" + ulStoc + "', '" + fakeArt + "','" + articolComanda[i].istoricPret + "','" + dataExp +"'," + greutateArticol + " ) ";
+                                articolComanda[i].Umb + "','" + ulStoc + "', '" + fakeArt + "','" + articolComanda[i].istoricPret + "','" + dataExp +"'," + greutateArticol +  
+                                "," + greutateBrutaArticol + ", " + cantitateInit + " ) ";
 
 
 
@@ -13769,7 +13772,7 @@ namespace LiteSFATestWebService
                     savePrelucrare04(connection, idCmd.Value.ToString(), dateLivrare.prelucrare);
                 }
 
-                if (!dateLivrare.prelucrareLemn.Equals("-1"))
+                if (dateLivrare.prelucrareLemn != null && !dateLivrare.prelucrareLemn.Equals("-1"))
                 {
                     savePrelucrare04(connection, idCmd.Value.ToString(), dateLivrare.prelucrareLemn);
                 }
@@ -14404,6 +14407,11 @@ namespace LiteSFATestWebService
             return new OperatiiClienti().getTermenPlataClientDepart(codAgent, codClient);
         }
 
+        [WebMethod]
+        public string getDatePoligonLivrare(string coords)
+        {
+            return new OperatiiPoligoane().getDatePoligonLivrare(coords);
+        }
 
         [WebMethod]
         public string getAgentClientInfo(string codClient, string filiala)
@@ -16164,15 +16172,15 @@ namespace LiteSFATestWebService
         }
 
         [WebMethod]
-        public string getLivrariCumulativeMathaus(string antetComanda, string comandaMathaus, string canal)
+        public string getLivrariCumulativeMathaus(string antetComanda, string comandaMathaus, string canal, string datePoligon)
         {
-            return new OperatiiMathaus().getLivrariComandaCumulative(antetComanda, comandaMathaus, canal);
+            return new OperatiiMathaus().getLivrariComandaCumulative(antetComanda, comandaMathaus, canal, datePoligon);
         }
 
         [WebMethod]
-        public string getLivrariMathaus(string antetComanda, string comandaMathaus, string canal)
+        public string getLivrariMathaus(string antetComanda, string comandaMathaus, string canal, string datePoligon)
         {
-            return new OperatiiMathaus().getLivrariComandaCumulative(antetComanda, comandaMathaus, canal);
+            return new OperatiiMathaus().getLivrariComandaCumulative(antetComanda, comandaMathaus, canal, datePoligon);
         }
 
         [WebMethod]
@@ -16203,6 +16211,12 @@ namespace LiteSFATestWebService
         public string getStocDepozit(string codArt, string filiala, string depozit, string depart, string isArtMathaus)
         {
             return new OperatiiArticole().getStocDepozit( codArt,  filiala,  depozit,  depart,  isArtMathaus);
+        }
+
+        [WebMethod]
+        public string getOptiuniMasini(string filiala, string camionDescoperit, string macara, string zona, string greutateComanda, string comandaEnergofaga, string comandaExtralungi)
+        {
+            return new OperatiiComenzi().getOptiuniMasini(filiala,  camionDescoperit,  macara,  zona,  greutateComanda,  comandaEnergofaga, comandaExtralungi);
         }
 
 

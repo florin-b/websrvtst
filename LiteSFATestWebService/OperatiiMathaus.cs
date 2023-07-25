@@ -1343,9 +1343,8 @@ namespace LiteSFATestWebService
         }
 
 
-        public string getLivrariComandaCumulative(string antetComanda, string strComanda, string canal)
+        public string getLivrariComandaCumulative(string antetComanda, string strComanda, string canal, string strPoligon)
         {
-
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             LivrareMathaus livrareMathaus = new LivrareMathaus();
@@ -1360,11 +1359,20 @@ namespace LiteSFATestWebService
                 ComandaMathaus comandaMathaus = serializer.Deserialize<ComandaMathaus>(strComanda);
                 List<DateArticolMathaus> articole = comandaMathaus.deliveryEntryDataList;
 
+                DatePoligon datePoligon = new DatePoligon("","","","","");
+
+                if (strPoligon != null && strPoligon.Trim().Length > 0)
+                {
+                    datePoligon = serializer.Deserialize<DatePoligon>(strPoligon);
+                }
+
                 ComandaMathaus comanda = new ComandaMathaus();
                 comanda.sellingPlant = comandaMathaus.sellingPlant;
                 comanda.countyCode = antetCmdMathaus.codJudet;
 
                 List<DateArticolMathaus> deliveryEntryDataList = new List<DateArticolMathaus>();
+
+                Dictionary<string, string> dictionarUmIso = HelperComenzi.getDictionarUmIso(articole);
 
                 foreach (DateArticolMathaus dateArticol in articole)
                 {
@@ -1373,9 +1381,15 @@ namespace LiteSFATestWebService
                         continue;
 
                     DateArticolMathaus articol = new DateArticolMathaus();
-                    articol.productCode = "0000000000" + dateArticol.productCode;
+                    if (Char.IsDigit(dateArticol.productCode,0))
+                        articol.productCode = "0000000000" + dateArticol.productCode;
+                    else
+                        articol.productCode = dateArticol.productCode;
+
                     articol.quantity = Math.Ceiling(dateArticol.quantity);
-                    articol.unit = dateArticol.unit;
+                    articol.initQuantity = dateArticol.quantity.ToString();
+                    articol.unit = dictionarUmIso[dateArticol.unit];
+
                     deliveryEntryDataList.Add(articol);
 
                 }
@@ -1387,6 +1401,8 @@ namespace LiteSFATestWebService
                 {
                     string strComandaRezultat = callDeliveryService(serializer.Serialize(comanda), canal, antetCmdMathaus.tipPers, antetCmdMathaus.codPers);
                     comandaRezultat = serializer.Deserialize<ComandaMathaus>(strComandaRezultat);
+                    var reversedDictionarUmIso = dictionarUmIso.ToDictionary(x => x.Value, x => x.Key);
+                    HelperComenzi.convertUmFromIso(reversedDictionarUmIso, comandaRezultat.deliveryEntryDataList);
                 }
                 else
                 {
@@ -1433,6 +1449,7 @@ namespace LiteSFATestWebService
                             articolComanda.unit = dateArticol.unit;
                             articolComanda.quantity = dateArticolRez.quantity;
                             articolComanda.valPoz = Math.Round(((dateArticol.valPoz / dateArticol.quantity) * dateArticolRez.quantity),2);
+                            articolComanda.greutate = dateArticol.greutate;
 
                             listArticoleComanda.Add(articolComanda);
 
@@ -1459,6 +1476,7 @@ namespace LiteSFATestWebService
                         articolComanda.unit = dateArticol.unit;
                         articolComanda.quantity = dateArticol.quantity;
                         articolComanda.valPoz = Math.Round(dateArticol.valPoz,2);
+                        articolComanda.greutate = dateArticol.greutate;
                         listArticoleComanda.Add(articolComanda);
                     }
 
@@ -1470,14 +1488,14 @@ namespace LiteSFATestWebService
                 comandaMathaus.deliveryEntryDataList = listArticoleComanda;
 
                 if (antetCmdMathaus != null)
-                    dateTransport = getTransportService(antetCmdMathaus, comandaMathaus, canal);
+                    dateTransport = getTransportService(antetCmdMathaus, comandaMathaus, canal, datePoligon);
 
                 foreach (DateArticolMathaus articolMathaus in comandaMathaus.deliveryEntryDataList)
                 {
                     foreach (DepozitArticolTransport depozitArticol in dateTransport.listDepozite)
 
                     {
-                        if (articolMathaus.productCode.Equals(depozitArticol.codArticol) && articolMathaus.deliveryWarehouse.Equals(depozitArticol.filiala))
+                        if (articolMathaus.productCode.TrimStart('0').Equals(depozitArticol.codArticol.TrimStart('0')) && articolMathaus.deliveryWarehouse.Equals(depozitArticol.filiala))
                         {
                             articolMathaus.depozit = depozitArticol.depozit;
                             break;
@@ -1496,7 +1514,7 @@ namespace LiteSFATestWebService
                 ErrorHandling.sendErrorToMail("getLivrariComanda: " + ex.ToString());
             }
 
-            ErrorHandling.sendErrorToMail("getLivrariComandaCumulative: \n " + antetComanda + " \n " + strComanda + " \n " + canal + "\n" + serializer.Serialize(livrareMathaus));
+            ErrorHandling.sendErrorToMail("getLivrariComandaCumulative: \n\n" + antetComanda + " \n\n" + strComanda + " \n\n" + canal + "\n\n" +strPoligon + "\n\n" + serializer.Serialize(livrareMathaus));
 
             return serializer.Serialize(livrareMathaus);
 
@@ -1511,6 +1529,8 @@ namespace LiteSFATestWebService
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             LivrareMathaus livrareMathaus = new LivrareMathaus();
+
+            DatePoligon datePoligon = new DatePoligon("", "", "", "", "");
 
             try {
 
@@ -1534,7 +1554,10 @@ namespace LiteSFATestWebService
                         continue;
 
                     DateArticolMathaus articol = new DateArticolMathaus();
-                    articol.productCode = "0000000000" + dateArticol.productCode;
+                    if (Char.IsDigit(dateArticol.productCode,0))
+                        articol.productCode = "0000000000" + dateArticol.productCode;
+                    else
+                        articol.productCode = dateArticol.productCode;
                     articol.quantity = Math.Ceiling(dateArticol.quantity);
                     articol.unit = dateArticol.unit;
                     deliveryEntryDataList.Add(articol);
@@ -1599,7 +1622,7 @@ namespace LiteSFATestWebService
                 DateTransportMathaus dateTransport = null;
 
                 if (antetCmdMathaus != null)
-                    dateTransport = getTransportService(antetCmdMathaus, comandaMathaus, canal);
+                    dateTransport = getTransportService(antetCmdMathaus, comandaMathaus, canal, datePoligon);
 
                 foreach(DateArticolMathaus articolMathaus in comandaMathaus.deliveryEntryDataList)
                 {
@@ -1834,12 +1857,14 @@ namespace LiteSFATestWebService
         }
 
 
-        private DateTransportMathaus getTransportService(AntetCmdMathaus antetCmd, ComandaMathaus comandaMathaus, string canal)
+        private DateTransportMathaus getTransportService(AntetCmdMathaus antetCmd, ComandaMathaus comandaMathaus, string canal, DatePoligon datePoligon)
         {
             DateTransportMathaus dateTransport = new DateTransportMathaus();
             List<CostTransportMathaus> listCostTransp = new List<CostTransportMathaus>();
             List<DepozitArticolTransport> listArticoleDepoz = new List<DepozitArticolTransport>();
+            List<CostTransportMathaus> listTaxeTransp = new List<CostTransportMathaus>();
 
+            List<OptiuneCamion> optiuniCamion = new JavaScriptSerializer().Deserialize<List<OptiuneCamion>>(antetCmd.tipCamion);
 
             string werks = comandaMathaus.sellingPlant;
             string departCmd = antetCmd.depart;
@@ -1866,7 +1891,34 @@ namespace LiteSFATestWebService
                 inParam.IpWerks = werks;
                 inParam.IpVkgrp = departCmd;
                 inParam.IpPernr = antetCmd.codPers;
-                inParam.IpTraty = antetCmd.tipTransp; 
+                inParam.IpTraty = antetCmd.tipTransp;
+
+                ZstTaxeAcces taxeAcces = new ZstTaxeAcces();
+
+                string zonaPoligon = datePoligon.tipZona;
+
+                if (datePoligon.tipZona.ToUpper().Equals("ZM"))
+                    zonaPoligon = "METRO";
+                else if (datePoligon.tipZona.ToUpper().Equals("ZMA") || datePoligon.tipZona.ToUpper().Equals("ZEMA"))
+                    zonaPoligon = "EXTRA_A";
+                else if (datePoligon.tipZona.ToUpper().Equals("ZMB") || datePoligon.tipZona.ToUpper().Equals("ZEMB"))
+                    zonaPoligon = "EXTRA_B";
+
+                taxeAcces.TipComanda = antetCmd.tipComandaCamion;
+                taxeAcces.GreutMarfa = (Decimal)antetCmd.greutateComanda;
+                taxeAcces.Zona = zonaPoligon;
+                taxeAcces.MasinaDescoperita = antetCmd.camionDescoperit != null && Boolean.Parse(antetCmd.camionDescoperit) ? "X" : " ";
+                taxeAcces.Macara = antetCmd.macara != null && Boolean.Parse(antetCmd.macara) ? "X" : " ";
+                taxeAcces.CamionScurt = HelperComenzi.getOptiuneCamion(optiuniCamion,"Camion scurt");
+                taxeAcces.CamionIveco = HelperComenzi.getOptiuneCamion(optiuniCamion, "Camioneta IVECO");
+                taxeAcces.Poligon = datePoligon.nume;
+                if (datePoligon.limitareTonaj!= null && datePoligon.limitareTonaj.Trim() != "")
+                    taxeAcces.LimitaTonaj = Decimal.Parse(datePoligon.limitareTonaj);
+
+
+                inParam.IsTaxaAcces = taxeAcces;
+
+
 
                 SAPWebServices.ZsitemsComanda[] items = new ZsitemsComanda[comandaMathaus.deliveryEntryDataList.Count];
 
@@ -1878,9 +1930,14 @@ namespace LiteSFATestWebService
                     items[ii].Kwmeng = Decimal.Parse(dateArticol.quantity.ToString());
                     items[ii].Vrkme = dateArticol.unit;
                     items[ii].ValPoz = Decimal.Parse(String.Format("{0:0.00}", dateArticol.valPoz));
+
+                    
                     items[ii].Werks = dateArticol.deliveryWarehouse;
+
                     if (dateArticol.depozit != null && dateArticol.depozit.Trim() != "")
                         items[ii].Lgort = dateArticol.depozit;
+
+                    items[ii].BrgewMatnr = Decimal.Parse(dateArticol.greutate);
 
                     ii++;
                 }
@@ -1935,6 +1992,33 @@ namespace LiteSFATestWebService
 
                 nrItems = resp.ItFilCost.Count();
 
+                
+
+
+                foreach (SAPWebServices.ZsfilTransp itemCost in resp.ItFilCost)
+                {
+
+                    foreach (CostTransportMathaus costTransp in listCostTransp)
+                    {
+                        if (costTransp.filiala.Equals(itemCost.Werks))
+                        {
+
+                            CostTransportMathaus taxaTransport = new CostTransportMathaus();
+                            taxaTransport.filiala = costTransp.filiala;
+                            taxaTransport.tipTransp = costTransp.tipTransp;
+
+                            taxaTransport.valTransp = itemCost.ValTr.ToString();
+                            taxaTransport.codArtTransp = itemCost.Matnr;
+                            taxaTransport.depart = itemCost.Spart;
+                            taxaTransport.numeCost = itemCost.Maktx.ToUpper();
+                            listTaxeTransp.Add(taxaTransport);
+                            break;
+                        }
+                    }
+
+                }
+
+                /*
                 foreach (SAPWebServices.ZsfilTransp itemCost in resp.ItFilCost)
                 {
 
@@ -1950,6 +2034,7 @@ namespace LiteSFATestWebService
                     }
 
                 }
+                */
 
                 if (Utils.isUnitLogGed(comandaMathaus.sellingPlant) || (canal != null && canal.Equals("20")))
                     trateazaLivrariGed(comandaMathaus, resp);
@@ -1957,10 +2042,11 @@ namespace LiteSFATestWebService
             }
             catch(Exception ex)
             {
-                ErrorHandling.sendErrorToMail("getTransportService: " + ex.ToString());
+                ErrorHandling.sendErrorToMail("getTransportService: " + ex.ToString()  );
             }
 
-            dateTransport.listCostTransport = listCostTransp;
+            //dateTransport.listCostTransport = listCostTransp;
+            dateTransport.listCostTransport = listTaxeTransp;
             dateTransport.listDepozite = listArticoleDepoz;
 
             return dateTransport;

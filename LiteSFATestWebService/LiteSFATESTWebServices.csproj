@@ -134,6 +134,7 @@
     <Compile Include="BeanCabluri.cs" />
     <Compile Include="BeanMathaus.cs" />
     <Compile Include="BeanPierderi.cs" />
+    <Compile Include="BeanPoligoane.cs" />
     <Compile Include="BeanRecomandari.cs" />
     <Compile Include="Cabluri05.cs" />
     <Compile Include="DocumentatieProduse.cs" />
@@ -192,6 +193,10 @@
     <Compile Include="OperatiiConditiiComanda.cs" />
     <Compile Include="OperatiiNecesar.cs" />
     <Compile Include="OperatiiObiectiveKA.cs" />
+    <Compile Include="ModelPoligoane.cs" />
+    <Compile Include="OperatiiPoligoane.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="OperatiiPreturiBG.cs" />
     <Compile Include="PierderiVanzari.cs" />
     <Compile Include="Preturi.cs" />

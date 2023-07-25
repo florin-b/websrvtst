@@ -44,6 +44,12 @@ namespace LiteSFATestWebService
         public string depart;
         public string codPers;
         public string tipTransp;
+        public string camionDescoperit;
+        public string macara;
+        public string tipCamion;
+        public double greutateComanda;
+        public string tipComandaCamion;
+
 
     }
 
@@ -60,6 +66,7 @@ namespace LiteSFATestWebService
         public string valTransp;
         public string codArtTransp;
         public string depart;
+        public string numeCost;
     }
 
     public class DepozitArticolTransport
@@ -92,6 +99,8 @@ namespace LiteSFATestWebService
         public string tip2;
         public string depozit;
         public string ulStoc;
+        public string greutate;
+        public string initQuantity;
     }
 
     public class StockMathaus
@@ -105,6 +114,13 @@ namespace LiteSFATestWebService
         public string productCode;
         public double availableQuantity;
         public string warehouse;
+    }
+
+    public class OptiuneCamion
+    {
+        public string nume;
+        public bool exista;
+        public bool selectat;
     }
 
 }
