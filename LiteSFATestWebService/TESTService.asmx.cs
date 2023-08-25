@@ -83,6 +83,14 @@ namespace LiteSFATestWebService
         }
 
         [WebMethod]
+        public double testRound(double doubleValue)
+        {
+
+            return Math.Round(doubleValue, 2, MidpointRounding.ToEven);
+
+        }
+
+        [WebMethod]
         public string testDocService()
         {
             return new DocumentatieProduse().testDocService();
@@ -3860,6 +3868,8 @@ namespace LiteSFATestWebService
         public string getArticoleComandaVanzare(string nrCmd, string afisCond, string tipUser, string departament)
         {
 
+            ErrorHandling.sendErrorToMail("getArticoleComandaVanzare: " + nrCmd + " , " + afisCond + " , " + tipUser + " , " + departament);
+
             string serializedResult = "", retVal = "";
             string unitLog1 = "", termenPlata = "", obsLivrare = "", tipPersClient = "";
             string cmp = "";
@@ -3872,8 +3882,7 @@ namespace LiteSFATestWebService
 
             if ((tipUser.Equals("DV") || tipUser.Equals("DD")) && !departament.Equals("00") && !departament.Equals("11") && !departament.Equals("99"))
                 conditieDepart = " and (b.spart = '" + departament + "' or b.dep_aprobare = '" + departament + "' or b.spart = '11') " + condArticole111;
-            //else if ((tipUser.Equals("DV") || tipUser.Equals("DD")) && (departament.Equals("00") || departament.Equals("11")))
-            //    conditieDepart = " and a.cod like '0000000000111%' ";
+            
 
 
             string infoPretTransp = ", a.val_transp  ";
@@ -4037,14 +4046,16 @@ namespace LiteSFATestWebService
 
                     if ((dateLivrare.tipPersAgent.Equals("CV") || dateLivrare.tipPersAgent.Equals("SITE")) && Utils.isUserTest(oReader.GetString(oReader.GetOrdinal("cod_agent"))))
                     {
+                        if (oReader.GetString(18).Trim().Length > 0)
+                        {
+                            dateLivrare.dateLivrare = oReader.GetString(16);
+                            dateLivrare.Oras = oReader.GetString(17);
+                            dateLivrare.codJudet = oReader.GetString(18);
 
-                        dateLivrare.dateLivrare = oReader.GetString(16);
-                        dateLivrare.Oras = oReader.GetString(17);
-                        dateLivrare.codJudet = oReader.GetString(18);
-
-                        dateLivrare.adresaD = oReader.GetString(2);
-                        dateLivrare.orasD = oReader.GetString(7);
-                        dateLivrare.codJudetD = oReader.GetString(8);
+                            dateLivrare.adresaD = oReader.GetString(2);
+                            dateLivrare.orasD = oReader.GetString(7);
+                            dateLivrare.codJudetD = oReader.GetString(8);
+                        }
                     }
 
 
@@ -7459,6 +7470,7 @@ namespace LiteSFATestWebService
         {
 
 
+
             string serializedResult = "";
             string retVal = "";
             string tipComanda = "";
@@ -7969,7 +7981,7 @@ namespace LiteSFATestWebService
                         string canalDistrib = "20";
                         if (oReader.GetString(9).Substring(2, 1).Equals("1"))
                         {
-                            comandaCuTva = oReader.GetFloat(3) * 1.19;
+                            comandaCuTva = new OperatiiArticole().getValoareCuTVAComanda(connection, comanda.idComanda);
                             canalDistrib = "10";
                         }
 
@@ -12640,7 +12652,7 @@ namespace LiteSFATestWebService
 
             if (tipUser.Equals("KA"))
             {
-                retVal = verificaArticoleMAV(comanda, alertSD, alertDV, cmdAngajament, tipUser, JSONArt, JSONComanda, JSONDateLivrare,"", idCmdAmob);
+                retVal = verificaArticoleMAV(comanda, alertSD, alertDV, cmdAngajament, tipUser, JSONArt, JSONComanda, JSONDateLivrare, tipUserSap, idCmdAmob);
             }
             else
             {
@@ -12771,7 +12783,7 @@ namespace LiteSFATestWebService
 
                     foreach (var articol in articolComanda)
                     {
-                        if (articol.depart.Equals("11"))
+                        if (articol.depart.Equals("11") || Utils.isUnitLogGed(articol.filialaSite))
                         {
                             articoleGed.Add(articol);
                             totalComandaGed += articol.pret;
@@ -12932,7 +12944,9 @@ namespace LiteSFATestWebService
 
                             if (!comandaVanzare.nrCmdSap.Equals("-1") || comandaVanzare.nrCmdSap.Length < 4)
                             {
-                                totalComanda += (articol.pretUnit / articol.multiplu) * Double.Parse(articol.cantUmb, CultureInfo.InvariantCulture);
+                                //aici - de verificat suplimentar
+                                //totalComanda += (articol.pretUnit / articol.multiplu) * Double.Parse(articol.cantUmb, CultureInfo.InvariantCulture);
+                                totalComanda += articol.pretUnit  * Double.Parse(articol.cantUmb, CultureInfo.InvariantCulture);
                             }
                             else
                             {
@@ -13353,7 +13367,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters[8].Value = HelperComenzi.setTipPlata(dateLivrare.tipPlata);
 
                 cmd.Parameters.Add(":perscont", OracleType.VarChar, 25).Direction = ParameterDirection.Input;
-                cmd.Parameters[9].Value = dateLivrare.persContact;
+                cmd.Parameters[9].Value = dateLivrare.persContact.Length == 0 ? " " : dateLivrare.persContact;
 
                 cmd.Parameters.Add(":tel", OracleType.VarChar, 15).Direction = ParameterDirection.Input;
                 cmd.Parameters[10].Value = dateLivrare.nrTel;
@@ -13362,16 +13376,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters[11].Value = stradaLivrareComanda;
 
                 cmd.Parameters.Add(":valoare", OracleType.Number, 15).Direction = ParameterDirection.Input;
-                string strValoareComanda = dateLivrare.totalComanda;
-
-                if (tipUser.Equals("CV") || tipUser.Equals("KA3"))   //se adauga valoare transport
-                {
-                    string strValoareIncasare = comandaVanzare.valoareIncasare == null ? "0" : comandaVanzare.valoareIncasare;
-                    double valoareComanda = Double.Parse(dateLivrare.totalComanda, CultureInfo.InvariantCulture) + Double.Parse(strValoareIncasare, CultureInfo.InvariantCulture);
-
-                    strValoareComanda = valoareComanda.ToString();
-                }
-                cmd.Parameters[12].Value = strValoareComanda;
+                cmd.Parameters[12].Value = dateLivrare.totalComanda;
 
                 cmd.Parameters.Add(":transp", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
                 cmd.Parameters[13].Value = dateLivrare.Transport;
@@ -13574,7 +13579,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters[49].Value = Convert.ToBoolean(dateLivrare.factPaletiSeparat) ? "X" : " ";
 
                 cmd.Parameters.Add(":lifnr", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
-                cmd.Parameters[50].Value = dateLivrare.filialaCLP != null && dateLivrare.filialaCLP.Trim().Length > 0 ? dateLivrare.filialaCLP : dateLivrare.furnizorMarfa;
+                cmd.Parameters[50].Value = HelperComenzi.isComandaBV90(articolComanda) ? " " : dateLivrare.filialaCLP != null && dateLivrare.filialaCLP.Trim().Length > 0 ? dateLivrare.filialaCLP : dateLivrare.furnizorMarfa;
 
                 cmd.Parameters.Add(":lifnr_prod", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
                 cmd.Parameters[51].Value = dateLivrare.furnizorProduse;
@@ -13681,9 +13686,8 @@ namespace LiteSFATestWebService
                         if (articolComanda[i].filialaSite != null || !articolComanda[i].filialaSite.Trim().Equals(String.Empty))
                             ulStoc = articolComanda[i].filialaSite;
 
-                        if (dateLivrare.filialaCLP != null && dateLivrare.filialaCLP.Trim().Length > 0)
+                        if (dateLivrare.filialaCLP != null && dateLivrare.filialaCLP.Trim().Length > 0 && !ulStoc.Equals("BV90"))
                             ulStoc = dateLivrare.filialaCLP;
-
 
 
                         pretUnit = articolComanda[i].pretUnit;

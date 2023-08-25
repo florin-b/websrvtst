@@ -1465,7 +1465,7 @@ namespace LiteSFATestWebService
                         if (dateArticol.ulStoc != null && dateArticol.ulStoc.Equals("BV90"))
                             articolComanda.deliveryWarehouse = "BV90";
                         else if (canal != null && canal.Equals("20") && (dateArticol.ulStoc == null || !dateArticol.ulStoc.Equals("BV90")))
-                            articolComanda.deliveryWarehouse = comanda.sellingPlant;
+                            articolComanda.deliveryWarehouse = dateArticol.productCode.StartsWith("0000000000111") ? getULGed(comanda.sellingPlant) : comanda.sellingPlant;
                         else
                             articolComanda.deliveryWarehouse = dateArticol.productCode.StartsWith("0000000000111") ? getULGed(comanda.sellingPlant) : comanda.sellingPlant;
 
@@ -1905,7 +1905,9 @@ namespace LiteSFATestWebService
                     zonaPoligon = "EXTRA_B";
 
                 taxeAcces.TipComanda = antetCmd.tipComandaCamion;
-                taxeAcces.GreutMarfa = (Decimal)antetCmd.greutateComanda;
+
+                taxeAcces.GreutMarfa = (Decimal)Math.Round(antetCmd.greutateComanda, 2, MidpointRounding.ToEven);
+
                 taxeAcces.Zona = zonaPoligon;
                 taxeAcces.MasinaDescoperita = antetCmd.camionDescoperit != null && Boolean.Parse(antetCmd.camionDescoperit) ? "X" : " ";
                 taxeAcces.Macara = antetCmd.macara != null && Boolean.Parse(antetCmd.macara) ? "X" : " ";
@@ -1937,7 +1939,7 @@ namespace LiteSFATestWebService
                     if (dateArticol.depozit != null && dateArticol.depozit.Trim() != "")
                         items[ii].Lgort = dateArticol.depozit;
 
-                    items[ii].BrgewMatnr = Decimal.Parse(dateArticol.greutate);
+                    items[ii].BrgewMatnr = Decimal.Parse(String.Format("{0:0.00}", dateArticol.greutate) );
 
                     ii++;
                 }
@@ -2018,26 +2020,9 @@ namespace LiteSFATestWebService
 
                 }
 
-                /*
-                foreach (SAPWebServices.ZsfilTransp itemCost in resp.ItFilCost)
-                {
 
-                    foreach (CostTransportMathaus costTransp in listCostTransp)
-                    {
-                        if (costTransp.filiala.Equals(itemCost.Werks))
-                        {
-                            costTransp.valTransp = itemCost.ValTr.ToString();
-                            costTransp.codArtTransp = itemCost.Matnr;
-                            costTransp.depart = itemCost.Spart;
-                            break;
-                        }
-                    }
-
-                }
-                */
-
-                if (Utils.isUnitLogGed(comandaMathaus.sellingPlant) || (canal != null && canal.Equals("20")))
-                    trateazaLivrariGed(comandaMathaus, resp);
+              //  if (Utils.isUnitLogGed(comandaMathaus.sellingPlant) || (canal != null && canal.Equals("20")))
+              //      trateazaLivrariGed(comandaMathaus, resp);
 
             }
             catch(Exception ex)

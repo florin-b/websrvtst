@@ -302,7 +302,7 @@ namespace LiteSFATestWebService
                          Convert.ToInt32(Double.Parse(multiplu)).ToString() + "#" +
                          cantUmb + "#" + Umb + "#" + discMaxKA + "#" + cmpArticol.ToString() + "#" + pretMediu + "#" + 
                          impachetare + "#" + istoricPret + "#" + procRedCmp + "#" + pretGed + "#" + dataExp + "#" + greutateArt + "#" + 
-                         articoleRecom + "#" + articolProps.tipMarfa + "#" + greutateBruta + "#" + articolProps.lungime + "#";
+                         articoleRecom + "#" + articolProps.tipMarfa + "#" + greutateBruta + "#" + articolProps.lungime + "#" ;
 
 
                 if (pretOut.Equals("0.0"))

@@ -2327,5 +2327,110 @@ namespace LiteSFATestWebService
             return articolProps;
         }
 
+
+        public double getValoareCuTVAComanda(OracleConnection connection, string idComanda)
+        {
+            double totalCuTva = 0;
+
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " SELECT sum(b.val_poz + b.val_poz * (k.kbetr/10)/100) cu_tva FROM sapprd.konp k, sapprd.zcomhead_tableta a, sapprd.zcomdet_tableta b WHERE " +
+                                  " a.mandt = '900' and b.mandt='900' and a.id = :idComanda and b.id = a.id  and k.mandt = '900' and k.knumh = " + 
+                                  " (SELECT knumh FROM sapprd.a002 WHERE mandt = '900' and kschl = 'MWST' AND aland = 'RO' " + 
+                                  " AND taxm1 = (select taklv from sapprd.mara where mandt = '900' and matnr = b.cod and rownum = 1) " + 
+                                  " AND taxk1 = (select taxkd from sapprd.knvi where mandt = '900' and kunnr = a.cod_client and rownum = 1) " + 
+                                  " AND datab <= a.datac AND datbi >= a.datac) ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":idComanda", OracleType.Int32, 20).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = Int32.Parse(idComanda);
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    totalCuTva = oReader.GetDouble(0);
+                }
+
+                oReader.Close();
+                oReader.Dispose();
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                cmd.Dispose();
+            }
+
+
+            return totalCuTva;
+        }
+
+        public double getCotaTva(OracleConnection connection, string codArticol, string codClient)
+        {
+            double cotaTva = 0;
+
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " SELECT kbetr/10 tva FROM sapprd.konp WHERE mandt = '900' and knumh = " + 
+                                  " (SELECT knumh FROM sapprd.a002 WHERE mandt = '900' and kschl = 'MWST' AND aland = 'RO' " +
+                                  " AND taxm1 = (select taklv from sapprd.mara where mandt = '900' and matnr = :codArticol and rownum = 1) " +
+                                  " AND taxk1 = (select taxkd from sapprd.knvi where mandt = '900' and kunnr = :codClient and rownum = 1) " + 
+                                  " AND datab <= to_char(sysdate, 'yyyymmdd') AND datbi >= to_char(sysdate, 'yyyymmdd')) ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                if (Char.IsDigit(codArticol, 0) && !codArticol.Substring(0,1).Equals("0"))
+                    codArticol = "0000000000" + codArticol;
+
+                cmd.Parameters.Add(":codArticol", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codArticol;
+
+                cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = codClient;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    cotaTva = oReader.GetDouble(0);
+                }
+
+                oReader.Close();
+                oReader.Dispose();
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                cmd.Dispose();
+            }
+
+
+            return cotaTva;
+        }
+
     }
 }

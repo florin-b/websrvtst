@@ -477,6 +477,21 @@ namespace LiteSFATestWebService
             return optiune;
         }
 
+        public static bool isComandaBV90(List<ArticolComanda> listArticole)
+        {
+
+            foreach (ArticolComanda articolComanda in listArticole)
+            {
+                if (articolComanda.filialaSite != null && articolComanda.filialaSite.Equals("BV90"))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+
+        }
+
 
     }
 }
