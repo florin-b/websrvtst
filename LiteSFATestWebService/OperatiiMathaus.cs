@@ -4,16 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.OracleClient;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
+
 using System.Text.RegularExpressions;
-using System.Web;
+
 
 
 using System.Web.Script.Serialization;
-using System.Xml.Linq;
+
 
 namespace LiteSFATestWebService
 {
@@ -83,19 +84,19 @@ namespace LiteSFATestWebService
 
 
 
-        public string getArticoleCategorie(string codCategorie, string filiala, string depart, string pagina, string tipArticol)
+        public string getArticoleCategorie(string codCategorie, string filiala, string depart, string pagina, string tipArticol, string tipComanda)
         {
 
-            ErrorHandling.sendErrorToMail("getArtCateg: " + codCategorie + " , " +  filiala + " , " + depart + " , " + pagina + " , " + tipArticol);
+            ErrorHandling.sendErrorToMail("getArtCateg: " + codCategorie + " , " +  filiala + " , " + depart + " , " + pagina + " , " + tipArticol + " , " + tipComanda);
 
             RezultatArtMathaus rezultat = new RezultatArtMathaus();
             
 
             if (codCategorie.Equals("0"))
-                rezultat = getArticoleLocal(filiala, depart, pagina);
+                rezultat = getArticoleLocal(filiala, depart, pagina, tipComanda);
             else {
                 if (tipArticol == null || (tipArticol != null && tipArticol.Equals("SITE")))
-                    rezultat = getArticoleCategorie(codCategorie, filiala, depart, pagina);
+                    rezultat = getArticoleCategorie(codCategorie, filiala, depart, pagina, tipComanda);
                 else
                     rezultat = getArticoleND(filiala, codCategorie, pagina);
             }
@@ -108,7 +109,7 @@ namespace LiteSFATestWebService
         }
 
 
-        private int getNrArticoleCategorie(string codCategorie, string filiala, string depart)
+        private int getNrArticoleCategorie(string codCategorie, string filiala, string depart, string tipComanda)
         {
 
             
@@ -125,6 +126,10 @@ namespace LiteSFATestWebService
             if (depart != null && (depart.Equals("00") || depart.Equals("11")))
                 condDepart = "";
 
+            string condFasonate = "";
+            if (tipComanda != null && tipComanda.ToLower().Contains("fasonat"))
+                condFasonate = " and ar.sintetic in " + HelperComenzi.getSinteticeFasonate();
+
             connection.ConnectionString = connectionString;
             connection.Open();
 
@@ -136,7 +141,7 @@ namespace LiteSFATestWebService
                                   " from sapprd.zpath_hybris s, sapprd.marc c, websap.articole ar, sapprd.mvke e " +
                                   " where (s.nivel_0 = :codCateg or s.nivel_1 = :codCateg or s.nivel_2 = :codCateg or " +
                                   " s.nivel_3 = :codCateg or s.nivel_4 = :codCateg or s.nivel_5 = :codCateg or s.nivel_6 = :codCateg) " +
-                                  condDepart +
+                                  condDepart + condFasonate + 
                                   " and ar.cod = s.matnr and s.mandt = c.mandt and s.matnr = c.matnr " +
                                   " and e.mandt = '900' and e.matnr = s.matnr and e.vtweg = '20' ";
                                   
@@ -172,7 +177,7 @@ namespace LiteSFATestWebService
             return nrArticole;
         }
 
-        public RezultatArtMathaus getArticoleCategorie(string codCategorie, string filiala, string depart, string pagina)
+        public RezultatArtMathaus getArticoleCategorie(string codCategorie, string filiala, string depart, string pagina, string tipComanda)
         {
             
 
@@ -183,7 +188,7 @@ namespace LiteSFATestWebService
 
             List<ArticolMathaus> listArticole = new List<ArticolMathaus>();
 
-            rezultat.nrTotalArticole = getNrArticoleCategorie(codCategorie, filiala, depart).ToString();
+            rezultat.nrTotalArticole = getNrArticoleCategorie(codCategorie, filiala, depart, tipComanda).ToString();
 
             OracleConnection connection = new OracleConnection();
             OracleDataReader oReader = null;
@@ -194,6 +199,10 @@ namespace LiteSFATestWebService
 
             if (depart != null && (depart.Equals("00") || depart.Equals("11")))
                 condDepart = "";
+
+            string condFasonate = "";
+            if (tipComanda != null && tipComanda.ToLower().Contains("fasonat"))
+                condFasonate = " and ar.sintetic in " + HelperComenzi.getSinteticeFasonate();
 
             connection.ConnectionString = connectionString;
             connection.Open();
@@ -218,13 +227,13 @@ namespace LiteSFATestWebService
                                   " from sapprd.zpath_hybris s, sapprd.marc c, websap.articole ar, sapprd.mvke e " +
                                   " where (s.nivel_0 = :codCateg or s.nivel_1 = :codCateg or s.nivel_2 = :codCateg or " +
                                   " s.nivel_3 = :codCateg or s.nivel_4 = :codCateg or s.nivel_5 = :codCateg or s.nivel_6 = :codCateg) " +
-                                  condDepart +
+                                  condDepart + condFasonate + 
                                   " and ar.cod = s.matnr and s.mandt = c.mandt and s.matnr = c.matnr " +
                                   " and e.mandt = '900' and e.matnr = s.matnr and e.vtweg = '20' " +
                                   " order by cod_planif, stoc_art desc, s.matnr OFFSET :paginaCrt ROWS FETCH NEXT 10 ROWS ONLY ";
 
 
-               
+                ErrorHandling.sendErrorToMail("getArticoleCategiorie: " + cmd.CommandText);
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -475,7 +484,7 @@ namespace LiteSFATestWebService
         }
 
 
-        private int getNrArticoleLocal(string filiala, string depart, string pagina)
+        private int getNrArticoleLocal(string filiala, string depart, string pagina, string tipComanda)
         {
 
             int nrArticole = 0;
@@ -494,14 +503,18 @@ namespace LiteSFATestWebService
             if (depart.Equals("00"))
                 condDepart = "";
 
+            string condFasonate = "";
+            if (tipComanda != null && tipComanda.ToLower().Contains("fasonat"))
+                condFasonate = " and a.sintetic in " + HelperComenzi.getSinteticeFasonate();
+
             try
             {
 
                 cmd.CommandText = " select count(distinct c.matnr) from sapprd.marc c, sapprd.zstoc_job b, websap.articole a, websap.sintetice g " +
-                                  " where c.mandt = '900' and c.werks = :filiala and c.dismm = 'ND' and b.mandt = c.mandt and b.matnr = c.matnr " +
+                                  " where c.mandt = '900' and c.werks = :filiala and c.dismm in ('ND', 'AC', 'ZC') and b.mandt = c.mandt and b.matnr = c.matnr " +
                                   " and (b.werks = c.werks or (a.spart in ('01', '02', '05') and b.werks = 'BV90')) and b.stocne > 0 and not exists " +
                                   " (select * from sapprd.zpath_hybris s where s.mandt = '900' and s.matnr = c.matnr) and c.matnr = a.cod " +
-                                  " and a.sintetic = g.cod " + condDepart + " order by c.matnr ";
+                                  " and a.sintetic = g.cod " + condDepart + condFasonate + " order by c.matnr ";
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -538,13 +551,13 @@ namespace LiteSFATestWebService
         }
 
         //neclasificate
-        private RezultatArtMathaus getArticoleLocal(string filiala, string depart, string pagina)
+        private RezultatArtMathaus getArticoleLocal(string filiala, string depart, string pagina, string tipComanda)
         {
 
            
 
             RezultatArtMathaus rezultat = new RezultatArtMathaus();
-            rezultat.nrTotalArticole = getNrArticoleLocal(filiala, depart, pagina).ToString();
+            rezultat.nrTotalArticole = getNrArticoleLocal(filiala, depart, pagina, tipComanda).ToString();
 
             List<ArticolMathaus> listArticole = new List<ArticolMathaus>();
 
@@ -566,15 +579,19 @@ namespace LiteSFATestWebService
             if (depart.Equals("00"))
                 condDepart = "";
 
+            string condFasonat = "";
+            if (tipComanda != null && tipComanda.ToLower().Contains("fasonat"))
+                condFasonat = " and a.sintetic in " + HelperComenzi.getSinteticeFasonate(); 
+
             try
             {
 
                 cmd.CommandText = " select * from (" +
-                                  " select distinct c.matnr, a.nume, nvl(dismm,' '), row_number() over (ORDER BY c.matnr ASC) line_number from sapprd.marc c, sapprd.zstoc_job b, websap.articole a, websap.sintetice g " + 
-                                  " where c.mandt = '900' and c.werks = :filiala and c.dismm = 'ND' and b.mandt = c.mandt and b.matnr = c.matnr " +
+                                  " select distinct c.matnr, a.nume, nvl(dismm,' '), row_number() over (ORDER BY c.matnr ASC) line_number from sapprd.marc c, sapprd.zstoc_job b, websap.articole a, websap.sintetice g " +
+                                  " where c.mandt = '900' and c.werks = :filiala and c.dismm in ('ND', 'AC', 'ZC') and b.mandt = c.mandt and b.matnr = c.matnr " +
                                   " and (b.werks = c.werks or (a.spart in ('01', '02', '05') and b.werks = 'BV90')) and b.stocne > 0 and not exists " + 
                                   " (select * from sapprd.zpath_hybris s where s.mandt = '900' and s.matnr = c.matnr) and c.matnr = a.cod " + 
-                                  " and a.sintetic = g.cod " + condDepart + "  order by c.matnr ) " +
+                                  " and a.sintetic = g.cod " + condDepart + condFasonat + "  order by c.matnr ) " +
                                   " where line_number between :pageMin and :pageMax order by line_number ";
 
 
@@ -736,7 +753,7 @@ namespace LiteSFATestWebService
 
 
 
-        public int getNrArticoleCautare(string codArticol, string tipCautare, string filiala, string depart)
+        public int getNrArticoleCautare(string codArticol, string tipCautare, string filiala, string depart, string tipComanda)
         {
 
             int nrArticole = 0;
@@ -755,6 +772,10 @@ namespace LiteSFATestWebService
             if (depart.Equals("00"))
                 condDepart = "";
 
+            string condFasonate = "";
+            if (tipComanda != null && tipComanda.Trim().ToLower().Contains("fasonat"))
+                condFasonate = " and a.sintetic in " + HelperComenzi.getSinteticeFasonate();
+
             OracleConnection connection = new OracleConnection();
             OracleDataReader oReader = null;
 
@@ -770,7 +791,7 @@ namespace LiteSFATestWebService
                 cmd.CommandText = " select count(distinct a.cod)  " +
                                  " from articole a, sintetice b, sapprd.marc c where c.mandt = '900' " +
                                  " and c.matnr = a.cod and c.werks = :filiala and c.mmsta <> '01'  and a.sintetic = b.cod and a.cod != 'MAT GENERIC PROD' " +
-                                 " and a.blocat <> '01' " + cautare + condDepart;
+                                 " and a.blocat <> '01' " + cautare + condDepart + condFasonate;
 
 
 
@@ -809,8 +830,10 @@ namespace LiteSFATestWebService
 
 
 
-        public string cautaArticoleMathaus(string codArticol, string tipCautare, string filiala, string depart, string pagina)
+        public string cautaArticoleMathaus(string codArticol, string tipCautare, string filiala, string depart, string pagina, string tipComanda)
         {
+
+            
 
             RezultatArtMathaus rezultat = new RezultatArtMathaus();
 
@@ -824,7 +847,7 @@ namespace LiteSFATestWebService
             else
                 cautare = " and lower(a.nume) like '" + codArticol.ToLower() + "%'";
 
-            rezultat.nrTotalArticole = getNrArticoleCautare( codArticol,  tipCautare, filiala, depart).ToString();
+            rezultat.nrTotalArticole = getNrArticoleCautare( codArticol,  tipCautare, filiala, depart, tipComanda).ToString();
 
             OracleConnection connection = new OracleConnection();
             OracleDataReader oReader = null;
@@ -836,13 +859,14 @@ namespace LiteSFATestWebService
 
 
             string condDepart = " and ( a.grup_vz in " + HelperComenzi.getDepartExtra(depart) + " or a.grup_vz = '11' )  ";
-
-            
             if (depart.Equals("00"))
             {
                 condDepart = "";
             }
 
+            string condFasonate = "";
+            if (tipComanda != null && tipComanda.Trim().ToLower().Contains("fasonat"))
+                condFasonate = " and a.sintetic in " + HelperComenzi.getSinteticeFasonate();
 
             OracleCommand cmd = connection.CreateCommand();
             try
@@ -863,8 +887,9 @@ namespace LiteSFATestWebService
                                   " from articole a, sintetice b, sapprd.marc c " +
                                   " where c.mandt = '900'  and c.matnr = a.cod and c.werks = :filiala and c.mmsta <> '01' " +
                                   " and a.sintetic = b.cod and a.cod != 'MAT GENERIC PROD'  and a.blocat <> '01' " +
-                                    cautare +  condDepart +
+                                    cautare +  condDepart + condFasonate +
                                   " order by cod_planif, stoc_art desc, a.nume  OFFSET :paginaCrt ROWS FETCH NEXT 10 ROWS ONLY ";
+
 
 
                 cmd.CommandType = CommandType.Text;
@@ -1381,14 +1406,20 @@ namespace LiteSFATestWebService
                         continue;
 
                     DateArticolMathaus articol = new DateArticolMathaus();
-                    if (Char.IsDigit(dateArticol.productCode,0))
+                    if (Char.IsDigit(dateArticol.productCode, 0))
                         articol.productCode = "0000000000" + dateArticol.productCode;
                     else
                         articol.productCode = dateArticol.productCode;
 
-                    articol.quantity = Math.Ceiling(dateArticol.quantity);
-                    articol.initQuantity = dateArticol.quantity.ToString();
-                    articol.unit = dictionarUmIso[dateArticol.unit];
+                    if (!dateArticol.unit.Equals(dateArticol.unit50) && dateArticol.quantity50 > 0)
+                    {
+                        articol.quantity = dateArticol.quantity50;
+                        articol.unit = dictionarUmIso[dateArticol.unit50];
+                    }
+                    else {
+                        articol.quantity = dateArticol.quantity;
+                        articol.unit = dictionarUmIso[dateArticol.unit];
+                    }
 
                     deliveryEntryDataList.Add(articol);
 
@@ -1407,7 +1438,7 @@ namespace LiteSFATestWebService
                 else
                 {
                     ComandaMathaus cmdMathaus = new ComandaMathaus();
-                    cmdMathaus.sellingPlant = comandaMathaus.sellingPlant;
+                    cmdMathaus.sellingPlant = comandaMathaus.sellingPlant.Split(',')[0];
                     cmdMathaus.deliveryEntryDataList = new List<DateArticolMathaus>();
                     comandaRezultat = cmdMathaus;
                 }
@@ -1447,8 +1478,14 @@ namespace LiteSFATestWebService
                             articolComanda.ulStoc = dateArticol.ulStoc;
                             articolComanda.tip2 = dateArticol.tip2;
                             articolComanda.unit = dateArticol.unit;
-                            articolComanda.quantity = dateArticolRez.quantity;
-                            articolComanda.valPoz = Math.Round(((dateArticol.valPoz / dateArticol.quantity) * dateArticolRez.quantity),2);
+
+                            if (!dateArticol.unit.Equals(dateArticol.unit50))
+                                articolComanda.quantity = Math.Round(dateArticolRez.quantity * (dateArticol.quantity / dateArticol.quantity50),2);
+                            else
+                                articolComanda.quantity = dateArticolRez.quantity;
+
+                            articolComanda.cantUmb = Math.Round(HelperComenzi.getCantitateUmb(articolComanda.productCode, articolComanda.quantity, articolComanda.unit),2);
+                            articolComanda.valPoz = Math.Round(((dateArticol.valPoz / dateArticol.quantity) * articolComanda.quantity),2);
                             articolComanda.greutate = dateArticol.greutate;
 
                             listArticoleComanda.Add(articolComanda);
@@ -1462,12 +1499,14 @@ namespace LiteSFATestWebService
 
                         articolComanda = new DateArticolMathaus();
 
-                        if (dateArticol.ulStoc != null && dateArticol.ulStoc.Equals("BV90"))
+                        if (dateArticol.ulStoc != null && dateArticol.ulStoc.Trim() != "" && !dateArticol.ulStoc.Equals("BV90"))
+                            articolComanda.deliveryWarehouse = dateArticol.ulStoc;
+                        else if (dateArticol.ulStoc != null && dateArticol.ulStoc.Equals("BV90"))
                             articolComanda.deliveryWarehouse = "BV90";
                         else if (canal != null && canal.Equals("20") && (dateArticol.ulStoc == null || !dateArticol.ulStoc.Equals("BV90")))
-                            articolComanda.deliveryWarehouse = dateArticol.productCode.StartsWith("0000000000111") ? getULGed(comanda.sellingPlant) : comanda.sellingPlant;
+                            articolComanda.deliveryWarehouse = dateArticol.productCode.StartsWith("0000000000111") ? getULGed(comanda.sellingPlant) : comanda.sellingPlant.Split(',')[0];
                         else
-                            articolComanda.deliveryWarehouse = dateArticol.productCode.StartsWith("0000000000111") ? getULGed(comanda.sellingPlant) : comanda.sellingPlant;
+                            articolComanda.deliveryWarehouse = dateArticol.productCode.StartsWith("0000000000111") ? getULGed(comanda.sellingPlant) : comanda.sellingPlant.Split(',')[0];
 
                         articolComanda.productCode = dateArticol.productCode;
                         articolComanda.depozit = dateArticol.depozit;
@@ -1707,7 +1746,7 @@ namespace LiteSFATestWebService
             }
             catch(Exception ex)
             {
-                ErrorHandling.sendErrorToMail("callDeliveryService: " + ex.ToString() + "\n" + urlDeliveryService);
+                ErrorHandling.sendErrorToMail("callDeliveryService: " + ex.ToString() + "\n\n" + jsonData + "\n" + urlDeliveryService + " \n\n " + canal + " \n\n " + tipPers + " \n\n " + codPers );
             }
 
             return result;
@@ -1847,6 +1886,8 @@ namespace LiteSFATestWebService
 
             string stockResponse = sr.ReadToEnd().Trim();
 
+            ErrorHandling.sendErrorToMail("callStockService: \n\n " + urlStockService + " \n\n " + jsonData + "\n\n" + stockResponse);
+
             return stockResponse;
 
         }
@@ -1866,7 +1907,7 @@ namespace LiteSFATestWebService
 
             List<OptiuneCamion> optiuniCamion = new JavaScriptSerializer().Deserialize<List<OptiuneCamion>>(antetCmd.tipCamion);
 
-            string werks = comandaMathaus.sellingPlant;
+            string werks = comandaMathaus.sellingPlant.Split(',')[0];
             string departCmd = antetCmd.depart;
 
             if (canal != null && canal.Equals("20"))
@@ -1914,8 +1955,14 @@ namespace LiteSFATestWebService
                 taxeAcces.CamionScurt = HelperComenzi.getOptiuneCamion(optiuniCamion,"Camion scurt");
                 taxeAcces.CamionIveco = HelperComenzi.getOptiuneCamion(optiuniCamion, "Camioneta IVECO");
                 taxeAcces.Poligon = datePoligon.nume;
-                if (datePoligon.limitareTonaj!= null && datePoligon.limitareTonaj.Trim() != "")
-                    taxeAcces.LimitaTonaj = Decimal.Parse(datePoligon.limitareTonaj);
+
+                if (datePoligon.limitareTonaj != null && datePoligon.limitareTonaj.Trim() != "")
+                {
+                    if (datePoligon.limitareTonaj.Contains(","))
+                        taxeAcces.LimitaTonaj = Decimal.Parse(datePoligon.limitareTonaj, new CultureInfo("ro"));
+                    else
+                        taxeAcces.LimitaTonaj = Decimal.Parse(datePoligon.limitareTonaj);
+                }
 
 
                 inParam.IsTaxaAcces = taxeAcces;
@@ -2021,8 +2068,7 @@ namespace LiteSFATestWebService
                 }
 
 
-              //  if (Utils.isUnitLogGed(comandaMathaus.sellingPlant) || (canal != null && canal.Equals("20")))
-              //      trateazaLivrariGed(comandaMathaus, resp);
+             
 
             }
             catch(Exception ex)
@@ -2030,8 +2076,11 @@ namespace LiteSFATestWebService
                 ErrorHandling.sendErrorToMail("getTransportService: " + ex.ToString()  );
             }
 
-            //dateTransport.listCostTransport = listCostTransp;
-            dateTransport.listCostTransport = listTaxeTransp;
+            if (antetCmd.tipTransp.Equals("TCLI") || antetCmd.tipTransp.Equals("TFRN"))
+                dateTransport.listCostTransport = new List<CostTransportMathaus>();
+            else
+                dateTransport.listCostTransport = listTaxeTransp;
+
             dateTransport.listDepozite = listArticoleDepoz;
 
             return dateTransport;

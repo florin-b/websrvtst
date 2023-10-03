@@ -62,8 +62,8 @@ namespace LiteSFATestWebService
                 inParam.Canal = canalDistrib;
                 inParam.UlStoc = filialaAlternativa.Equals("BV90") ? "BV90" : filialaClp != null ? filialaClp : " ";
                 inParam.Traty = tipTransport != null ? tipTransport : " ";
+                inParam.CuRotunj = "X";
                 
-
 
                 SAPWebServices.ZgetPriceResponse outParam = webService.ZgetPrice(inParam);
 
@@ -86,7 +86,10 @@ namespace LiteSFATestWebService
 
                 string greutateArt = outParam.GvBrgew.ToString();
                 string greutateBruta = outParam.GvBrgewMatnr.ToString();
-               
+
+                string um50 = outParam.GvUm50;
+                string cantitate50 = outParam.GvQty50.ToString();
+
 
                 string extindere11 = outParam.ErrorCode.ToString();
 
@@ -302,7 +305,7 @@ namespace LiteSFATestWebService
                          Convert.ToInt32(Double.Parse(multiplu)).ToString() + "#" +
                          cantUmb + "#" + Umb + "#" + discMaxKA + "#" + cmpArticol.ToString() + "#" + pretMediu + "#" + 
                          impachetare + "#" + istoricPret + "#" + procRedCmp + "#" + pretGed + "#" + dataExp + "#" + greutateArt + "#" + 
-                         articoleRecom + "#" + articolProps.tipMarfa + "#" + greutateBruta + "#" + articolProps.lungime + "#" ;
+                         articoleRecom + "#" + articolProps.tipMarfa + "#" + greutateBruta + "#" + articolProps.lungime + "#" + cantitate50 + "#" + um50 + "#";
 
 
                 if (pretOut.Equals("0.0"))

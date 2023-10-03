@@ -42,8 +42,6 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         private System.Threading.SendOrPostCallback ZactDiscMaximOperationCompleted;
         
-        private System.Threading.SendOrPostCallback ZcheckZileLivrareOperationCompleted;
-        
         private System.Threading.SendOrPostCallback ZpalcantOperationCompleted;
         
         private System.Threading.SendOrPostCallback ZretMarfaOperationCompleted;
@@ -133,9 +131,6 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         /// <remarks/>
         public event ZactDiscMaximCompletedEventHandler ZactDiscMaximCompleted;
-        
-        /// <remarks/>
-        public event ZcheckZileLivrareCompletedEventHandler ZcheckZileLivrareCompleted;
         
         /// <remarks/>
         public event ZpalcantCompletedEventHandler ZpalcantCompleted;
@@ -371,36 +366,6 @@ namespace LiteSFATestWebService.SAPWebServices {
             if ((this.ZactDiscMaximCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.ZactDiscMaximCompleted(this, new ZactDiscMaximCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
-            }
-        }
-        
-        /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
-        [return: System.Xml.Serialization.XmlElementAttribute("ZcheckZileLivrareResponse", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
-        public ZcheckZileLivrareResponse ZcheckZileLivrare([System.Xml.Serialization.XmlElementAttribute("ZcheckZileLivrare", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")] ZcheckZileLivrare ZcheckZileLivrare1) {
-            object[] results = this.Invoke("ZcheckZileLivrare", new object[] {
-                        ZcheckZileLivrare1});
-            return ((ZcheckZileLivrareResponse)(results[0]));
-        }
-        
-        /// <remarks/>
-        public void ZcheckZileLivrareAsync(ZcheckZileLivrare ZcheckZileLivrare1) {
-            this.ZcheckZileLivrareAsync(ZcheckZileLivrare1, null);
-        }
-        
-        /// <remarks/>
-        public void ZcheckZileLivrareAsync(ZcheckZileLivrare ZcheckZileLivrare1, object userState) {
-            if ((this.ZcheckZileLivrareOperationCompleted == null)) {
-                this.ZcheckZileLivrareOperationCompleted = new System.Threading.SendOrPostCallback(this.OnZcheckZileLivrareOperationCompleted);
-            }
-            this.InvokeAsync("ZcheckZileLivrare", new object[] {
-                        ZcheckZileLivrare1}, this.ZcheckZileLivrareOperationCompleted, userState);
-        }
-        
-        private void OnZcheckZileLivrareOperationCompleted(object arg) {
-            if ((this.ZcheckZileLivrareCompleted != null)) {
-                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
-                this.ZcheckZileLivrareCompleted(this, new ZcheckZileLivrareCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -18964,7 +18929,7 @@ namespace LiteSFATestWebService.SAPWebServices {
             }
         }
         
-        /// <remarks/>global::
+        /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form= global::System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public string MessageV1 {
             get {
@@ -26279,67 +26244,6 @@ namespace LiteSFATestWebService.SAPWebServices {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
-    public partial class ZileIncarc {
-        
-        private string dataField;
-        
-        private string i813Field;
-        
-        private string i1318Field;
-        
-        private string toataZiuaField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string Data {
-            get {
-                return this.dataField;
-            }
-            set {
-                this.dataField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string I813 {
-            get {
-                return this.i813Field;
-            }
-            set {
-                this.i813Field = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string I1318 {
-            get {
-                return this.i1318Field;
-            }
-            set {
-                this.i1318Field = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string ToataZiua {
-            get {
-                return this.toataZiuaField;
-            }
-            set {
-                this.toataZiuaField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
     public partial class ZsitemsComanda {
         
         private string matnrField;
@@ -26968,6 +26872,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         private string cityField;
         
+        private string cuRotunjField;
+        
         private string dztermField;
         
         private decimal gvCantField;
@@ -27017,6 +26923,17 @@ namespace LiteSFATestWebService.SAPWebServices {
             }
             set {
                 this.cityField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string CuRotunj {
+            get {
+                return this.cuRotunjField;
+            }
+            set {
+                this.cuRotunjField = value;
             }
         }
         
@@ -27224,6 +27141,10 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         private string gvNoDiscField;
         
+        private decimal gvQty50Field;
+        
+        private string gvUm50Field;
+        
         private string gvVrkmeField;
         
         private string gvVrkmeFreeField;
@@ -27404,6 +27325,28 @@ namespace LiteSFATestWebService.SAPWebServices {
             }
             set {
                 this.gvNoDiscField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal GvQty50 {
+            get {
+                return this.gvQty50Field;
+            }
+            set {
+                this.gvQty50Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvUm50 {
+            get {
+                return this.gvUm50Field;
+            }
+            set {
+                this.gvUm50Field = value;
             }
         }
         
@@ -27591,104 +27534,6 @@ namespace LiteSFATestWebService.SAPWebServices {
             }
             set {
                 this.vOkField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
-    public partial class ZcheckZileLivrare {
-        
-        private string ipCityField;
-        
-        private string ipRegioField;
-        
-        private string ipVstelField;
-        
-        private string ipWerksField;
-        
-        private ZileIncarc[] itZileField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string IpCity {
-            get {
-                return this.ipCityField;
-            }
-            set {
-                this.ipCityField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string IpRegio {
-            get {
-                return this.ipRegioField;
-            }
-            set {
-                this.ipRegioField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string IpVstel {
-            get {
-                return this.ipVstelField;
-            }
-            set {
-                this.ipVstelField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public string IpWerks {
-            get {
-                return this.ipWerksField;
-            }
-            set {
-                this.ipWerksField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
-        public ZileIncarc[] ItZile {
-            get {
-                return this.itZileField;
-            }
-            set {
-                this.itZileField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
-    public partial class ZcheckZileLivrareResponse {
-        
-        private ZileIncarc[] itZileField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        [System.Xml.Serialization.XmlArrayItemAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=false)]
-        public ZileIncarc[] ItZile {
-            get {
-                return this.itZileField;
-            }
-            set {
-                this.itZileField = value;
             }
         }
     }
@@ -30814,32 +30659,6 @@ namespace LiteSFATestWebService.SAPWebServices {
             get {
                 this.RaiseExceptionIfNecessary();
                 return ((ZactDiscMaximResponse)(this.results[0]));
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
-    public delegate void ZcheckZileLivrareCompletedEventHandler(object sender, ZcheckZileLivrareCompletedEventArgs e);
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    public partial class ZcheckZileLivrareCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
-        
-        private object[] results;
-        
-        internal ZcheckZileLivrareCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
-                base(exception, cancelled, userState) {
-            this.results = results;
-        }
-        
-        /// <remarks/>
-        public ZcheckZileLivrareResponse Result {
-            get {
-                this.RaiseExceptionIfNecessary();
-                return ((ZcheckZileLivrareResponse)(this.results[0]));
             }
         }
     }

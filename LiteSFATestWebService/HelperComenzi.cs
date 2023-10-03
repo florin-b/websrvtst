@@ -401,13 +401,19 @@ namespace LiteSFATestWebService
             Dictionary<string, string> dictionarUmIso = new Dictionary<string, string>();
 
             string umArt = "";
-
+            string unitArt = "";
             foreach (DateArticolMathaus articol in listArticole)
             {
+
+                unitArt = articol.unit;
+
+                if (!articol.unit.Equals(articol.unit50))
+                    unitArt = articol.unit50;
+
                 if (umArt == "")
-                    umArt = "'" + articol.unit + "'";
+                    umArt = "'" + unitArt + "'";
                 else
-                    umArt += "," + "'" + articol.unit + "'";
+                    umArt += "," + "'" + unitArt + "'";
             }
 
             OracleConnection connection = new OracleConnection();
@@ -451,7 +457,8 @@ namespace LiteSFATestWebService
         {
             foreach(DateArticolMathaus articol in listArticole)
             {
-                articol.unit = dictionarUmIso[articol.unit];
+                if (dictionarUmIso.ContainsKey(articol.unit))
+                    articol.unit = dictionarUmIso[articol.unit];
             }
         }
 
@@ -490,6 +497,60 @@ namespace LiteSFATestWebService
 
             return false;
 
+        }
+
+
+        public static double getCantitateUmb (string codArticol, double cantitate, string um)
+        {
+
+            double cantitateUmb = 0;
+
+            OracleConnection connection = new OracleConnection();
+            OracleDataReader oReader = null;
+
+            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+            connection.ConnectionString = connectionString;
+            connection.Open();
+            OracleCommand cmd = connection.CreateCommand();
+
+            try
+            {
+                cmd.CommandText = " select umrez numarator,umren numitor from sapprd.marm where mandt = '900' and matnr = :codArt and meinh = :um ";
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":codArt", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codArticol;
+
+                cmd.Parameters.Add(":um", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
+                cmd.Parameters[1].Value = um;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    cantitateUmb = cantitate * oReader.GetDouble(0) / oReader.GetDouble(1);
+                }
+            }
+
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return cantitateUmb;
+
+        }
+
+
+
+        public static string getSinteticeFasonate()
+        {
+            return " ('437','438','439','440') ";
         }
 
 

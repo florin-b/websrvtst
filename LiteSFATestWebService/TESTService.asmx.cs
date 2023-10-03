@@ -85,9 +85,22 @@ namespace LiteSFATestWebService
         [WebMethod]
         public double testRound(double doubleValue)
         {
-
             return Math.Round(doubleValue, 2, MidpointRounding.ToEven);
+        }
 
+        [WebMethod]
+        public string testPoligoane(string coords)
+        {
+            //new OperatiiPoligoane().getListPoligoaneDB("ZM", "");
+
+            string testDB = "DB: " ;
+            testDB += new OperatiiPoligoane().getDatePoligonLivrareDB(coords);
+
+
+            string testFis = "FIS: " ;
+            testFis += new OperatiiPoligoane().getDatePoligonLivrare(coords);
+
+            return testDB + "\n\n\n" + testFis;
         }
 
         [WebMethod]
@@ -258,10 +271,10 @@ namespace LiteSFATestWebService
         }
 
         [WebMethod]
-        public string getArticoleCategorieMathaus(string codCategorie, string filiala, string depart, string pagina, string tipArticol)
+        public string getArticoleCategorieMathaus(string codCategorie, string filiala, string depart, string pagina, string tipArticol, string tipComanda)
         {
 
-            return new OperatiiMathaus().getArticoleCategorie(codCategorie, filiala, depart, pagina, tipArticol);
+            return new OperatiiMathaus().getArticoleCategorie(codCategorie, filiala, depart, pagina, tipArticol, tipComanda);
         }
 
         [WebMethod]
@@ -1981,12 +1994,12 @@ namespace LiteSFATestWebService
         
 
         [WebMethod]
-        public string getArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament, string afisStoc, string tipUser, string codUser, string modulCautare)
+        public string getArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament, string afisStoc, string tipUser, string codUser, string modulCautare, string tipComanda)
         {
 
 
             OperatiiArticole articole = new OperatiiArticole();
-            return articole.getListArticoleDistributie(searchString, tipArticol, tipCautare, filiala, departament, afisStoc, tipUser, codUser, modulCautare);
+            return articole.getListArticoleDistributie(searchString, tipArticol, tipCautare, filiala, departament, afisStoc, tipUser, codUser, modulCautare, tipComanda);
         }
 
 
@@ -4110,7 +4123,7 @@ namespace LiteSFATestWebService
                                   " decode(trim(b.dep_aprobare),'','00', b.dep_aprobare)  dep_aprobare " + condBlocAprov + istoricPret + vechime + infoPretTransp + sinteticArt +
                                   lungimeArt + " , a.data_exp_pret, " +
                                   " (select nvl((select 1 from sapprd.mara m where m.mandt = '900' and m.matnr = a.cod and m.categ_mat in ('PA','AM')),-1) palet from dual) palet, nvl(a.brgew,0) greutate, " +
-                                  " nvl(a.brgew_matnr,0) greutate_bruta, a.cant_pret from sapprd.zcomdet_tableta a, sapprd.zdisc_pers_sint a1,  sintetice c," +
+                                  " nvl(a.brgew_matnr,0) greutate_bruta, a.cant_pret, a.umv50, a.qty50 from sapprd.zcomdet_tableta a, sapprd.zdisc_pers_sint a1,  sintetice c," +
                                   " articole b, sapprd.zpretsubcmp s " + condTabKA + " where a.cod = b.cod(+) " + condIdKA + " and " +
                                   " a1.inactiv(+) <> 'X' and a1.functie(+)='AV' and a1.spart(+)=substr(c.COD_NIVEL1,2,2) and a1.werks(+) ='" + unitLog1 + "' " +
                                   " and b.sintetic = c.cod(+) and a1.matkl(+) = c.cod " + conditieDepart +
@@ -4200,6 +4213,10 @@ namespace LiteSFATestWebService
                         articol.greutate = oReader1.GetDouble(36).ToString();
                         articol.greutateBruta = oReader1.GetDouble(37).ToString();
                         articol.cantitateInit = oReader1.GetDouble(38).ToString();
+
+                        articol.um50 = oReader1.GetString(39).ToString();
+                        articol.cantitate50 = oReader1.GetDouble(40);
+
 
                         ArticolProps articolProps = new OperatiiArticole().getPropsArticol(connection, articol.codArticol);
 
@@ -7573,7 +7590,7 @@ namespace LiteSFATestWebService
                     {
                         if (tipUser.Equals("CV") || tipUser.Equals("SM") || tipUser.Equals("SMR"))
                         {
-                            condClient = " and (a.nume_client = '" + codClient +"' or a.cod_client = '" + codClient + "') " ;
+                            condClient = " and ( convert(a.nume_client, 'US7ASCII') = convert('" + codClient + "','US7ASCII') or a.cod_client = '" + codClient + "') ";
                         }
                         else
                         {
@@ -9620,6 +9637,7 @@ namespace LiteSFATestWebService
                 inParam.GvLgort = " ";
                 inParam.GvCant = Decimal.Parse(cantitate);
                 inParam.GvCantSpecified = true;
+                inParam.CuRotunj = "X";
 
                 SAPWebServices.ZgetPriceResponse outParam = webService.ZgetPrice(inParam);
 
@@ -9635,7 +9653,7 @@ namespace LiteSFATestWebService
                 string condPret = outParam.GvCond.ToString() != "" ? outParam.GvCond.ToString() : "-1";
                 string multiplu = outParam.Multiplu.ToString() != "" ? outParam.Multiplu.ToString() : "-1";
                 string pretOutGed = " ";
-
+                
                 //pentru unii se afiseaza si pretul ged
                 if (tipAcces.Equals("12") || tipAcces.Equals("14") || tipAcces.Equals("9"))
                 {
@@ -9730,6 +9748,7 @@ namespace LiteSFATestWebService
                 inParam.GvSite = isConsVanzSite(codUser) ? "X" : " ";
                 inParam.TipPers = "CV";
                 inParam.Canal = "20";
+                inParam.CuRotunj = "X";
                 
 
                 SAPWebServices.ZgetPriceResponse outParam = webService.ZgetPrice(inParam);
@@ -13680,6 +13699,9 @@ namespace LiteSFATestWebService
                     string greutateBrutaArticol = articolComanda[i].greutateBruta == null ? "0" : articolComanda[i].greutateBruta;
                     string cantitateInit = articolComanda[i].cantitateInit == null ? "0" : articolComanda[i].cantitateInit;
 
+                    string um50 = articolComanda[i].um50 == null ? articolComanda[i].um : articolComanda[i].um50;
+
+
                     if (tipUser.Equals("CV"))
                     {
 
@@ -13703,14 +13725,15 @@ namespace LiteSFATestWebService
 
                         query = " insert into sapprd.zcomdet_tableta(mandt,id,poz,status,cod,cantitate,valoare,depoz, " +
                                 " transfer,valoaresap,ppoz,procent,um,pret_cl,conditie,disclient,procent_aprob,multiplu, " +
-                                " val_poz,inf_pret,cant_umb,umb, ul_stoc, fake, ponderat, istoric_pret, val_transp, data_exp_pret, brgew, brgew_matnr, cant_pret) " +
+                                " val_poz,inf_pret,cant_umb,umb, ul_stoc, fake, ponderat, istoric_pret, val_transp, data_exp_pret, brgew, brgew_matnr, cant_pret, umv50, qty50) " +
                                 " values ('900'," + idCmd.Value + ",'" + pozArt + "','" + cmdStatus + "','" + codArt + "'," + articolComanda[i].cantitate.ToString(nfi) + ", " +
                                 "" + pretUnit.ToString(nfi) + ",'" + articolComanda[i].depozit + "','0',0,'0'," + articolComanda[i].procent.ToString(nfi) + ",'" +
                                 articolComanda[i].um + "'," + articolComanda[i].pretUnitarClient.ToString(nfi) + ",' '," +
                                 articolComanda[i].discClient.ToString(nfi) + "," + articolComanda[i].procAprob.ToString(nfi) + "," + articolComanda[i].multiplu.ToString(nfi) + "," +
                                 valPoz.ToString(nfi) + ",'" + articolComanda[i].infoArticol + "'," + articolComanda[i].cantUmb + ",'" +
                                 articolComanda[i].Umb + "','" + ulStoc + "', '" + fakeArt + "','" + ponderareArt + "','" + articolComanda[i].istoricPret + "', " +
-                                valTransportArt +  ", '" + dataExp +"'," + greutateArticol + "," + greutateBrutaArticol + ", " + cantitateInit + " ) ";
+                                valTransportArt +  ", '" + dataExp +"'," + greutateArticol + "," + greutateBrutaArticol + ", " + cantitateInit + ",'" + um50
+                                +"'," + articolComanda[i].cantitate50 + " ) ";
 
                     }
                     else
@@ -13742,14 +13765,14 @@ namespace LiteSFATestWebService
 
                         query = " insert into sapprd.zcomdet_tableta(mandt,id,poz,status,cod,cantitate,valoare,depoz, " +
                                 " transfer,valoaresap,ppoz,procent,um,procent_fc,conditie,disclient,procent_aprob,multiplu, " +
-                                " val_poz,inf_pret,cant_umb,umb, ul_stoc, fake,istoric_pret, data_exp_pret, brgew, brgew_matnr, cant_pret) " +
+                                " val_poz,inf_pret,cant_umb,umb, ul_stoc, fake,istoric_pret, data_exp_pret, brgew, brgew_matnr, cant_pret, umv50, qty50) " +
                                 " values ('900'," + idCmd.Value + ",'" + pozArt + "','" + cmdStatus + "','" + codArt + "'," + articolComanda[i].cantitate.ToString(nfi) + ", " +
                                 "" + pretUnit.ToString(nfi) + ",'" + articolComanda[i].depozit + "','0',0,'0'," + articolComanda[i].procent.ToString(nfi) + ",'" +
                                 articolComanda[i].um + "'," + articolComanda[i].procentFact.ToString(nfi) + ",' '," +
                                 articolComanda[i].discClient.ToString(nfi) + "," + articolComanda[i].procAprob.ToString(nfi) + "," + articolComanda[i].multiplu.ToString(nfi) + "," +
                                 valPoz.ToString(nfi) + ",'" + articolComanda[i].infoArticol + "'," + articolComanda[i].cantUmb + ",'" +
                                 articolComanda[i].Umb + "','" + ulStoc + "', '" + fakeArt + "','" + articolComanda[i].istoricPret + "','" + dataExp +"'," + greutateArticol +  
-                                "," + greutateBrutaArticol + ", " + cantitateInit + " ) ";
+                                "," + greutateBrutaArticol + ", " + cantitateInit + ",'" + um50 + "' , " + articolComanda[i].cantitate50 + " ) ";
 
 
 
@@ -16188,9 +16211,9 @@ namespace LiteSFATestWebService
         }
 
         [WebMethod]
-        public string cautaArticoleMathaus(string codArticol, string tipCautare, string filiala, string depart, string pagina)
+        public string cautaArticoleMathaus(string codArticol, string tipCautare, string filiala, string depart, string pagina, string tipComanda)
         {
-            return new OperatiiMathaus().cautaArticoleMathaus(codArticol, tipCautare, filiala, depart, pagina);
+            return new OperatiiMathaus().cautaArticoleMathaus(codArticol, tipCautare, filiala, depart, pagina, tipComanda);
         }
 
         [WebMethod]

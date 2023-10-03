@@ -174,6 +174,8 @@ namespace LiteSFATestWebService
         public string lungimeArt;
         public string tipMarfa;
         public string cantitateInit;
+        public double cantitate50;
+        public string um50;
 
 
         public override string ToString()
@@ -830,6 +832,8 @@ namespace LiteSFATestWebService
         public string tipMarfa;
         public string greutateBruta;
         public string lungime;
+        public string um50;
+        public string cantitate50;
 
     }
 

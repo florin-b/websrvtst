@@ -578,10 +578,8 @@ namespace LiteSFATestWebService
         }
 
 
-        public string getListArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament, string afisStoc, string tipUser, string codUser, string modulCautare)
+        public string getListArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament, string afisStoc, string tipUser, string codUser, string modulCautare, string tipComanda)
         {
-
-            
 
             string condExtraDepart = " ";
             List<ArticolCautare> listArticole = new List<ArticolCautare>();
@@ -698,6 +696,10 @@ namespace LiteSFATestWebService
                     if (searchString.StartsWith("111"))
                         condFil = filiala.Substring(0, 2) + "2" + filiala.Substring(3, 1);
 
+                    string conditiiFasonate = "";
+                    if (tipComanda != null && tipComanda.ToLower().Contains("fasonat"))
+                        conditiiFasonate = " and x.sintetic in " + HelperComenzi.getSinteticeFasonate();
+
                     cmd.CommandText = " select x.* from ( " +
                                     " select distinct decode(length(a.cod),18,substr(a.cod,-8),a.cod) codart,a.nume, a.sintetic, b.cod_nivel1, a.umvanz10, a.umvanz, nvl(a.tip_mat,' '), " +
                                     " b.cod nume_sint,  " +
@@ -708,7 +710,7 @@ namespace LiteSFATestWebService
                                     " from articole a, " +
                                     " sintetice b, sapprd.marc c " + condTabCodBare + " where c.mandt = '900' and c.matnr = a.cod and c.werks = '" + condFil + "' and c.mmsta <> '01' " +
                                     " and a.sintetic = b.cod and a.cod != 'MAT GENERIC PROD' and a.blocat <> '01' and " + condCautare + condDepart +
-                                    " ) x  where  " + condLimit + condExtraDepart + " order by x.nume ";
+                                    " ) x  where  " + condLimit + condExtraDepart + conditiiFasonate + " order by x.nume ";
 
 
 
@@ -720,6 +722,10 @@ namespace LiteSFATestWebService
                     if (filiala != null && filiala.Length > 0)
                         filGed = filiala.Substring(0, 2) + "2" + filiala.Substring(3, 1);
 
+                    string conditiiFasonate = "";
+                    if (tipComanda != null && tipComanda.ToLower().Contains("fasonat"))
+                        conditiiFasonate = " and a.sintetic in " + HelperComenzi.getSinteticeFasonate();
+
                     cmd.CommandText = " select distinct decode(length(a.cod),18,substr(a.cod,-8),a.cod) codart,a.nume, a.sintetic, b.cod_nivel1, a.umvanz10, a.umvanz, nvl(a.tip_mat,' '), b.cod nume_sint, " +
                                       " decode(a.grup_vz,' ','-1', a.grup_vz), decode(trim(a.dep_aprobare),'','00', a.dep_aprobare), " +
                                       " (select nvl( " +
@@ -727,10 +733,10 @@ namespace LiteSFATestWebService
                                       valStoc + ", categ_mat, lungime " +
                                       " from articole a, " +
                                       " sintetice b, sapprd.marc c " + condTabCodBare + " where c.mandt = '900' and c.matnr = a.cod and c.werks = '" + filGed + "' and c.mmsta <> '01'" +
-                                      " and a.sintetic = b.cod and a.cod != 'MAT GENERIC PROD' and a.blocat <> '01' and " + condCautare + condDepart + " and " + condLimit + "  order by a.nume ";
+                                      " and a.sintetic = b.cod and a.cod != 'MAT GENERIC PROD' and a.blocat <> '01' and " + condCautare + condDepart + conditiiFasonate +
+                                      " and " + condLimit + "  order by a.nume ";
 
                 }
-
 
 
                 cmd.CommandType = CommandType.Text;
@@ -780,9 +786,6 @@ namespace LiteSFATestWebService
                         articol.categorie = strCat;
 
                         articol.lungime = oReader.GetDouble(13).ToString();
-
-                        
-
 
                         listArticole.Add(articol);
 
@@ -982,8 +985,7 @@ namespace LiteSFATestWebService
 
         public string getPretGed(string parametruPret)
         {
-
-            
+            ErrorHandling.sendErrorToMail("getPretGed: " + parametruPret);
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             ParametruPretGed paramPret = serializer.Deserialize<ParametruPretGed>(parametruPret);
@@ -1029,7 +1031,7 @@ namespace LiteSFATestWebService
                 inParam.City = paramPret.localitate == null ? " " : paramPret.localitate.Length <= 25 ? paramPret.localitate : paramPret.localitate.Substring(0,25);
                 inParam.UlStoc = paramPret.filialaAlternativa.Equals("BV90") ? "BV90" : paramPret.filialaClp != null ? paramPret.filialaClp : " ";
                 inParam.Traty = paramPret.tipTransport != null ? paramPret.tipTransport : " ";
-
+                inParam.CuRotunj = "X";
 
                 SAPWebServices.ZgetPriceResponse outParam = webService.ZgetPrice(inParam);
 
@@ -1089,7 +1091,8 @@ namespace LiteSFATestWebService
                 pretArticolGed.greutate = outParam.GvBrgew.ToString();
 
                 pretArticolGed.errMsg = outParam.VMess;
-                
+                pretArticolGed.um50 = outParam.GvUm50;
+                pretArticolGed.cantitate50 = outParam.GvQty50.ToString();
 
                 //---verificare cmp
 
@@ -1325,6 +1328,7 @@ namespace LiteSFATestWebService
             }
 
             serializedResult = serializer.Serialize(pretArticolGed);
+
 
             return serializedResult;
 
@@ -2220,6 +2224,8 @@ namespace LiteSFATestWebService
         {
 
             List<Articol> listArticole = new List<Articol>();
+
+            /*
             OracleCommand cmd = new OracleCommand();
             OracleDataReader oReader = null;
 
@@ -2260,6 +2266,8 @@ namespace LiteSFATestWebService
             {
                 DatabaseConnections.CloseConnections(oReader, cmd);
             }
+
+            */
 
             return new JavaScriptSerializer().Serialize(listArticole);
 

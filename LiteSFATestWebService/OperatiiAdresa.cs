@@ -41,7 +41,6 @@ namespace LiteSFATestWebService
                                   " order by a.localitate ";
 
 
-
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
 
@@ -89,6 +88,8 @@ namespace LiteSFATestWebService
                 connection.Close();
                 connection.Dispose();
             }
+
+            
 
             return serializedResult;
 

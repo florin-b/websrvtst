@@ -100,7 +100,9 @@ namespace LiteSFATestWebService
         public string depozit;
         public string ulStoc;
         public string greutate;
-        public string initQuantity;
+        public double quantity50;
+        public string unit50;
+        public double cantUmb;
     }
 
     public class StockMathaus
