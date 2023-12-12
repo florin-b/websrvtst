@@ -546,7 +546,62 @@ namespace LiteSFATestWebService
 
         }
 
+        public static bool isArticolPromo(string codArticol)
+        {
+            bool isArtPromo = false;
 
+            OracleConnection connection = new OracleConnection();
+            OracleDataReader oReader = null;
+
+            string connectionString = DatabaseConnections.ConnectToProdEnvironment();
+            connection.ConnectionString = connectionString;
+            connection.Open();
+            OracleCommand cmd = connection.CreateCommand();
+
+            try
+            {
+                cmd.CommandText = " select 1 from sapprd.zart_promo where mandt = '900' and matnr = :codArt and to_char(sysdate,'yyyymmdd') between datab and datbi ";
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":codArt", OracleType.VarChar, 54).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codArticol;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    isArtPromo = true;
+                }
+            }
+
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return isArtPromo;
+        }
+
+
+        public static string getTipZonaMathaus(string tipZona)
+        {
+            string zonaMathaus = "";
+
+            if (tipZona == null)
+                zonaMathaus = "";
+            else if (tipZona.ToUpper().Equals("ZM"))
+                zonaMathaus = "METRO";
+            else if (tipZona.ToUpper().Equals("ZMA") || tipZona.ToUpper().Equals("ZEMA"))
+                zonaMathaus = "EXTRA_A";
+            else if (tipZona.ToUpper().Equals("ZMB") || tipZona.ToUpper().Equals("ZEMB"))
+                zonaMathaus = "EXTRA_B";
+
+            return zonaMathaus;
+        }
 
         public static string getSinteticeFasonate()
         {

@@ -400,7 +400,7 @@ namespace DistributieTESTWebServices
 
             try
             {
-                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+                string connectionString = DatabaseConnections.ConnectToProdEnvironment();
 
                 connection.ConnectionString = connectionString;
                 connection.Open();
@@ -438,6 +438,56 @@ namespace DistributieTESTWebServices
 
 
 
+        }
+
+        public string getMasiniFiliala(string codFiliala)
+        {
+            string listMasini = "";
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select ktext from sapprd.aufk where mandt='900' and auart='1001' and PHAS1='X' and werks =:codFiliala order by ktext ";
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codFiliala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codFiliala;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        if (listMasini.Length == 0)
+                            listMasini = oReader.GetString(0);
+                        else
+                            listMasini += "," + oReader.GetString(0);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return listMasini;
         }
 
     }

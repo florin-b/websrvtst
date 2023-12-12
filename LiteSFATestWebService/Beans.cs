@@ -90,9 +90,24 @@ namespace LiteSFATestWebService
         public string isFurnizor;
         public string divizii;
         public string tipPlata;
+        public string email;
     }
 
 
+    public class FilialaTCLI
+    {
+        public string nume;
+        public string werks;
+        public List<string> depozite;
+    }
+
+    public class Depozit
+    {
+        public string name;
+        public string vstel;
+        public string lgort;
+        public string werks;
+    }
 
 
     public class Furnizor

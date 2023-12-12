@@ -664,6 +664,7 @@ namespace LiteSFATestWebService
             if (!codDepartament.Equals("00") && !codDepartament.Equals("11"))
                 condDepart = " and p.spart = substr(:depart,0,2) ";
 
+            string critFiliala = "";
 
             try
             {
@@ -673,7 +674,11 @@ namespace LiteSFATestWebService
                     string tipDocuRetur = " ('ZFM','ZFMC','ZFS','ZFSC','ZFPA','ZFVS') ";
 
                     if (tipUserSap != null && (tipUserSap.Equals("CVO") || tipUserSap.Equals("SVO")))
-                        tipDocuRetur = " ('ZFHC','ZF2H','ZFVS','ZFCS','ZFVS') "; 
+                        tipDocuRetur = " ('ZFHC','ZF2H','ZFVS','ZFCS','ZFVS') ";
+
+                    critFiliala = " and p.prctr =:unitLog ";
+                    if (tipUserSap != null &&  tipUserSap.Contains("VO"))
+                        critFiliala = "";
 
 
                     cmd.CommandText = " select distinct k.vbeln, to_date(k.fkdat,'yyyymmdd'),  " +
@@ -684,10 +689,10 @@ namespace LiteSFATestWebService
                                       " and k.vbeln = p.vbeln  and k.mandt = '900'  and k.fkart in " + tipDocuRetur +
                                       " and k.fksto <> 'X'  and k.fkdat >= to_char(" + nrZileRetur + ",'yyyymmdd') " +
                                       condPaleti +
-                                      " and k.mandt = a.mandt  and k.vbeln = a.vbeln  and a.parvw = 'WE' " +
-                                      " and p.prctr =:unitLog  and a.mandt = c.client and a.adrnr = c.addrnumber " +
+                                      " and k.mandt = a.mandt  and k.vbeln = a.vbeln  and a.parvw = 'WE' and c.name1 = :numeClient  " +
+                                      critFiliala + " and a.mandt = c.client and a.adrnr = c.addrnumber " +
                                       condData +
-                                      " and c.name1 =  :numeClient  order by to_date(k.fkdat,'yyyymmdd') ";
+                                      " order by to_date(k.fkdat,'yyyymmdd') ";
 
 
                 }
@@ -708,19 +713,24 @@ namespace LiteSFATestWebService
                 }
 
 
-                
-
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
 
 
                 if (codDepartament.Equals("11"))
                 {
-                    cmd.Parameters.Add(":unitLog", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
-                    cmd.Parameters[0].Value = unitLog;
+
 
                     cmd.Parameters.Add(":numeClient", OracleType.VarChar, 120).Direction = ParameterDirection.Input;
-                    cmd.Parameters[1].Value = codClient;
+                    cmd.Parameters[0].Value = codClient;
+
+                    if (!critFiliala.Equals(String.Empty))
+                    {
+                        cmd.Parameters.Add(":unitLog", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                        cmd.Parameters[1].Value = unitLog;
+                    }
+
+
                 }
                 else
                 {
@@ -1644,7 +1654,7 @@ namespace LiteSFATestWebService
 
 
             string critFiliala = " and p.prctr =:unitLog ";
-            if (tipUserSap != null && (tipUserSap.Equals("CVIP") || tipUserSap.Equals("SDIP")))
+            if (tipUserSap != null && (tipUserSap.Equals("CVIP") || tipUserSap.Equals("SDIP") || tipUserSap.Contains("VO")))
                 critFiliala = "";
 
             string tipDocuRetur = " ('ZFM','ZFMC','ZFS','ZFSC','ZFPA', 'ZFVS','ZFCS') ";
@@ -1667,7 +1677,7 @@ namespace LiteSFATestWebService
                                   " and k.fksto <> 'X' and k.fkdat >= to_char(sysdate-345,'yyyymmdd') " + sintPaleti + 
                                   " and k.mandt = a.mandt and k.vbeln = a.vbeln and a.parvw = 'WE' " + critFiliala + 
                                   " and a.mandt = c.client and a.adrnr = c.addrnumber  and " + criteriuCautare + " order by c.name1 ";
-
+                
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();

@@ -985,7 +985,7 @@ namespace LiteSFATestWebService
 
         public string getPretGed(string parametruPret)
         {
-            ErrorHandling.sendErrorToMail("getPretGed: " + parametruPret);
+            
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             ParametruPretGed paramPret = serializer.Deserialize<ParametruPretGed>(parametruPret);
@@ -1103,12 +1103,13 @@ namespace LiteSFATestWebService
                 string filialaCmp = paramPret.filialaAlternativa;
 
 
-                if (paramPret.filialaAlternativa.Equals("BV90"))
-                    filialaCmp = "BV92";
-                else
-                    filialaCmp = paramPret.filialaAlternativa.Substring(0, 2) + "2" + paramPret.filialaAlternativa.Substring(3, 1);
+                string strFilialaCmp = paramPret.ul;
 
+                if (paramPret.filialaClp != null && paramPret.filialaClp.Trim() != "")
+                    strFilialaCmp = paramPret.filialaClp.Substring(0, 2) + "2" + paramPret.filialaClp.Substring(3, 1);
 
+                if (!paramPret.depart.Equals("11"))
+                    strFilialaCmp = strFilialaCmp.Substring(0, 2) + "1" + strFilialaCmp.Substring(3, 1);
 
                 string connectionString = DatabaseConnections.ConnectToTestEnvironment();
 
@@ -1162,6 +1163,9 @@ namespace LiteSFATestWebService
 
 
                 }
+
+               // if (HelperComenzi.isArticolPromo(paramPret.articol))
+               //     cmpArticol = 0;
 
                 //---sf. verificare cmp
 
@@ -2440,5 +2444,81 @@ namespace LiteSFATestWebService
             return cotaTva;
         }
 
+
+        public string getFilialeTCLI()
+        {
+            List<FilialaTCLI> listFiliale = new List<FilialaTCLI>();
+
+            List<Depozit> listDepozite = new List<Depozit>();
+            HashSet<string> numeDepozite = new HashSet<string>();
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                cmd = connection.CreateCommand();
+                cmd.CommandText = " select a.name, b.vstel, b.lgort, b.werks from sapprd.zlocatii a, sapprd.zexp_lgort b where a.werks = b.werks " + 
+                                  " and a.vstel = b.vstel order by a.name, b.lgort ";
+
+                cmd.CommandType = CommandType.Text;
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        Depozit depozit = new Depozit();
+                        depozit.name = oReader.GetString(0);
+                        depozit.vstel = oReader.GetString(1);
+                        depozit.lgort = oReader.GetString(2);
+                        depozit.werks = oReader.GetString(3);
+                        listDepozite.Add(depozit);
+                        numeDepozite.Add(depozit.name);
+                    }
+
+                }
+
+                List<string> listNumeDepozite = new List<string>();
+                foreach(string numeDepozit in numeDepozite)
+                {
+                    FilialaTCLI filialaTCLI = new FilialaTCLI();
+                    filialaTCLI.nume = numeDepozit;
+                    
+                    foreach(Depozit depozit in listDepozite)
+                    {
+                        if (numeDepozit.Equals(depozit.name))
+                        {
+                            listNumeDepozite.Add(depozit.lgort);
+                            filialaTCLI.werks = depozit.werks;
+                        }
+                    }
+
+                    filialaTCLI.depozite = listNumeDepozite;
+                    listFiliale.Add(filialaTCLI);
+                    listNumeDepozite = new List<string>();
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return new JavaScriptSerializer().Serialize(listFiliale);
+        }
+
+ 
     }
 }

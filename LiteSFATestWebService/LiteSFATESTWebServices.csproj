@@ -182,6 +182,7 @@
     <Compile Include="OperatiiCLP.cs" />
     <Compile Include="OperatiiConditiiBG.cs" />
     <Compile Include="OperatiiDocumente.cs" />
+    <Compile Include="OperatiiFurnizori.cs" />
     <Compile Include="OperatiiMacara.cs" />
     <Compile Include="OperatiiMathaus.cs" />
     <Compile Include="OperatiiObiectiveCVA.cs" />

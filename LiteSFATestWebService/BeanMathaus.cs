@@ -80,6 +80,7 @@ namespace LiteSFATestWebService
     {
         public string sellingPlant;
         public string countyCode;
+        public string deliveryZoneType;
         public List<DateArticolMathaus> deliveryEntryDataList;
     }
 
@@ -108,6 +109,7 @@ namespace LiteSFATestWebService
     public class StockMathaus
     {
         public string plant;
+        public string deliveryZoneType;
         public List<StockEntryDataList> stockEntryDataList;
     }
 

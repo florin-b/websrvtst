@@ -1394,6 +1394,7 @@ namespace LiteSFATestWebService
                 ComandaMathaus comanda = new ComandaMathaus();
                 comanda.sellingPlant = comandaMathaus.sellingPlant;
                 comanda.countyCode = antetCmdMathaus.codJudet;
+                comanda.deliveryZoneType = HelperComenzi.getTipZonaMathaus(datePoligon.tipZona);
 
                 List<DateArticolMathaus> deliveryEntryDataList = new List<DateArticolMathaus>();
 
@@ -1753,7 +1754,7 @@ namespace LiteSFATestWebService
 
         }
 
-        public string getStocMathaus(string filiala, string codArticol, string um, string tipCmd, string tipUserSap, string codUser)
+        public string getStocMathaus(string filiala, string codArticol, string um, string tipCmd, string tipUserSap, string codUser, string tipZona)
         {
 
             
@@ -1764,6 +1765,8 @@ namespace LiteSFATestWebService
 
                 StockMathaus stockMathaus = new StockMathaus();
                 stockMathaus.plant = filiala;
+                stockMathaus.deliveryZoneType = HelperComenzi.getTipZonaMathaus(tipZona);
+
                 List<StockEntryDataList> stockEntryDataList = new List<StockEntryDataList>();
 
                 StockEntryDataList stockEntry = new StockEntryDataList();
@@ -1936,20 +1939,12 @@ namespace LiteSFATestWebService
 
                 ZstTaxeAcces taxeAcces = new ZstTaxeAcces();
 
-                string zonaPoligon = datePoligon.tipZona;
-
-                if (datePoligon.tipZona.ToUpper().Equals("ZM"))
-                    zonaPoligon = "METRO";
-                else if (datePoligon.tipZona.ToUpper().Equals("ZMA") || datePoligon.tipZona.ToUpper().Equals("ZEMA"))
-                    zonaPoligon = "EXTRA_A";
-                else if (datePoligon.tipZona.ToUpper().Equals("ZMB") || datePoligon.tipZona.ToUpper().Equals("ZEMB"))
-                    zonaPoligon = "EXTRA_B";
 
                 taxeAcces.TipComanda = antetCmd.tipComandaCamion;
 
                 taxeAcces.GreutMarfa = (Decimal)Math.Round(antetCmd.greutateComanda, 2, MidpointRounding.ToEven);
 
-                taxeAcces.Zona = zonaPoligon;
+                taxeAcces.Zona = HelperComenzi.getTipZonaMathaus(datePoligon.tipZona);
                 taxeAcces.MasinaDescoperita = antetCmd.camionDescoperit != null && Boolean.Parse(antetCmd.camionDescoperit) ? "X" : " ";
                 taxeAcces.Macara = antetCmd.macara != null && Boolean.Parse(antetCmd.macara) ? "X" : " ";
                 taxeAcces.CamionScurt = HelperComenzi.getOptiuneCamion(optiuniCamion,"Camion scurt");
@@ -1996,6 +1991,8 @@ namespace LiteSFATestWebService
                 inParam.ItFilCost = filCost;
 
                 SAPWebServices.ZdetTransportResponse resp = webService.ZdetTransport(inParam);
+
+                
 
                 int nrItems = resp.ItItems.Count();
 

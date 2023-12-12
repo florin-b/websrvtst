@@ -82,8 +82,6 @@ namespace LiteSFATestWebService
                 ErrorHandling.sendErrorToMail(ex.ToString() + " -> " + coords);
             }
 
-            ErrorHandling.sendErrorToMail("getDatePoligonDB: " + coords + " -> " + new JavaScriptSerializer().Serialize(datePoligon));
-
             return new JavaScriptSerializer().Serialize(datePoligon);
 
         }

@@ -222,11 +222,6 @@ namespace LiteSFATestWebService
                 }
 
 
-                cmd.CommandText = " select x.nume, x.cod, x.tip_pers from (select c.nume, c.cod, c.tip_pers from clienti c " +
-                                  " where upper(c.nume) like upper('" + numeClient.Replace("'", "") + "%')  " + condClient +
-                                  "  ) x " +
-                                  " where rownum<=50 order by x.nume ";
-
 
                 cmd.CommandText = " select x.nume, x.cod, x.tip_pers, x.city1, x.street ||' '|| x.house_num1, x.region " +
                                   " from (select c.nume, c.cod, c.tip_pers, a.city1, a.street, a.house_num1, a.region from clienti c, sapprd.adrc a " +
@@ -237,6 +232,7 @@ namespace LiteSFATestWebService
                                   "  ) x " +
                                   " where rownum<=50 order by x.nume ";
 
+                
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -811,29 +807,8 @@ namespace LiteSFATestWebService
 
 
                     //contract activ
-                    bool contractActiv = false;
 
-                    /*
-                    //nu se mai verifica
-                    cmd = connection.CreateCommand();
-
-                    cmd.CommandText = " select 1 from sapprd.kna1 k where k.mandt = '900' and k.kunnr = :codClient " +
-                                      " and k.ZDATAEXPCTR !='00000000' and to_date(k.ZDATAEXPCTR, 'yyyymmdd') >= sysdate ";
-
-                    cmd.CommandType = CommandType.Text;
-                    cmd.Parameters.Clear();
-
-                    cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
-                    cmd.Parameters[0].Value = codClient;
-
-                    oReader = cmd.ExecuteReader();
-                    if (oReader.HasRows)
-                    {
-                        contractActiv = true;
-                    }
-                    */
-
-                    contractActiv = true;
+                    bool contractActiv = true;
 
 
                     if (!contractActiv)
@@ -888,10 +863,31 @@ namespace LiteSFATestWebService
                         
                     }
 
+                    detaliiClient.email = " ";
+
+                    cmd = connection.CreateCommand();
+
+                    cmd.CommandText = " select nvl(adrs_mail,' ') from clienti where cod = :codClient ";
+
+                    cmd.CommandType = CommandType.Text;
+                    cmd.Parameters.Clear();
+
+                    cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
+                    cmd.Parameters[0].Value = codClient;
+
+                    oReader = cmd.ExecuteReader();
+                    if (oReader.HasRows)
+                    {
+                        oReader.Read();
+                        detaliiClient.email = oReader.GetString(0);
+                    }
+
                     oReader.Close();
                     oReader.Dispose();
 
                 }
+
+                
 
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 serializedResult = serializer.Serialize(detaliiClient);
@@ -1507,8 +1503,8 @@ namespace LiteSFATestWebService
                 cmd.CommandText = " select u.zterm from sapprd.T052u u, sapprd.TVZBT t where u.mandt = '900' and  u.spras = '4' " +
                                   " and u.mandt = t.mandt and u.spras = t.spras and u.zterm = t.zterm  and u.zterm " +
                                   " <= (select max(p.zterm) from sapprd.knvv p where p.mandt = '900' " +
-                                  " and p.kunnr = :codClient and p.vtweg = '20' and p.spart = (select divizie from agenti where activ = 1 and cod=:codAgent)) " + 
-                                  " and u.zterm != 'C000' order by u.zterm ";
+                                  " and p.kunnr = :codClient and p.vtweg = '20' and p.spart = (select divizie from agenti where activ = 1 and cod=:codAgent)) " +
+                                  " and u.zterm != 'C000' and u.zterm like 'C%' order by u.zterm ";
 
 
                 cmd.CommandType = CommandType.Text;

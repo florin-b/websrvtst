@@ -113,12 +113,19 @@ namespace LiteSFATestWebService
 
                 string filialaCmp = filialaAlternativa;
 
-                if (depart.Equals("11"))
+                if (filialaClp != null && filialaClp.Trim() != "")
+                    filialaCmp = filialaClp;
+
+                if (depart.Equals("11") || depoz.Contains("MAV"))
                 {
                     if (filialaAlternativa.Equals("BV90"))
                         filialaCmp = "BV92";
-                    else
-                        filialaCmp = filialaAlternativa.Substring(0, 2) + "2" + filialaAlternativa.Substring(3, 1);
+                    else {
+                        if (filialaClp != null && filialaClp.Trim() != "")
+                            filialaCmp = filialaClp.Substring(0, 2) + "2" + filialaClp.Substring(3, 1);
+                        else
+                            filialaCmp = filialaAlternativa.Substring(0, 2) + "2" + filialaAlternativa.Substring(3, 1);
+                    }
                 }
 
                 string connectionString = DatabaseConnections.ConnectToTestEnvironment();
@@ -156,6 +163,9 @@ namespace LiteSFATestWebService
                     cmpArticol = cmpArticol * (100 - procRedCmp) / 100;
 
                 }
+
+              //  if (HelperComenzi.isArticolPromo(articol))
+              //      cmpArticol = 0;
 
                 //---sf. verificare cmp
 
