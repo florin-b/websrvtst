@@ -29,7 +29,7 @@ namespace LiteSFATestWebService
 
 
                 cmd.CommandText = " select id, id_amob,  to_char(to_date(datac,'yyyymmdd')) datac, valoare, nume_client from sapprd.zcom_amob_head " + 
-                                  " where cod_agent = :codAgent and status = '0' order by id_amob ";
+                                  " where cod_agent = :codAgent and status = '0' order by datac desc ";
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();

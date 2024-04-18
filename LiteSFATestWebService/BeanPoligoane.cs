@@ -30,6 +30,7 @@ namespace LiteSFATestWebService
         public string filiala;
         public string tonaj;
         public string nume;
+        public string interzis;
     }
 
     public class DatePoligon
@@ -40,19 +41,21 @@ namespace LiteSFATestWebService
         public string tipZona;
         public string limitareTonaj;
         public string nume;
+        public string isRestrictionat;
 
         public DatePoligon()
         {
 
         }
 
-        public DatePoligon(string filialaPrincipala, string filialaSecundara, string tipZona, string limitareTonaj, string nume)
+        public DatePoligon(string filialaPrincipala, string filialaSecundara, string tipZona, string limitareTonaj, string nume, string isRestrictionat)
         {
             this.filialaPrincipala = filialaPrincipala;
             this.filialaSecundara = filialaSecundara;
             this.tipZona = tipZona;
             this.limitareTonaj = limitareTonaj;
             this.nume = nume;
+            this.isRestrictionat = isRestrictionat;
         }
 
 

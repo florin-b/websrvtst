@@ -13,10 +13,9 @@ namespace LiteSFATestWebService
     {
 
 
-        public String getCostMacara(string unitLog, string codAgent, string codClient, string codFurnizor, string listArt, string canal)
+        public String getCostMacara(string unitLog, string codAgent, string codClient, string codFurnizor, string listArt, string canal, string isCustodie)
         {
 
-            
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             List<ArticolCalculDesc> listArtCmd = serializer.Deserialize<List<ArticolCalculDesc>>(listArt);
@@ -63,10 +62,14 @@ namespace LiteSFATestWebService
             inParam.IpPernr = codAgent;
             inParam.IpKunnr = codClient;
             inParam.IpLifnr = codFurnizor;
+            inParam.IpCust = isCustodie != null && isCustodie.ToLower().Equals("true") ? "X" : " ";
+
+            
 
             SAPWebServices.ZNrPaletiResponse resp = webService.ZNrPaleti(inParam);
             SAPWebServices.ZstEtPaleti[] valPaleti = resp.EtValpal;
             SAPWebServices.ZstEtMarfaPalet[] listMarfaPaleti = resp.EtMarfaPalet;
+
 
             CostDescarcare costDescarcare = new CostDescarcare();
             costDescarcare.sePermite = !resp.EpMacara.Equals("X");
@@ -134,9 +137,10 @@ namespace LiteSFATestWebService
         }
 
 
-        public string getCostMacaraComenzi(string codAgent, string codClient, string codFurnizor, string listComenzi, string canal)
+        public string getCostMacaraComenzi(string codAgent, string codClient, string codFurnizor, string listComenzi, string canal, string isCustodie)
         {
 
+            
 
             List<CostDescarcare> costDescarcare = new List<CostDescarcare>();
 
@@ -145,11 +149,9 @@ namespace LiteSFATestWebService
             
             foreach (ComandaCalculDescarcare comanda in listCom)
             {
-                string costDescComanda = getCostMacara(comanda.filiala, codAgent, codClient, codFurnizor, comanda.listArticole, canal);
+                string costDescComanda = getCostMacara(comanda.filiala, codAgent, codClient, codFurnizor, comanda.listArticole, canal, isCustodie);
                 costDescarcare.Add(serializer.Deserialize<CostDescarcare>(costDescComanda));
             }
-
-           
 
             return serializer.Serialize(costDescarcare);
         }

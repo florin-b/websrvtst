@@ -581,6 +581,7 @@ namespace LiteSFATestWebService
         public string getListArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament, string afisStoc, string tipUser, string codUser, string modulCautare, string tipComanda)
         {
 
+
             string condExtraDepart = " ";
             List<ArticolCautare> listArticole = new List<ArticolCautare>();
 
@@ -607,7 +608,11 @@ namespace LiteSFATestWebService
             string condLimit = " rownum < 300 ";
             string valStoc = "";
 
-            if (!departament.Equals("00") && !departament.Equals("12") && departament.Length > 0)
+            if (departament.ToLower().Contains("extra"))
+            {
+                condDepart = " and a.grup_vz in (" + HelperComenzi.getDepartIncrucisat(departament) + ") ";
+            }
+            else if (!departament.Equals("00") && !departament.Equals("12") && departament.Length > 0)
             {
                 if (Utils.isFilialaMica04(filiala, departament) && modulCautare != null && modulCautare.Equals("CLP"))
                     condDepart = " and ( substr(a.grup_vz,0,2) like '" + departament.Substring(0,2) + "%') ";
@@ -737,7 +742,6 @@ namespace LiteSFATestWebService
                                       " and " + condLimit + "  order by a.nume ";
 
                 }
-
 
                 cmd.CommandType = CommandType.Text;
 
@@ -985,7 +989,6 @@ namespace LiteSFATestWebService
 
         public string getPretGed(string parametruPret)
         {
-            
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             ParametruPretGed paramPret = serializer.Deserialize<ParametruPretGed>(parametruPret);
@@ -1689,6 +1692,10 @@ namespace LiteSFATestWebService
             double stocArt = 0;
             string umArt = "BUC";
             string stocResponse = "";
+            string pret = "0";
+            string greutate = "0";
+
+            ArticolProps articolProps = new ArticolProps();
 
             try
             {
@@ -1703,9 +1710,10 @@ namespace LiteSFATestWebService
                 cmd.CommandText = " select sum(kulab), m.meins um_art from " +
                                   " (select k.matnr, k.kulab from sapprd.MSKU k " +
                                   " where k.mandt = '900' and k.kunnr = :codClient and sobkz = 'W' and kulab > 0 and matnr = :codArticol " +
+                                  " and (k.werks = :filiala or k.werks = :filiala2) " +
                                   " union all " +
                                   " select d.matnr, -1 * (d.lfimg)from sapprd.lips d, sapprd.vbup p, sapprd.likp l " +
-                                  " where d.mandt = '900' and d.sobkz = 'W' and d.matnr = :codArticol and(d.werks = :filiala or d.werks = :filiala2) " +
+                                  " where d.mandt = '900' and d.sobkz = 'W' and d.matnr = :codArticol and (d.werks = :filiala or d.werks = :filiala2) " +
                                   " and d.mandt = p.mandt and d.vbeln = p.vbeln and d.posnr = p.posnr and d.mandt = l.mandt and d.vbeln = l.vbeln " +
                                   " and l.kunnr =:codClient and p.WBSTA <> 'C') y, sapprd.mara m where m.mandt = '900' and y.matnr = m.matnr " +
                                   " group by y.matnr, m.meins  ";
@@ -1732,6 +1740,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
                 cmd.Parameters[5].Value = codClient;
 
+
                 oReader = cmd.ExecuteReader();
 
                 if (oReader.HasRows)
@@ -1741,6 +1750,7 @@ namespace LiteSFATestWebService
                     umArt = oReader.GetString(1);
                 }
 
+                articolProps = new OperatiiArticole().getPropsArticol(connection, codArticol);
 
             }
             catch(Exception ex)
@@ -1753,10 +1763,7 @@ namespace LiteSFATestWebService
                 DatabaseConnections.CloseConnections(oReader, cmd, connection);
             }
 
-            stocResponse = stocArt.ToString()  + "#" + umArt + "#1#";
-
-
-
+            stocResponse = stocArt.ToString()  + "#" + umArt + "#1#" + pret + "#" + greutate + "#" + articolProps.lungime + "#" + articolProps.tipMarfa + "#";
 
             return stocResponse;
 
@@ -2515,6 +2522,7 @@ namespace LiteSFATestWebService
             {
                 DatabaseConnections.CloseConnections(oReader, cmd, connection);
             }
+
 
             return new JavaScriptSerializer().Serialize(listFiliale);
         }

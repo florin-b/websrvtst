@@ -717,7 +717,7 @@ namespace LiteSFATestWebService
         }
 
 
-
+       
 
         public static Adresa getAdresaComanda(OracleConnection connection, string idComanda, string codAdresa)
         {
@@ -831,7 +831,6 @@ namespace LiteSFATestWebService
         public string saveLivrareCustodie(string JSONArt, string JSONComanda, string JSONDateLivrare)
         {
 
-            ErrorHandling.sendErrorToMail("saveLivrareCustodie: " + JSONArt + " , " + JSONComanda + " , " + JSONDateLivrare);
 
             var serializer = new JavaScriptSerializer();
             string query;
@@ -871,9 +870,9 @@ namespace LiteSFATestWebService
 
 
                 query = " insert into sapprd.zcust_head(mandt, id, cod_client, cod_agent, ul, depart, status, datac,  pers_contact, telefon, adr_livrare, " +
-                        "  city, region, den_cl, ketdat, addrnumber, macara, descoperita, traty ) values " +
+                        "  city, region, den_cl, ketdat, addrnumber, macara, descoperita, traty, zlsch, pmnttrms ) values " +
                         " ('900', pk_key.nextval, :cod_client, :cod_agent, :ul, :depart, :status, :datac,  :pers_contact, :telefon, :adr_livrare, " +
-                        "  :city, :region, :den_cl, :ketdat, :addrnumber, :macara, :descoperita, :traty ) returning id into :id ";
+                        "  :city, :region, :den_cl, :ketdat, :addrnumber, :macara, :descoperita, :traty, :zlsch, :pmnttrms ) returning id into :id ";
 
 
                 cmd.CommandText = query;
@@ -931,6 +930,12 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Add(":traty", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
                 cmd.Parameters[16].Value = dateLivrare.Transport;
 
+                cmd.Parameters.Add(":zlsch", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[17].Value = HelperComenzi.setTipPlata(dateLivrare.tipPlata);
+
+                cmd.Parameters.Add(":pmnttrms", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[18].Value = dateLivrare.termenPlata != null && !dateLivrare.termenPlata.Equals("") ? dateLivrare.termenPlata : " ";
+
                 OracleParameter idCmd = new OracleParameter("id", OracleType.Number);
                 idCmd.Direction = ParameterDirection.Output;
                 cmd.Parameters.Add(idCmd);
@@ -951,8 +956,8 @@ namespace LiteSFATestWebService
                     if (codArt.Length == 8)
                         codArt = "0000000000" + codArt;
 
-                    query = " insert into sapprd.zcust_det(mandt, id, poz, status, cod, cantitate, um ) values " +
-                            " ('900', :id, :poz, :status, :cod, :cantitate, :um ) ";
+                    query = " insert into sapprd.zcust_det(mandt, id, poz, status, cod, cantitate, um, valoare ) values " +
+                            " ('900', :id, :poz, :status, :cod, :cantitate, :um, :valPoz ) ";
 
                     cmd.CommandText = query;
                     cmd.CommandType = CommandType.Text;
@@ -976,6 +981,9 @@ namespace LiteSFATestWebService
                     cmd.Parameters.Add(":um", OracleType.NVarChar, 9).Direction = ParameterDirection.Input;
                     cmd.Parameters[5].Value = articolComanda[i].um;
 
+                    cmd.Parameters.Add(":valPoz", OracleType.Double, 13).Direction = ParameterDirection.Input;
+                    cmd.Parameters[6].Value = articolComanda[i].pretUnit * articolComanda[i].cantitate;
+
                     cmd.ExecuteNonQuery();
 
 
@@ -996,6 +1004,8 @@ namespace LiteSFATestWebService
                     OperatiiSuplimentare.saveComandaSuperAv(connection, dateLivrare.codSuperAgent, idCmd.Value.ToString());
                 }
 
+                
+
                 webService = new SAPWSCustodie.zwbs_custodie();
                 SAPWSCustodie.ZlivrareCustodie inParam = new SAPWSCustodie.ZlivrareCustodie();
                 System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Service1.getUser(), Service1.getPass());
@@ -1007,8 +1017,10 @@ namespace LiteSFATestWebService
 
                 SAPWSCustodie.ZlivrareCustodieResponse response = webService.ZlivrareCustodie(inParam);
                 retVal = response.EpOk + "#" + response.EpMesaj;
+                
 
                 ErrorHandling.sendErrorToMail("saveLivrareCustodie response: " + response.EpOk + "#" + response.EpMesaj);
+                
 
                 webService.Dispose();
 
@@ -1580,6 +1592,58 @@ namespace LiteSFATestWebService
 
 
             return retVal;
+        }
+
+        public string getEstimareLivrare(string filiala)
+        {
+            string estimareLivrare = "";
+
+            ZTBL_WEBSERVICE webService = new ZTBL_WEBSERVICE();
+
+            System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Service1.getUser(), Service1.getPass());
+            webService.Credentials = nc;
+            webService.Timeout = 300000;
+
+            SAPWebServices.ZdetTransport inParams = new SAPWebServices.ZdetTransport();
+
+            inParams.IpCity = "Galati";
+            inParams.IpKunnr = "4110102652";
+            inParams.IpPernr = "00071360";
+            inParams.IpRegio = "17";
+            inParams.IpTippers = "SD";
+            inParams.IpTraty = "TRAP";
+            inParams.IpVkgrp = "03";
+            inParams.IpWerks = "GL10";
+
+            ZsitemsComanda[] itItems = new ZsitemsComanda[1];
+            ZsfilTransp[] filTransp = new ZsfilTransp[1];
+            ZileIncarcWerks[] itZile = new ZileIncarcWerks[1];
+
+            itItems[0] = new ZsitemsComanda();
+            itItems[0].BrgewMatnr = 100;
+            itItems[0].Kwmeng = 20;
+            itItems[0].Lgort = "03V1";
+            itItems[0].Matnr = "000000000010310127";
+            itItems[0].Traty = "TRAP";
+            itItems[0].ValPoz = 100;
+            itItems[0].Vrkme = "BUC";
+            itItems[0].Vstel = "GL01";
+            itItems[0].Werks = "GL10";
+            
+
+
+            inParams.ItItems = itItems;
+            inParams.ItFilCost = filTransp;
+            inParams.ItZile = itZile;
+
+
+
+
+            SAPWebServices.ZdetTransportResponse outParam = webService.ZdetTransport(inParams);
+
+            
+
+            return outParam.ItFilCost.ToString();
         }
 
 
@@ -2201,7 +2265,6 @@ namespace LiteSFATestWebService
             if (!camionScurt && !camionIveco)
                 optiuniCamion = " ";
 
-            ErrorHandling.sendErrorToMail("getOptiuniMasini: " + filiala + " , " + camionDescoperit + " , " + macara + " , " + zona + " , " + greutateComanda + " , " + comandaEnergofaga + " , " + comandaExtralungi + " -> " + optiuniCamion);
 
             return optiuniCamion;
         }

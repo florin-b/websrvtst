@@ -242,9 +242,10 @@ namespace LiteSFATestWebService
 
 
 
-        public double getValoareComenziNumerar(string codClient, string dataLivrare, string tipClient)
+        public double getValoareComenziNumerar(string codClient, string dataLivrare, string tipClient, string idComanda)
         {
 
+            
             double valoareComenzi = 0;
 
             OracleConnection connection = new OracleConnection();
@@ -267,8 +268,12 @@ namespace LiteSFATestWebService
                 else if (tipClient.Equals("PJG"))
                     condClient = " regexp_replace(stceg, 'RO', '') = :codClient ";
 
+                string condComanda = "";
+                if (idComanda != null && !idComanda.Equals(String.Empty))
+                    condComanda = " and id != :idComanda ";
+
                 cmd.CommandText = " select nvl(sum(valoare),0) from sapprd.zcomhead_tableta where status = 2 and status_aprov in (0, 2, 15) and " + 
-                                    condClient + " and tip_plata in ('E','E1') and ketdat = :dataLivrare  ";
+                                    condClient + " and tip_plata in ('E','E1') and ketdat = :dataLivrare  " + condComanda;
 
 
                 cmd.CommandType = CommandType.Text;
@@ -279,6 +284,12 @@ namespace LiteSFATestWebService
 
                 cmd.Parameters.Add(":dataLivrare", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
                 cmd.Parameters[1].Value = formatDataSap(dataLivrare);
+
+                if (idComanda != null && !idComanda.Equals(String.Empty))
+                {
+                    cmd.Parameters.Add(":idComanda", OracleType.Int32, 11).Direction = ParameterDirection.Input;
+                    cmd.Parameters[2].Value = Int32.Parse(idComanda);
+                }
 
                 oReader = cmd.ExecuteReader();
 

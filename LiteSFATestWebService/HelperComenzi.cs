@@ -352,35 +352,35 @@ namespace LiteSFATestWebService
             if (divizie.Equals("01"))
                 depExtra = "'02'";
 
-            if (divizie.Equals("041"))
+            else if (divizie.Equals("041"))
                 if (depExtra == null)
                     depExtra = "'040'";
                 else
                     depExtra += ",'040'";
 
 
-            if (divizie.Equals("040"))
+            else if (divizie.Equals("040"))
                 if (depExtra == null)
                     depExtra = "'041'";
                 else
                     depExtra += ",'041'";
 
 
-            if (divizie.Equals("07"))
+            else if (divizie.Equals("07"))
                 if (depExtra == null)
                     depExtra = "'03','06'";
                 else
                     depExtra += ",'03','06'";
 
 
-            if (divizie.Equals("03"))
+            else if (divizie.Equals("03"))
                 if (depExtra == null)
                     depExtra = "'07','06'";
                 else
                     depExtra += ",'07','06'";
 
 
-            if (divizie.Equals("06"))
+            else if (divizie.Equals("06"))
                 if (depExtra == null)
                     depExtra = "'03','07'";
                 else
@@ -391,8 +391,32 @@ namespace LiteSFATestWebService
             else
                 depExtra = "(" + depExtra + ",'" + divizie + "')";
 
+            if (divizie.ToLower().Contains("extra"))
+                depExtra = "(" +  getDepartIncrucisat(divizie) + ")";
+
             return depExtra;
 
+        }
+
+        public static string getDepartIncrucisat(string departIncrucisat)
+        {
+
+            string[] departExtra = departIncrucisat.Split(':')[1].Split(';');
+
+            string strDeparts = "";
+
+            foreach (string dep in departExtra)
+            {
+                if (dep == "")
+                    continue;
+
+                if (strDeparts == "")
+                    strDeparts = "'" + dep + "'";
+                else
+                    strDeparts += ",'" + dep + "'";
+            }
+
+            return strDeparts;
         }
 
         public static Dictionary<string, string> getDictionarUmIso(List<DateArticolMathaus> listArticole)
@@ -602,6 +626,33 @@ namespace LiteSFATestWebService
 
             return zonaMathaus;
         }
+
+        public static double getGreutateArticol(string codArticol, double cantitatePoz, ComandaMathaus comandaMathaus)
+        {
+
+            double greutateTotalArt = 0;
+            double cantitateTotalArt = 0;
+            double greutateArticol = 0;
+
+            foreach (DateArticolMathaus articolMathaus in comandaMathaus.deliveryEntryDataList)
+            {
+                if (articolMathaus.productCode.Equals(codArticol))
+                {
+                    cantitateTotalArt += articolMathaus.quantity;
+                    greutateTotalArt = Double.Parse(articolMathaus.greutate);
+                }
+            }
+
+            if (cantitateTotalArt > 0)
+                greutateArticol = (greutateTotalArt / cantitateTotalArt) * cantitatePoz;
+            else
+                greutateArticol = 0;
+
+            return Math.Round(greutateArticol, 2); 
+            
+        }
+
+
 
         public static string getSinteticeFasonate()
         {

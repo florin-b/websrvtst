@@ -47,6 +47,7 @@ namespace LiteSFATestWebService
         public string codJudet;
         public string localitate;
         public string strada;
+        public string diviziiClient;
     }
 
     public class ClientIP : Client
@@ -134,6 +135,7 @@ namespace LiteSFATestWebService
         public bool isOras;
         public int razaKm;
         public string coordsCentru;
+        public string codPostal;
     }
 
 
@@ -191,6 +193,7 @@ namespace LiteSFATestWebService
         public string cantitateInit;
         public double cantitate50;
         public string um50;
+        public string dataLivrare;
 
 
         public override string ToString()
@@ -325,6 +328,8 @@ namespace LiteSFATestWebService
         public string prelucrareLemn;
         public string tipPersAgent;
         public string filialaPlata;
+        public string codPostal;
+        public string isComandaCustodie;
 
 
 

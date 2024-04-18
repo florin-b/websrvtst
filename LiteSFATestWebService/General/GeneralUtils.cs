@@ -29,6 +29,13 @@ namespace LiteSFATestWebService.General
 
         }
 
+        public static string formatStrDateV1(string strDate)
+        {
+            DateTime dt = DateTime.ParseExact(strDate, "yyyy-mm-dd", System.Globalization.CultureInfo.InvariantCulture);
+            return dt.ToString("dd.mm.yyyy");
+
+        }
+
 
         public static string  addDays(string date, int nrDays)
         {

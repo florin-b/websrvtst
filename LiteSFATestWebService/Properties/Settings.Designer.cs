@@ -186,5 +186,16 @@ namespace LiteSFATestWebService.Properties {
                 return ((string)(this["LiteSFATestWebService_SapWsCabluri05_ZWMS_UL10_GET_STOCK_ARAB"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zws_sal_cva/900/zws_sal_cva" +
+            "/zws_sal_cva")]
+        public string LiteSFATestWebService_SalarizareCVA_ZWS_SAL_CVA {
+            get {
+                return ((string)(this["LiteSFATestWebService_SalarizareCVA_ZWS_SAL_CVA"]));
+            }
+        }
     }
 }

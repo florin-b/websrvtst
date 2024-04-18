@@ -49,6 +49,7 @@ namespace LiteSFATestWebService
         public string tipCamion;
         public double greutateComanda;
         public string tipComandaCamion;
+        public string isComandaDL;
 
 
     }
@@ -57,6 +58,13 @@ namespace LiteSFATestWebService
     {
         public List<CostTransportMathaus> listCostTransport;
         public List<DepozitArticolTransport> listDepozite;
+        public List<DataLivrare> zileLivrare;
+    }
+
+    public class DataLivrare
+    {
+        public string filiala;
+        public string dataLivrare;
     }
 
     public class CostTransportMathaus
@@ -88,6 +96,7 @@ namespace LiteSFATestWebService
     {
         public ComandaMathaus comandaMathaus;
         public List<CostTransportMathaus> costTransport;
+        public List<DataLivrare> zileLivrare;
     }
 
     public class DateArticolMathaus
@@ -104,6 +113,7 @@ namespace LiteSFATestWebService
         public double quantity50;
         public string unit50;
         public double cantUmb;
+        public string tipStoc;
     }
 
     public class StockMathaus

@@ -308,7 +308,7 @@ namespace LiteSFATestWebService
 
                 string articoleRecom = new OperatiiArticole().getArticoleRecomandate(connection, articol, depart);
 
-                //aici
+                
                 ArticolProps articolProps = new OperatiiArticole().getPropsArticol(connection, articol);
 
                 retVal += discMaxAV + "#" + discMaxSD + "#" + discMaxDV + "#" +

@@ -23,6 +23,9 @@ namespace LiteSFATestWebService
         public string DataTVA;
         public string errMessage;
         public string TVA_data;
+        public string StareInregistrare;
+        
+        
 
         public override string ToString()
         {
@@ -44,6 +47,8 @@ namespace LiteSFATestWebService
         public string codJudet;
         public string localitate;
         public string strada;
+        public string stareInregistrare;
+        public string diviziiClient;
 
         public override string ToString()
         {

@@ -59,6 +59,51 @@ namespace LiteSFATestWebService.General
             return umServ;
         }
 
+        public static string getUmServicii(string codArticol)
+        {
+            string umServ = "BUC";
+            OracleCommand cmd = null;
+            OracleDataReader oReader = null;
+            OracleConnection connection = new OracleConnection();
+
+            try
+            {
+
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select um from articole where cod = :codArticol ";
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(":codArticol", OracleType.NVarChar, 54).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codArticol;
+
+                oReader = cmd.ExecuteReader();
+
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    umServ = oReader.GetString(0);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return umServ;
+        }
+
 
 
     }

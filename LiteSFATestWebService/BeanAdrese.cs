@@ -49,5 +49,19 @@ namespace LiteSFATestWebService
 
     }
 
+    public class CodPostal
+    {
+        public string localitate;
+        public string strada;
+        public string nrStrada;
+        public string codPostal;
+    }
+
+    public class ProgramLivrare
+    {
+        public string data;
+        public string interval;
+    }
+
 
 }

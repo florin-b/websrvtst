@@ -87,8 +87,6 @@ namespace LiteSFATestWebService
         public string getArticoleCategorie(string codCategorie, string filiala, string depart, string pagina, string tipArticol, string tipComanda)
         {
 
-            ErrorHandling.sendErrorToMail("getArtCateg: " + codCategorie + " , " +  filiala + " , " + depart + " , " + pagina + " , " + tipArticol + " , " + tipComanda);
-
             RezultatArtMathaus rezultat = new RezultatArtMathaus();
             
 
@@ -233,7 +231,6 @@ namespace LiteSFATestWebService
                                   " order by cod_planif, stoc_art desc, s.matnr OFFSET :paginaCrt ROWS FETCH NEXT 10 ROWS ONLY ";
 
 
-                ErrorHandling.sendErrorToMail("getArticoleCategiorie: " + cmd.CommandText);
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -1108,55 +1105,61 @@ namespace LiteSFATestWebService
         private void setDetaliiArticol(ArticolMathaus articol)
         {
 
+            try {
+
+                string serviceUrl = "https://wse1-sap-hybris-prod.arabesque.ro/solr/master_erp_Product_default/select?q=code_string:" + articol.cod;
 
 
-            string serviceUrl = "https://wse1-sap-hybris-prod.arabesque.ro/solr/master_erp_Product_default/select?q=code_string:" + articol.cod;
+                System.Net.ServicePointManager.Expect100Continue = false;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
+                System.Net.WebRequest request = System.Net.WebRequest.Create(serviceUrl);
 
-            System.Net.ServicePointManager.Expect100Continue = false;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                CredentialCache credential = new CredentialCache();
+                credential.Add(new System.Uri(serviceUrl), "Basic", new System.Net.NetworkCredential("erpClient", "S3EjkNEm"));
+                request.Credentials = credential;
 
-            System.Net.WebRequest request = System.Net.WebRequest.Create(serviceUrl);
+                System.Net.WebResponse response = request.GetResponse();
+                System.IO.StreamReader sr = new System.IO.StreamReader(response.GetResponseStream());
 
-            CredentialCache credential = new CredentialCache();
-            credential.Add(new System.Uri(serviceUrl), "Basic", new System.Net.NetworkCredential("erpClient", "S3EjkNEm"));
-            request.Credentials = credential;
+                string jsonResponse = sr.ReadToEnd().Trim();
 
-            System.Net.WebResponse response = request.GetResponse();
-            System.IO.StreamReader sr = new System.IO.StreamReader(response.GetResponseStream());
+                int startResponse = jsonResponse.IndexOf("docs\":[") + 7;
 
-            string jsonResponse = sr.ReadToEnd().Trim();
+                jsonResponse = jsonResponse.Substring(startResponse, jsonResponse.Length - startResponse - 1);
 
-            int startResponse = jsonResponse.IndexOf("docs\":[") + 7;
+                string[] articole = Regex.Split(jsonResponse, "\"id\":");
 
-            jsonResponse = jsonResponse.Substring(startResponse, jsonResponse.Length - startResponse - 1);
-
-            string[] articole = Regex.Split(jsonResponse, "\"id\":");
-
-            foreach (string art in articole)
-            {
-
-                string[] artData = Regex.Split(art, "\",");
-
-                foreach (string data in artData)
+                foreach (string art in articole)
                 {
 
-                    if (data.Contains("image_m_string"))
-                    {
-                        articol.adresaImg = "https" + Regex.Split(data, "https")[1].Replace("\"", "");
-                    }
+                    string[] artData = Regex.Split(art, "\",");
 
-                    if (data.Contains("image_l_string"))
+                    foreach (string data in artData)
                     {
-                        articol.adresaImgMare = "https" + Regex.Split(data, "https")[1].Replace("\"", "");
-                    }
 
-                    if (data.Contains("description_text_ro"))
-                    {
-                        articol.descriere = Regex.Replace(Regex.Split(data.Trim(), "\":\"")[1].Replace("\"", "").Replace("\\n", " ").Replace("\\t", " ").Replace("&nbsp;", " "), "<.*?>", String.Empty);
-                    }
+                        if (data.Contains("image_m_string"))
+                        {
+                            if (data.Contains("https"))
+                                articol.adresaImg = "https" + Regex.Split(data, "https")[1].Replace("\"", "");
+                        }
 
+                        if (data.Contains("image_l_string"))
+                        {
+                            articol.adresaImgMare = "https" + Regex.Split(data, "https")[1].Replace("\"", "");
+                        }
+
+                        if (data.Contains("description_text_ro"))
+                        {
+                            articol.descriere = Regex.Replace(Regex.Split(data.Trim(), "\":\"")[1].Replace("\"", "").Replace("\\n", " ").Replace("\\t", " ").Replace("&nbsp;", " "), "<.*?>", String.Empty);
+                        }
+
+                    }
                 }
+            }
+            catch(Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
             }
 
         }
@@ -1384,7 +1387,7 @@ namespace LiteSFATestWebService
                 ComandaMathaus comandaMathaus = serializer.Deserialize<ComandaMathaus>(strComanda);
                 List<DateArticolMathaus> articole = comandaMathaus.deliveryEntryDataList;
 
-                DatePoligon datePoligon = new DatePoligon("","","","","");
+                DatePoligon datePoligon = new DatePoligon("","","","","","");
 
                 if (strPoligon != null && strPoligon.Trim().Length > 0)
                 {
@@ -1488,6 +1491,7 @@ namespace LiteSFATestWebService
                             articolComanda.cantUmb = Math.Round(HelperComenzi.getCantitateUmb(articolComanda.productCode, articolComanda.quantity, articolComanda.unit),2);
                             articolComanda.valPoz = Math.Round(((dateArticol.valPoz / dateArticol.quantity) * articolComanda.quantity),2);
                             articolComanda.greutate = dateArticol.greutate;
+                            articolComanda.tipStoc = dateArticol.tipStoc;
 
                             listArticoleComanda.Add(articolComanda);
 
@@ -1517,6 +1521,7 @@ namespace LiteSFATestWebService
                         articolComanda.quantity = dateArticol.quantity;
                         articolComanda.valPoz = Math.Round(dateArticol.valPoz,2);
                         articolComanda.greutate = dateArticol.greutate;
+                        articolComanda.tipStoc = dateArticol.tipStoc;
                         listArticoleComanda.Add(articolComanda);
                     }
 
@@ -1530,14 +1535,27 @@ namespace LiteSFATestWebService
                 if (antetCmdMathaus != null)
                     dateTransport = getTransportService(antetCmdMathaus, comandaMathaus, canal, datePoligon);
 
+                bool stocSap = false;
+
                 foreach (DateArticolMathaus articolMathaus in comandaMathaus.deliveryEntryDataList)
                 {
-                    foreach (DepozitArticolTransport depozitArticol in dateTransport.listDepozite)
 
+                    stocSap = articolMathaus.tipStoc != null && articolMathaus.tipStoc.ToLower().Equals("sap");
+
+                    foreach (DepozitArticolTransport depozitArticol in dateTransport.listDepozite)
                     {
-                        if (articolMathaus.productCode.TrimStart('0').Equals(depozitArticol.codArticol.TrimStart('0')) && articolMathaus.deliveryWarehouse.Equals(depozitArticol.filiala))
+                        bool conditieArticol = articolMathaus.productCode.TrimStart('0').Equals(depozitArticol.codArticol.TrimStart('0')) && articolMathaus.deliveryWarehouse.Equals(depozitArticol.filiala);
+
+                        if (stocSap)
+                            conditieArticol = articolMathaus.productCode.TrimStart('0').Equals(depozitArticol.codArticol.TrimStart('0'));
+
+                        if (conditieArticol)
                         {
                             articolMathaus.depozit = depozitArticol.depozit;
+
+                            if (stocSap)
+                                articolMathaus.deliveryWarehouse = depozitArticol.filiala;
+
                             break;
                         }
                     }
@@ -1546,7 +1564,7 @@ namespace LiteSFATestWebService
 
                 livrareMathaus.comandaMathaus = comandaMathaus;
                 livrareMathaus.costTransport = dateTransport.listCostTransport;
-
+                livrareMathaus.zileLivrare = dateTransport.zileLivrare;
 
             }
             catch (Exception ex)
@@ -1570,7 +1588,7 @@ namespace LiteSFATestWebService
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             LivrareMathaus livrareMathaus = new LivrareMathaus();
 
-            DatePoligon datePoligon = new DatePoligon("", "", "", "", "");
+            DatePoligon datePoligon = new DatePoligon("", "", "", "", "", "");
 
             try {
 
@@ -1741,7 +1759,6 @@ namespace LiteSFATestWebService
 
                 string deliveryResponse = sr.ReadToEnd().Trim();
 
-                ErrorHandling.sendErrorToMail("callDeliveryService: " + urlDeliveryService + " , " + canal + " , " + tipPers + " , " + codPers + " , " + deliveryResponse);
 
                 result = deliveryResponse;
             }
@@ -1889,7 +1906,6 @@ namespace LiteSFATestWebService
 
             string stockResponse = sr.ReadToEnd().Trim();
 
-            ErrorHandling.sendErrorToMail("callStockService: \n\n " + urlStockService + " \n\n " + jsonData + "\n\n" + stockResponse);
 
             return stockResponse;
 
@@ -1901,12 +1917,13 @@ namespace LiteSFATestWebService
         }
 
 
-        private DateTransportMathaus getTransportService(AntetCmdMathaus antetCmd, ComandaMathaus comandaMathaus, string canal, DatePoligon datePoligon)
+        public DateTransportMathaus getTransportService(AntetCmdMathaus antetCmd, ComandaMathaus comandaMathaus, string canal, DatePoligon datePoligon)
         {
             DateTransportMathaus dateTransport = new DateTransportMathaus();
             List<CostTransportMathaus> listCostTransp = new List<CostTransportMathaus>();
             List<DepozitArticolTransport> listArticoleDepoz = new List<DepozitArticolTransport>();
             List<CostTransportMathaus> listTaxeTransp = new List<CostTransportMathaus>();
+            List<DataLivrare> listZileLivrare = new List<DataLivrare>();
 
             List<OptiuneCamion> optiuniCamion = new JavaScriptSerializer().Deserialize<List<OptiuneCamion>>(antetCmd.tipCamion);
 
@@ -1962,8 +1979,6 @@ namespace LiteSFATestWebService
 
                 inParam.IsTaxaAcces = taxeAcces;
 
-
-
                 SAPWebServices.ZsitemsComanda[] items = new ZsitemsComanda[comandaMathaus.deliveryEntryDataList.Count];
 
                 int ii = 0;
@@ -1974,14 +1989,19 @@ namespace LiteSFATestWebService
                     items[ii].Kwmeng = Decimal.Parse(dateArticol.quantity.ToString());
                     items[ii].Vrkme = dateArticol.unit;
                     items[ii].ValPoz = Decimal.Parse(String.Format("{0:0.00}", dateArticol.valPoz));
-
                     
                     items[ii].Werks = dateArticol.deliveryWarehouse;
+
+                    if (dateArticol.tipStoc != null && dateArticol.tipStoc.ToLower().Equals("sap"))
+                        items[ii].Werks = "NN10";
 
                     if (dateArticol.depozit != null && dateArticol.depozit.Trim() != "")
                         items[ii].Lgort = dateArticol.depozit;
 
-                    items[ii].BrgewMatnr = Decimal.Parse(String.Format("{0:0.00}", dateArticol.greutate) );
+                    if (antetCmd.isComandaDL != null && Boolean.Parse(antetCmd.isComandaDL))
+                        items[ii].Lgort = "DESC";
+
+                    items[ii].BrgewMatnr = (Decimal)HelperComenzi.getGreutateArticol(dateArticol.productCode, dateArticol.quantity, comandaMathaus);
 
                     ii++;
                 }
@@ -1990,9 +2010,10 @@ namespace LiteSFATestWebService
                 SAPWebServices.ZsfilTransp[] filCost = new SAPWebServices.ZsfilTransp[1];
                 inParam.ItFilCost = filCost;
 
-                SAPWebServices.ZdetTransportResponse resp = webService.ZdetTransport(inParam);
+                SAPWebServices.ZileIncarcWerks[] zileInc = new ZileIncarcWerks[1];
+                inParam.ItZile = zileInc;
 
-                
+                SAPWebServices.ZdetTransportResponse resp = webService.ZdetTransport(inParam);
 
                 int nrItems = resp.ItItems.Count();
 
@@ -2038,9 +2059,6 @@ namespace LiteSFATestWebService
 
                 nrItems = resp.ItFilCost.Count();
 
-                
-
-
                 foreach (SAPWebServices.ZsfilTransp itemCost in resp.ItFilCost)
                 {
 
@@ -2052,11 +2070,11 @@ namespace LiteSFATestWebService
                             CostTransportMathaus taxaTransport = new CostTransportMathaus();
                             taxaTransport.filiala = costTransp.filiala;
                             taxaTransport.tipTransp = costTransp.tipTransp;
-
                             taxaTransport.valTransp = itemCost.ValTr.ToString();
                             taxaTransport.codArtTransp = itemCost.Matnr;
                             taxaTransport.depart = itemCost.Spart;
                             taxaTransport.numeCost = itemCost.Maktx.ToUpper();
+
                             listTaxeTransp.Add(taxaTransport);
                             break;
                         }
@@ -2064,13 +2082,18 @@ namespace LiteSFATestWebService
 
                 }
 
-
-             
+                foreach (SAPWebServices.ZileIncarcWerks itemZileInc in resp.ItZile)
+                {
+                    DataLivrare dataLivrare = new DataLivrare();
+                    dataLivrare.filiala = itemZileInc.Werks;
+                    dataLivrare.dataLivrare = General.GeneralUtils.formatStrDateV1(itemZileInc.Data);
+                    listZileLivrare.Add(dataLivrare);
+                }
 
             }
             catch(Exception ex)
             {
-                ErrorHandling.sendErrorToMail("getTransportService: " + ex.ToString()  );
+                ErrorHandling.sendErrorToMail("getTransportService: " + ex.ToString());
             }
 
             if (antetCmd.tipTransp.Equals("TCLI") || antetCmd.tipTransp.Equals("TFRN"))
@@ -2079,11 +2102,12 @@ namespace LiteSFATestWebService
                 dateTransport.listCostTransport = listTaxeTransp;
 
             dateTransport.listDepozite = listArticoleDepoz;
+            dateTransport.zileLivrare = listZileLivrare;
 
             return dateTransport;
 
         }
-        
+
 
         private void trateazaLivrariGed(ComandaMathaus comandaMathaus, SAPWebServices.ZdetTransportResponse resp)
         {

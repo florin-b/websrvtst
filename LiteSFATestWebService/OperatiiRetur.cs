@@ -646,11 +646,11 @@ namespace LiteSFATestWebService
 
             string condPaleti = "";
             string condData = "";
-            string nrZileRetur = " sysdate-145 ";
+            string nrZileRetur = " sysdate-245 ";
             string condDepart = "";
 
             if (tipDocument != null && tipDocument.Equals("PAL"))
-                nrZileRetur = " sysdate-990 ";
+                nrZileRetur = " sysdate-590 ";
 
             if (tipDocument == null || (tipDocument != null && tipDocument.Equals("PAL")))
             {
@@ -1353,6 +1353,22 @@ namespace LiteSFATestWebService
         }
 
 
+        public string saveListComenziRetur(string dateRetur, string tipRetur)
+        {
+
+            var serializer = new JavaScriptSerializer();
+            List<ComandaRetur> listaComenziRetur = serializer.Deserialize<List<ComandaRetur>>(dateRetur);
+
+            string retVal = "";
+
+            if (tipRetur != null && tipRetur.Equals("PAL"))
+            {
+                foreach(ComandaRetur comandaRetur in listaComenziRetur)
+                    retVal = saveReturPaleti(serializer.Serialize(comandaRetur));
+            }
+
+            return retVal;
+        }
 
         public string saveComandaRetur(string dateRetur, string tipRetur)
         {
@@ -1429,17 +1445,8 @@ namespace LiteSFATestWebService
 
             var serializer = new JavaScriptSerializer();
             ComandaRetur comanda = serializer.Deserialize<ComandaRetur>(dateRetur);
-           
             dateRetur = setArticolTransportPaleti(dateRetur);
-
             retVal = saveComandaReturToDB(dateRetur);
-
-            /*
-            if (comanda.tipAgent.Contains("AV"))
-                retVal = saveComandaReturToDB(dateRetur);
-            else
-                retVal = saveComandaReturToWS(dateRetur);
-            */
 
             return retVal;
         }

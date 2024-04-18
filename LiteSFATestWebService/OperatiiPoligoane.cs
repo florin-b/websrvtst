@@ -17,7 +17,8 @@ namespace LiteSFATestWebService
 
         public string getDatePoligonLivrareDB(string coords)
         {
-            DatePoligon datePoligon = new DatePoligon("", "", "", "", "");
+            DatePoligon datePoligon = new DatePoligon("", "", "", "", "", "");
+            datePoligon.isRestrictionat = Boolean.FalseString;
 
             try
             {
@@ -72,9 +73,12 @@ namespace LiteSFATestWebService
                 {
                     if (punctInPoligonTonajDB(addressPoint, poligon, datePoligon))
                     {
+                        datePoligon.isRestrictionat = poligon.interzis.Equals("X") ? Boolean.TrueString : Boolean.FalseString;
                         break;
                     }
                 }
+
+                
 
             }
             catch (Exception ex)
@@ -89,7 +93,7 @@ namespace LiteSFATestWebService
 
         public string getDatePoligonLivrare(string coords)
         {
-            DatePoligon datePoligon = new DatePoligon("", "", "", "", "");
+            DatePoligon datePoligon = new DatePoligon("", "", "", "", "", "");
 
             try
             {
@@ -345,6 +349,7 @@ namespace LiteSFATestWebService
             OracleDataReader oReader = null;
 
             string connectionString = DatabaseConnections.ConnectToProdEnvironment();
+
             connection.ConnectionString = connectionString;
             connection.Open();
             OracleCommand cmd = connection.CreateCommand();
@@ -356,7 +361,7 @@ namespace LiteSFATestWebService
             string infoTonaj = "";
             if (filtruPoligon.Equals("PERMIS"))
             {
-                infoTonaj = " , name, lt ";
+                infoTonaj = " , name, lt, interzis ";
                 conditieFiliala = " and pct =:filiala ";
                 conditieTip = "tippoligon";
             }
@@ -387,11 +392,13 @@ namespace LiteSFATestWebService
                         poligon.tipPoligon = oReader.GetString(2);
                         poligon.tonaj = "";
                         poligon.nume = "";
+                        poligon.interzis = "";
 
                         if (filtruPoligon.Equals("PERMIS"))
                         {
                             poligon.nume = oReader.GetString(3);
                             poligon.tonaj = oReader.GetDouble(4).ToString();
+                            poligon.interzis = oReader.GetString(5);
                             poligon.tipPoligon = "LT";
                         }
 
