@@ -138,6 +138,7 @@
     <Compile Include="BeanRecomandari.cs" />
     <Compile Include="Cabluri05.cs" />
     <Compile Include="DocumentatieProduse.cs" />
+    <Compile Include="HelperAprobari.cs" />
     <Compile Include="HelperComenzi.cs" />
     <Compile Include="InfoComenziSap.cs" />
     <Compile Include="JurnalAprobari.cs" />
@@ -198,6 +199,7 @@
     <Compile Include="OperatiiPoligoane.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="OperatiiPreturi.cs" />
     <Compile Include="OperatiiPreturiBG.cs" />
     <Compile Include="OperatiiStocuri.cs" />
     <Compile Include="PierderiVanzari.cs" />
@@ -654,6 +656,9 @@
       <DependentUpon>Reference.map</DependentUpon>
     </Content>
     <Content Include="Web References\SAPWebServices\ZstocSfaResponse.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\SAPWebServices\ZgetPrice20Response.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </Content>
     <None Include="Web References\SAPWebServices\ztbl_webservice.wsdl" />

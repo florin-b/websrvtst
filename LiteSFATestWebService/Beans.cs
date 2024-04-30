@@ -194,6 +194,8 @@ namespace LiteSFATestWebService
         public double cantitate50;
         public string um50;
         public string dataLivrare;
+        public double cmpCorectat;
+        public double pretMinim;
 
 
         public override string ToString()
@@ -330,9 +332,16 @@ namespace LiteSFATestWebService
         public string filialaPlata;
         public string codPostal;
         public string isComandaCustodie;
+        public string taxeComanda;
 
 
 
+    }
+
+    public class TaxaComanda
+    {
+        public string filiala;
+        public double valoare;
     }
 
 
@@ -854,6 +863,8 @@ namespace LiteSFATestWebService
         public string lungime;
         public string um50;
         public string cantitate50;
+        public string pretMinim;
+        public string promo;
 
     }
 

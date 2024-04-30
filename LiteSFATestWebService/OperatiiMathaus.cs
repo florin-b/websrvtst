@@ -1456,7 +1456,7 @@ namespace LiteSFATestWebService
 
                     DateArticolMathaus articolComanda = null;
 
-                    if (!dateArticol.productCode.StartsWith("0000000000"))
+                    if (!dateArticol.productCode.StartsWith("0000000000") && Char.IsDigit(dateArticol.productCode, 0))
                         dateArticol.productCode = "0000000000" + dateArticol.productCode;
 
                     artFound = false;
@@ -1552,6 +1552,10 @@ namespace LiteSFATestWebService
                         if (conditieArticol)
                         {
                             articolMathaus.depozit = depozitArticol.depozit;
+                            articolMathaus.cmpCorectat = depozitArticol.cmpCorectat;
+
+                            if (!articolMathaus.productCode.StartsWith("0000000000"))
+                                articolMathaus.productCode = "0000000000" + articolMathaus.productCode;
 
                             if (stocSap)
                                 articolMathaus.deliveryWarehouse = depozitArticol.filiala;
@@ -2053,6 +2057,7 @@ namespace LiteSFATestWebService
                     depozitArticol.codArticol = itemCmd.Matnr;
                     depozitArticol.filiala = itemCmd.Werks;
                     depozitArticol.depozit = itemCmd.Lgort;
+                    depozitArticol.cmpCorectat = itemCmd.Cmpc.ToString();
                     listArticoleDepoz.Add(depozitArticol);
 
                 }

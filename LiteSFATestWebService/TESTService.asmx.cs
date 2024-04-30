@@ -4168,7 +4168,7 @@ namespace LiteSFATestWebService
                                   " decode(trim(b.dep_aprobare),'','00', b.dep_aprobare)  dep_aprobare " + condBlocAprov + istoricPret + vechime + infoPretTransp + sinteticArt +
                                   lungimeArt + " , a.data_exp_pret, " +
                                   " (select nvl((select 1 from sapprd.mara m where m.mandt = '900' and m.matnr = a.cod and m.categ_mat in ('PA','AM')),-1) palet from dual) palet, nvl(a.brgew,0) greutate, " +
-                                  " nvl(a.brgew_matnr,0) greutate_bruta, a.cant_pret, a.umv50, a.qty50 from sapprd.zcomdet_tableta a, sapprd.zdisc_pers_sint a1,  sintetice c," +
+                                  " nvl(a.brgew_matnr,0) greutate_bruta, a.cant_pret, a.umv50, a.qty50, a.pret_minim from sapprd.zcomdet_tableta a, sapprd.zdisc_pers_sint a1,  sintetice c," +
                                   " articole b, sapprd.zpretsubcmp s " + condTabKA + " where a.cod = b.cod(+) " + condIdKA + " and " +
                                   " a1.inactiv(+) <> 'X' and a1.functie(+)='AV' and a1.spart(+)=substr(c.COD_NIVEL1,2,2) and a1.werks(+) ='" + unitLog1 + "' " +
                                   " and b.sintetic = c.cod(+) and a1.matkl(+) = c.cod " + conditieDepart +
@@ -4261,6 +4261,7 @@ namespace LiteSFATestWebService
 
                         articol.um50 = oReader1.GetString(39).ToString();
                         articol.cantitate50 = oReader1.GetDouble(40);
+                        articol.pretMinim = oReader1.GetDouble(oReader1.GetOrdinal("pret_minim"));
 
 
                         ArticolProps articolProps = new OperatiiArticole().getPropsArticol(connection, articol.codArticol);
@@ -9717,6 +9718,12 @@ namespace LiteSFATestWebService
             return opArticole.getPretGed(parametruPret);
         }
 
+        [WebMethod]
+        public string getPretUnic(string parametruPret)
+        {
+            return new OperatiiPreturi().getPretUnic(parametruPret);
+        }
+
 
         [WebMethod]
         public string getPretGed(string client, string articol, string cantitate, string depart, string um, string ul, string depoz, string codUser)
@@ -12853,8 +12860,6 @@ namespace LiteSFATestWebService
                                 if (tipTranspCmd != null && !tipTranspCmd.Equals(String.Empty))
                                     dateLivrareDistrib.Transport = tipTranspCmd;
 
-                              
-
                                 retVal = saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, tipUser, serializer.Serialize(articoleAgenti), serializer.Serialize(comandaVanzare), serializer.Serialize(dateLivrareDistrib), false, tipUserSap, idCmdAmob);
                                 articoleAgenti.Clear();
                                 totalComanda = 0;
@@ -12890,7 +12895,6 @@ namespace LiteSFATestWebService
 
                         if (tipTranspCmd != null && !tipTranspCmd.Equals(String.Empty))
                             dateLivrareDistrib.Transport = tipTranspCmd;
-
 
                         retVal = saveAVNewCmd(comanda, alertSD, alertDV, cmdAngajament, tipUser, serializer.Serialize(articoleAgenti), serializer.Serialize(comandaVanzare), serializer.Serialize(dateLivrareDistrib), true,tipUserSap, idCmdAmob);
                     }
@@ -12949,7 +12953,6 @@ namespace LiteSFATestWebService
                                 if (tipTranspCmd != null && !tipTranspCmd.Equals(String.Empty))
                                     dateLivrareDistrib.Transport = tipTranspCmd;
 
-
                                 retVal = saveAVNewCmd(comanda, alertSD, paramAlertDVGed, cmdAngajament, tipUser, serializer.Serialize(articoleAgenti), serializer.Serialize(comandaVanzare), serializer.Serialize(dateLivrareDistrib), calcTransport, tipUserSap, idCmdAmob);
 
                                 if (retVal.Contains("#"))
@@ -12992,7 +12995,6 @@ namespace LiteSFATestWebService
 
                         if (tipTranspCmd != null && !tipTranspCmd.Equals(String.Empty))
                             dateLivrareDistrib.Transport = tipTranspCmd;
-
 
                         retVal = saveAVNewCmd(comanda, alertSD, paramAlertDVGed, cmdAngajament, tipUser, serializer.Serialize(articoleAgenti), serializer.Serialize(comandaVanzare), serializer.Serialize(dateLivrareDistrib), calcTransport, tipUserSap, idCmdAmob);
 
@@ -13122,6 +13124,11 @@ namespace LiteSFATestWebService
             ComandaVanzare comandaVanzare = serializer.Deserialize<ComandaVanzare>(JSONComanda);
             DateLivrare dateLivrare = serializer.Deserialize<DateLivrare>(JSONDateLivrare);
             List<ArticolComanda> articolComanda = serializer.Deserialize<List<ArticolComanda>>(JSONArt);
+
+            List<TaxaComanda> taxeComanda = new List<TaxaComanda>();
+
+            if (dateLivrare.taxeComanda != null && dateLivrare.taxeComanda.Trim() != "")
+                taxeComanda = serializer.Deserialize<List<TaxaComanda>>(dateLivrare.taxeComanda);
 
 
             if (tipUser.Equals("SITE"))
@@ -13440,6 +13447,8 @@ namespace LiteSFATestWebService
                     valSD = "X";
                 }
 
+                valSD = " ";
+
                 cmd.Parameters[15].Value = valSD;
 
 
@@ -13448,6 +13457,13 @@ namespace LiteSFATestWebService
                     valDV = "X";
                 else
                     valDV = " ";
+
+
+                //verificare aprobare doar pentru useri test
+                {
+                    valDV = HelperAprobari.isAprobareDV(articolComanda, tipUserSap, taxeComanda, dateLivrare, comandaVanzare) ? "X" : " ";
+                }
+
                 cmd.Parameters[16].Value = valDV;
 
                 cmd.Parameters.Add(":factred", OracleType.VarChar, 3).Direction = ParameterDirection.Input;
@@ -13737,7 +13753,8 @@ namespace LiteSFATestWebService
 
                         query = " insert into sapprd.zcomdet_tableta(mandt,id,poz,status,cod,cantitate,valoare,depoz, " +
                                 " transfer,valoaresap,ppoz,procent,um,pret_cl,conditie,disclient,procent_aprob,multiplu, " +
-                                " val_poz,inf_pret,cant_umb,umb, ul_stoc, fake, ponderat, istoric_pret, val_transp, data_exp_pret, brgew, brgew_matnr, cant_pret, umv50, qty50) " +
+                                " val_poz,inf_pret,cant_umb,umb, ul_stoc, fake, ponderat, istoric_pret, val_transp, data_exp_pret, brgew, brgew_matnr, cant_pret, umv50, " +
+                                " qty50, pret_minim) " +
                                 " values ('900'," + idCmd.Value + ",'" + pozArt + "','" + cmdStatus + "','" + codArt + "'," + articolComanda[i].cantitate.ToString(nfi) + ", " +
                                 "" + pretUnit.ToString(nfi) + ",'" + articolComanda[i].depozit + "','0',0,'0'," + articolComanda[i].procent.ToString(nfi) + ",'" +
                                 articolComanda[i].um + "'," + articolComanda[i].pretUnitarClient.ToString(nfi) + ",' '," +
@@ -13745,7 +13762,7 @@ namespace LiteSFATestWebService
                                 valPoz.ToString(nfi) + ",'" + articolComanda[i].infoArticol + "'," + articolComanda[i].cantUmb + ",'" +
                                 articolComanda[i].Umb + "','" + ulStoc + "', '" + fakeArt + "','" + ponderareArt + "','" + articolComanda[i].istoricPret + "', " +
                                 valTransportArt +  ", '" + dataExp +"'," + greutateArticol + "," + greutateBrutaArticol + ", " + cantitateInit + ",'" + um50
-                                +"'," + articolComanda[i].cantitate50 + " ) ";
+                                +"'," + articolComanda[i].cantitate50 + "," + articolComanda[i].pretMinim + " ) ";
 
                     }
                     else
@@ -13777,14 +13794,14 @@ namespace LiteSFATestWebService
 
                         query = " insert into sapprd.zcomdet_tableta(mandt,id,poz,status,cod,cantitate,valoare,depoz, " +
                                 " transfer,valoaresap,ppoz,procent,um,procent_fc,conditie,disclient,procent_aprob,multiplu, " +
-                                " val_poz,inf_pret,cant_umb,umb, ul_stoc, fake,istoric_pret, data_exp_pret, brgew, brgew_matnr, cant_pret, umv50, qty50) " +
+                                " val_poz,inf_pret,cant_umb,umb, ul_stoc, fake,istoric_pret, data_exp_pret, brgew, brgew_matnr, cant_pret, umv50, qty50, pret_minim) " +
                                 " values ('900'," + idCmd.Value + ",'" + pozArt + "','" + cmdStatus + "','" + codArt + "'," + articolComanda[i].cantitate.ToString(nfi) + ", " +
                                 "" + pretUnit.ToString(nfi) + ",'" + articolComanda[i].depozit + "','0',0,'0'," + articolComanda[i].procent.ToString(nfi) + ",'" +
                                 articolComanda[i].um + "'," + articolComanda[i].procentFact.ToString(nfi) + ",' '," +
                                 articolComanda[i].discClient.ToString(nfi) + "," + articolComanda[i].procAprob.ToString(nfi) + "," + articolComanda[i].multiplu.ToString(nfi) + "," +
                                 valPoz.ToString(nfi) + ",'" + articolComanda[i].infoArticol + "'," + articolComanda[i].cantUmb + ",'" +
                                 articolComanda[i].Umb + "','" + ulStoc + "', '" + fakeArt + "','" + articolComanda[i].istoricPret + "','" + dataExp +"'," + greutateArticol +  
-                                "," + greutateBrutaArticol + ", " + cantitateInit + ",'" + um50 + "' , " + articolComanda[i].cantitate50 + " ) ";
+                                "," + greutateBrutaArticol + ", " + cantitateInit + ",'" + um50 + "' , " + articolComanda[i].cantitate50 + ", " + articolComanda[i].pretMinim + " ) ";
 
 
 

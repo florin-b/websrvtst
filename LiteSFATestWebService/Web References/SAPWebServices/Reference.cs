@@ -48,6 +48,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         private System.Threading.SendOrPostCallback ZdetTransport2OperationCompleted;
         
+        private System.Threading.SendOrPostCallback ZgetPrice20OperationCompleted;
+        
         private System.Threading.SendOrPostCallback ZpalcantOperationCompleted;
         
         private System.Threading.SendOrPostCallback ZretMarfaOperationCompleted;
@@ -160,6 +162,9 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         /// <remarks/>
         public event ZdetTransport2CompletedEventHandler ZdetTransport2Completed;
+        
+        /// <remarks/>
+        public event ZgetPrice20CompletedEventHandler ZgetPrice20Completed;
         
         /// <remarks/>
         public event ZpalcantCompletedEventHandler ZpalcantCompleted;
@@ -508,6 +513,37 @@ namespace LiteSFATestWebService.SAPWebServices {
             if ((this.ZdetTransport2Completed != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.ZdetTransport2Completed(this, new ZdetTransport2CompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZgetPrice20Reque" +
+            "st", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Bare)]
+        [return: System.Xml.Serialization.XmlElementAttribute("ZgetPrice20Response", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+        public ZgetPrice20Response ZgetPrice20([System.Xml.Serialization.XmlElementAttribute("ZgetPrice20", Namespace="urn:sap-com:document:sap:soap:functions:mc-style")] ZgetPrice20 ZgetPrice201) {
+            object[] results = this.Invoke("ZgetPrice20", new object[] {
+                        ZgetPrice201});
+            return ((ZgetPrice20Response)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void ZgetPrice20Async(ZgetPrice20 ZgetPrice201) {
+            this.ZgetPrice20Async(ZgetPrice201, null);
+        }
+        
+        /// <remarks/>
+        public void ZgetPrice20Async(ZgetPrice20 ZgetPrice201, object userState) {
+            if ((this.ZgetPrice20OperationCompleted == null)) {
+                this.ZgetPrice20OperationCompleted = new System.Threading.SendOrPostCallback(this.OnZgetPrice20OperationCompleted);
+            }
+            this.InvokeAsync("ZgetPrice20", new object[] {
+                        ZgetPrice201}, this.ZgetPrice20OperationCompleted, userState);
+        }
+        
+        private void OnZgetPrice20OperationCompleted(object arg) {
+            if ((this.ZgetPrice20Completed != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.ZgetPrice20Completed(this, new ZgetPrice20CompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -2948,6 +2984,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         private string custodieField;
         
+        private string codPostalField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public string Mandt {
@@ -3803,6 +3841,17 @@ namespace LiteSFATestWebService.SAPWebServices {
             }
             set {
                 this.custodieField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string CodPostal {
+            get {
+                return this.codPostalField;
+            }
+            set {
+                this.codPostalField = value;
             }
         }
     }
@@ -28910,6 +28959,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         private string tratyField;
         
+        private decimal cmpcField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public string Matnr {
@@ -29006,6 +29057,17 @@ namespace LiteSFATestWebService.SAPWebServices {
             }
             set {
                 this.tratyField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal Cmpc {
+            get {
+                return this.cmpcField;
+            }
+            set {
+                this.cmpcField = value;
             }
         }
     }
@@ -30316,9 +30378,17 @@ namespace LiteSFATestWebService.SAPWebServices {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
     public partial class ZcheckZileLivrare {
         
+        private string ipCityField;
+        
         private string ipKunnrField;
         
+        private string ipLifnrField;
+        
+        private string ipNoCheckField;
+        
         private string ipPernrField;
+        
+        private string ipRegioField;
         
         private string ipVbelnField;
         
@@ -30329,6 +30399,17 @@ namespace LiteSFATestWebService.SAPWebServices {
         private string ipZonaField;
         
         private ZileIncarc[] itZileField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string IpCity {
+            get {
+                return this.ipCityField;
+            }
+            set {
+                this.ipCityField = value;
+            }
+        }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
@@ -30343,12 +30424,45 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string IpLifnr {
+            get {
+                return this.ipLifnrField;
+            }
+            set {
+                this.ipLifnrField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string IpNoCheck {
+            get {
+                return this.ipNoCheckField;
+            }
+            set {
+                this.ipNoCheckField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public string IpPernr {
             get {
                 return this.ipPernrField;
             }
             set {
                 this.ipPernrField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string IpRegio {
+            get {
+                return this.ipRegioField;
+            }
+            set {
+                this.ipRegioField = value;
             }
         }
         
@@ -30647,6 +30761,596 @@ namespace LiteSFATestWebService.SAPWebServices {
             }
             set {
                 this.itZileField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZgetPrice20 {
+        
+        private string canalField;
+        
+        private string cityField;
+        
+        private string cuRotunjField;
+        
+        private string dztermField;
+        
+        private decimal gvCantField;
+        
+        private bool gvCantFieldSpecified;
+        
+        private string gvKunnrField;
+        
+        private string gvLgortField;
+        
+        private string gvMatnrField;
+        
+        private string gvSiteField;
+        
+        private string gvSpartField;
+        
+        private string gvVrkmeField;
+        
+        private string gvWerksField;
+        
+        private string mpField;
+        
+        private string regioField;
+        
+        private string tipPersField;
+        
+        private string tratyField;
+        
+        private string ulStocField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Canal {
+            get {
+                return this.canalField;
+            }
+            set {
+                this.canalField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string City {
+            get {
+                return this.cityField;
+            }
+            set {
+                this.cityField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string CuRotunj {
+            get {
+                return this.cuRotunjField;
+            }
+            set {
+                this.cuRotunjField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Dzterm {
+            get {
+                return this.dztermField;
+            }
+            set {
+                this.dztermField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal GvCant {
+            get {
+                return this.gvCantField;
+            }
+            set {
+                this.gvCantField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool GvCantSpecified {
+            get {
+                return this.gvCantFieldSpecified;
+            }
+            set {
+                this.gvCantFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvKunnr {
+            get {
+                return this.gvKunnrField;
+            }
+            set {
+                this.gvKunnrField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvLgort {
+            get {
+                return this.gvLgortField;
+            }
+            set {
+                this.gvLgortField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvMatnr {
+            get {
+                return this.gvMatnrField;
+            }
+            set {
+                this.gvMatnrField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvSite {
+            get {
+                return this.gvSiteField;
+            }
+            set {
+                this.gvSiteField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvSpart {
+            get {
+                return this.gvSpartField;
+            }
+            set {
+                this.gvSpartField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvVrkme {
+            get {
+                return this.gvVrkmeField;
+            }
+            set {
+                this.gvVrkmeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvWerks {
+            get {
+                return this.gvWerksField;
+            }
+            set {
+                this.gvWerksField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Mp {
+            get {
+                return this.mpField;
+            }
+            set {
+                this.mpField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Regio {
+            get {
+                return this.regioField;
+            }
+            set {
+                this.regioField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string TipPers {
+            get {
+                return this.tipPersField;
+            }
+            set {
+                this.tipPersField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Traty {
+            get {
+                return this.tratyField;
+            }
+            set {
+                this.tratyField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string UlStoc {
+            get {
+                return this.ulStocField;
+            }
+            set {
+                this.ulStocField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9037.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
+    public partial class ZgetPrice20Response {
+        
+        private byte errorCodeField;
+        
+        private decimal gvBrgewField;
+        
+        private decimal gvBrgewMatnrField;
+        
+        private decimal gvCantField;
+        
+        private bool gvCantFieldSpecified;
+        
+        private decimal gvCantFreeField;
+        
+        private string gvCondField;
+        
+        private string gvCurrencyField;
+        
+        private string gvDatbiField;
+        
+        private string gvMatnrFreeField;
+        
+        private decimal gvNetwrField;
+        
+        private decimal gvNetwrFreeField;
+        
+        private decimal gvNetwrFtvaField;
+        
+        private decimal gvNetwrListField;
+        
+        private decimal gvNetwrMinField;
+        
+        private string gvNoDiscField;
+        
+        private string gvPromoField;
+        
+        private decimal gvQty50Field;
+        
+        private string gvUm50Field;
+        
+        private string gvVrkmeField;
+        
+        private string gvVrkmeFreeField;
+        
+        private string impachetField;
+        
+        private decimal multipluField;
+        
+        private decimal outCantUmbField;
+        
+        private string outUmbField;
+        
+        private string vMessField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public byte ErrorCode {
+            get {
+                return this.errorCodeField;
+            }
+            set {
+                this.errorCodeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal GvBrgew {
+            get {
+                return this.gvBrgewField;
+            }
+            set {
+                this.gvBrgewField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal GvBrgewMatnr {
+            get {
+                return this.gvBrgewMatnrField;
+            }
+            set {
+                this.gvBrgewMatnrField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal GvCant {
+            get {
+                return this.gvCantField;
+            }
+            set {
+                this.gvCantField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool GvCantSpecified {
+            get {
+                return this.gvCantFieldSpecified;
+            }
+            set {
+                this.gvCantFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal GvCantFree {
+            get {
+                return this.gvCantFreeField;
+            }
+            set {
+                this.gvCantFreeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvCond {
+            get {
+                return this.gvCondField;
+            }
+            set {
+                this.gvCondField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvCurrency {
+            get {
+                return this.gvCurrencyField;
+            }
+            set {
+                this.gvCurrencyField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvDatbi {
+            get {
+                return this.gvDatbiField;
+            }
+            set {
+                this.gvDatbiField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvMatnrFree {
+            get {
+                return this.gvMatnrFreeField;
+            }
+            set {
+                this.gvMatnrFreeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal GvNetwr {
+            get {
+                return this.gvNetwrField;
+            }
+            set {
+                this.gvNetwrField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal GvNetwrFree {
+            get {
+                return this.gvNetwrFreeField;
+            }
+            set {
+                this.gvNetwrFreeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal GvNetwrFtva {
+            get {
+                return this.gvNetwrFtvaField;
+            }
+            set {
+                this.gvNetwrFtvaField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal GvNetwrList {
+            get {
+                return this.gvNetwrListField;
+            }
+            set {
+                this.gvNetwrListField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal GvNetwrMin {
+            get {
+                return this.gvNetwrMinField;
+            }
+            set {
+                this.gvNetwrMinField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvNoDisc {
+            get {
+                return this.gvNoDiscField;
+            }
+            set {
+                this.gvNoDiscField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvPromo {
+            get {
+                return this.gvPromoField;
+            }
+            set {
+                this.gvPromoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal GvQty50 {
+            get {
+                return this.gvQty50Field;
+            }
+            set {
+                this.gvQty50Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvUm50 {
+            get {
+                return this.gvUm50Field;
+            }
+            set {
+                this.gvUm50Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvVrkme {
+            get {
+                return this.gvVrkmeField;
+            }
+            set {
+                this.gvVrkmeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string GvVrkmeFree {
+            get {
+                return this.gvVrkmeFreeField;
+            }
+            set {
+                this.gvVrkmeFreeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string Impachet {
+            get {
+                return this.impachetField;
+            }
+            set {
+                this.impachetField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal Multiplu {
+            get {
+                return this.multipluField;
+            }
+            set {
+                this.multipluField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal OutCantUmb {
+            get {
+                return this.outCantUmbField;
+            }
+            set {
+                this.outCantUmbField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string OutUmb {
+            get {
+                return this.outUmbField;
+            }
+            set {
+                this.outUmbField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string VMess {
+            get {
+                return this.vMessField;
+            }
+            set {
+                this.vMessField = value;
             }
         }
     }
@@ -34864,6 +35568,32 @@ namespace LiteSFATestWebService.SAPWebServices {
             get {
                 this.RaiseExceptionIfNecessary();
                 return ((ZdetTransport2Response)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
+    public delegate void ZgetPrice20CompletedEventHandler(object sender, ZgetPrice20CompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9037.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class ZgetPrice20CompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal ZgetPrice20CompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public ZgetPrice20Response Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((ZgetPrice20Response)(this.results[0]));
             }
         }
     }

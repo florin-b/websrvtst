@@ -82,6 +82,7 @@ namespace LiteSFATestWebService
         public string codArticol;
         public string filiala;
         public string depozit;
+        public string cmpCorectat;
     }
 
     public class ComandaMathaus
@@ -114,6 +115,7 @@ namespace LiteSFATestWebService
         public string unit50;
         public double cantUmb;
         public string tipStoc;
+        public string cmpCorectat;
     }
 
     public class StockMathaus

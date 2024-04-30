@@ -5,7 +5,6 @@ using System.Web;
 using System.Web.Script.Serialization;
 using System.Data.OracleClient;
 using System.Data;
-using LiteSFATestWebService.SAPWebServices;
 using LiteSFATestWebService.General;
 
 namespace LiteSFATestWebService

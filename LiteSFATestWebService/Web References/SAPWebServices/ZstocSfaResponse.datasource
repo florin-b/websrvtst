@@ -6,5 +6,5 @@
     cause the file to be unrecognizable by the program.
 -->
 <GenericObjectDataSource DisplayName="ZstocSfaResponse" Version="1.0" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
-   <TypeInfo>LiteSFATestWebService.SAPWebServices.ZstocSfaResponse</TypeInfo>
+   <TypeInfo>LiteSFATestWebService.SAPWebServices.ZstocSfaResponse, LiteSFATestWebService, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</TypeInfo>
 </GenericObjectDataSource>

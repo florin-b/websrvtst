@@ -143,14 +143,24 @@ namespace LiteSFATestWebService
             
 
             List<CostDescarcare> costDescarcare = new List<CostDescarcare>();
-
             JavaScriptSerializer serializer = new JavaScriptSerializer();
-            List<ComandaCalculDescarcare> listCom = serializer.Deserialize<List<ComandaCalculDescarcare>>(listComenzi);
-            
-            foreach (ComandaCalculDescarcare comanda in listCom)
+
+            try
             {
-                string costDescComanda = getCostMacara(comanda.filiala, codAgent, codClient, codFurnizor, comanda.listArticole, canal, isCustodie);
-                costDescarcare.Add(serializer.Deserialize<CostDescarcare>(costDescComanda));
+
+                
+                List<ComandaCalculDescarcare> listCom = serializer.Deserialize<List<ComandaCalculDescarcare>>(listComenzi);
+
+                foreach (ComandaCalculDescarcare comanda in listCom)
+                {
+                    string costDescComanda = getCostMacara(comanda.filiala, codAgent, codClient, codFurnizor, comanda.listArticole, canal, isCustodie);
+                    costDescarcare.Add(serializer.Deserialize<CostDescarcare>(costDescComanda));
+                }
+            }
+
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail("getCostMacaraComenzi: \n\n" + ex.ToString() + "\n\n" + codAgent + "\n" + codClient + "\n" + codFurnizor + "\n" + listComenzi + "\n" + canal + "\n" + isCustodie);
             }
 
             return serializer.Serialize(costDescarcare);
