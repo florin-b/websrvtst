@@ -92,6 +92,7 @@ namespace LiteSFATestWebService
         public string divizii;
         public string tipPlata;
         public string email;
+        public string errMsg;
     }
 
 
@@ -333,6 +334,7 @@ namespace LiteSFATestWebService
         public string codPostal;
         public string isComandaCustodie;
         public string taxeComanda;
+        public string zona;
 
 
 

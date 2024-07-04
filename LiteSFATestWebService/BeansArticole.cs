@@ -27,6 +27,7 @@ namespace LiteSFATestWebService
         public string codClientParavan;
         public string filialaClp;
         public string tipTransport;
+        public string appVer;
     }
 
     public class ArticolPretTransportGed

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LiteSFATestWebService.SapWsSalarizare;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -93,6 +94,8 @@ namespace LiteSFATestWebService
         public DetaliiCorectie detaliiCorectie;
         public List<DetaliiIncasari08> detaliiIncasari08;
         public List<DetaliiMalus1> detaliiMalus;
+        public List<ZSUM_VANZ_VS> detaliiVanzariVS;
+        public List<ZclIncrAlocat> detaliiIncrAlocat;
     }
 
 
@@ -108,6 +111,8 @@ namespace LiteSFATestWebService
         public double corectieIncasare;
         public double venitFinal;
         public double venitCVS;
+        public double venitStocNociv;
+        public double venitIncrucisate;
     }
 
 
@@ -156,11 +161,11 @@ namespace LiteSFATestWebService
         public string agent;
         public double venitBaza;
         public double venitCvs;
-        public double valoareP6V;
-        public double pondere;
-        public double targetValoric;
-        public double valoareFTVA;
-        public double cvs;
+        public double valTotal;
+        public double valNociv;
+        public double prag;
+        public double procent;
+
         
 
     }
@@ -183,6 +188,32 @@ namespace LiteSFATestWebService
         public int zileIntarziere;
         public double coefPenalizare;
 
+    }
+
+    public class DetaliiVenitVS
+    {
+        public double coefSal;
+        public string ename;
+        public string matnr;
+        public double netwrCalc;
+        public double netwrVf;
+        public double netwrVfRed;
+        public string pernr;
+        public double posnrVf;
+        public double procCant;
+        public string shortStr;
+        public string spart;
+        public double T0prim;
+        public double T1a;
+        public double T1aProc;
+        public double T1d;
+        public double T1dProc;
+        public double T1net;
+        public string VbelnVf;
+        public string VbelnVfRed;
+        public double venitBaza;
+        public string werks;
+        public double ZmarjaCoef;
     }
 
 }

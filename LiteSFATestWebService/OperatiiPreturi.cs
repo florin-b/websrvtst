@@ -139,7 +139,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters[0].Value = paramPret.articol;
 
                 cmd.Parameters.Add(":unitLog", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[1].Value = filialaCmp;   //ul. ged
+                cmd.Parameters[1].Value = strFilialaCmp;   //ul. ged
 
 
 
@@ -317,8 +317,10 @@ namespace LiteSFATestWebService
 
 
                 string istoricPret = " ";
-                if (paramPret.codClientParavan != null && paramPret.codClientParavan.Trim().Length > 0)
-                    istoricPret = new Preturi().getIstoricPret(connection, paramPret.articol, paramPret.codClientParavan);
+
+
+                if (paramPret.canalDistrib.Equals("10"))
+                    istoricPret = new Preturi().getIstoricPret(connection, paramPret.articol, paramPret.client);
 
                 pretArticolGed.articoleRecomandate = new OperatiiArticole().getArticoleRecomandate(connection, paramPret.articol, "11");
                 ArticolProps articolProps = new OperatiiArticole().getPropsArticol(connection, paramPret.articol);
@@ -336,6 +338,14 @@ namespace LiteSFATestWebService
 
                 webService.Dispose();
 
+                if (paramPret.appVer != null && !paramPret.appVer.Equals(Service1.LiteSFAVer.Split(':')[1]))
+                {
+                    pretArticolGed.pret = "0";
+                    pretArticolGed.pretLista = "0";
+                    pretArticolGed.pretMinim = "0";
+                    pretArticolGed.errMsg = "Actualizati aplicatia.";
+                }
+
             }
             catch (Exception ex)
             {
@@ -343,10 +353,20 @@ namespace LiteSFATestWebService
             }
 
             ErrorHandling.sendErrorToMail("getPretUnic: \n\n" + parametruPret + "\n\n" + serializer.Serialize(pretArticolGed));
+
+
                 
 
             return serializer.Serialize(pretArticolGed); 
 
+        }
+
+        private static bool isConditiePretAfisata(string codConditie)
+        {
+            if (codConditie.ToUpper().Equals("MWSI") || codConditie.ToUpper().Equals("ZSTA") || codConditie.ToUpper().Equals("ZSTX"))
+                return true;
+
+            return false;
         }
 
 

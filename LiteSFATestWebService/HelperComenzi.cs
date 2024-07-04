@@ -659,6 +659,14 @@ namespace LiteSFATestWebService
             return " ('437','438','439','440') ";
         }
 
+        public static bool isComandaSimulata(string statusComanda)
+        {
+            if (statusComanda == null)
+                return false;
+
+            return statusComanda.Equals("20") || statusComanda.Equals("21");
+        }
+
 
     }
 }

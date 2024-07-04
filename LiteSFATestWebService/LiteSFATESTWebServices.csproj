@@ -216,6 +216,7 @@
     <Compile Include="Salarizare.cs" />
     <Compile Include="SalarizareAgenti2019.cs" />
     <Compile Include="SalarizareConsilieri.cs" />
+    <Compile Include="SalarizareVanzari.cs" />
     <Compile Include="Sms.cs" />
     <Compile Include="Stocuri.cs" />
     <Compile Include="TESTService.asmx.cs">
@@ -253,6 +254,11 @@
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>
     <Compile Include="Web References\SalarizareKA\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+    <Compile Include="Web References\SapWsSalarizare\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.map</DependentUpon>
@@ -355,6 +361,17 @@
       </CachedDynamicPropName>
       <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
       <CachedSettingsPropName>LiteSFATestWebService_SalarizareAG_ZWBS_SAL_AV</CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://sap-prd6a.arabesque.ro:8036/sap/bc/srt/wsdl/flv_10002A111AD1/bndg_url/sap/bc/srt/rfc/sap/zws_salarizare_24/900/zws_salarizare_24/zws_salarizare_24%3fsap-client=900">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\SapWsSalarizare\</RelPath>
+      <UpdateFromURL>http://sap-prd6a.arabesque.ro:8036/sap/bc/srt/wsdl/flv_10002A111AD1/bndg_url/sap/bc/srt/rfc/sap/zws_salarizare_24/900/zws_salarizare_24/zws_salarizare_24%3fsap-client=900</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>LiteSFATestWebService_Salarizare_ZWS_SALARIZARE_24</CachedSettingsPropName>
     </WebReferenceUrl>
     <WebReferenceUrl Include="http://sap-prd6a.arabesque.ro:8036/sap/bc/srt/wsdl/flv_10002A111AD1/bndg_url/sap/bc/srt/rfc/sap/zws_sal_ka_2019/900/zws_sal_ka_2019/zws_sal_ka_2019%3fsap-client=900">
       <UrlBehavior>Dynamic</UrlBehavior>
@@ -555,6 +572,29 @@
       <DependentUpon>Reference.map</DependentUpon>
     </Content>
     <None Include="Web References\SalarizareKA\zws_sal_ka_2019.wsdl" />
+    <None Include="Web References\SapWsSalarizare\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <Content Include="Web References\SapWsSalarizare\ZgetSalav24Response1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\SapWsSalarizare\ZgetSalcva24Response1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\SapWsSalarizare\ZgetSalcvip24Response1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\SapWsSalarizare\ZgetSalka24Response1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\SapWsSalarizare\ZgetSalsd24Response1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <Content Include="Web References\SapWsSalarizare\ZgetSalsdka24Response1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
+    <None Include="Web References\SapWsSalarizare\zws_salarizare_24.wsdl" />
     <None Include="Web References\SAPWebServices\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>

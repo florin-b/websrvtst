@@ -198,10 +198,20 @@ namespace LiteSFATestWebService
 
                 else
                 {
-                    condClient = " and exists (select 1 from clie_tip t where t.canal = '10' " +
-                                " and t.cod_cli=c.cod " + condDepart1 + " ) " +
-                                " and exists (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.cod " +
-                                " and p.vtweg = '10' " + condDepart2 + " and p.parvw in ('ZA','ZS') " +
+
+                    string cond1_Canal = "  t.canal = '10' and ";
+                    string cond2_Canal = " and p.vtweg = '10' ";
+
+                    if (tipUserSap != null && tipUserSap.Equals("SSCM"))
+                    {
+                        cond1_Canal = "";
+                        cond2_Canal = "";
+                    }
+
+                    condClient = " and exists (select 1 from clie_tip t where  " + cond1_Canal + 
+                                " t.cod_cli=c.cod " + condDepart1 + " ) " +
+                                " and exists (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.cod " + cond2_Canal
+                                + condDepart2 + " and p.parvw in ('ZA','ZS') " +
                                   exceptieClient + " ) ";
 
 
@@ -337,7 +347,7 @@ namespace LiteSFATestWebService
 
                 cmd.CommandText = " select x.pernr, x.nume from ( " +
                                   " select distinct pernr, nume, max(tb.datac) datacom from sapprd.knvp y, agenti ag, sapprd.zcomhead_tableta tb where y.mandt = '900' " +
-                                  " and y.kunnr = :codClient and y.parvw = 'VE'  and vtweg = '10' " +
+                                  " and y.kunnr = :codClient and y.parvw in ('VE','ZC') " +
                                   " and tb.mandt = '900' and tb.cod_client = y.kunnr and tb.datac >= :dataCom and tb.cod_agent = pernr " +
                                   " and ag.cod = pernr and ag.activ = 1 group by pernr, nume order by datacom desc) x where rownum = 1 ";
 
@@ -383,15 +393,15 @@ namespace LiteSFATestWebService
 
             try
             {
-                string condDepart = " and spart = '" + codDepart + "' ";
+                string condDepart = " and vtweg = '10' and spart = '" + codDepart + "' ";
 
                 if (codDepart.Equals("00"))
                     condDepart = "";
 
                 cmd = connection.CreateCommand();
 
-                cmd.CommandText = " select distinct pernr, nume from sapprd.knvp y, agenti ag where y.mandt = '900' and y.kunnr = '" + codClient + "' and y.parvw = 'VE' " +
-                                  " and vtweg = '10' " + condDepart + " and ag.cod = pernr and ag.activ = 1 order by nume ";
+                cmd.CommandText = " select distinct pernr, nume from sapprd.knvp y, agenti ag where y.mandt = '900' and y.kunnr = '" + codClient + 
+                                  "' and y.parvw in ('VE','ZC') " + condDepart + " and ag.cod = pernr and ag.activ = 1 order by nume ";
 
 
                 cmd.CommandType = CommandType.Text;
@@ -507,6 +517,7 @@ namespace LiteSFATestWebService
             string retVal = "-1";
 
             string serializedResult = "";
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
 
             OracleConnection connection = new OracleConnection();
             OracleCommand cmd = new OracleCommand();
@@ -917,10 +928,11 @@ namespace LiteSFATestWebService
                     }
 
                     detaliiClient.email = " ";
+                    string cuiClient = " ";
 
                     cmd = connection.CreateCommand();
 
-                    cmd.CommandText = " select nvl(adrs_mail,' ') from clienti where cod = :codClient ";
+                    cmd.CommandText = " select nvl(adrs_mail,' '), nvl(cui,' ') from clienti where cod = :codClient ";
 
                     cmd.CommandType = CommandType.Text;
                     cmd.Parameters.Clear();
@@ -933,16 +945,25 @@ namespace LiteSFATestWebService
                     {
                         oReader.Read();
                         detaliiClient.email = oReader.GetString(0);
+                        cuiClient = oReader.GetString(1);
                     }
 
                     oReader.Close();
                     oReader.Dispose();
 
+                    detaliiClient.errMsg = "";
+
+                    if (cuiClient.Trim().Length > 0)
+                    {
+                        string stareClient = new VerificaTva().isPlatitorTva(cuiClient, codUser);
+                        PlatitorTvaResponse starePlatitor = serializer.Deserialize<PlatitorTvaResponse>(stareClient);
+                        if (starePlatitor.stareInregistrare != null && starePlatitor.stareInregistrare.ToLower().Contains("radiere"))
+                            detaliiClient.errMsg = "Acest client este radiat.";
+
+                    }
+
                 }
-
                 
-
-                JavaScriptSerializer serializer = new JavaScriptSerializer();
                 serializedResult = serializer.Serialize(detaliiClient);
 
 

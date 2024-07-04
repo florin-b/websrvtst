@@ -109,7 +109,6 @@ namespace LiteSFATestWebService
             salarizareAv.venitTcf = serTcf;
 
             serResult = serializer.Serialize(salarizareAv);
-
             webService.Dispose();
 
             return serResult;

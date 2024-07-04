@@ -577,7 +577,7 @@ namespace LiteSFATestWebService
         }
 
 
-        public string getListArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament, string afisStoc, string tipUser, string codUser, string modulCautare, string tipComanda)
+        public string getListArticoleDistributie(string searchString, string tipArticol, string tipCautare, string filiala, string departament, string afisStoc, string tipUser, string codUser, string modulCautare, string tipComanda, string transpTert)
         {
 
 
@@ -597,6 +597,12 @@ namespace LiteSFATestWebService
             {
                 return new JavaScriptSerializer().Serialize(listArticole);
             }
+
+            string condTranspTert = "";
+
+            if (transpTert != null && Boolean.Parse(transpTert))
+                condTranspTert = " and upper(a.transp_tert) = 'Y' ";
+                     
 
 
 
@@ -689,7 +695,8 @@ namespace LiteSFATestWebService
                                     " (select 1 from sapprd.mara m where m.mandt = '900' and m.matnr = a.cod and m.categ_mat in ('PA','AM')),-1) palet from dual) palet " +
                                     valStoc + ", categ_mat, lungime " +
                                     " from articole a, " +
-                                    " sintetice b " + condTabCodBare + " where a.sintetic = b.cod and a.cod != 'MAT GENERIC PROD' and a.blocat <> '01' and " + condCautare + condDepart +
+                                    " sintetice b " + condTabCodBare + " where a.sintetic = b.cod and a.cod != 'MAT GENERIC PROD' and a.blocat <> '01' and " + 
+                                    condCautare + condDepart + condTranspTert + 
                                     " ) x  where  " + condLimit + " order by x.nume ";
                 }
                 else
@@ -712,9 +719,11 @@ namespace LiteSFATestWebService
                                     " (select 1 from sapprd.mara m where m.mandt = '900' and m.matnr = a.cod and m.categ_mat in ('PA','AM')),-1) palet from dual) palet " +
                                     valStoc + ", categ_mat, lungime " +
                                     " from articole a, " +
-                                    " sintetice b, sapprd.marc c " + condTabCodBare + " where c.mandt = '900' and c.matnr = a.cod and c.werks = '" + condFil + "' and c.mmsta <> '01' " +
-                                    " and a.sintetic = b.cod and a.cod != 'MAT GENERIC PROD' and a.blocat <> '01' and " + condCautare + condDepart +
-                                    " ) x  where  " + condLimit + condExtraDepart + conditiiFasonate + " order by x.nume ";
+                                    " sintetice b, sapprd.marc c " + condTabCodBare + " where c.mandt = '900' and c.matnr = a.cod and c.werks = '" + condFil + 
+                                    "' and c.mmsta <> '01' " +
+                                    " and a.sintetic = b.cod and a.cod != 'MAT GENERIC PROD' and a.blocat <> '01' and " + 
+                                    condCautare + condDepart + condTranspTert + conditiiFasonate + 
+                                    " ) x  where  " + condLimit + condExtraDepart + " order by x.nume ";
 
 
 
@@ -737,10 +746,12 @@ namespace LiteSFATestWebService
                                       valStoc + ", categ_mat, lungime " +
                                       " from articole a, " +
                                       " sintetice b, sapprd.marc c " + condTabCodBare + " where c.mandt = '900' and c.matnr = a.cod and c.werks = '" + filGed + "' and c.mmsta <> '01'" +
-                                      " and a.sintetic = b.cod and a.cod != 'MAT GENERIC PROD' and a.blocat <> '01' and " + condCautare + condDepart + conditiiFasonate +
+                                      " and a.sintetic = b.cod and a.cod != 'MAT GENERIC PROD' and a.blocat <> '01' and " + 
+                                      condCautare + condDepart + conditiiFasonate + condTranspTert + 
                                       " and " + condLimit + "  order by a.nume ";
 
                 }
+
 
                 cmd.CommandType = CommandType.Text;
 
@@ -1102,7 +1113,7 @@ namespace LiteSFATestWebService
                 OracleCommand cmd = new OracleCommand();
                 OracleDataReader oReader = null;
 
-                string filialaCmp = paramPret.filialaAlternativa;
+               
 
 
                 string strFilialaCmp = paramPret.ul;
@@ -1130,7 +1141,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters[0].Value = paramPret.articol;
 
                 cmd.Parameters.Add(":unitLog", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
-                cmd.Parameters[1].Value = filialaCmp;   //ul. ged
+                cmd.Parameters[1].Value = strFilialaCmp;   
 
 
 
@@ -2044,6 +2055,11 @@ namespace LiteSFATestWebService
 
             if (depart != null && (depart.Equals("040") || depart.Equals("041")))
                 depart = "04";
+
+
+            string codTempArt = codArt.TrimStart('0');
+            if (!Char.IsDigit(codTempArt, 0))
+                codArt = codArt.TrimStart('0');
 
             try
             {
