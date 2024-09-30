@@ -224,7 +224,27 @@
       </wsp:All>
     </wsp:ExactlyOne>
   </wsp:Policy>
+  <wsp:Policy wsu:Id="OP__ZdetTransportV">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
+        <sapcomhnd:enableCommit xmlns:sapcomhnd="http://www.sap.com/NW05/soap/features/commit/">false</sapcomhnd:enableCommit>
+        <sapblock:enableBlocking xmlns:sapblock="http://www.sap.com/NW05/soap/features/blocking/">true</sapblock:enableBlocking>
+        <saprmnw05:enableWSRM xmlns:saprmnw05="http://www.sap.com/NW05/soap/features/wsrm/">false</saprmnw05:enableWSRM>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
   <wsp:Policy wsu:Id="OP__ZdetTransport2">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
+        <sapcomhnd:enableCommit xmlns:sapcomhnd="http://www.sap.com/NW05/soap/features/commit/">false</sapcomhnd:enableCommit>
+        <sapblock:enableBlocking xmlns:sapblock="http://www.sap.com/NW05/soap/features/blocking/">true</sapblock:enableBlocking>
+        <saprmnw05:enableWSRM xmlns:saprmnw05="http://www.sap.com/NW05/soap/features/wsrm/">false</saprmnw05:enableWSRM>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsp:Policy wsu:Id="OP__ZdetTransportN">
     <wsp:ExactlyOne>
       <wsp:All>
         <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
@@ -405,6 +425,16 @@
     </wsp:ExactlyOne>
   </wsp:Policy>
   <wsp:Policy wsu:Id="OP__ZbapiReservationChange">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
+        <sapcomhnd:enableCommit xmlns:sapcomhnd="http://www.sap.com/NW05/soap/features/commit/">false</sapcomhnd:enableCommit>
+        <sapblock:enableBlocking xmlns:sapblock="http://www.sap.com/NW05/soap/features/blocking/">true</sapblock:enableBlocking>
+        <saprmnw05:enableWSRM xmlns:saprmnw05="http://www.sap.com/NW05/soap/features/wsrm/">false</saprmnw05:enableWSRM>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsp:Policy wsu:Id="OP__ZcreateClientMinReq">
     <wsp:ExactlyOne>
       <wsp:All>
         <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
@@ -928,18 +958,18 @@
           <xsd:element name="Cmpc" type="n0:curr11.2" />
         </xsd:sequence>
       </xsd:complexType>
-      <xsd:complexType name="ZileIncarcWerks">
+      <xsd:complexType name="ZileIncarc">
         <xsd:sequence>
-          <xsd:element name="Werks" type="n0:char4" />
-          <xsd:element name="Vstel" type="n0:char4" />
           <xsd:element name="Data" type="n0:date10" />
           <xsd:element name="I813" type="n0:char1" />
           <xsd:element name="I1318" type="n0:char1" />
           <xsd:element name="ToataZiua" type="n0:char1" />
         </xsd:sequence>
       </xsd:complexType>
-      <xsd:complexType name="ZileIncarc">
+      <xsd:complexType name="ZileIncarcWerks">
         <xsd:sequence>
+          <xsd:element name="Werks" type="n0:char4" />
+          <xsd:element name="Vstel" type="n0:char4" />
           <xsd:element name="Data" type="n0:date10" />
           <xsd:element name="I813" type="n0:char1" />
           <xsd:element name="I1318" type="n0:char1" />
@@ -1378,20 +1408,6 @@
           <xsd:element name="System" type="n0:char10" />
         </xsd:sequence>
       </xsd:complexType>
-      <xsd:complexType name="Bapicondx">
-        <xsd:sequence>
-          <xsd:element name="ItmNumber" type="n0:numeric6" />
-          <xsd:element name="CondStNo" type="n0:numeric3" />
-          <xsd:element name="CondCount" type="n0:numeric2" />
-          <xsd:element name="CondType" type="n0:char4" />
-          <xsd:element name="Updateflag" type="n0:char1" />
-          <xsd:element name="CondValue" type="n0:char1" />
-          <xsd:element name="Currency" type="n0:char1" />
-          <xsd:element name="CondUnit" type="n0:char1" />
-          <xsd:element name="CondPUnt" type="n0:char1" />
-          <xsd:element name="Varcond" type="n0:char26" />
-        </xsd:sequence>
-      </xsd:complexType>
       <xsd:complexType name="Bapisdhd1">
         <xsd:sequence>
           <xsd:element name="Refobjtype" type="n0:char10" />
@@ -1654,6 +1670,20 @@
           <xsd:element name="Incotermsv" type="n0:char1" />
           <xsd:element name="Incoterms2l" type="n0:char1" />
           <xsd:element name="Incoterms3l" type="n0:char1" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="Bapicondx">
+        <xsd:sequence>
+          <xsd:element name="ItmNumber" type="n0:numeric6" />
+          <xsd:element name="CondStNo" type="n0:numeric3" />
+          <xsd:element name="CondCount" type="n0:numeric2" />
+          <xsd:element name="CondType" type="n0:char4" />
+          <xsd:element name="Updateflag" type="n0:char1" />
+          <xsd:element name="CondValue" type="n0:char1" />
+          <xsd:element name="Currency" type="n0:char1" />
+          <xsd:element name="CondUnit" type="n0:char1" />
+          <xsd:element name="CondPUnt" type="n0:char1" />
+          <xsd:element name="Varcond" type="n0:char26" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="Bapisditmx">
@@ -2518,6 +2548,14 @@
           <xsd:element name="AddrCheck" type="n0:char1" />
         </xsd:sequence>
       </xsd:complexType>
+      <xsd:complexType name="ZsfaExtra">
+        <xsd:sequence>
+          <xsd:element name="ProgLivrare" type="n0:char1" />
+          <xsd:element name="LivrSambata" type="n0:char2" />
+          <xsd:element name="Tonaj" type="n0:quantum13.3" />
+          <xsd:element name="Obssof" type="n0:char100" />
+        </xsd:sequence>
+      </xsd:complexType>
       <xsd:complexType name="Bapibtsel">
         <xsd:sequence>
           <xsd:element name="Selection" type="n0:char32" />
@@ -2588,14 +2626,6 @@
           <xsd:element name="Author" type="n0:char1" />
           <xsd:element name="ValueTo" type="n0:char40" />
           <xsd:element name="Valcode" type="n0:char1" />
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:complexType name="ZsfaExtra">
-        <xsd:sequence>
-          <xsd:element name="ProgLivrare" type="n0:char1" />
-          <xsd:element name="LivrSambata" type="n0:char2" />
-          <xsd:element name="Tonaj" type="n0:quantum13.3" />
-          <xsd:element name="Obssof" type="n0:char100" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="Bapicucfg">
@@ -3110,6 +3140,7 @@
           <xsd:element name="FilPlata" type="n0:char4" />
           <xsd:element name="Custodie" type="n0:char1" />
           <xsd:element name="CodPostal" type="n0:char15" />
+          <xsd:element name="Zona" type="n0:char10" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="Bapi2093ResItemChange">
@@ -3154,6 +3185,24 @@
           <xsd:element name="ReqSegment" type="n0:char1" />
           <xsd:element name="StkSegLong" type="n0:char1" />
           <xsd:element name="ReqSegLong" type="n0:char1" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ZclientMin">
+        <xsd:sequence>
+          <xsd:element name="Fiscalcode" type="n0:char20" />
+          <xsd:element name="Companyname" type="n0:char35" />
+          <xsd:element name="Companyemail" type="n0:char241" />
+          <xsd:element name="Companystreet" type="n0:char60" />
+          <xsd:element name="Companynumber" type="n0:char10" />
+          <xsd:element name="Companycity" type="n0:char40" />
+          <xsd:element name="Companycounty" type="n0:char20" />
+          <xsd:element name="Firstname" type="n0:char30" />
+          <xsd:element name="Lastname" type="n0:char30" />
+          <xsd:element name="Phonenumber" type="n0:char16" />
+          <xsd:element name="Comregnumber" type="n0:char18" />
+          <xsd:element name="Vatpayer" type="n0:char1" />
+          <xsd:element name="Prctr" type="n0:char4" />
+          <xsd:element name="TipB2b" type="n0:char2" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="ZstNrPaleti">
@@ -3258,14 +3307,14 @@
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZsitemsComanda" />
         </xsd:sequence>
       </xsd:complexType>
-      <xsd:complexType name="TableOfZileIncarcWerks">
-        <xsd:sequence>
-          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZileIncarcWerks" />
-        </xsd:sequence>
-      </xsd:complexType>
       <xsd:complexType name="TableOfZileIncarc">
         <xsd:sequence>
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZileIncarc" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="TableOfZileIncarcWerks">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZileIncarcWerks" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="TableOfZmateriale">
@@ -3555,7 +3604,6 @@
             <xsd:element minOccurs="0" name="IsTaxaAcces" type="tns:ZstTaxeAcces" />
             <xsd:element name="ItFilCost" type="tns:TableOfZsfilTransp" />
             <xsd:element name="ItItems" type="tns:TableOfZsitemsComanda" />
-            <xsd:element minOccurs="0" name="ItZile" type="tns:TableOfZileIncarcWerks" />
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -3564,13 +3612,13 @@
           <xsd:sequence>
             <xsd:element name="ItFilCost" type="tns:TableOfZsfilTransp" />
             <xsd:element name="ItItems" type="tns:TableOfZsitemsComanda" />
-            <xsd:element minOccurs="0" name="ItZile" type="tns:TableOfZileIncarcWerks" />
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="ZextindeClient">
         <xsd:complexType>
           <xsd:sequence>
+            <xsd:element minOccurs="0" name="VKdgrp" type="n0:char2" />
             <xsd:element minOccurs="0" name="VKunnr" type="n0:char10" />
             <xsd:element minOccurs="0" name="VSpart" type="n0:char2" />
             <xsd:element minOccurs="0" name="VVtweg" type="n0:char2" />
@@ -3708,6 +3756,33 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
+      <xsd:element name="ZdetTransportV">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="0" name="IpCity" type="n0:char25" />
+            <xsd:element minOccurs="0" name="IpKunnr" type="n0:char10" />
+            <xsd:element minOccurs="0" name="IpPernr" type="n0:numeric8" />
+            <xsd:element minOccurs="0" name="IpRegio" type="n0:char3" />
+            <xsd:element minOccurs="0" name="IpTippers" type="n0:char12" />
+            <xsd:element minOccurs="0" name="IpTraty" type="n0:char4" />
+            <xsd:element minOccurs="0" name="IpVkgrp" type="n0:char3" />
+            <xsd:element minOccurs="0" name="IpWerks" type="n0:char4" />
+            <xsd:element minOccurs="0" name="IsTaxaAcces" type="tns:ZstTaxeAcces" />
+            <xsd:element name="ItFilCost" type="tns:TableOfZsfilTransp" />
+            <xsd:element name="ItItems" type="tns:TableOfZsitemsComanda" />
+            <xsd:element minOccurs="0" name="ItZile" type="tns:TableOfZileIncarcWerks" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ZdetTransportVResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ItFilCost" type="tns:TableOfZsfilTransp" />
+            <xsd:element name="ItItems" type="tns:TableOfZsitemsComanda" />
+            <xsd:element minOccurs="0" name="ItZile" type="tns:TableOfZileIncarcWerks" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <xsd:element name="ZdetTransport2">
         <xsd:complexType>
           <xsd:sequence>
@@ -3727,6 +3802,33 @@
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="ZdetTransport2Response">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ItFilCost" type="tns:TableOfZsfilTransp" />
+            <xsd:element name="ItItems" type="tns:TableOfZsitemsComanda" />
+            <xsd:element minOccurs="0" name="ItZile" type="tns:TableOfZileIncarcWerks" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ZdetTransportN">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="0" name="IpCity" type="n0:char25" />
+            <xsd:element minOccurs="0" name="IpKunnr" type="n0:char10" />
+            <xsd:element minOccurs="0" name="IpPernr" type="n0:numeric8" />
+            <xsd:element minOccurs="0" name="IpRegio" type="n0:char3" />
+            <xsd:element minOccurs="0" name="IpTippers" type="n0:char12" />
+            <xsd:element minOccurs="0" name="IpTraty" type="n0:char4" />
+            <xsd:element minOccurs="0" name="IpVkgrp" type="n0:char3" />
+            <xsd:element minOccurs="0" name="IpWerks" type="n0:char4" />
+            <xsd:element minOccurs="0" name="IsTaxaAcces" type="tns:ZstTaxeAcces" />
+            <xsd:element name="ItFilCost" type="tns:TableOfZsfilTransp" />
+            <xsd:element name="ItItems" type="tns:TableOfZsitemsComanda" />
+            <xsd:element minOccurs="0" name="ItZile" type="tns:TableOfZileIncarcWerks" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ZdetTransportNResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="ItFilCost" type="tns:TableOfZsfilTransp" />
@@ -4209,6 +4311,23 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
+      <xsd:element name="ZcreateClientMinReq">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="CodAv" type="n0:numeric8" />
+            <xsd:element name="IpClient" type="tns:ZclientMin" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ZcreateClientMinReqResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="EpKunnr" type="n0:char10" />
+            <xsd:element name="EpMess" type="n0:char100" />
+            <xsd:element name="EpReturncode" type="xsd:unsignedByte" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <xsd:element name="ZcreazaComanda">
         <xsd:complexType>
           <xsd:sequence>
@@ -4386,11 +4505,23 @@
   <wsdl:message name="ZcheckZileLivrareResponse">
     <wsdl:part name="parameter" element="tns:ZcheckZileLivrareResponse" />
   </wsdl:message>
+  <wsdl:message name="ZdetTransportV">
+    <wsdl:part name="parameters" element="tns:ZdetTransportV" />
+  </wsdl:message>
+  <wsdl:message name="ZdetTransportVResponse">
+    <wsdl:part name="parameter" element="tns:ZdetTransportVResponse" />
+  </wsdl:message>
   <wsdl:message name="ZdetTransport2">
     <wsdl:part name="parameters" element="tns:ZdetTransport2" />
   </wsdl:message>
   <wsdl:message name="ZdetTransport2Response">
     <wsdl:part name="parameter" element="tns:ZdetTransport2Response" />
+  </wsdl:message>
+  <wsdl:message name="ZdetTransportN">
+    <wsdl:part name="parameters" element="tns:ZdetTransportN" />
+  </wsdl:message>
+  <wsdl:message name="ZdetTransportNResponse">
+    <wsdl:part name="parameter" element="tns:ZdetTransportNResponse" />
   </wsdl:message>
   <wsdl:message name="ZgetPrice20">
     <wsdl:part name="parameters" element="tns:ZgetPrice20" />
@@ -4500,6 +4631,12 @@
   <wsdl:message name="ZbapiReservationChangeResponse">
     <wsdl:part name="parameter" element="tns:ZbapiReservationChangeResponse" />
   </wsdl:message>
+  <wsdl:message name="ZcreateClientMinReq">
+    <wsdl:part name="parameters" element="tns:ZcreateClientMinReq" />
+  </wsdl:message>
+  <wsdl:message name="ZcreateClientMinReqResponse">
+    <wsdl:part name="parameter" element="tns:ZcreateClientMinReqResponse" />
+  </wsdl:message>
   <wsdl:message name="ZcreazaComanda">
     <wsdl:part name="parameters" element="tns:ZcreazaComanda" />
   </wsdl:message>
@@ -4602,12 +4739,26 @@
       <wsdl:input message="tns:ZcheckZileLivrare" />
       <wsdl:output message="tns:ZcheckZileLivrareResponse" />
     </wsdl:operation>
+    <wsdl:operation name="ZdetTransportV">
+      <wsp:Policy>
+        <wsp:PolicyReference URI="#OP__ZdetTransportV" />
+      </wsp:Policy>
+      <wsdl:input message="tns:ZdetTransportV" />
+      <wsdl:output message="tns:ZdetTransportVResponse" />
+    </wsdl:operation>
     <wsdl:operation name="ZdetTransport2">
       <wsp:Policy>
         <wsp:PolicyReference URI="#OP__ZdetTransport2" />
       </wsp:Policy>
       <wsdl:input message="tns:ZdetTransport2" />
       <wsdl:output message="tns:ZdetTransport2Response" />
+    </wsdl:operation>
+    <wsdl:operation name="ZdetTransportN">
+      <wsp:Policy>
+        <wsp:PolicyReference URI="#OP__ZdetTransportN" />
+      </wsp:Policy>
+      <wsdl:input message="tns:ZdetTransportN" />
+      <wsdl:output message="tns:ZdetTransportNResponse" />
     </wsdl:operation>
     <wsdl:operation name="ZgetPrice20">
       <wsp:Policy>
@@ -4734,6 +4885,13 @@
       </wsp:Policy>
       <wsdl:input message="tns:ZbapiReservationChange" />
       <wsdl:output message="tns:ZbapiReservationChangeResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="ZcreateClientMinReq">
+      <wsp:Policy>
+        <wsp:PolicyReference URI="#OP__ZcreateClientMinReq" />
+      </wsp:Policy>
+      <wsdl:input message="tns:ZcreateClientMinReq" />
+      <wsdl:output message="tns:ZcreateClientMinReqResponse" />
     </wsdl:operation>
     <wsdl:operation name="ZcreazaComanda">
       <wsp:Policy>
@@ -4862,8 +5020,26 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="ZdetTransportV">
+      <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZdetTransportVRequest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="ZdetTransport2">
       <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZdetTransport2Request" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ZdetTransportN">
+      <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZdetTransportNRequest" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -5033,6 +5209,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="ZcreateClientMinReq">
+      <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZcreateClientMinReqRequest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="ZcreazaComanda">
       <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZcreazaComandaRequest" style="document" />
       <wsdl:input>
@@ -5174,8 +5359,26 @@
         <wsoap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="ZdetTransportV">
+      <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZdetTransportVRequest" style="document" />
+      <wsdl:input>
+        <wsoap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <wsoap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="ZdetTransport2">
       <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZdetTransport2Request" style="document" />
+      <wsdl:input>
+        <wsoap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <wsoap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ZdetTransportN">
+      <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZdetTransportNRequest" style="document" />
       <wsdl:input>
         <wsoap12:body use="literal" />
       </wsdl:input>
@@ -5338,6 +5541,15 @@
     </wsdl:operation>
     <wsdl:operation name="ZbapiReservationChange">
       <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZbapiReservationChangeRequest" style="document" />
+      <wsdl:input>
+        <wsoap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <wsoap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ZcreateClientMinReq">
+      <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZcreateClientMinReqRequest" style="document" />
       <wsdl:input>
         <wsoap12:body use="literal" />
       </wsdl:input>

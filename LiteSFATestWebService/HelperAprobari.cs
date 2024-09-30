@@ -30,14 +30,12 @@ namespace LiteSFATestWebService
                 if (articol.pretMinim == 0)
                     continue;
 
-                //pentru cva,sdcva sau canal 20 trebuie pretminim / multplu; altfel pret minim
 
                 pretMinimUnitar = articol.pretMinim;
 
                 if (tipUser.Equals("CVA") || tipUser.Equals("SDCVA") || Utils.isUnitLogGed(dateLivrare.unitLog))
                     pretMinimUnitar = articol.pretMinim / articol.multiplu;
 
-                //if (articol.pretUnit < articol.pretMinim)
                 if (articol.pretUnit < pretMinimUnitar)
                 {
                     isAprobare = true;
@@ -78,8 +76,6 @@ namespace LiteSFATestWebService
                 if (articol.pretMinim == 0 || articol.cmpCorectat == 0)
                     continue;
 
-                //adaosArticol = (articol.pretUnit / articol.multiplu - articol.pretMinim / articol.multiplu) * articol.cantitate;
-
                 adaosArticol = (articol.pretUnit  - articol.pretMinim / articol.multiplu) * articol.cantitate;
 
 
@@ -93,7 +89,6 @@ namespace LiteSFATestWebService
 
                 totalAdaos += adaosArticol;
 
-                //cmpCorectatUnit = (articol.cmpCorectat / Double.Parse(articol.cantUmb)) * articol.multiplu;
                 cmpCorectatUnit = (articol.cmpCorectat / Double.Parse(articol.cantUmb)) ;
 
                 if (articol.pretUnit < cmpCorectatUnit)
@@ -133,7 +128,7 @@ namespace LiteSFATestWebService
 
         private static bool isUserAprobari_11(string tipUser)
         {
-            return tipUser.Contains("IP") || tipUser.Equals("SMR");
+            return tipUser.Contains("IP") || tipUser.Equals("SMR") || tipUser.Equals("SSCM");
         }
 
 

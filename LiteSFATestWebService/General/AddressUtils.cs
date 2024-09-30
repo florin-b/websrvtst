@@ -138,6 +138,18 @@ namespace LiteSFATestWebService.General
         }
 
 
+        public static string getDaysDate(int days)
+        {
+            string mDate = "";
+            DateTime cDate = DateTime.Now.AddDays(days);
+            string year = cDate.Year.ToString();
+            string day = cDate.Day.ToString("00");
+            string month = cDate.Month.ToString("00");
+            mDate = year + month + day;
+            return mDate;
+        }
+
+
         public static string getStartMonthDate(int months)
         {
             string mDate = "";

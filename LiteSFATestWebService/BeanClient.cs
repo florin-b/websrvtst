@@ -56,6 +56,33 @@ namespace LiteSFATestWebService
         public bool isBlocat;
         public string motivBlocat;
     }
+
+
+    public class DateClientSap
+    {
+        public string cui;
+        public string numeCompanie;
+        public string emailCompanie;
+        public string strada;
+        public string numarStrada;
+        public string localitate;
+        public string judet;
+        public string numePersContact;
+        public string prenumePersContact;
+        public string telPersContact;
+        public string codJ;
+        public string platitorTVA;
+        public string filialaAsociata;
+        public string coordonateAdresa;
+        public string tipClient;
+        public string codAgent;
+    }
+
+    public class RaspunsClientSap
+    {
+        public string codClient;
+        public string msg;
+    }
    
 
 }

@@ -1634,7 +1634,7 @@ namespace LiteSFATestWebService
 
             inParams.ItItems = itItems;
             inParams.ItFilCost = filTransp;
-            inParams.ItZile = itZile;
+           
 
 
 
@@ -2074,7 +2074,7 @@ namespace LiteSFATestWebService
                 articoleGed = articolComanda;
                 totalComandaGed = Double.Parse(dateLivrare.totalComanda, CultureInfo.InvariantCulture);
 
-                if (!dateLivrareGed.unitLog.Contains("40"))
+                if (!dateLivrareGed.unitLog.Contains("40") && !dateLivrareGed.unitLog.Contains("41"))
                     dateLivrareGed.unitLog = dateLivrareGed.unitLog.Substring(0, 2) + "2" + dateLivrareGed.unitLog.Substring(3, 1);
 
                 dateLivrareGed.totalComanda = totalComandaGed.ToString();

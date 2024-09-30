@@ -1975,7 +1975,6 @@ namespace LiteSFATestWebService
             List<CostTransportMathaus> listCostTransp = new List<CostTransportMathaus>();
             List<DepozitArticolTransport> listArticoleDepoz = new List<DepozitArticolTransport>();
             List<CostTransportMathaus> listTaxeTransp = new List<CostTransportMathaus>();
-            List<DataLivrare> listZileLivrare = new List<DataLivrare>();
 
             List<OptiuneCamion> optiuniCamion = new JavaScriptSerializer().Deserialize<List<OptiuneCamion>>(antetCmd.tipCamion);
 
@@ -2063,7 +2062,7 @@ namespace LiteSFATestWebService
                 inParam.ItFilCost = filCost;
 
                 SAPWebServices.ZileIncarcWerks[] zileInc = new ZileIncarcWerks[1];
-                inParam.ItZile = zileInc;
+               
 
                 SAPWebServices.ZdetTransportResponse resp = webService.ZdetTransport(inParam);
 
@@ -2135,13 +2134,7 @@ namespace LiteSFATestWebService
 
                 }
 
-                foreach (SAPWebServices.ZileIncarcWerks itemZileInc in resp.ItZile)
-                {
-                    DataLivrare dataLivrare = new DataLivrare();
-                    dataLivrare.filiala = itemZileInc.Werks;
-                    dataLivrare.dataLivrare = General.GeneralUtils.formatStrDateV1(itemZileInc.Data);
-                    listZileLivrare.Add(dataLivrare);
-                }
+               
 
             }
             catch(Exception ex)
@@ -2155,7 +2148,7 @@ namespace LiteSFATestWebService
                 dateTransport.listCostTransport = listTaxeTransp;
 
             dateTransport.listDepozite = listArticoleDepoz;
-            dateTransport.zileLivrare = listZileLivrare;
+            
 
             return dateTransport;
 

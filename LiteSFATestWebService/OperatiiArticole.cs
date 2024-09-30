@@ -75,7 +75,7 @@ namespace LiteSFATestWebService
 
                 string conditieDepart = "";
 
-                if (!codDepart.Equals("00") && !codDepart.Trim().Equals(""))
+                if (!codDepart.Equals("00") && !codDepart.Trim().Equals("") && !codDepart.Equals("11"))
                     conditieDepart = " b.grup_vz =:depart and ";
 
                 if (codDepart.StartsWith("04"))
@@ -356,6 +356,9 @@ namespace LiteSFATestWebService
             OracleCommand cmd = connection.CreateCommand();
 
             string condDepart = "";
+
+            if (departament.Equals(""))
+                departament = "00";
 
             if (!departament.Equals("00"))
                 condDepart = " and substr(m.spart,0,2) =:depart ";
@@ -763,8 +766,6 @@ namespace LiteSFATestWebService
                     cmd.Parameters[0].Value = filiala;
                 }
 
-
-              
 
                 oReader = cmd.ExecuteReader();
 

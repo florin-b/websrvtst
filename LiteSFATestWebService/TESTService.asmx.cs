@@ -325,7 +325,18 @@ namespace LiteSFATestWebService
         public StarePlatitorTva testTVA(string cui)
         {
             return new VerificaTva().verificaTVAService(cui);
+        }
 
+        [WebMethod]
+        public string getDateClientANAF(string cui)
+        {
+            return new OperatiiClienti().getDateClientAnaf(cui);
+        }
+
+        [WebMethod]
+        public string creeazaClientPJ(string dateClient)
+        {
+            return new OperatiiClienti().creeazaClientPJ(dateClient);
         }
 
         [WebMethod]
@@ -346,6 +357,12 @@ namespace LiteSFATestWebService
         public string getStareTVA(string cuiClient, string codAgent)
         {
             return new VerificaTva().isPlatitorTva(cuiClient, codAgent).ToString();
+        }
+
+        [WebMethod]
+        public string getListClientiCUI(string cuiClient, string codAgent)
+        {
+            return new OperatiiClienti().getListClientiCUI(cuiClient, codAgent);
         }
 
         [WebMethod]
@@ -2421,20 +2438,7 @@ namespace LiteSFATestWebService
         [WebMethod]
         public string salveazaConditiiComanda(string conditiiComanda)
         {
-
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            ConditiiPrimite conditiiPrimite = serializer.Deserialize<ConditiiPrimite>(conditiiComanda);
-            ConditiiHeader conditiiHeader = serializer.Deserialize<ConditiiHeader>(conditiiPrimite.header.ToString());
-
-            if ( OperatiiComenziBG.isComandaBG(conditiiHeader.id.ToString()))
-            {
-                return new OperatiiConditiiBG().salveazaConditiiComanda(conditiiComanda);
-            }
-            else {
-                return new OperatiiConditiiComanda().salveazaConditiiComanda(conditiiComanda);
-            }
-            
-
+           return new OperatiiConditiiComanda().salveazaConditiiComanda(conditiiComanda);
         }
 
 
@@ -4029,7 +4033,7 @@ namespace LiteSFATestWebService
                                   " nvl((select latitude||','||longitude from sapprd.zcoordcomenzi where idcomanda = a.id),'0,0') coord, " +
                                   " 0 tonaj, nvl(client_raft,' '), a.meserias, a.fact_palet_separat, a.lifnr, a.lifnr_prod, a.descoperita, nvl((trim(a.prog_livr)),'0'), " +
                                   " a.livr_sambata, a.bloc, a.cod_client, a.ref_client, nvl(a.docin,' '), a.ac_zc, a.nrcmdsap, a.tip_pers tip_pers_av, fil_plata, " + 
-                                  " a.cod_agent, a.cod_postal, a.custodie, a.val_incasata " +
+                                  " a.cod_agent, a.cod_postal, a.custodie, a.val_incasata, a.cod_j, a.aprob_cv_necesar, a.aprob_cv_realiz " +
                                   " from sapprd.zcomhead_tableta a, clienti b " +
                                   " where a.id=:idcmd and a.cod_client = b.cod ";
 
@@ -4127,6 +4131,9 @@ namespace LiteSFATestWebService
                     dateLivrare.codPostal = oReader.GetString(oReader.GetOrdinal("cod_postal"));
                     dateLivrare.isComandaCustodie = oReader.GetString(oReader.GetOrdinal("custodie")).ToUpper().Equals("X") ? "true" : "false";
                     dateLivrare.valoareIncasare = oReader.GetDouble(oReader.GetOrdinal("val_incasata")).ToString();
+                    dateLivrare.codJ = oReader.GetString(oReader.GetOrdinal("cod_j"));
+                    dateLivrare.aprobariNecesare = oReader.GetString(oReader.GetOrdinal("aprob_cv_necesar"));
+                    dateLivrare.aprobariPrimite = oReader.GetString(oReader.GetOrdinal("aprob_cv_realiz"));
 
                     if ((dateLivrare.tipPersAgent.Equals("CV") || dateLivrare.tipPersAgent.Equals("SITE")) && Utils.isUserTest(oReader.GetString(oReader.GetOrdinal("cod_agent"))))
                     {
@@ -5895,10 +5902,6 @@ namespace LiteSFATestWebService
 
                     new JurnalAprobari().salveazaAprobare(nrCmd, codUser, "A");
 
-                    if (OperatiiComenziBG.isComandaBG(nrCmd))
-                    {
-                        return new OperatiiComenziBG().opereazaComandaSap(nrCmd, codUser,"APROBARE", "");
-                    }
 
                     try
                     {
@@ -6001,11 +6004,6 @@ namespace LiteSFATestWebService
                 if (tipOp.Equals("1")) //respingere cmd
                 {
                     //doar modificare stare cmd
-
-                    if (OperatiiComenziBG.isComandaBG(nrCmd))
-                    {
-                        return new OperatiiComenziBG().opereazaComandaSap(nrCmd, codUser, "RESPINGERE", codRespingere);
-                    }
 
                     new JurnalAprobari().salveazaAprobare(nrCmd, codUser, "R");
 
@@ -7589,7 +7587,7 @@ namespace LiteSFATestWebService
 
                             condUser = " and ( cod_agent=:codag " + condExtraSAV + ") and substr(a.ul,0,2) = '" + filiala.Substring(0, 2) + "' ";
 
-                            if (tipUserSap != null && (tipUserSap.Equals("SDIP") || tipUserSap.Equals("CVIP")))
+                            if (tipUserSap != null && (tipUserSap.Equals("SDIP") || tipUserSap.Equals("CVIP") || tipUserSap.Equals("CVO")))
                             {
                                 condUser = " and ( cod_agent=:codag " + condExtraSAV + ")  ";
                             }
@@ -8324,11 +8322,6 @@ namespace LiteSFATestWebService
             }
 
 
-            if (tipCmd == "2" && tipUser == "DV")
-            {
-                List<Comanda> listComenziBG = new OperatiiComenziBG().getListComenzi(filiala, codUser, tipCmd, tipUser, depart, interval, restrictii, codClient);
-                listComenzi.AddRange(listComenziBG);
-            }
 
             if (tipCmd == "0" && (tipUserSap == "AV" || tipUserSap == "SD" || tipUserSap == "KA") && codClient == "" &&  codUser != "00000000")
             {
@@ -8347,6 +8340,7 @@ namespace LiteSFATestWebService
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             serializedResult = serializer.Serialize(listComenzi);
+
 
             return serializedResult;
 
@@ -10296,7 +10290,6 @@ namespace LiteSFATestWebService
             string tipComanda = parametru.tipComanda;
 
 
-
             string listArticole = "('0000000000" + String.Join("','", articole.ToArray()) + "')";
             string listClienti = "('" + String.Join("','", clienti.ToArray()) + "')";
             string listFiliale = " and a.prefix in ('" + filiala + "','" + filiala.Substring(0, 2) + "2" + filiala.Substring(3, 1) + "','" + filiala.Substring(0, 2) + "3" + filiala.Substring(3, 1) + "')";
@@ -10353,6 +10346,8 @@ namespace LiteSFATestWebService
                     {
                         conditieAgent = " and v.pernr in ('" + agent + "') ";
                         conditieDepart = "";
+
+                        listFiliale = "";
                     }
 
 
@@ -12918,7 +12913,7 @@ namespace LiteSFATestWebService
                         comandaVanzare.comandaBlocata = "0";
                     }
 
-                    if (!dateLivrareGed.unitLog.Contains("40"))
+                    if (!dateLivrareGed.unitLog.Contains("40") && !dateLivrareGed.unitLog.Contains("41"))
                         dateLivrareGed.unitLog = dateLivrareGed.unitLog.Substring(0, 2) + "2" + dateLivrareGed.unitLog.Substring(3, 1);
 
                     dateLivrareGed.totalComanda = totalComandaGed.ToString();

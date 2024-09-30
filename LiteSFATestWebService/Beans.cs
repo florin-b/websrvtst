@@ -335,6 +335,7 @@ namespace LiteSFATestWebService
         public string isComandaCustodie;
         public string taxeComanda;
         public string zona;
+        public string codJ;
 
 
 
@@ -372,6 +373,8 @@ namespace LiteSFATestWebService
         public double procMarjaBruta = 0;
         public double marjaBrutaTot = 0;
         public double procMarjaBrutaTot = 0;
+        public string aprobariNecesare;
+        public string aprobariPrimite;
 
     }
 
