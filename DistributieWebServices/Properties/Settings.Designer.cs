@@ -65,5 +65,16 @@ namespace DistributieTESTWebServices.Properties {
                 return ((string)(this["DistributieTESTWebServices_BordDistService_ZARTICOLE_BORD"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://sap-prd4a.arabesque.ro:8034/sap/bc/srt/rfc/sap/zws_sal_cva/900/zws_sal_cva" +
+            "/zws_sal_cva")]
+        public string DistributieTESTWebServices_SalarizareWS_ZWS_SAL_CVA {
+            get {
+                return ((string)(this["DistributieTESTWebServices_SalarizareWS_ZWS_SAL_CVA"]));
+            }
+        }
     }
 }

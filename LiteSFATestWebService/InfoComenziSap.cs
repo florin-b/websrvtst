@@ -118,8 +118,6 @@ namespace LiteSFATestWebService
                         art.valT1 = Double.Parse(response.ItDet[i].t1.ToString());
                         art.procT1 = Double.Parse(response.ItDet[i].T1Proc.ToString());
 
-                        if (tipUser.Equals("DV"))
-                            art.cmp = Double.Parse(response.ItDet[i].Cmp.ToString());
                         break;
 
                     }

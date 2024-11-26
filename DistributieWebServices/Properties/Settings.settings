@@ -14,5 +14,8 @@
     <Setting Name="DistributieTESTWebServices_BordDistService_ZARTICOLE_BORD" Type="(Web Service URL)" Scope="Application">
       <Value Profile="(Default)">http://sap-prd4a.arabesque.ro:8034/sap/bc/srt/rfc/sap/zarticole_bord/900/zarticole_bord/zarticole_bord</Value>
     </Setting>
+    <Setting Name="DistributieTESTWebServices_SalarizareWS_ZWS_SAL_CVA" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://sap-prd4a.arabesque.ro:8034/sap/bc/srt/rfc/sap/zws_sal_cva/900/zws_sal_cva/zws_sal_cva</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

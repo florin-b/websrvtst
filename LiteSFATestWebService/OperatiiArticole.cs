@@ -107,7 +107,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
                 cmd.Parameters[1].Value = codDepart.Equals("11") || codDepart.Trim().Equals(String.Empty) ? Utils.getFilialaGed(filiala) : filiala;
 
-                if (!codDepart.Equals("00") && !codDepart.Trim().Equals(""))
+                if (!codDepart.Equals("00") && !codDepart.Trim().Equals("") && !codDepart.Equals("11"))
                 {
                     cmd.Parameters.Add(":depart", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
                     cmd.Parameters[2].Value = codDepart;
@@ -424,7 +424,7 @@ namespace LiteSFATestWebService
                         articol.umVanz10 = oReader.GetString(4);
                         articol.umVanz = oReader.GetString(8).Substring(0, 2).Equals("11") ? oReader.GetString(5) : oReader.GetString(4);
                         articol.tipAB = oReader.GetString(6);
-                        articol.depart = oReader.GetString(8).Substring(0, 2);
+                        articol.depart = oReader.GetString(8);
                         articol.departAprob = oReader.GetString(9);
                         articol.umPalet = oReader.GetInt32(10).ToString();
                         articol.stoc = oReader.GetDouble(11).ToString();

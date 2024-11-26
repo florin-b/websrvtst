@@ -226,16 +226,6 @@ namespace LiteSFATestWebService
                         if (tipUser != "SD" && !tipUserSap.Contains("KA") && tipUserSap != null && !tipUserSap.Equals(Constants.tipSuperAv) && !tipUserSap.Equals(Constants.tipInfoAv) && !tipUserSap.Equals(Constants.tipSMR) && !tipUserSap.Equals(Constants.tipCVR) && !tipUserSap.Equals(Constants.tipSSCM) && !tipUserSap.Equals(Constants.tipCGED) && !tipUserSap.Equals(Constants.tipOIVPD))
                             condClient += condExtraClient;
 
-                        if (tipUser.Equals("SD"))
-                            condClient = " and exists(select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.cod and p.vtweg = '10' and p.parvw in ('VE', 'ZC') and p.pernr in " +
-                                         " (select cod from websap.agenti where activ = 1 and filiala = '" + unitLog + "' and divizie = '" + departAg + "')) " + 
-                                         " union " + 
-                                         " select c.nume, c.cod, c.tip_pers, a.city1, a.street, a.house_num1, a.region from websap.clienti c, " +
-                                         " sapprd.adrc a where upper(c.nume) like upper('" + numeClient.Replace("'", "") + "%') and a.client = '900' and a.addrnumber = " + 
-                                         " (select k.adrnr from sapprd.kna1 k where k.mandt = '900' and k.kunnr = c.cod) " +
-                                         " and exists (select 1 from websap.clie_tip t where t.canal = '10' and t.cod_cli = c.cod and t.depart <> '" + departAg + "' and t.tip = '01') " +
-                                         " and exists (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.cod and p.vtweg = '10' and p.spart = '" + departAg + "' " + 
-                                         " and p.parvw in ('ZA', 'ZS') " + exceptieClient + " )" ;
 
                     }
 
@@ -267,7 +257,7 @@ namespace LiteSFATestWebService
                     {
 
                         unClient = new Client();
-                        unClient.numeClient = oReader.GetString(0);
+                        unClient.numeClient = oReader.GetString(0).Trim();
                         unClient.codClient = oReader.GetString(1);
                         unClient.tipClient = oReader.GetString(2);
                         unClient.localitate = oReader.GetString(3);

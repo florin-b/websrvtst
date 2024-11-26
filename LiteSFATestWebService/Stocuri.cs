@@ -114,6 +114,7 @@ namespace LiteSFATestWebService
                 }
                 else
                 {
+                    /*
                     //exceptie sintetice
                     if (filiala == "BV90")
                     {
@@ -134,6 +135,7 @@ namespace LiteSFATestWebService
                             }
                         }
                     }
+                    */
                 }
 
                 retVal += "!" + cmpVal + "!" + showStocVal_ + "!" + getStocImbatranit(connection,codArt, filiala) + "!" + getStocBlocat(connection, codArt, filiala);

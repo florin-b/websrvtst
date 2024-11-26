@@ -2004,6 +2004,8 @@ namespace LiteSFATestWebService
                 inParam.IpVkgrp = departCmd;
                 inParam.IpPernr = antetCmd.codPers;
                 inParam.IpTraty = antetCmd.tipTransp;
+                inParam.IpCanal = canal;
+                    
 
                 ZstTaxeAcces taxeAcces = new ZstTaxeAcces();
 

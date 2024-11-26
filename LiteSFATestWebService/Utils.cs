@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.OracleClient;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 
@@ -575,7 +577,22 @@ namespace LiteSFATestWebService
             return tipAngajat;
         }
 
+        public static string removeDiacritics(string text)
+        {
+            string normalizedString = text.Normalize(NormalizationForm.FormD);
 
+            var stringBuilder = new StringBuilder(normalizedString.Length);
+
+            foreach (char c in normalizedString)
+            {
+                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder.ToString();
+        }
 
 
         public static string getCodAngajat(OracleConnection connection, string numeAngajat, string filiala)

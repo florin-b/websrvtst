@@ -797,6 +797,8 @@ namespace LiteSFATestWebService
         public string motivRespingere;
         public bool inlocuire;
         public string pozeArticol;
+        public string taxaUzura;
+        public string categMat;
     }
 
     public class PozaArticol

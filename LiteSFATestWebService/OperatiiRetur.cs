@@ -677,7 +677,7 @@ namespace LiteSFATestWebService
                         tipDocuRetur = " ('ZFHC','ZF2H','ZFVS','ZFCS','ZFVS') ";
 
                     critFiliala = " and p.prctr =:unitLog ";
-                    if (tipUserSap != null &&  tipUserSap.Contains("VO"))
+                    if (tipUserSap != null &&  (tipUserSap.Contains("VO") || tipUserSap.Contains("IP")))
                         critFiliala = "";
 
 
@@ -964,8 +964,8 @@ namespace LiteSFATestWebService
 
             OracleCommand cmd = connection.CreateCommand();
 
-            string condPaleti = "";
-            string tabelaPaleti = "";
+            string condPaleti = " and p.mandt = m.mandt and p.matnr = m.matnr ";
+            string tabelaPaleti = " , sapprd.mara m ";
             string valPalet1 = "";
             string valPalet2 = "";
 
@@ -980,14 +980,17 @@ namespace LiteSFATestWebService
             try
             {
 
-                cmd.CommandText = " select decode(length(matnr),18,substr(matnr,-8),matnr) codart, arktx,  sum(fkimg - returnate) cant, vrkme " + valPalet1 + "  from " + 
-                                  " (select p.matnr, p.fkimg, p.arktx,p.vrkme, p.posnr, p.vbeln " + valPalet2 + " , ( select " +
-                                  " nvl(sum(cp.KWMENG),0) from sapprd.vbap cp, sapprd.vbfa a, sapprd.vbak vk " +
+                cmd.CommandText = " select decode(length(matnr),18,substr(matnr,-8),matnr) codart, arktx,  sum(fkimg - returnate) cant, vrkme " + valPalet1 + 
+                                  ", max(u) uzura , categ_mat from " + 
+                                  " ( select p.matnr, p.fkimg, p.arktx,p.vrkme, p.posnr, p.vbeln " + valPalet2 + " ,  " +
+                                  " (select nvl(max(u.val_uzura),0) from sapprd.ZPALETI_RETUR_FZ u where u.mandt = '900' and u.matnr = p.matnr) u ," + 
+                                  " ( select nvl(sum(cp.KWMENG),0) from sapprd.vbap cp, sapprd.vbfa a, sapprd.vbak vk " +
                                   " where a.mandt = '900' and a.vbelv = p.vbeln and a.posnv = p.posnr and a.vbtyp_v = 'M' " +
                                   " and a.vbtyp_n = 'H' and a.mandt = vk.mandt and a.vbeln = vk.vbeln and vk.auart in ('ZRI', 'ZRIA', 'ZRSA', 'ZRSA', 'ZRSS') " +
-                                  " and a.mandt = cp.mandt and a.vbeln = cp.vbeln and a.posnn = cp.posnr and cp.abgru = ' ') returnate " +
+                                  " and a.mandt = cp.mandt and a.vbeln = cp.vbeln and a.posnn = cp.posnr and cp.abgru = ' ') returnate, m.categ_mat " +
                                   " from sapprd.vbrp p " + tabelaPaleti + " where p.mandt = '900' and p.vbeln =:nrDoc " + condPaleti + "  ) where fkimg - returnate > 0 " +
-                                  " group by matnr, arktx, vrkme order by codart ";
+                                  " group by matnr, arktx, vrkme, categ_mat order by codart ";
+
 
 
                 cmd.CommandType = CommandType.Text;
@@ -1017,6 +1020,10 @@ namespace LiteSFATestWebService
                         }
                         else
                             artRetur.pretUnitPalet = "0";
+
+                        artRetur.taxaUzura = oReader.GetDouble(oReader.GetOrdinal("uzura")).ToString();
+                        artRetur.categMat = oReader.GetString(oReader.GetOrdinal("categ_mat")).ToString();
+
 
                         listArticole.Add(artRetur);
                     }
@@ -1386,12 +1393,11 @@ namespace LiteSFATestWebService
 
         private string saveReturComanda(string dateRetur)
         {
+
+            dateRetur = setArticolTransportPaleti(dateRetur);
             List<string> listComenzi = getComenziRetur(dateRetur);
 
             string retVal = "";
-
-            var serializer = new JavaScriptSerializer();
-            ComandaRetur comanda = serializer.Deserialize<ComandaRetur>(dateRetur);
 
             foreach (var cmdRetur in listComenzi)
                 retVal = saveComandaReturToDB(cmdRetur);
@@ -1778,6 +1784,52 @@ namespace LiteSFATestWebService
             return artRetur;
         }
 
+
+        private string getArticolUzuraPaleti(string codAgent)
+        {
+            string artRetur = "000000000000000000";
+
+            OracleConnection connection = new OracleConnection();
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+                connection.ConnectionString = connectionString;
+                connection.Open();
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select ar.cod from agenti ag, articole ar where ag.cod = :codAgent " +
+                                  " and substr(ag.divizie,0,2) = substr(ar.grup_vz,0,2) and ar.categ_mat = 'UZ' ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codAgent", OracleType.VarChar, 24).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codAgent;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    artRetur = oReader.GetString(0);
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+            return artRetur;
+        }
+
+
         private string setArticolTransportPaleti(string comandaRetur)
         {
 
@@ -1792,6 +1844,11 @@ namespace LiteSFATestWebService
                 if (listaArticole[i].cod.Equals("99999999"))
                 {
                     listaArticole[i].cod = codArticolRetur;
+                }
+
+                if (listaArticole[i].cod.Equals("88888888"))
+                {
+                    listaArticole[i].cod = getArticolUzuraPaleti(comanda.codAgent);
                 }
             }
 

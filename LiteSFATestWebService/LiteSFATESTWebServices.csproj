@@ -219,6 +219,7 @@
     <Compile Include="SalarizareVanzari.cs" />
     <Compile Include="Sms.cs" />
     <Compile Include="Stocuri.cs" />
+    <Compile Include="Test.cs" />
     <Compile Include="TESTService.asmx.cs">
       <DependentUpon>TESTService.asmx</DependentUpon>
       <SubType>Component</SubType>
