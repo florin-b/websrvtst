@@ -218,7 +218,7 @@ namespace LiteSFATestWebService
         }
 
 
-        private static string getNumeArticol(OracleConnection connection, string codArticol)
+        public static string getNumeArticol(OracleConnection connection, string codArticol)
         {
             string numeArticol = "Nedefinit";
 

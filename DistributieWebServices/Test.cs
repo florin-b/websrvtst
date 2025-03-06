@@ -26,13 +26,13 @@ namespace DistributieTESTWebServices
             string certificatePath = HttpRuntime.AppDomainAppPath + @"\etransport_glc-it-fb.pfx";
 
             handler.ClientCertificates.Add(new X509Certificate2(certificatePath));
+            
 
             var client = new HttpClient(handler);
 
             var dataToAuth = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            var request = client.PostAsync("https://etransport-test-flota-gps.anaf.ro/api/internal/rawMessages", dataToAuth).GetAwaiter().GetResult();
-
-           // var request = client.PostAsync("https://etransport-flota-gps.anaf.ro/api/internal/rawMessages", dataToAuth).GetAwaiter().GetResult();
+           
+            var request = client.PostAsync("https://etransport-flota-gps.anaf.ro/api/cnif/internal/rawMessages", dataToAuth).GetAwaiter().GetResult();
 
             var response = request.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 

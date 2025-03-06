@@ -104,7 +104,7 @@ namespace LiteSFATestWebService
                 pretArticolGed.cantitate50 = outParam.GvQty50.ToString();
                 pretArticolGed.pretMinim = outParam.GvNetwrMin.ToString();
                 pretArticolGed.promo = outParam.GvPromo;
-
+                
                 
 
                 OracleConnection connection = new OracleConnection();
@@ -341,6 +341,7 @@ namespace LiteSFATestWebService
                 pretArticolGed.tipMarfa = articolProps.tipMarfa;
                 pretArticolGed.greutateBruta = greutateBruta;
                 pretArticolGed.lungime = articolProps.lungime;
+                pretArticolGed.tipTransport = articolProps.transpTert.ToLower().Equals("y") ? "TERT" : "TRAP";
 
                 webService.Dispose();
 
@@ -351,9 +352,6 @@ namespace LiteSFATestWebService
                     pretArticolGed.pretMinim = "0";
                     pretArticolGed.errMsg = "Actualizati aplicatia.";
                 }
-
-
-                ErrorHandling.sendErrorToMail("getPretUnic: \n\n" + parametruPret + "\n\n" + serializer.Serialize(pretArticolGed) + "\n\n" + serializer.Serialize(inParam));
 
             }
             catch (Exception ex)

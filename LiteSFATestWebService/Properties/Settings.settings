@@ -29,9 +29,6 @@
     <Setting Name="LiteSFATestWebService_PlataNeincasate_ZFG_INSTR_PLATA" Type="(Web Service URL)" Scope="Application">
       <Value Profile="(Default)">http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zfg_instr_plata/900/zfg_instr_plata/zfg_instr_plata</Value>
     </Setting>
-    <Setting Name="LiteSFATestWebService_SapWs_test_bg_budmax_ZTBL_WEBSERVICE" Type="(Web Service URL)" Scope="Application">
-      <Value Profile="(Default)">http://bg-test01.budmax.bg:8003/sap/bc/srt/rfc/sap/ztbl_webservice/900/ztbl_webservice/ztbl_webservice</Value>
-    </Setting>
     <Setting Name="LiteSFATestWebService_SAPWSCustodie_ZWS_CUSTODIE" Type="(Web Service URL)" Scope="Application">
       <Value Profile="(Default)">http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zws_custodie/900/zwbs_custodie/zwbs_custodie</Value>
     </Setting>

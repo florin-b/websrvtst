@@ -352,6 +352,12 @@ namespace LiteSFATestWebService
         }
 
         [WebMethod]
+        public string creeazaClientPF(string dateClient)
+        {
+            return new OperatiiClienti().creeazaClientPF(dateClient);
+        }
+
+        [WebMethod]
         public string getArticoleCategorieMathaus(string codCategorie, string filiala, string depart, string pagina, string tipArticol, string tipComanda, string transpTert)
         {
 
@@ -8353,7 +8359,8 @@ namespace LiteSFATestWebService
             }
 
 
-            if (tipCmd == "0" && (tipUserSap.Equals("AV") || tipUserSap.Equals("SD") || tipUserSap.Equals("DV") || tipUserSap.StartsWith("KA")))
+            if (tipCmd == "0" && (tipUserSap.Equals("AV") || tipUserSap.Equals("SD") || tipUserSap.Equals("CVA") || tipUserSap.Equals("SDCVA") 
+                || tipUserSap.Equals("DV") || tipUserSap.StartsWith("KA")))
             {
                 InfoComenziSap.getDateHeader(listComenzi);
             }
@@ -10593,6 +10600,11 @@ namespace LiteSFATestWebService
             return new OperatiiClienti().getDatePersonaleClient(numeClient, tipClient, codAgent);
         }
 
+        [WebMethod]
+        public string cautaClientPF(string strClient, string criteriu)
+        {
+            return new OperatiiClienti().cautaClientPF(strClient, criteriu);
+        }
 
 
         [WebMethod]
@@ -13148,9 +13160,14 @@ namespace LiteSFATestWebService
             List<ArticolComanda> articolComanda = serializer.Deserialize<List<ArticolComanda>>(JSONArt);
 
             List<TaxaComanda> taxeComanda = new List<TaxaComanda>();
+            double valoareTaxeComanda = 0;
 
             if (dateLivrare.taxeComanda != null && dateLivrare.taxeComanda.Trim() != "")
+            {
                 taxeComanda = serializer.Deserialize<List<TaxaComanda>>(dateLivrare.taxeComanda);
+                valoareTaxeComanda = HelperComenzi.getValoareTaxeComanda(taxeComanda);
+            }
+
 
 
             if (tipUser.Equals("SITE"))
@@ -13377,12 +13394,12 @@ namespace LiteSFATestWebService
                         " valoare,mt,com_referinta,accept1,accept2,fact_red, city, region, pmnttrms , obstra, timpc, ketdat, docin, adr_noua, depart, obsplata, addrnumber, nume_client, " +
                         " stceg, tip_pers, val_incasata, site, email, mod_av, cod_j, adr_livrare_d, city_d, region_d, aprob_cv_necesar, macara, val_min_tr, id_obiectiv, " +
                         " adresa_obiectiv, parent_id, client_raft, meserias,fact_palet_separat, lifnr, lifnr_prod, descoperita, prog_livr, livr_sambata, bloc, ref_client, " + 
-                        " ac_zc, fil_plata, cod_postal, custodie, zona, canal) " +
+                        " ac_zc, fil_plata, cod_postal, custodie, zona, canal, val_tr) " +
                         " values ('900',pk_key.nextval, :codCl,:ul,:status,:status_aprov, " +
                         " :datac,:cantar,:agent,:codinit,:plata,:perscont,:tel,:adr,:valoare,:transp,:comsap,:accept1,:accept2,:factred,:city,:region,:termplt,:obslivr,:timpc,:datalivrare, " +
                         " :tipDocIn, :adrNoua, :depart, :obsplata, :adrnumber, :numeClient, :cnpClient, :tipPers, :valIncasata, :cmdSite, :email, :mod_av, :codJ, :adr_livrare_d, :city_d, :region_d, " +
                         " :necesarCVAprob, :macara, :val_min_tr, :idObiectiv, :adresaObiectiv, :parent_id, :client_raft, :meserias, :factPaletSeparat, :lifnr, :lifnr_prod, :descoperita, " + 
-                        " :progrLivr, :livrSambata, :bloc, :refClient, :aczc, :filPlata, :codPostal, :custodie, :zona, :canal ) " +
+                        " :progrLivr, :livrSambata, :bloc, :refClient, :aczc, :filPlata, :codPostal, :custodie, :zona, :canal, :valTr ) " +
                         " returning id into :id ";
 
                 cmd.CommandText = query;
@@ -13688,6 +13705,9 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Add(":canal", OracleType.VarChar, 6).Direction = ParameterDirection.Input;
                 cmd.Parameters[62].Value = comandaVanzare.canalDistrib;
 
+                cmd.Parameters.Add(":valTr", OracleType.Number, 15).Direction = ParameterDirection.Input;
+                cmd.Parameters[63].Value = valoareTaxeComanda;
+
                 OracleParameter idCmd = new OracleParameter("id", OracleType.Number);
                 idCmd.Direction = ParameterDirection.Output;
                 cmd.Parameters.Add(idCmd);
@@ -13976,7 +13996,7 @@ namespace LiteSFATestWebService
                     OperatiiSuplimentare.aprobaAutomatSD(connection, dateLivrare.codAgent, idCmd.Value.ToString());
                 }
 
-                if (tipUserSap.Equals("OIVPD") || (dateLivrare.codSuperAgent != null && dateLivrare.codSuperAgent.Trim().Length > 0 && !dateLivrare.codSuperAgent.Equals(dateLivrare.codAgent)))
+                if (tipUserSap.Equals("OIVPD") || tipUserSap.Equals("ASDL") || (dateLivrare.codSuperAgent != null && dateLivrare.codSuperAgent.Trim().Length > 0 && !dateLivrare.codSuperAgent.Equals(dateLivrare.codAgent)))
                 {
                     OperatiiSuplimentare.saveComandaSuperAv(connection, dateLivrare.codSuperAgent, idCmd.Value.ToString());
                 }
@@ -14646,13 +14666,7 @@ namespace LiteSFATestWebService
 
         }
 
-        [WebMethod]
-        public void testBG()
-        {
-            //new OperatiiBG().getListComenzi("BU10", "123", "2", "DV", "01", "1", 3,"22");
 
-             OperatiiComenziBG.isComandaBG("734");
-        }
 
         [WebMethod]
         public string cautaFurnizorProduseAndroid(string numeClient, string depart, string departAg, string unitLog, string codFurnizor)

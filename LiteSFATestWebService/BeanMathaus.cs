@@ -50,6 +50,8 @@ namespace LiteSFATestWebService
         public double greutateComanda;
         public string tipComandaCamion;
         public string isComandaDL;
+        public string nrCmdSap;
+        public string strada;
 
 
     }
@@ -59,6 +61,34 @@ namespace LiteSFATestWebService
         public List<CostTransportMathaus> listCostTransport;
         public List<DepozitArticolTransport> listDepozite;
         public List<DataLivrare> zileLivrare;
+        public List<TaxaMasina> taxeMasini;
+        public List<ArticolPalet> listPaleti;
+
+    }
+
+    public class TaxaMasina
+    {
+        public string werks;
+        public string vstel;
+        public string macara;
+        public string lift;
+        public string camionIveco;
+        public string camionScurt;
+        public string camionOricare;
+        public string taxaMacara;
+        public string matnrMacara;
+        public string maktxMacara;
+        public string matnrZona;
+        public string maktxZona;
+        public string taxaZona;
+        public string matnrAcces;
+        public string maktxAcces;
+        public string taxaAcces;
+        public string matnrTransport;
+        public string maktxTransport;
+        public string taxaTransport;
+        public string spart;
+        public string traty;
     }
 
     public class DataLivrare
@@ -98,6 +128,8 @@ namespace LiteSFATestWebService
         public ComandaMathaus comandaMathaus;
         public List<CostTransportMathaus> costTransport;
         public List<DataLivrare> zileLivrare;
+        public List<TaxaMasina> taxeMasini;
+        public List<ArticolPalet> listPaleti;
     }
 
     public class DateArticolMathaus

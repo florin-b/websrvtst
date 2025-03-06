@@ -124,17 +124,6 @@ namespace LiteSFATestWebService.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://bg-test01.budmax.bg:8003/sap/bc/srt/rfc/sap/ztbl_webservice/900/ztbl_webse" +
-            "rvice/ztbl_webservice")]
-        public string LiteSFATestWebService_SapWs_test_bg_budmax_ZTBL_WEBSERVICE {
-            get {
-                return ((string)(this["LiteSFATestWebService_SapWs_test_bg_budmax_ZTBL_WEBSERVICE"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
         [global::System.Configuration.DefaultSettingValueAttribute("http://SAP-QAS1A.arabesque.ro:8082/sap/bc/srt/rfc/sap/zws_custodie/900/zwbs_custo" +
             "die/zwbs_custodie")]
         public string LiteSFATestWebService_SAPWSCustodie_ZWS_CUSTODIE {

@@ -164,6 +164,16 @@
       </wsp:All>
     </wsp:ExactlyOne>
   </wsp:Policy>
+  <wsp:Policy wsu:Id="OP__ZdetTransportSfa">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <saptrhnw05:required xmlns:saptrhnw05="http://www.sap.com/NW05/soap/features/transaction/">no</saptrhnw05:required>
+        <sapcomhnd:enableCommit xmlns:sapcomhnd="http://www.sap.com/NW05/soap/features/commit/">false</sapcomhnd:enableCommit>
+        <sapblock:enableBlocking xmlns:sapblock="http://www.sap.com/NW05/soap/features/blocking/">true</sapblock:enableBlocking>
+        <saprmnw05:enableWSRM xmlns:saprmnw05="http://www.sap.com/NW05/soap/features/wsrm/">false</saprmnw05:enableWSRM>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
   <wsp:Policy wsu:Id="OP__ZextindeClient">
     <wsp:ExactlyOne>
       <wsp:All>
@@ -762,6 +772,12 @@
           <xsd:fractionDigits value="0" />
         </xsd:restriction>
       </xsd:simpleType>
+      <xsd:simpleType name="decimal15.2">
+        <xsd:restriction base="xsd:decimal">
+          <xsd:totalDigits value="15" />
+          <xsd:fractionDigits value="2" />
+        </xsd:restriction>
+      </xsd:simpleType>
       <xsd:simpleType name="decimal15.4">
         <xsd:restriction base="xsd:decimal">
           <xsd:totalDigits value="15" />
@@ -921,6 +937,11 @@
     </xsd:schema>
     <xsd:schema xmlns:n0="urn:sap-com:document:sap:rfc:functions" attributeFormDefault="qualified" targetNamespace="urn:sap-com:document:sap:soap:functions:mc-style">
       <xsd:import namespace="urn:sap-com:document:sap:rfc:functions" />
+      <xsd:simpleType name="char30">
+        <xsd:restriction base="xsd:string">
+          <xsd:maxLength value="30" />
+        </xsd:restriction>
+      </xsd:simpleType>
       <xsd:complexType name="ZsfilTransp">
         <xsd:sequence>
           <xsd:element name="Werks" type="n0:char4" />
@@ -929,6 +950,7 @@
           <xsd:element name="Matnr" type="n0:char18" />
           <xsd:element name="Spart" type="n0:char3" />
           <xsd:element name="Maktx" type="n0:char40" />
+          <xsd:element name="Traty" type="n0:char4" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="ZstTaxeAcces">
@@ -956,6 +978,52 @@
           <xsd:element name="Vstel" type="n0:char4" />
           <xsd:element name="Traty" type="n0:char4" />
           <xsd:element name="Cmpc" type="n0:curr11.2" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ZstransportCom">
+        <xsd:sequence>
+          <xsd:element name="Werks" type="n0:char4" />
+          <xsd:element name="Vstel" type="n0:char4" />
+          <xsd:element name="Macara" type="n0:char1" />
+          <xsd:element name="Lift" type="n0:char1" />
+          <xsd:element name="CamionIveco" type="n0:char1" />
+          <xsd:element name="CamionScurt" type="n0:char1" />
+          <xsd:element name="CamionOricare" type="n0:char1" />
+          <xsd:element name="MatnrMacara" type="n0:char18" />
+          <xsd:element name="TaxaMacara" type="n0:curr15.2" />
+          <xsd:element name="MatnrZona" type="n0:char18" />
+          <xsd:element name="MaktxZona" type="n0:char40" />
+          <xsd:element name="TaxaZona" type="n0:decimal15.2" />
+          <xsd:element name="MatnrAcces" type="n0:char18" />
+          <xsd:element name="TaxaAcces" type="n0:curr15.2" />
+          <xsd:element name="MatnrTransport" type="n0:char18" />
+          <xsd:element name="MaktxTransport" type="n0:char40" />
+          <xsd:element name="TaxaTransport" type="n0:curr15.2" />
+          <xsd:element name="Spart" type="n0:char3" />
+          <xsd:element name="Traty" type="n0:char4" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ZstTaxeAcces2">
+        <xsd:sequence>
+          <xsd:element name="TipComanda" type="n0:char20" />
+          <xsd:element name="Zona" type="n0:char7" />
+          <xsd:element name="MasinaDescoperita" type="n0:char1" />
+          <xsd:element name="Poligon" type="n0:char50" />
+          <xsd:element name="LimitaTonaj" type="n0:quantum13.3" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ZstEtMarfaPalet">
+        <xsd:sequence>
+          <xsd:element name="SpartMarfa" type="n0:char2" />
+          <xsd:element name="MatnrMarfa" type="n0:char18" />
+          <xsd:element name="CantMarfa" type="n0:quantum13.3" />
+          <xsd:element name="MeinsMarfa" type="n0:unit3" />
+          <xsd:element name="SpartPalet" type="n0:char3" />
+          <xsd:element name="MatnrPalet" type="n0:char18" />
+          <xsd:element name="CantPalet" type="n0:quantum13.3" />
+          <xsd:element name="MeinsPalet" type="n0:unit3" />
+          <xsd:element name="FurnizorPalet" type="n0:char10" />
+          <xsd:element name="PretPalet" type="n0:curr15.2" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="ZileIncarc">
@@ -1408,6 +1476,20 @@
           <xsd:element name="System" type="n0:char10" />
         </xsd:sequence>
       </xsd:complexType>
+      <xsd:complexType name="Bapicondx">
+        <xsd:sequence>
+          <xsd:element name="ItmNumber" type="n0:numeric6" />
+          <xsd:element name="CondStNo" type="n0:numeric3" />
+          <xsd:element name="CondCount" type="n0:numeric2" />
+          <xsd:element name="CondType" type="n0:char4" />
+          <xsd:element name="Updateflag" type="n0:char1" />
+          <xsd:element name="CondValue" type="n0:char1" />
+          <xsd:element name="Currency" type="n0:char1" />
+          <xsd:element name="CondUnit" type="n0:char1" />
+          <xsd:element name="CondPUnt" type="n0:char1" />
+          <xsd:element name="Varcond" type="n0:char26" />
+        </xsd:sequence>
+      </xsd:complexType>
       <xsd:complexType name="Bapisdhd1">
         <xsd:sequence>
           <xsd:element name="Refobjtype" type="n0:char10" />
@@ -1670,20 +1752,6 @@
           <xsd:element name="Incotermsv" type="n0:char1" />
           <xsd:element name="Incoterms2l" type="n0:char1" />
           <xsd:element name="Incoterms3l" type="n0:char1" />
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:complexType name="Bapicondx">
-        <xsd:sequence>
-          <xsd:element name="ItmNumber" type="n0:numeric6" />
-          <xsd:element name="CondStNo" type="n0:numeric3" />
-          <xsd:element name="CondCount" type="n0:numeric2" />
-          <xsd:element name="CondType" type="n0:char4" />
-          <xsd:element name="Updateflag" type="n0:char1" />
-          <xsd:element name="CondValue" type="n0:char1" />
-          <xsd:element name="Currency" type="n0:char1" />
-          <xsd:element name="CondUnit" type="n0:char1" />
-          <xsd:element name="CondPUnt" type="n0:char1" />
-          <xsd:element name="Varcond" type="n0:char26" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="Bapisditmx">
@@ -2233,6 +2301,24 @@
           <xsd:element name="Abart" type="n0:char1" />
         </xsd:sequence>
       </xsd:complexType>
+      <xsd:complexType name="Bapicublb">
+        <xsd:sequence>
+          <xsd:element name="ConfigId" type="n0:char6" />
+          <xsd:element name="Context" type="n0:char250" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="Bapisdtext">
+        <xsd:sequence>
+          <xsd:element name="DocNumber" type="n0:char10" />
+          <xsd:element name="ItmNumber" type="n0:numeric6" />
+          <xsd:element name="TextId" type="n0:char4" />
+          <xsd:element name="Langu" type="n0:lang" />
+          <xsd:element name="LanguIso" type="n0:char2" />
+          <xsd:element name="FormatCol" type="n0:char2" />
+          <xsd:element name="TextLine" type="n0:char132" />
+          <xsd:element name="Function" type="n0:char3" />
+        </xsd:sequence>
+      </xsd:complexType>
       <xsd:complexType name="BdiLogsys">
         <xsd:sequence>
           <xsd:element name="Logsys" type="n0:char10" />
@@ -2347,22 +2433,11 @@
           <xsd:element name="Valuepart4" type="n0:char240" />
         </xsd:sequence>
       </xsd:complexType>
-      <xsd:complexType name="Bapicublb">
+      <xsd:complexType name="Bapicuref">
         <xsd:sequence>
+          <xsd:element name="Posex" type="n0:char6" />
           <xsd:element name="ConfigId" type="n0:char6" />
-          <xsd:element name="Context" type="n0:char250" />
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:complexType name="Bapisdtext">
-        <xsd:sequence>
-          <xsd:element name="DocNumber" type="n0:char10" />
-          <xsd:element name="ItmNumber" type="n0:numeric6" />
-          <xsd:element name="TextId" type="n0:char4" />
-          <xsd:element name="Langu" type="n0:lang" />
-          <xsd:element name="LanguIso" type="n0:char2" />
-          <xsd:element name="FormatCol" type="n0:char2" />
-          <xsd:element name="TextLine" type="n0:char132" />
-          <xsd:element name="Function" type="n0:char3" />
+          <xsd:element name="InstId" type="n0:char8" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="Bapitextli">
@@ -2376,13 +2451,6 @@
           <xsd:element name="LineCnt" type="n0:numeric8" />
           <xsd:element name="Line" type="n0:char132" />
           <xsd:element name="FormatCol" type="n0:char2" />
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:complexType name="Bapicuref">
-        <xsd:sequence>
-          <xsd:element name="Posex" type="n0:char6" />
-          <xsd:element name="ConfigId" type="n0:char6" />
-          <xsd:element name="InstId" type="n0:char8" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="Bapiaddr1">
@@ -2628,44 +2696,6 @@
           <xsd:element name="Valcode" type="n0:char1" />
         </xsd:sequence>
       </xsd:complexType>
-      <xsd:complexType name="Bapisdtehd">
-        <xsd:sequence>
-          <xsd:element name="Operation" type="n0:char3" />
-          <xsd:element name="SdDoc" type="n0:char10" />
-          <xsd:element name="ItmNumber" type="n0:numeric6" />
-          <xsd:element name="Applobject" type="n0:char10" />
-          <xsd:element name="TextName" type="n0:char70" />
-          <xsd:element name="TextId" type="n0:char4" />
-          <xsd:element name="Langu" type="n0:lang" />
-          <xsd:element name="LanguIso" type="n0:char2" />
-          <xsd:element name="Title" type="n0:char50" />
-          <xsd:element name="Form" type="n0:char16" />
-          <xsd:element name="Style" type="n0:char8" />
-          <xsd:element name="Version" type="n0:numeric5" />
-          <xsd:element name="Createuser" type="n0:char12" />
-          <xsd:element name="Createrel" type="n0:char4" />
-          <xsd:element name="Createdate" type="n0:date10" />
-          <xsd:element name="Createtime" type="n0:time" />
-          <xsd:element name="Changeuser" type="n0:char12" />
-          <xsd:element name="Changerel" type="n0:char4" />
-          <xsd:element name="Changedate" type="n0:date10" />
-          <xsd:element name="Changetime" type="n0:time" />
-          <xsd:element name="Linesize" type="n0:numeric3" />
-          <xsd:element name="Lineamount" type="n0:numeric5" />
-          <xsd:element name="Hyphenat" type="n0:char1" />
-          <xsd:element name="Orgspras" type="n0:lang" />
-          <xsd:element name="Orgspraiso" type="n0:char2" />
-          <xsd:element name="Transtat" type="n0:numeric1" />
-          <xsd:element name="Matchcod1" type="n0:char16" />
-          <xsd:element name="Matchcod2" type="n0:char16" />
-          <xsd:element name="Refobject" type="n0:char10" />
-          <xsd:element name="Refname" type="n0:char70" />
-          <xsd:element name="Refid" type="n0:char4" />
-          <xsd:element name="Texttype" type="n0:char6" />
-          <xsd:element name="Compresstd" type="n0:char1" />
-          <xsd:element name="ObjClass" type="n0:char4" />
-        </xsd:sequence>
-      </xsd:complexType>
       <xsd:complexType name="Bapicucfg">
         <xsd:sequence>
           <xsd:element name="Posex" type="n0:char6" />
@@ -2716,6 +2746,44 @@
           <xsd:element name="ActionDat" type="n0:char1" />
           <xsd:element name="ActDatrul" type="n0:char1" />
           <xsd:element name="ConEnRul" type="n0:char1" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="Bapisdtehd">
+        <xsd:sequence>
+          <xsd:element name="Operation" type="n0:char3" />
+          <xsd:element name="SdDoc" type="n0:char10" />
+          <xsd:element name="ItmNumber" type="n0:numeric6" />
+          <xsd:element name="Applobject" type="n0:char10" />
+          <xsd:element name="TextName" type="n0:char70" />
+          <xsd:element name="TextId" type="n0:char4" />
+          <xsd:element name="Langu" type="n0:lang" />
+          <xsd:element name="LanguIso" type="n0:char2" />
+          <xsd:element name="Title" type="n0:char50" />
+          <xsd:element name="Form" type="n0:char16" />
+          <xsd:element name="Style" type="n0:char8" />
+          <xsd:element name="Version" type="n0:numeric5" />
+          <xsd:element name="Createuser" type="n0:char12" />
+          <xsd:element name="Createrel" type="n0:char4" />
+          <xsd:element name="Createdate" type="n0:date10" />
+          <xsd:element name="Createtime" type="n0:time" />
+          <xsd:element name="Changeuser" type="n0:char12" />
+          <xsd:element name="Changerel" type="n0:char4" />
+          <xsd:element name="Changedate" type="n0:date10" />
+          <xsd:element name="Changetime" type="n0:time" />
+          <xsd:element name="Linesize" type="n0:numeric3" />
+          <xsd:element name="Lineamount" type="n0:numeric5" />
+          <xsd:element name="Hyphenat" type="n0:char1" />
+          <xsd:element name="Orgspras" type="n0:lang" />
+          <xsd:element name="Orgspraiso" type="n0:char2" />
+          <xsd:element name="Transtat" type="n0:numeric1" />
+          <xsd:element name="Matchcod1" type="n0:char16" />
+          <xsd:element name="Matchcod2" type="n0:char16" />
+          <xsd:element name="Refobject" type="n0:char10" />
+          <xsd:element name="Refname" type="n0:char70" />
+          <xsd:element name="Refid" type="n0:char4" />
+          <xsd:element name="Texttype" type="n0:char6" />
+          <xsd:element name="Compresstd" type="n0:char1" />
+          <xsd:element name="ObjClass" type="n0:char4" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="Bapisdca">
@@ -3142,6 +3210,7 @@
           <xsd:element name="CodPostal" type="n0:char15" />
           <xsd:element name="Zona" type="n0:char10" />
           <xsd:element name="Canal" type="n0:char2" />
+          <xsd:element name="ValTr" type="n0:curr15.2" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="Bapi2093ResItemChange">
@@ -3212,20 +3281,6 @@
           <xsd:element name="Menge" type="n0:quantum13.3" />
           <xsd:element name="Meins" type="n0:unit3" />
           <xsd:element name="Lgort" type="n0:char4" />
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:complexType name="ZstEtMarfaPalet">
-        <xsd:sequence>
-          <xsd:element name="SpartMarfa" type="n0:char2" />
-          <xsd:element name="MatnrMarfa" type="n0:char18" />
-          <xsd:element name="CantMarfa" type="n0:quantum13.3" />
-          <xsd:element name="MeinsMarfa" type="n0:unit3" />
-          <xsd:element name="SpartPalet" type="n0:char3" />
-          <xsd:element name="MatnrPalet" type="n0:char18" />
-          <xsd:element name="CantPalet" type="n0:quantum13.3" />
-          <xsd:element name="MeinsPalet" type="n0:unit3" />
-          <xsd:element name="FurnizorPalet" type="n0:char10" />
-          <xsd:element name="PretPalet" type="n0:curr15.2" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="ZstEtPaleti">
@@ -3306,6 +3361,16 @@
       <xsd:complexType name="TableOfZsitemsComanda">
         <xsd:sequence>
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZsitemsComanda" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="TableOfZstransportCom">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZstransportCom" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="TableOfZstEtMarfaPalet">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZstEtMarfaPalet" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="TableOfZileIncarc">
@@ -3413,16 +3478,6 @@
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapisdkey" />
         </xsd:sequence>
       </xsd:complexType>
-      <xsd:complexType name="TableOfBapisdbusi">
-        <xsd:sequence>
-          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapisdbusi" />
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:complexType name="TableOfBapiparex">
-        <xsd:sequence>
-          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapiparex" />
-        </xsd:sequence>
-      </xsd:complexType>
       <xsd:complexType name="TableOfBapicublb">
         <xsd:sequence>
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapicublb" />
@@ -3433,14 +3488,24 @@
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapisdtext" />
         </xsd:sequence>
       </xsd:complexType>
-      <xsd:complexType name="TableOfBapitextli">
+      <xsd:complexType name="TableOfBapisdbusi">
         <xsd:sequence>
-          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapitextli" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapisdbusi" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="TableOfBapiparex">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapiparex" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="TableOfBapicuref">
         <xsd:sequence>
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapicuref" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="TableOfBapitextli">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapitextli" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="TableOfBapiaddr1">
@@ -3483,11 +3548,6 @@
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapicuval" />
         </xsd:sequence>
       </xsd:complexType>
-      <xsd:complexType name="TableOfBapisdtehd">
-        <xsd:sequence>
-          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapisdtehd" />
-        </xsd:sequence>
-      </xsd:complexType>
       <xsd:complexType name="TableOfBapicucfg">
         <xsd:sequence>
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapicucfg" />
@@ -3501,6 +3561,11 @@
       <xsd:complexType name="TableOfBapictrx">
         <xsd:sequence>
           <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapictrx" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="TableOfBapisdtehd">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Bapisdtehd" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="TableOfBapisdca">
@@ -3614,6 +3679,38 @@
           <xsd:sequence>
             <xsd:element name="ItFilCost" type="tns:TableOfZsfilTransp" />
             <xsd:element name="ItItems" type="tns:TableOfZsitemsComanda" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ZdetTransportSfa">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="0" name="IpAdresa" type="tns:char30" />
+            <xsd:element minOccurs="0" name="IpCanal" type="n0:char2" />
+            <xsd:element minOccurs="0" name="IpCity" type="n0:char25" />
+            <xsd:element minOccurs="0" name="IpKunnr" type="n0:char10" />
+            <xsd:element minOccurs="0" name="IpPernr" type="n0:numeric8" />
+            <xsd:element minOccurs="0" name="IpRegio" type="n0:char3" />
+            <xsd:element minOccurs="0" name="IpTippers" type="n0:char12" />
+            <xsd:element minOccurs="0" name="IpTraty" type="n0:char4" />
+            <xsd:element minOccurs="0" name="IpVbeln" type="n0:char10" />
+            <xsd:element minOccurs="0" name="IpVkgrp" type="n0:char3" />
+            <xsd:element minOccurs="0" name="IpWerks" type="n0:char4" />
+            <xsd:element minOccurs="0" name="IsTaxaAcces" type="tns:ZstTaxeAcces2" />
+            <xsd:element name="ItFilCost" type="tns:TableOfZsfilTransp" />
+            <xsd:element name="ItItems" type="tns:TableOfZsitemsComanda" />
+            <xsd:element name="ItMarfaPalet" type="tns:TableOfZstEtMarfaPalet" />
+            <xsd:element name="ItTransCom" type="tns:TableOfZstransportCom" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ZdetTransportSfaResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ItFilCost" type="tns:TableOfZsfilTransp" />
+            <xsd:element name="ItItems" type="tns:TableOfZsitemsComanda" />
+            <xsd:element name="ItMarfaPalet" type="tns:TableOfZstEtMarfaPalet" />
+            <xsd:element name="ItTransCom" type="tns:TableOfZstransportCom" />
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -4114,6 +4211,7 @@
             <xsd:element minOccurs="0" name="VMacara" type="n0:char1" />
             <xsd:element minOccurs="0" name="VOp" type="n0:char1" />
             <xsd:element minOccurs="0" name="VTipplata" type="n0:char4" />
+            <xsd:element minOccurs="0" name="VVtweg" type="n0:char2" />
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -4471,6 +4569,12 @@
   <wsdl:message name="ZdetTransportResponse">
     <wsdl:part name="parameter" element="tns:ZdetTransportResponse" />
   </wsdl:message>
+  <wsdl:message name="ZdetTransportSfa">
+    <wsdl:part name="parameters" element="tns:ZdetTransportSfa" />
+  </wsdl:message>
+  <wsdl:message name="ZdetTransportSfaResponse">
+    <wsdl:part name="parameter" element="tns:ZdetTransportSfaResponse" />
+  </wsdl:message>
   <wsdl:message name="ZextindeClient">
     <wsdl:part name="parameters" element="tns:ZextindeClient" />
   </wsdl:message>
@@ -4698,6 +4802,13 @@
       </wsp:Policy>
       <wsdl:input message="tns:ZdetTransport" />
       <wsdl:output message="tns:ZdetTransportResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="ZdetTransportSfa">
+      <wsp:Policy>
+        <wsp:PolicyReference URI="#OP__ZdetTransportSfa" />
+      </wsp:Policy>
+      <wsdl:input message="tns:ZdetTransportSfa" />
+      <wsdl:output message="tns:ZdetTransportSfaResponse" />
     </wsdl:operation>
     <wsdl:operation name="ZextindeClient">
       <wsp:Policy>
@@ -4961,6 +5072,15 @@
     </wsdl:operation>
     <wsdl:operation name="ZdetTransport">
       <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZdetTransportRequest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ZdetTransportSfa">
+      <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZdetTransportSfaRequest" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -5300,6 +5420,15 @@
     </wsdl:operation>
     <wsdl:operation name="ZdetTransport">
       <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZdetTransportRequest" style="document" />
+      <wsdl:input>
+        <wsoap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <wsoap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ZdetTransportSfa">
+      <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZTBL_WEBSERVICE:ZdetTransportSfaRequest" style="document" />
       <wsdl:input>
         <wsoap12:body use="literal" />
       </wsdl:input>

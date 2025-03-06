@@ -1613,10 +1613,11 @@ namespace LiteSFATestWebService
                     }
                 }
 
-
                 livrareMathaus.comandaMathaus = comandaMathaus;
                 livrareMathaus.costTransport = dateTransport.listCostTransport;
                 livrareMathaus.zileLivrare = dateTransport.zileLivrare;
+                livrareMathaus.taxeMasini = dateTransport.taxeMasini;
+                livrareMathaus.listPaleti = dateTransport.listPaleti;
 
             }
             catch (Exception ex)
@@ -1968,8 +1969,300 @@ namespace LiteSFATestWebService
             return unitLog.Substring(0, 2) + "2" + unitLog.Substring(3, 1);
         }
 
-
         public DateTransportMathaus getTransportService(AntetCmdMathaus antetCmd, ComandaMathaus comandaMathaus, string canal, DatePoligon datePoligon)
+        {
+            
+
+            DateTransportMathaus dateTransport = new DateTransportMathaus();
+            List<CostTransportMathaus> listCostTransp = new List<CostTransportMathaus>();
+            List<DepozitArticolTransport> listArticoleDepoz = new List<DepozitArticolTransport>();
+            List<CostTransportMathaus> listTaxeTransp = new List<CostTransportMathaus>();
+            List<TaxaMasina> listTaxeMasini = new List<TaxaMasina>();
+            List<ArticolPalet> listPaleti = new List<ArticolPalet>();
+
+            List<OptiuneCamion> optiuniCamion = new JavaScriptSerializer().Deserialize<List<OptiuneCamion>>(antetCmd.tipCamion);
+
+            string werks = comandaMathaus.sellingPlant.Split(',')[0];
+
+
+            string departCmd = antetCmd.depart;
+
+            if (canal != null && canal.Equals("20"))
+            {
+                werks = getULGed(comandaMathaus.sellingPlant);
+                departCmd = "11";
+            }
+
+            try
+            {
+
+                SAPWebServices.ZTBL_WEBSERVICE webService = new ZTBL_WEBSERVICE();
+
+                SAPWebServices.ZdetTransportSfa inParam = new ZdetTransportSfa();
+                System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Auth.getUser(), Auth.getPass());
+                webService.Credentials = nc;
+                webService.Timeout = 300000;
+
+                inParam.IpCity = antetCmd.localitate;
+                inParam.IpRegio = antetCmd.codJudet;
+                inParam.IpKunnr = antetCmd.codClient;
+                inParam.IpTippers = antetCmd.tipPers;
+                inParam.IpWerks = werks;
+                inParam.IpVkgrp = departCmd;
+                inParam.IpPernr = antetCmd.codPers;
+                inParam.IpTraty = antetCmd.tipTransp;
+                inParam.IpCanal = canal;
+                inParam.IpVbeln = antetCmd.nrCmdSap;
+                inParam.IpAdresa = antetCmd.strada;
+
+
+                ZstTaxeAcces2 taxeAcces = new ZstTaxeAcces2();
+
+
+                taxeAcces.TipComanda = antetCmd.tipComandaCamion;
+                taxeAcces.Zona = HelperComenzi.getTipZonaMathaus(datePoligon.tipZona);
+                taxeAcces.MasinaDescoperita = antetCmd.camionDescoperit != null && Boolean.Parse(antetCmd.camionDescoperit) ? "X" : " ";
+                taxeAcces.Poligon = datePoligon.nume;
+
+                if (datePoligon.limitareTonaj != null && datePoligon.limitareTonaj.Trim() != "")
+                {
+                    if (datePoligon.limitareTonaj.Contains(","))
+                        taxeAcces.LimitaTonaj = Decimal.Parse(datePoligon.limitareTonaj, new CultureInfo("ro"));
+                    else
+                        taxeAcces.LimitaTonaj = Decimal.Parse(datePoligon.limitareTonaj);
+                }
+
+
+                inParam.IsTaxaAcces = taxeAcces;
+
+                SAPWebServices.ZsitemsComanda[] items = new ZsitemsComanda[comandaMathaus.deliveryEntryDataList.Count];
+
+                int ii = 0;
+                foreach (DateArticolMathaus dateArticol in comandaMathaus.deliveryEntryDataList)
+                {
+                    items[ii] = new ZsitemsComanda();
+                    items[ii].Matnr = dateArticol.productCode;
+                    items[ii].Kwmeng = Decimal.Parse(dateArticol.quantity.ToString());
+                    items[ii].Vrkme = dateArticol.unit;
+                    items[ii].ValPoz = Decimal.Parse(String.Format("{0:0.00}", dateArticol.valPoz));
+
+                    items[ii].Werks = dateArticol.deliveryWarehouse;
+
+                    if (dateArticol.tipStoc != null && dateArticol.tipStoc.ToLower().Equals("sap"))
+                        items[ii].Werks = "NN10";
+
+                    if (dateArticol.depozit != null && dateArticol.depozit.Trim() != "")
+                        items[ii].Lgort = dateArticol.depozit;
+
+                    if (antetCmd.isComandaDL != null && Boolean.Parse(antetCmd.isComandaDL))
+                        items[ii].Lgort = "DESC";
+
+                    items[ii].BrgewMatnr = (Decimal)HelperComenzi.getGreutateArticol(dateArticol.productCode, dateArticol.quantity, comandaMathaus);
+
+                    ii++;
+                }
+
+                inParam.ItItems = items;
+                SAPWebServices.ZsfilTransp[] filCost = new SAPWebServices.ZsfilTransp[1];
+                inParam.ItFilCost = filCost;
+                inParam.ItMarfaPalet = new ZstEtMarfaPalet[1];
+                inParam.ItTransCom = new ZstransportCom[1];
+
+                SAPWebServices.ZdetTransportSfaResponse resp = webService.ZdetTransportSfa(inParam);
+
+                int nrItems = resp.ItItems.Count();
+
+                bool artFound = false;
+                foreach (SAPWebServices.ZsitemsComanda itemCmd in resp.ItItems)
+                {
+                    if (listCostTransp.Count == 0)
+                    {
+                        CostTransportMathaus cost = new CostTransportMathaus();
+                        cost.filiala = itemCmd.Werks;
+                        cost.tipTransp = itemCmd.Traty;
+                        listCostTransp.Add(cost);
+                    }
+                    else
+                    {
+                        artFound = false;
+                        foreach (CostTransportMathaus costTransp in listCostTransp)
+                        {
+                            if (costTransp.filiala.Equals(itemCmd.Werks))
+                            {
+                                artFound = true;
+                                break;
+                            }
+                        }
+
+                        if (!artFound)
+                        {
+                            CostTransportMathaus cost = new CostTransportMathaus();
+                            cost.filiala = itemCmd.Werks;
+                            cost.tipTransp = itemCmd.Traty;
+                            listCostTransp.Add(cost);
+                        }
+
+                    }
+
+                    DepozitArticolTransport depozitArticol = new DepozitArticolTransport();
+                    depozitArticol.codArticol = itemCmd.Matnr;
+                    depozitArticol.filiala = itemCmd.Werks;
+                    depozitArticol.depozit = itemCmd.Lgort;
+                    depozitArticol.cmpCorectat = itemCmd.Cmpc.ToString();
+                    listArticoleDepoz.Add(depozitArticol);
+
+                }
+
+                nrItems = resp.ItFilCost.Count();
+
+                foreach (SAPWebServices.ZsfilTransp itemCost in resp.ItFilCost)
+                {
+
+                    foreach (CostTransportMathaus costTransp in listCostTransp)
+                    {
+                        if (costTransp.filiala.Equals(itemCost.Werks))
+                        {
+
+                            CostTransportMathaus taxaTransport = new CostTransportMathaus();
+                            taxaTransport.filiala = costTransp.filiala;
+                            taxaTransport.tipTransp = costTransp.tipTransp;
+                            taxaTransport.valTransp = itemCost.ValTr.ToString();
+                            taxaTransport.codArtTransp = itemCost.Matnr;
+                            taxaTransport.depart = itemCost.Spart;
+                            taxaTransport.numeCost = itemCost.Maktx.ToUpper();
+
+                            listTaxeTransp.Add(taxaTransport);
+                            break;
+                        }
+                    }
+
+                }
+
+                Random rnd = new Random();
+                foreach (SAPWebServices.ZstransportCom itemTaxeMasini in resp.ItTransCom)
+                {
+
+                  
+                        TaxaMasina taxaMasina = new TaxaMasina();
+                        taxaMasina.werks = itemTaxeMasini.Werks;
+                        taxaMasina.vstel = itemTaxeMasini.Vstel;
+
+                        taxaMasina.camionIveco = itemTaxeMasini.CamionIveco;
+                        taxaMasina.camionScurt = itemTaxeMasini.CamionScurt;
+                        taxaMasina.camionOricare = itemTaxeMasini.CamionOricare;
+                        taxaMasina.macara = itemTaxeMasini.Macara;
+                        taxaMasina.lift = itemTaxeMasini.Lift;
+
+                        taxaMasina.taxaMacara = itemTaxeMasini.TaxaMacara.ToString();
+                        taxaMasina.matnrMacara = itemTaxeMasini.MatnrMacara;
+                        taxaMasina.maktxMacara = "PREST.SERV.DESCARCARE PALET";
+
+                        taxaMasina.matnrZona = itemTaxeMasini.MatnrZona;
+                        taxaMasina.maktxZona = itemTaxeMasini.MaktxZona;
+                        taxaMasina.taxaZona = itemTaxeMasini.TaxaZona.ToString();
+                        taxaMasina.taxaAcces = itemTaxeMasini.TaxaAcces.ToString();
+                        taxaMasina.matnrAcces = itemTaxeMasini.MatnrAcces;
+                        taxaMasina.maktxAcces = "Taxa extra metro";
+                        taxaMasina.matnrTransport = itemTaxeMasini.MatnrTransport;
+                        taxaMasina.maktxTransport = itemTaxeMasini.MaktxTransport;
+                        taxaMasina.taxaTransport = itemTaxeMasini.TaxaTransport.ToString();
+                        taxaMasina.spart = itemTaxeMasini.Spart;
+                        taxaMasina.traty = itemTaxeMasini.Traty.Equals("TERA") ? "TERT" : itemTaxeMasini.Traty;
+
+                        listTaxeMasini.Add(taxaMasina);
+                    }
+                
+
+
+                OracleConnection connection = new OracleConnection();
+                string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                foreach (SAPWebServices.ZstEtMarfaPalet itemPalet in resp.ItMarfaPalet)
+                {
+                    ArticolPalet artPalet = new ArticolPalet();
+                    artPalet.codPalet = itemPalet.MatnrPalet.TrimStart('0');
+                    artPalet.depart = itemPalet.SpartPalet;
+                    artPalet.cantitate = Decimal.ToInt32(itemPalet.CantPalet).ToString();
+                    artPalet.numePalet = OperatiiMacara.getNumeArticol(connection, itemPalet.MatnrPalet);
+                    artPalet.codArticol = itemPalet.MatnrMarfa.TrimStart('0');
+                    artPalet.numeArticol = OperatiiMacara.getNumeArticol(connection, itemPalet.MatnrMarfa);
+                    artPalet.furnizor = itemPalet.FurnizorPalet;
+                    artPalet.pretUnit = itemPalet.PretPalet.ToString();
+                    artPalet.cantArticol = itemPalet.CantMarfa.ToString();
+                    artPalet.umArticol = itemPalet.MeinsMarfa;
+                    listPaleti.Add(artPalet);
+
+
+                }
+
+                connection.Close();
+
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail("getTransportService: " + ex.ToString());
+            }
+
+            if (antetCmd.tipTransp.Equals("TCLI") || antetCmd.tipTransp.Equals("TFRN"))
+                dateTransport.listCostTransport = new List<CostTransportMathaus>();
+            else
+                dateTransport.listCostTransport = listTaxeTransp;
+
+            dateTransport.listDepozite = listArticoleDepoz;
+            dateTransport.taxeMasini = listTaxeMasini;
+            dateTransport.listPaleti = listPaleti;
+
+            return dateTransport;
+
+        }
+
+        private bool isFilialaPalet(string filiala, SAPWebServices.ZdetTransportSfaResponse resp)
+        {
+          
+
+
+            foreach (SAPWebServices.ZsitemsComanda itemCmd in resp.ItItems)
+            {
+                foreach (SAPWebServices.ZstEtMarfaPalet itemPalet in resp.ItMarfaPalet)
+                {
+                    if (itemPalet.MatnrMarfa.Equals(itemCmd.Matnr) && itemCmd.Werks.Equals(filiala))
+                        return true;
+                }
+
+            }
+
+           return false;
+        }
+
+
+
+        private bool isMacara(ZstransportCom itemTaxeMasini)
+        {
+            return itemTaxeMasini.Macara.Equals("X");
+        }
+
+        private bool isLift(ZstransportCom itemTaxeMasini)
+        {
+            return  itemTaxeMasini.Lift.Equals("X");
+        }
+
+        private bool existaFiliala(string filiala, List<TaxaMasina> listTaxe)
+        {
+            foreach(TaxaMasina taxaMasina in listTaxe)
+            {
+                if (taxaMasina.werks.Equals(filiala))
+                    return true;
+            }
+
+            return false;
+        }
+
+
+        public DateTransportMathaus getTransportService_old(AntetCmdMathaus antetCmd, ComandaMathaus comandaMathaus, string canal, DatePoligon datePoligon)
         {
             DateTransportMathaus dateTransport = new DateTransportMathaus();
             List<CostTransportMathaus> listCostTransp = new List<CostTransportMathaus>();
@@ -1987,7 +2280,8 @@ namespace LiteSFATestWebService
                 departCmd = "11";
             }
 
-            try {
+            try
+            {
 
                 SAPWebServices.ZTBL_WEBSERVICE webService = new ZTBL_WEBSERVICE();
 
@@ -2005,7 +2299,7 @@ namespace LiteSFATestWebService
                 inParam.IpPernr = antetCmd.codPers;
                 inParam.IpTraty = antetCmd.tipTransp;
                 inParam.IpCanal = canal;
-                    
+
 
                 ZstTaxeAcces taxeAcces = new ZstTaxeAcces();
 
@@ -2017,7 +2311,7 @@ namespace LiteSFATestWebService
                 taxeAcces.Zona = HelperComenzi.getTipZonaMathaus(datePoligon.tipZona);
                 taxeAcces.MasinaDescoperita = antetCmd.camionDescoperit != null && Boolean.Parse(antetCmd.camionDescoperit) ? "X" : " ";
                 taxeAcces.Macara = antetCmd.macara != null && Boolean.Parse(antetCmd.macara) ? "X" : " ";
-                taxeAcces.CamionScurt = HelperComenzi.getOptiuneCamion(optiuniCamion,"Camion scurt");
+                taxeAcces.CamionScurt = HelperComenzi.getOptiuneCamion(optiuniCamion, "Camion scurt");
                 taxeAcces.CamionIveco = HelperComenzi.getOptiuneCamion(optiuniCamion, "Camioneta IVECO");
                 taxeAcces.Poligon = datePoligon.nume;
 
@@ -2042,7 +2336,7 @@ namespace LiteSFATestWebService
                     items[ii].Kwmeng = Decimal.Parse(dateArticol.quantity.ToString());
                     items[ii].Vrkme = dateArticol.unit;
                     items[ii].ValPoz = Decimal.Parse(String.Format("{0:0.00}", dateArticol.valPoz));
-                    
+
                     items[ii].Werks = dateArticol.deliveryWarehouse;
 
                     if (dateArticol.tipStoc != null && dateArticol.tipStoc.ToLower().Equals("sap"))
@@ -2064,7 +2358,7 @@ namespace LiteSFATestWebService
                 inParam.ItFilCost = filCost;
 
                 SAPWebServices.ZileIncarcWerks[] zileInc = new ZileIncarcWerks[1];
-               
+
 
                 SAPWebServices.ZdetTransportResponse resp = webService.ZdetTransport(inParam);
 
@@ -2136,10 +2430,10 @@ namespace LiteSFATestWebService
 
                 }
 
-               
+
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ErrorHandling.sendErrorToMail("getTransportService: " + ex.ToString());
             }
@@ -2150,7 +2444,7 @@ namespace LiteSFATestWebService
                 dateTransport.listCostTransport = listTaxeTransp;
 
             dateTransport.listDepozite = listArticoleDepoz;
-            
+
 
             return dateTransport;
 

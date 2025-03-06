@@ -13,51 +13,57 @@ namespace LiteSFATestWebService
         public static void getDateHeader(List<Comanda> listComenzi)
         {
 
-            SAPWebServices.ZTBL_WEBSERVICE webService = new ZTBL_WEBSERVICE();
+            try {
+                SAPWebServices.ZTBL_WEBSERVICE webService = new ZTBL_WEBSERVICE();
 
-            System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Service1.getUser(), Service1.getPass());
-            webService.Credentials = nc;
-            webService.Timeout = 300000;
+                System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Service1.getUser(), Service1.getPass());
+                webService.Credentials = nc;
+                webService.Timeout = 300000;
 
-            ZheadInfocv[] itComenzi = new ZheadInfocv[listComenzi.Count];
+                ZheadInfocv[] itComenzi = new ZheadInfocv[listComenzi.Count];
 
-            int i = 0;
-            foreach (Comanda com in listComenzi)
-            {
-                ZheadInfocv itCmd = new ZheadInfocv();
-                itCmd.Nrcmdsap = com.cmdSap;
-                itCmd.Status = " ";
-                itCmd.Waers = " ";
-                itCmd.t0 = 0;
-                itCmd.T0Proc = 0;
-                itCmd.t1 = 0;
-                itCmd.T1Proc = 0;
-                itCmd.ValBrut = 0;
-                itCmd.ValNet = 0;
-
-                itComenzi[i] = itCmd;
-
-                i++;
-            }
-
-            SAPWebServices.ZgetInfoheadcv infoHead = new ZgetInfoheadcv();
-            infoHead.ItComenzi = itComenzi;
-
-            ZgetInfoheadcvResponse response = webService.ZgetInfoheadcv(infoHead);
-
-            foreach (Comanda com in listComenzi)
-            {
-                foreach (ZheadInfocv resp in response.ItComenzi)
+                int i = 0;
+                foreach (Comanda com in listComenzi)
                 {
-                    if (com.cmdSap.Equals(resp.Nrcmdsap))
+                    ZheadInfocv itCmd = new ZheadInfocv();
+                    itCmd.Nrcmdsap = com.cmdSap;
+                    itCmd.Status = " ";
+                    itCmd.Waers = " ";
+                    itCmd.t0 = 0;
+                    itCmd.T0Proc = 0;
+                    itCmd.t1 = 0;
+                    itCmd.T1Proc = 0;
+                    itCmd.ValBrut = 0;
+                    itCmd.ValNet = 0;
+
+                    itComenzi[i] = itCmd;
+
+                    i++;
+                }
+
+                SAPWebServices.ZgetInfoheadcv infoHead = new ZgetInfoheadcv();
+                infoHead.ItComenzi = itComenzi;
+
+                ZgetInfoheadcvResponse response = webService.ZgetInfoheadcv(infoHead);
+
+                foreach (Comanda com in listComenzi)
+                {
+                    foreach (ZheadInfocv resp in response.ItComenzi)
                     {
-                        com.bazaSalariala = Double.Parse(resp.t1.ToString());
-                        break;
+                        if (com.cmdSap.Equals(resp.Nrcmdsap))
+                        {
+                            com.bazaSalariala = Double.Parse(resp.t1.ToString());
+                            break;
+                        }
                     }
                 }
-            }
 
-            webService.Dispose();
+                webService.Dispose();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail("getDateHeader: " + ex.ToString());
+            }
 
         }
 

@@ -872,6 +872,7 @@ namespace LiteSFATestWebService
         public string cantitate50;
         public string pretMinim;
         public string promo;
+        public string tipTransport;
 
     }
 
@@ -917,6 +918,7 @@ namespace LiteSFATestWebService
     {
         public string tipMarfa;
         public string lungime;
+        public string transpTert;
 
         public ArticolProps()
         {
