@@ -81,7 +81,7 @@ namespace LiteSFATestWebService
 
         }
 
-        public string isPlatitorTva(string cuiClient, string codAgent)
+        public string isPlatitorTva(string cuiClient, string codAgent, string depart)
         {
 
             PlatitorTvaResponse platitorResponse = new PlatitorTvaResponse();
@@ -147,6 +147,10 @@ namespace LiteSFATestWebService
                 }
 
                 platitorResponse.diviziiClient = OperatiiClienti.getDiviziiClientCUI(connection, cuiClient, codAgent);
+
+                if (depart != null && depart.Equals("16"))
+                    platitorResponse.diviziiClient = HelperClienti.getDiviziiClientDep16(platitorResponse.diviziiClient);
+
                 platitorResponse.codClientNominal = OperatiiClienti.getCodClientNominal(connection, cuiClient);
 
 

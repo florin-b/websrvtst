@@ -60,6 +60,8 @@ namespace LiteSFATestWebService
 
                 SAPWebServices.ZgetPrice20Response outParam = webService.ZgetPrice20(inParam);
 
+                ErrorHandling.sendErrorToMail("getPretUnic: \n\n" + serializer.Serialize(inParam) + "\n\n" + serializer.Serialize(outParam));
+
                 string pretOut = outParam.GvNetwr.ToString() != "" ? outParam.GvNetwr.ToString() : "-1";
                 string umOut = outParam.GvVrkme.ToString() != "" ? outParam.GvVrkme.ToString() : "-1";
                 string noDiscOut = outParam.GvNoDisc.ToString();

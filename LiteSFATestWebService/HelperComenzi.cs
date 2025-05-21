@@ -77,6 +77,27 @@ namespace LiteSFATestWebService
 
         }
 
+        public static string eliminaCodDepart(string numeArticol)
+        {
+
+
+            if (numeArticol == null || numeArticol.Trim().Length == 0)
+                return " ";
+
+            if (!numeArticol.ToLower().Contains("div."))
+                return numeArticol;
+
+
+            int posDiv = numeArticol.ToLower().IndexOf("div.");
+
+            if (numeArticol.ToLower().Contains("-div."))
+                posDiv = numeArticol.ToLower().IndexOf("-div.");
+
+
+            return numeArticol.Substring(0, posDiv);
+
+        }
+
 
         public static string getArtExcCherestea(OracleConnection connection, OracleTransaction transaction, List<ArticolComanda> listArticole, string codArticol)
         {
@@ -458,6 +479,49 @@ namespace LiteSFATestWebService
             return strDeparts;
         }
 
+        public static string getCodArticolDescarcare(string codDepart)
+        {
+            string codArticol = "000000000000000000";
+
+            OracleConnection connection = new OracleConnection();
+            OracleDataReader oReader = null;
+
+            string connectionString = DatabaseConnections.ConnectToTestEnvironment();
+            connection.ConnectionString = connectionString;
+            connection.Open();
+            OracleCommand cmd = connection.CreateCommand();
+
+            try
+            {
+                cmd.CommandText = " select cod from articole where lower(nume) like '%serv%descarcare%' and grup_vz = :depart and lower(sintetic) like '%servtd%' ";
+
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":depart", OracleType.VarChar, 9).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codDepart;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    codArticol = oReader.GetString(0);
+                }
+            }
+
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd, connection);
+            }
+
+
+            return codArticol;
+        }
+
         public static Dictionary<string, string> getDictionarUmIso(List<DateArticolMathaus> listArticole)
         {
 
@@ -559,6 +623,19 @@ namespace LiteSFATestWebService
             }
 
             return false;
+
+        }
+
+        public static bool isComandaCLP(DateLivrare dateLivrare)
+        {
+
+            if (dateLivrare.furnizorMarfa != null && dateLivrare.furnizorMarfa.Trim().Length == 10)
+                return false;
+
+            if (dateLivrare.filialaCLP == null)
+                return false;
+
+            return dateLivrare.filialaCLP.Trim().Length == 4;
 
         }
 

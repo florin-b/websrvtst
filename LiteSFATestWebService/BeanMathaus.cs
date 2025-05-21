@@ -52,6 +52,7 @@ namespace LiteSFATestWebService
         public string isComandaDL;
         public string nrCmdSap;
         public string strada;
+        public string codFurnizor;
 
 
     }
@@ -78,6 +79,10 @@ namespace LiteSFATestWebService
         public string taxaMacara;
         public string matnrMacara;
         public string maktxMacara;
+        public string nrPaleti;
+        public string matnrUsor;
+        public string maktxUsor;
+        public string taxaUsor;
         public string matnrZona;
         public string maktxZona;
         public string taxaZona;
@@ -89,6 +94,7 @@ namespace LiteSFATestWebService
         public string taxaTransport;
         public string spart;
         public string traty;
+        public List<TaxaMasina> taxeDivizii;
     }
 
     public class DataLivrare

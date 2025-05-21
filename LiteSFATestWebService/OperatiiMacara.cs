@@ -167,7 +167,7 @@ namespace LiteSFATestWebService
         }
 
 
-        private List<ArticolPalet> getPaletiDistincti(List<ArticolPalet> listPaleti)
+        public static List<ArticolPalet> getPaletiDistincti(List<ArticolPalet> listPaleti)
         {
             List<ArticolPalet> paletiDistincti = new List<ArticolPalet>();
             List<string> coduriUnice = listPaleti.Select(p => p.codPalet).Distinct().ToList<string>();
@@ -182,7 +182,7 @@ namespace LiteSFATestWebService
             return paletiDistincti;
         }
 
-        private ArticolPalet getDatePalet(List<ArticolPalet> listPaleti, string codPalet)
+        private static ArticolPalet getDatePalet(List<ArticolPalet> listPaleti, string codPalet)
         {
             ArticolPalet palet = new ArticolPalet();
 
@@ -202,7 +202,7 @@ namespace LiteSFATestWebService
             return palet;
         }
 
-        private int getCantitatePalet(List<ArticolPalet> listPaleti, string codPalet)
+        private static int getCantitatePalet(List<ArticolPalet> listPaleti, string codPalet)
         {
             int cantPalet = 0;
 

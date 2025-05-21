@@ -167,11 +167,16 @@ namespace LiteSFATestWebService
 
                 string condDepart1 = "", condDepart2 = "";
 
-                if (!depart.Equals("00"))
+                if (!depart.Equals("00") && !depart.Equals("16"))
                 {
                     condDepart1 = " and t.depart='" + depart + "'";
                     condDepart2 = " and p.spart = '" + depart + "'";
+                }
 
+                if (depart.Equals("16"))
+                {
+                    condDepart1 = " and t.depart in ('03','04','09') ";
+                    condDepart2 = " and p.spart in ('03','04','09') ";
                 }
 
 
@@ -218,6 +223,13 @@ namespace LiteSFATestWebService
 
                     string condExtraClient = " and exists (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.cod  and p.vtweg = '10' " +
                                              " and p.spart = '" + departAg+ "' and p.parvw in ('VE', 'ZC')  and p.pernr = '" + codUser + "' ) ";
+
+                    if (depart.Equals("16"))
+                    {
+                        condExtraClient = " and exists (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.cod  and p.vtweg = '10' " +
+                                          " and p.spart in ('03','04','09') and p.parvw in ('VE', 'ZC')  and p.pernr = '" + codUser + "' ) ";
+
+                    }
 
                     if (codUser != null)
                     {
@@ -285,7 +297,13 @@ namespace LiteSFATestWebService
                         unClient.numeAgent = "0";
                         unClient.termenPlata = getTermenPlataClient(connection, unClient.codClient);
                         unClient.clientBlocat = HelperClienti.isClientBlocat(connection, unClient.codClient);
+
                         unClient.diviziiClient = getDiviziiClient(connection, unClient.codClient, codUser);
+
+                        if (depart.Equals("16"))
+                            unClient.diviziiClient = HelperClienti.getDiviziiClientDep16(unClient.diviziiClient);
+
+                            
 
                         string tipPlataContract = getTipPlataContract(connection, unClient.codClient);
 
@@ -687,7 +705,7 @@ namespace LiteSFATestWebService
                     condClient1 = " and vtweg = '10' ";
 
                     string condDepS = "";
-                    if (!depart.Equals("00"))
+                    if (!depart.Equals("00") && !depart.Equals("16"))
                         condDepS = " and p.spart = '" + depart + "'";
 
                     condClient2 = "  and p.vtweg = '10' " + condDepS + " ";
@@ -697,7 +715,7 @@ namespace LiteSFATestWebService
                 cmd = connection.CreateCommand();
 
                 String condDepartTip = "";
-                if (!depart.Equals("00"))
+                if (!depart.Equals("00") && !depart.Equals("16"))
                 {
                     condDepartTip = " and depart = '" + depart + "'";
                 }
@@ -824,7 +842,7 @@ namespace LiteSFATestWebService
                     //peroana de contact
 
                     string condDepartPersCont = "";
-                    if (!depart.Equals("00"))
+                    if (!depart.Equals("00") && !depart.Equals("16"))
                     {
                         condDepartPersCont = " and spart = '" + depart + "' ";
                     }
@@ -870,7 +888,7 @@ namespace LiteSFATestWebService
                     cmd = connection.CreateCommand();
 
                     string condDepartCursV = "";
-                    if (!depart.Equals("00"))
+                    if (!depart.Equals("00") && !depart.Equals("16"))
                     {
                         condDepartCursV = " and b.spart = '" + depart + "' ";
                     }
@@ -1002,6 +1020,8 @@ namespace LiteSFATestWebService
 
                     detaliiClient.divizii = getDiviziiClient(connection, codClient, codUser);
 
+                    if (depart.Equals("16"))
+                        detaliiClient.divizii = HelperClienti.getDiviziiClientDep16(detaliiClient.divizii);
 
                     //contract activ
 
@@ -1088,7 +1108,7 @@ namespace LiteSFATestWebService
 
                     if (cuiClient.Trim().Length > 0)
                     {
-                        string stareClient = new VerificaTva().isPlatitorTva(cuiClient, codUser);
+                        string stareClient = new VerificaTva().isPlatitorTva(cuiClient, codUser, null);
                         PlatitorTvaResponse starePlatitor = serializer.Deserialize<PlatitorTvaResponse>(stareClient);
                         if (starePlatitor.stareInregistrare != null && starePlatitor.stareInregistrare.ToLower().Contains("radiere"))
                             detaliiClient.errMsg = "Acest client este radiat.";
@@ -1186,6 +1206,9 @@ namespace LiteSFATestWebService
                 oReader.Dispose();
 
                 cmd.Dispose();
+
+                if (!diviziiClient.Contains("11"))
+                    diviziiClient += "11;";
 
             }
             catch (Exception ex)
@@ -1369,7 +1392,8 @@ namespace LiteSFATestWebService
 
                 cmd.CommandText = " select distinct spart from sapprd.knvp p, sapprd.zcomhead_tableta t where p.mandt = '900' and t.mandt = '900' " +
                                   " and t.id =:idComanda and p.kunnr = t.cod_client " +
-                                  " and p.pernr = t.cod_agent and p.vtweg = '10' and p.parvw in ('VE','ZC') ";
+                                  " and p.vtweg = '10' and p.parvw in ('VE','ZC') ";
+
 
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.Clear();
@@ -1379,12 +1403,20 @@ namespace LiteSFATestWebService
                 cmd.Parameters[0].Value = Int32.Parse(idComanda);
 
                 oReader = cmd.ExecuteReader();
+                string divizie = "";
 
                 if (oReader.HasRows)
                 {
                     while (oReader.Read())
                     {
-                        diviziiClient += oReader.GetString(0).ToString() + ";";
+
+                        divizie = oReader.GetString(0).ToString();
+
+                        if (divizie.Equals("04"))
+                            divizie = "040;041";
+
+                        diviziiClient += divizie + ";";
+
                     }
                 }
 
@@ -1392,6 +1424,9 @@ namespace LiteSFATestWebService
                 oReader.Dispose();
 
                 cmd.Dispose();
+
+                if (!diviziiClient.Contains("11"))
+                    diviziiClient += "11;";
 
             }
             catch (Exception ex)
@@ -1506,7 +1541,7 @@ namespace LiteSFATestWebService
 
 
 
-        public string getDatePersonaleClient(string numeClient, string tipClient, string codAgent)
+        public string getDatePersonaleClient(string numeClient, string tipClient, string codAgent, string depart, string tipUserSap)
         {
 
             
@@ -1531,12 +1566,22 @@ namespace LiteSFATestWebService
                 if (tipClient.Equals("PF"))
                     sqlString = " select name1, stceg, regio, city1, street||' '||nr from sapprd.zinformclmag where mandt='900' " +
                                 " and lower(name1) like lower('" + numeClient.Trim() + "%') and tip_cl ='PF' order by name1 ";
-                else
-                    sqlString = " select z.numefirma, z.cui, z.judet, z.localitate, z.adresa||' '||z.nr, " +
-                                " nvl((select k.cod from clienti k where k.tip2 in ('1000', 'OCAV', 'OCAZ') and k.tip_pers='PJ' " + 
-                                " and k.cui = TRANSLATE(z.cui, '0' || TRANSLATE(z.cui, '.0123456789', '.'), '0')),'-1') codclient " +
-                                " from sapprd.zverifcui z where z.mandt='900' and " +
-                                " lower(z.numefirma) like lower('" + numeClient.Trim() + "%') and length(trim(z.judet)) = 2 and rownum <= 30 order by z.numefirma ";
+                else {
+
+                    if (tipUserSap != null && tipUserSap.Equals("CVOB"))
+                        sqlString = "select c.nume, c.cui cui, a.region, a.city1, a.street||' '||a.house_num1, c.cod codClient from websap.clienti c, sapprd.adrc a where " +
+                                    " upper(c.nume) like upper('" + numeClient.Trim() + "%') and a.client = '900' " + 
+                                    " and a.addrnumber = (select k.adrnr from sapprd.kna1 k where k.mandt = '900' and k.kunnr = c.cod) and " + 
+                                    " exists (select 1 from clie_tip t where t.canal = '10' and t.cod_cli = c.cod  ) " + 
+                                    " and exists (select 1 from sapprd.knvp p where p.mandt = '900' and p.kunnr = c.cod and p.vtweg = '10' " + 
+                                    " and p.parvw in ('VE', 'ZC') and p.pernr = '" + codAgent + "') order by c.nume" ; 
+                    else
+                        sqlString = " select z.numefirma, z.cui, z.judet, z.localitate, z.adresa||' '||z.nr, " +
+                                    " nvl((select k.cod from clienti k where k.tip2 in ('1000', '1020', 'OCAV', 'OCAZ') and k.tip_pers='PJ' " +
+                                    " and k.cui = TRANSLATE(z.cui, '0' || TRANSLATE(z.cui, '.0123456789', '.'), '0')),'-1') codclient " +
+                                    " from sapprd.zverifcui z where z.mandt='900' and " +
+                                    " lower(z.numefirma) like lower('" + numeClient.Trim() + "%') and length(trim(z.judet)) = 2 and rownum <= 30 order by z.numefirma ";
+                }
 
 
                 cmd.CommandText = sqlString;
@@ -1583,6 +1628,9 @@ namespace LiteSFATestWebService
 
                             if (codAgent != null && datePersonale.codClient != null && !datePersonale.codClient.Equals("-1"))
                                 datePersonale.divizii = getDiviziiClient(connection, datePersonale.codClient, codAgent);
+
+                            if (depart != null && depart.Equals("16"))
+                                datePersonale.divizii = HelperClienti.getDiviziiClientDep16(datePersonale.divizii);
 
                         }
 
@@ -2412,7 +2460,7 @@ namespace LiteSFATestWebService
 
                 SAPWebServices.ZcreateClientMinReqResponse outParam = webService.ZcreateClientMinReq(inParam);
 
-                if (outParam.EpReturncode.Equals("0"))
+                if (outParam.EpReturncode.ToString().Equals("0"))
                 {
                     raspunsClient.codClient = outParam.EpKunnr;
                     raspunsClient.msg = "";
@@ -2420,6 +2468,8 @@ namespace LiteSFATestWebService
                 {
                     raspunsClient.codClient = "";
                     raspunsClient.msg = outParam.EpMess;
+                    ErrorHandling.sendErrorToMail("creeazaClientPJ: \n\n" + serializer.Serialize(dateClientPJ) + "\n\n" + serializer.Serialize(inParam) + "\n\n" +
+                    serializer.Serialize(outParam));
                 }
 
             }

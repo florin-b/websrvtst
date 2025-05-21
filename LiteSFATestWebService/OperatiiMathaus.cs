@@ -1155,7 +1155,7 @@ namespace LiteSFATestWebService
 
             try {
 
-                string serviceUrl = "https://wse1-sap-hybris-prod.arabesque.ro/solr/master_erp_Product_default/select?q=code_string:" + articol.cod;
+                string serviceUrl = "https://wse1-dmz-prod.arabesque.ro/solr/master_erp_Product_default/select?q=code_string:" + articol.cod;
 
 
                 System.Net.ServicePointManager.Expect100Continue = false;
@@ -1993,12 +1993,14 @@ namespace LiteSFATestWebService
                 departCmd = "11";
             }
 
+            SAPWebServices.ZdetTransportSfa inParam = new ZdetTransportSfa();
+
             try
             {
 
                 SAPWebServices.ZTBL_WEBSERVICE webService = new ZTBL_WEBSERVICE();
 
-                SAPWebServices.ZdetTransportSfa inParam = new ZdetTransportSfa();
+              
                 System.Net.NetworkCredential nc = new System.Net.NetworkCredential(Auth.getUser(), Auth.getPass());
                 webService.Credentials = nc;
                 webService.Timeout = 300000;
@@ -2014,6 +2016,7 @@ namespace LiteSFATestWebService
                 inParam.IpCanal = canal;
                 inParam.IpVbeln = antetCmd.nrCmdSap;
                 inParam.IpAdresa = antetCmd.strada;
+                inParam.IpLifnr = antetCmd.codFurnizor;
 
 
                 ZstTaxeAcces2 taxeAcces = new ZstTaxeAcces2();
@@ -2129,7 +2132,7 @@ namespace LiteSFATestWebService
                             taxaTransport.valTransp = itemCost.ValTr.ToString();
                             taxaTransport.codArtTransp = itemCost.Matnr;
                             taxaTransport.depart = itemCost.Spart;
-                            taxaTransport.numeCost = itemCost.Maktx.ToUpper();
+                            taxaTransport.numeCost = HelperComenzi.eliminaCodDepart(itemCost.Maktx.ToUpper());
 
                             listTaxeTransp.Add(taxaTransport);
                             break;
@@ -2142,35 +2145,40 @@ namespace LiteSFATestWebService
                 foreach (SAPWebServices.ZstransportCom itemTaxeMasini in resp.ItTransCom)
                 {
 
-                  
-                        TaxaMasina taxaMasina = new TaxaMasina();
-                        taxaMasina.werks = itemTaxeMasini.Werks;
-                        taxaMasina.vstel = itemTaxeMasini.Vstel;
 
-                        taxaMasina.camionIveco = itemTaxeMasini.CamionIveco;
-                        taxaMasina.camionScurt = itemTaxeMasini.CamionScurt;
-                        taxaMasina.camionOricare = itemTaxeMasini.CamionOricare;
-                        taxaMasina.macara = itemTaxeMasini.Macara;
-                        taxaMasina.lift = itemTaxeMasini.Lift;
+                    TaxaMasina taxaMasina = new TaxaMasina();
+                    taxaMasina.werks = itemTaxeMasini.Werks;
+                    taxaMasina.vstel = itemTaxeMasini.Vstel;
 
-                        taxaMasina.taxaMacara = itemTaxeMasini.TaxaMacara.ToString();
-                        taxaMasina.matnrMacara = itemTaxeMasini.MatnrMacara;
-                        taxaMasina.maktxMacara = "PREST.SERV.DESCARCARE PALET";
+                    taxaMasina.camionIveco = itemTaxeMasini.CamionIveco;
+                    taxaMasina.camionScurt = itemTaxeMasini.CamionScurt;
+                    taxaMasina.camionOricare = itemTaxeMasini.CamionOricare;
+                    taxaMasina.macara = itemTaxeMasini.Macara;
+                    taxaMasina.lift = itemTaxeMasini.Lift;
 
-                        taxaMasina.matnrZona = itemTaxeMasini.MatnrZona;
-                        taxaMasina.maktxZona = itemTaxeMasini.MaktxZona;
-                        taxaMasina.taxaZona = itemTaxeMasini.TaxaZona.ToString();
-                        taxaMasina.taxaAcces = itemTaxeMasini.TaxaAcces.ToString();
-                        taxaMasina.matnrAcces = itemTaxeMasini.MatnrAcces;
-                        taxaMasina.maktxAcces = "Taxa extra metro";
-                        taxaMasina.matnrTransport = itemTaxeMasini.MatnrTransport;
-                        taxaMasina.maktxTransport = itemTaxeMasini.MaktxTransport;
-                        taxaMasina.taxaTransport = itemTaxeMasini.TaxaTransport.ToString();
-                        taxaMasina.spart = itemTaxeMasini.Spart;
-                        taxaMasina.traty = itemTaxeMasini.Traty.Equals("TERA") ? "TERT" : itemTaxeMasini.Traty;
+                    taxaMasina.taxaMacara = itemTaxeMasini.TaxaMacara.ToString();
+                    taxaMasina.matnrMacara = itemTaxeMasini.MatnrMacara;
+                    taxaMasina.maktxMacara = "PREST.SERV.DESCARCARE PALET";
+                    taxaMasina.nrPaleti = ((int)itemTaxeMasini.NrPaleti).ToString();
 
-                        listTaxeMasini.Add(taxaMasina);
-                    }
+                    taxaMasina.matnrUsor = itemTaxeMasini.MatnrVuosor;
+                    taxaMasina.maktxUsor = HelperComenzi.eliminaCodDepart(itemTaxeMasini.MaktxVuosor);
+                    taxaMasina.taxaUsor = itemTaxeMasini.TaxaVuosor.ToString();
+
+                    taxaMasina.matnrZona = itemTaxeMasini.MatnrZona;
+                    taxaMasina.maktxZona = HelperComenzi.eliminaCodDepart(itemTaxeMasini.MaktxZona);
+                    taxaMasina.taxaZona = itemTaxeMasini.TaxaZona.ToString();
+                    taxaMasina.taxaAcces = itemTaxeMasini.TaxaAcces.ToString();
+                    taxaMasina.matnrAcces = itemTaxeMasini.MatnrAcces;
+                    taxaMasina.maktxAcces = HelperComenzi.eliminaCodDepart(itemTaxeMasini.MaktxAcces);
+                    taxaMasina.matnrTransport = itemTaxeMasini.MatnrTransport;
+                    taxaMasina.maktxTransport = HelperComenzi.eliminaCodDepart(itemTaxeMasini.MaktxTransport);
+                    taxaMasina.taxaTransport = itemTaxeMasini.TaxaTransport.ToString();
+                    taxaMasina.spart = itemTaxeMasini.Spart;
+                    taxaMasina.traty = itemTaxeMasini.Traty.Equals("TERA") ? "TERT" : itemTaxeMasini.Traty;
+
+                    listTaxeMasini.Add(taxaMasina);
+                }
                 
 
 
@@ -2200,11 +2208,13 @@ namespace LiteSFATestWebService
 
                 connection.Close();
 
+                ErrorHandling.sendErrorToMail("getTransportService params: \n\n" + new JavaScriptSerializer().Serialize(inParam) + "\n\n" + new JavaScriptSerializer().Serialize(resp));
+
 
             }
             catch (Exception ex)
             {
-                ErrorHandling.sendErrorToMail("getTransportService: " + ex.ToString());
+                ErrorHandling.sendErrorToMail("getTransportService: \n\n " + ex.ToString() + "\n\n" + new JavaScriptSerializer().Serialize(inParam));
             }
 
             if (antetCmd.tipTransp.Equals("TCLI") || antetCmd.tipTransp.Equals("TFRN"))
@@ -2213,10 +2223,274 @@ namespace LiteSFATestWebService
                 dateTransport.listCostTransport = listTaxeTransp;
 
             dateTransport.listDepozite = listArticoleDepoz;
-            dateTransport.taxeMasini = listTaxeMasini;
-            dateTransport.listPaleti = listPaleti;
+            dateTransport.listPaleti = OperatiiMacara.getPaletiDistincti(listPaleti);
+            dateTransport.taxeMasini = setTaxeTransport(listTaxeMasini);
 
             return dateTransport;
+
+        }
+
+
+        private List<TaxaMasina> setTaxeTransport(List<TaxaMasina> listTaxeMasini)
+        {
+
+            List<TaxaMasina> tempListTaxe = new List<TaxaMasina>();
+            
+
+            foreach(TaxaMasina oTaxa in listTaxeMasini)
+            {
+
+                if (tempListTaxe.Count == 0)
+                {
+                    adaugaTaxa(tempListTaxe, oTaxa);
+                }
+                else
+                {
+
+                    if (transpFaraMacara(oTaxa))
+                    {
+                        if (oTaxa.camionIveco.Equals("X"))
+                        {
+                            List<TaxaMasina> taxaExist = tempListTaxe.Where(x => x.werks == oTaxa.werks && x.camionIveco.Equals("X") && !x.macara.Equals("X") && !x.lift.Equals("X")).ToList();
+                            trateazaTaxe(taxaExist, oTaxa, tempListTaxe);
+                        }
+
+                        if (oTaxa.camionScurt.Equals("X"))
+                        {
+                            List<TaxaMasina> taxaExist = tempListTaxe.Where(x => x.werks == oTaxa.werks && x.camionScurt.Equals("X") && !x.macara.Equals("X") && !x.lift.Equals("X")).ToList();
+                            trateazaTaxe(taxaExist, oTaxa, tempListTaxe);
+
+                        }
+
+                        if (oTaxa.camionOricare.Equals("X"))
+                        {
+                            List<TaxaMasina> taxaExist = tempListTaxe.Where(x => x.werks == oTaxa.werks && x.camionOricare.Equals("X") && !x.macara.Equals("X") && !x.lift.Equals("X")).ToList();
+                            trateazaTaxe(taxaExist, oTaxa, tempListTaxe);
+
+                        }
+                    }
+                    else
+                    {
+                        if (oTaxa.camionIveco.Equals("X"))
+                        {
+                            List<TaxaMasina> taxaExist = tempListTaxe.Where(x => x.werks == oTaxa.werks && x.camionIveco.Equals("X") && (x.macara.Equals("X") || x.lift.Equals("X"))).ToList();
+                            trateazaTaxe(taxaExist, oTaxa, tempListTaxe);
+
+                        }
+
+                        if (oTaxa.camionScurt.Equals("X"))
+                        {
+                            List<TaxaMasina> taxaExist = tempListTaxe.Where(x => x.werks == oTaxa.werks && x.camionScurt.Equals("X") && (x.macara.Equals("X") || x.lift.Equals("X"))).ToList();
+                            trateazaTaxe(taxaExist, oTaxa, tempListTaxe);
+
+                        }
+
+                        if (oTaxa.camionOricare.Equals("X"))
+                        {
+                            List<TaxaMasina> taxaExist = tempListTaxe.Where(x => x.werks == oTaxa.werks && x.camionOricare.Equals("X") && (x.macara.Equals("X") || x.lift.Equals("X"))).ToList();
+                            trateazaTaxe(taxaExist, oTaxa, tempListTaxe);
+                        }
+                    }
+
+                }
+                
+
+            }
+
+            setTaxeDivizii(listTaxeMasini, tempListTaxe);
+
+            return tempListTaxe;
+
+
+        }
+
+        private void setTaxeDivizii(List<TaxaMasina> listTaxeServiciu, List<TaxaMasina> listTaxeDeterm)
+        {
+
+            List<TaxaMasina> listTaxeMasina;
+
+            foreach(TaxaMasina taxaDeterm in listTaxeDeterm)
+            {
+                listTaxeMasina = new List<TaxaMasina>();
+
+                foreach (TaxaMasina taxaServ in listTaxeServiciu)
+                {
+
+                    if (taxaDeterm.werks.Equals(taxaServ.werks))
+                    {
+
+                        if (transpFaraMacara(taxaDeterm) && transpFaraMacara(taxaServ))
+                        {
+
+                            if (taxaDeterm.camionIveco.Equals("X") && taxaDeterm.camionIveco.Equals(taxaServ.camionIveco))
+                            {
+                                listTaxeMasina.Add(determTaxeDepart(taxaServ));
+                            }
+                            else if (taxaDeterm.camionScurt.Equals("X") && taxaDeterm.camionScurt.Equals(taxaServ.camionScurt))
+                            {
+                                listTaxeMasina.Add(determTaxeDepart(taxaServ));
+                            }
+                            else if (taxaDeterm.camionOricare.Equals("X") && taxaDeterm.camionOricare.Equals(taxaServ.camionOricare))
+                            {
+                                listTaxeMasina.Add(determTaxeDepart(taxaServ));
+                            }
+                        }
+                        else if (!transpFaraMacara(taxaDeterm) && !transpFaraMacara(taxaServ))
+                        {
+                            if (taxaDeterm.camionIveco.Equals("X") && taxaDeterm.camionIveco.Equals(taxaServ.camionIveco))
+                            {
+                                listTaxeMasina.Add(determTaxeDepart(taxaServ));
+                            }
+                            else if (taxaDeterm.camionScurt.Equals("X") && taxaDeterm.camionScurt.Equals(taxaServ.camionScurt))
+                            {
+                                listTaxeMasina.Add(determTaxeDepart(taxaServ));
+                            }
+                            else if (taxaDeterm.camionOricare.Equals("X") && taxaDeterm.camionOricare.Equals(taxaServ.camionOricare))
+                            {
+                                listTaxeMasina.Add(determTaxeDepart(taxaServ));
+                            }
+                        }
+
+                    }
+
+                }
+
+                taxaDeterm.taxeDivizii = listTaxeMasina;
+
+            }
+
+
+        }
+
+
+        private TaxaMasina determTaxeDepart(TaxaMasina taxaServ)
+        {
+            TaxaMasina taxaMasina = new TaxaMasina();
+
+            taxaMasina.spart = taxaServ.spart;
+            taxaMasina.matnrTransport = taxaServ.matnrTransport;
+            taxaMasina.taxaTransport = taxaServ.taxaTransport;
+            taxaMasina.maktxTransport = taxaServ.maktxTransport;
+            taxaMasina.traty = taxaServ.traty;
+            taxaMasina.taxaAcces = taxaServ.taxaAcces;
+            taxaMasina.taxaZona = taxaServ.taxaZona;
+            taxaMasina.taxaMacara = taxaServ.taxaMacara;
+            taxaMasina.nrPaleti = taxaServ.nrPaleti;
+
+
+            if (Double.Parse(taxaServ.taxaAcces) > 0)
+            {
+                taxaMasina.matnrAcces = taxaServ.matnrAcces;
+                taxaMasina.maktxAcces = taxaServ.maktxAcces;
+                taxaMasina.taxaAcces = taxaServ.taxaAcces;
+            }
+
+            if (Double.Parse(taxaServ.taxaZona) > 0)
+            {
+                taxaMasina.matnrZona = taxaServ.matnrZona;
+                taxaMasina.maktxZona = taxaServ.maktxZona;
+                taxaMasina.taxaZona = taxaServ.taxaZona;
+            }
+
+            if (Double.Parse(taxaServ.taxaMacara) > 0)
+            {
+                taxaMasina.matnrMacara = taxaServ.matnrMacara;
+                taxaMasina.maktxMacara = taxaServ.maktxMacara;
+            }
+
+            if (Double.Parse(taxaServ.taxaUsor) > 0)
+            {
+                taxaMasina.matnrUsor = taxaServ.matnrUsor;
+                taxaMasina.maktxUsor = taxaServ.maktxUsor;
+                taxaMasina.taxaUsor = taxaServ.taxaUsor;
+            }
+
+            return taxaMasina;
+        }
+
+        private bool transpFaraMacara(TaxaMasina taxaMasina)
+        {
+            return !taxaMasina.macara.Equals("X") && !taxaMasina.lift.Equals("X");
+        }
+
+        private void actualizeazaTaxe(TaxaMasina taxaExist, TaxaMasina taxaNoua)
+        {
+            taxaExist.nrPaleti = (Double.Parse(taxaExist.nrPaleti) + Double.Parse(taxaNoua.nrPaleti)).ToString();
+
+            if (Double.Parse(taxaExist.taxaMacara) == 0)
+                taxaExist.taxaMacara = (Double.Parse(taxaNoua.taxaMacara)).ToString();
+
+            taxaExist.taxaZona = (Double.Parse(taxaExist.taxaZona) + Double.Parse(taxaNoua.taxaZona)).ToString();
+            taxaExist.taxaAcces = (Double.Parse(taxaExist.taxaAcces) + Double.Parse(taxaNoua.taxaAcces)).ToString();
+            taxaExist.taxaTransport = (Double.Parse(taxaExist.taxaTransport) + Double.Parse(taxaNoua.taxaTransport)).ToString();
+            taxaExist.taxaUsor = (Double.Parse(taxaExist.taxaUsor) + Double.Parse(taxaNoua.taxaUsor)).ToString();
+            setNumeTaxe(taxaExist, taxaNoua);
+        }
+
+        private void trateazaTaxe(List<TaxaMasina> listTaxe, TaxaMasina taxaNoua, List<TaxaMasina> taxeNoi)
+        {
+            if (listTaxe.Count > 0)
+            {
+                actualizeazaTaxe(listTaxe[0], taxaNoua);
+            }
+            else
+            {
+                adaugaTaxa(taxeNoi, taxaNoua);
+            }
+        }
+
+        private void adaugaTaxa(List<TaxaMasina> listTaxe, TaxaMasina oTaxa)
+        {
+            TaxaMasina taxaMasina = new TaxaMasina();
+            taxaMasina.werks = oTaxa.werks;
+            taxaMasina.vstel = oTaxa.vstel;
+
+            taxaMasina.camionIveco = oTaxa.camionIveco;
+            taxaMasina.camionScurt = oTaxa.camionScurt;
+            taxaMasina.camionOricare = oTaxa.camionOricare;
+            taxaMasina.macara = oTaxa.macara;
+            taxaMasina.lift = oTaxa.lift;
+
+            taxaMasina.taxaMacara = oTaxa.taxaMacara;
+            taxaMasina.matnrMacara = oTaxa.matnrMacara;
+
+            taxaMasina.maktxMacara = oTaxa.maktxMacara;
+            taxaMasina.nrPaleti = oTaxa.nrPaleti;
+
+            taxaMasina.matnrUsor = oTaxa.matnrUsor;
+            taxaMasina.maktxUsor = oTaxa.maktxUsor;
+            taxaMasina.taxaUsor = oTaxa.taxaUsor;
+
+            taxaMasina.matnrZona = oTaxa.matnrZona;
+            taxaMasina.maktxZona = oTaxa.maktxZona;
+            taxaMasina.taxaZona = oTaxa.taxaZona;
+            taxaMasina.taxaAcces = oTaxa.taxaAcces;
+            taxaMasina.matnrAcces = oTaxa.matnrAcces;
+            taxaMasina.maktxAcces = oTaxa.maktxAcces;
+            taxaMasina.matnrTransport = oTaxa.matnrTransport;
+            taxaMasina.maktxTransport = oTaxa.maktxTransport;
+            taxaMasina.taxaTransport = oTaxa.taxaTransport;
+            taxaMasina.spart = oTaxa.spart;
+            taxaMasina.traty = oTaxa.traty;
+            listTaxe.Add(taxaMasina);
+        }
+
+
+        private void setNumeTaxe(TaxaMasina taxaExist, TaxaMasina taxaNoua) 
+        {
+
+
+            if (taxaNoua.matnrZona.Trim().Length > 0)
+            {
+                taxaExist.matnrZona = taxaNoua.matnrZona;
+                taxaExist.maktxZona = taxaNoua.maktxZona;
+            }
+
+            if (taxaNoua.matnrAcces.Trim().Length > 0)
+            {
+                taxaExist.matnrAcces = taxaNoua.matnrAcces;
+                taxaExist.maktxAcces = taxaNoua.maktxAcces;
+            }
 
         }
 
