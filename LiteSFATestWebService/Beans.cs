@@ -520,6 +520,7 @@ namespace LiteSFATestWebService
     {
         public string nume;
         public string cod;
+        public string depart;
     }
 
 

@@ -51,6 +51,8 @@ namespace LiteSFATestWebService
         public string numeArticol;
         public string cantArticol;
         public string umArticol;
+        public string filiala;
+        public List<CantitateFiliala> paletiFiliala;
     }
 
     public class CalculDescarcare
@@ -58,6 +60,14 @@ namespace LiteSFATestWebService
         public string filiala;
         public List<ArticolCalculDesc> listArticole;
 
+    }
+
+    public class CantitateFiliala
+    {
+        public string filiala;
+        public string cantitate;
+        public string pretUnitPalet;
+        public string cantTotal;
     }
 
    

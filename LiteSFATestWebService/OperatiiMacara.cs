@@ -176,6 +176,7 @@ namespace LiteSFATestWebService
             {
                 ArticolPalet palet = getDatePalet(listPaleti, codPalet);
                 palet.cantitate = getCantitatePalet(listPaleti, codPalet).ToString();
+                palet.paletiFiliala = getCantitatiFiliala(listPaleti, palet);
                 paletiDistincti.Add(palet);
             }
 
@@ -215,6 +216,27 @@ namespace LiteSFATestWebService
             }
 
             return cantPalet;
+        }
+
+        private static List<CantitateFiliala> getCantitatiFiliala(List<ArticolPalet> listPaleti, ArticolPalet palet)
+        {
+            List<CantitateFiliala> listPaletiFiliala = new List<CantitateFiliala>();
+
+            foreach (ArticolPalet pal in listPaleti)
+            {
+                if (pal.codPalet.Equals(palet.codPalet))
+                {
+                    CantitateFiliala paletFiliala = new CantitateFiliala();
+                    paletFiliala.filiala = pal.filiala;
+                    paletFiliala.cantitate = pal.cantitate;
+                    paletFiliala.cantTotal = palet.cantitate;
+                    paletFiliala.pretUnitPalet = pal.pretUnit;
+                    listPaletiFiliala.Add(paletFiliala);
+                }
+            }
+
+            return listPaletiFiliala;
+
         }
 
 

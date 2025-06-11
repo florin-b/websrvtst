@@ -76,11 +76,14 @@ namespace LiteSFATestWebService
         public string coordonateAdresa;
         public string tipClient;
         public string codAgent;
+        public string tipAngajat;
+        public string codDepart;
     }
 
     public class RaspunsClientSap
     {
         public string codClient;
+        public string diviziiClient;
         public string msg;
     }
    

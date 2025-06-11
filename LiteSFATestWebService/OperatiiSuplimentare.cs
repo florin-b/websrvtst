@@ -16,7 +16,7 @@ namespace LiteSFATestWebService
     {
 
 
-      
+
 
         public static void saveTonajAdresa(OracleConnection connection, string codClient, string codAdresa, string tonaj)
         {
@@ -37,7 +37,7 @@ namespace LiteSFATestWebService
             try
             {
 
-                 cmd = connection.CreateCommand();
+                cmd = connection.CreateCommand();
 
                 if (!recordTonajExists(connection, codClient, codAdresa))
                 {
@@ -297,7 +297,7 @@ namespace LiteSFATestWebService
                 cmd.ExecuteNonQuery();
 
 
-                
+
 
 
             }
@@ -314,7 +314,7 @@ namespace LiteSFATestWebService
         public static void saveClpComanda(OracleConnection connection, string idComanda, string nrDocumentClp)
         {
 
-            
+
 
             OracleDataReader oReader = null;
             OracleCommand cmd = null;
@@ -347,7 +347,7 @@ namespace LiteSFATestWebService
 
 
                     cmd.CommandText = " update sapprd.zclp_inchise set vbeln =:comandaSap, erdat=:data, erzet=:ora where mandt='900' and ebeln =:documentClp and vbeln =:comReferinta ";
-                                  
+
                     cmd.Parameters.Clear();
                     cmd.Parameters.Add(":comandaSap", OracleType.NVarChar, 30).Direction = ParameterDirection.Input;
                     cmd.Parameters[0].Value = nrCmdSap;
@@ -372,7 +372,7 @@ namespace LiteSFATestWebService
                                 " ('900', :documentClp , :comandaSap, :data, :ora, :codAgent)";
 
 
-                        
+
 
                         cmd.CommandText = query;
                         cmd.CommandType = CommandType.Text;
@@ -416,7 +416,7 @@ namespace LiteSFATestWebService
         }
 
 
-        public static void saveTonajAdresa(OracleConnection connection, string idComanda,  string tonaj)
+        public static void saveTonajAdresa(OracleConnection connection, string idComanda, string tonaj)
         {
 
 
@@ -559,7 +559,7 @@ namespace LiteSFATestWebService
             try
             {
 
-                if (dateLivrare.numeDelegat!= null && dateLivrare.numeDelegat.Trim().Length == 0 || dateLivrare.ciDelegat.Trim().Length == 0)
+                if (dateLivrare.numeDelegat != null && dateLivrare.numeDelegat.Trim().Length == 0 || dateLivrare.ciDelegat.Trim().Length == 0)
                     return;
 
                 cmd = connection.CreateCommand();
@@ -632,11 +632,11 @@ namespace LiteSFATestWebService
                 cmd.Dispose();
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ErrorHandling.sendErrorToMail(ex.ToString());
             }
-            
+
         }
 
 
@@ -769,7 +769,7 @@ namespace LiteSFATestWebService
                 cmd.Dispose();
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ErrorHandling.sendErrorToMail(ex.ToString());
             }
@@ -866,7 +866,7 @@ namespace LiteSFATestWebService
                 cmd.ExecuteNonQuery();
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ErrorHandling.sendErrorToMail(ex.ToString());
             }
@@ -875,6 +875,61 @@ namespace LiteSFATestWebService
                 DatabaseConnections.CloseConnections(cmd, connection);
             }
 
+        }
+
+        public static bool isConditiiDep16(string depart)
+        {
+
+            if (depart == null)
+                return false;
+
+            return depart.Equals("03") || depart.Contains("04") || depart.Equals("09");
+
+        }
+
+        public static List<Agent> getAgentiDep16(OracleConnection connection, string filiala)
+        {
+            List<Agent> listAgenti = new List<Agent>();
+
+            OracleDataReader oReader = null;
+            OracleCommand cmd = connection.CreateCommand();
+
+            try
+            {
+
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = " select nume, cod from agenti where activ = 1 and divizie = '16' and filiala = :filiala order by nume ";
+
+                cmd.Parameters.Add(":filiala", OracleType.VarChar, 12).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = filiala;
+
+                oReader = cmd.ExecuteReader();
+                Agent unAgent;
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        unAgent = new Agent();
+                        unAgent.nume = oReader.GetString(0);
+                        unAgent.cod = oReader.GetString(1);
+                        unAgent.depart = "16";
+                        listAgenti.Add(unAgent);
+                    }
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+
+            return listAgenti;
         }
 
         public static string getPlafonNumerar(OracleConnection connection)

@@ -962,6 +962,11 @@
     </xsd:schema>
     <xsd:schema xmlns:n0="urn:sap-com:document:sap:rfc:functions" attributeFormDefault="qualified" targetNamespace="urn:sap-com:document:sap:soap:functions:mc-style">
       <xsd:import namespace="urn:sap-com:document:sap:rfc:functions" />
+      <xsd:simpleType name="char200">
+        <xsd:restriction base="xsd:string">
+          <xsd:maxLength value="200" />
+        </xsd:restriction>
+      </xsd:simpleType>
       <xsd:complexType name="ZsfilTransp">
         <xsd:sequence>
           <xsd:element name="Werks" type="n0:char4" />
@@ -1049,6 +1054,7 @@
           <xsd:element name="MeinsPalet" type="n0:unit3" />
           <xsd:element name="FurnizorPalet" type="n0:char10" />
           <xsd:element name="PretPalet" type="n0:curr15.2" />
+          <xsd:element name="WerksPalet" type="n0:char4" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="ZileIncarc">
@@ -4477,6 +4483,7 @@
           <xsd:sequence>
             <xsd:element name="CodAv" type="n0:numeric8" />
             <xsd:element name="IpClient" type="tns:ZclientMin" />
+            <xsd:element minOccurs="0" name="IpSimRfc" type="n0:char1" />
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -4484,7 +4491,7 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="EpKunnr" type="n0:char10" />
-            <xsd:element name="EpMess" type="n0:char100" />
+            <xsd:element name="EpMess" type="tns:char200" />
             <xsd:element name="EpReturncode" type="xsd:unsignedByte" />
           </xsd:sequence>
         </xsd:complexType>

@@ -29615,6 +29615,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         private decimal pretPaletField;
         
+        private string werksPaletField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public string SpartMarfa {
@@ -29722,6 +29724,17 @@ namespace LiteSFATestWebService.SAPWebServices {
             }
             set {
                 this.pretPaletField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string WerksPalet {
+            get {
+                return this.werksPaletField;
+            }
+            set {
+                this.werksPaletField = value;
             }
         }
     }
@@ -36557,6 +36570,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         private ZclientMin ipClientField;
         
+        private string ipSimRfcField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public string CodAv {
@@ -36576,6 +36591,17 @@ namespace LiteSFATestWebService.SAPWebServices {
             }
             set {
                 this.ipClientField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string IpSimRfc {
+            get {
+                return this.ipSimRfcField;
+            }
+            set {
+                this.ipSimRfcField = value;
             }
         }
     }

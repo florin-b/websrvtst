@@ -24,8 +24,8 @@ namespace LiteSFATestWebService
         public string errMessage;
         public string TVA_data;
         public string StareInregistrare;
-        
-        
+        public string scod_Judet;
+
 
         public override string ToString()
         {
