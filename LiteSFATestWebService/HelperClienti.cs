@@ -381,6 +381,10 @@ namespace LiteSFATestWebService
             
         }
 
+        public static bool isConditiiCodNominal(string codClient)
+        {
+            return codClient != null && codClient.Length != 10 && !codClient.StartsWith("411");
+        }
 
         private static string formatDataSap(string dataRaw)
         {

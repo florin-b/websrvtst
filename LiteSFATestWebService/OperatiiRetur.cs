@@ -629,7 +629,7 @@ namespace LiteSFATestWebService
 
 
 
-        public string getDocumenteRetur(string codClient, string codDepartament, string unitLog, string tipDocument, string interval, string tipUserSap)
+        public string getDocumenteRetur(string codClient, string codDepartament, string unitLog, string tipDocument, string interval, string tipUserSap, string codAgent)
         {
 
 

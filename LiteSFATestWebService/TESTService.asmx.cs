@@ -1793,10 +1793,10 @@ namespace LiteSFATestWebService
 
 
         [WebMethod]
-        public string getDocumenteRetur(string codClient, string codDepartament, string unitLog, string tipDocument, string interval, string tipUserSap)
+        public string getDocumenteRetur(string codClient, string codDepartament, string unitLog, string tipDocument, string interval, string tipUserSap, string codAgent)
         {
             OperatiiRetur opRetur = new OperatiiRetur();
-            return opRetur.getDocumenteRetur(codClient, codDepartament, unitLog, tipDocument, interval, tipUserSap);
+            return opRetur.getDocumenteRetur(codClient, codDepartament, unitLog, tipDocument, interval, tipUserSap, codAgent);
         }
 
 
@@ -13250,7 +13250,7 @@ namespace LiteSFATestWebService
                 string depart = "00";
                 string tempDepart = "00";  //pentru comenzile ged facute de agenti
                 //consilieri
-                if (tipUser.Equals("CV") || tipUser.Equals("SITE"))
+                if (tipUser.Equals("CV") || tipUser.Equals("SITE") || tipUserSap.Equals("CVA"))
                 {
                     depart = "11";
 
@@ -13559,6 +13559,10 @@ namespace LiteSFATestWebService
                 cmd.Parameters[25].Value = adrLivrNoua;
 
                 cmd.Parameters.Add(":depart", OracleType.VarChar, 6).Direction = ParameterDirection.Input;
+
+                if (tipUser.Equals("CV") || tipUser.Equals("SITE") || tipUserSap.Equals("CVA"))
+                    depart = "11";
+
                 cmd.Parameters[26].Value = depart;
 
                 cmd.Parameters.Add(":obsplata", OracleType.VarChar, 300).Direction = ParameterDirection.Input;

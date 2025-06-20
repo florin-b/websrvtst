@@ -1958,12 +1958,57 @@ namespace LiteSFATestWebService
 
         }
 
+        public static string getCodClientCUI(OracleConnection connection, string codCUI)
+        {
+            string codClient = "";
+
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select cod from clienti where cui=:codCui ";
+
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add(":codCui", OracleType.VarChar, 180).Direction = ParameterDirection.Input;
+                cmd.Parameters[0].Value = codCUI;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    oReader.Read();
+                    codClient = oReader.GetString(0);
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+            return codClient;
+        }
+
 
         private List<string> getTermenPlataClient(OracleConnection connection, string codClient)
         {
 
             OracleCommand cmd = new OracleCommand();
             OracleDataReader oReader = null;
+
+            string localCodClient = codClient;
+
+            if (HelperClienti.isConditiiCodNominal(codClient))
+                localCodClient = getCodClientCUI(connection, codClient);
 
             List<string> termenPlata = new List<string>();
             termenPlata.Add("C010");
@@ -1982,7 +2027,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Clear();
 
                 cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
-                cmd.Parameters[0].Value = codClient;
+                cmd.Parameters[0].Value = localCodClient;
 
                 oReader = cmd.ExecuteReader();
 
@@ -2294,6 +2339,11 @@ namespace LiteSFATestWebService
             OracleCommand cmd = new OracleCommand();
             string tipPlata = "";
 
+            string localCodClient = codClient;
+
+            if (HelperClienti.isConditiiCodNominal(codClient))
+                localCodClient = getCodClientCUI(connection, codClient);
+
             try
             {
                 cmd = connection.CreateCommand();
@@ -2307,7 +2357,7 @@ namespace LiteSFATestWebService
                 cmd.Parameters.Clear();
 
                 cmd.Parameters.Add(":codClient", OracleType.VarChar, 30).Direction = ParameterDirection.Input;
-                cmd.Parameters[0].Value = codClient;
+                cmd.Parameters[0].Value = localCodClient;
 
                 oReader = cmd.ExecuteReader();
                 if (oReader.HasRows)
@@ -2332,6 +2382,7 @@ namespace LiteSFATestWebService
             {
                 DatabaseConnections.CloseConnections(oReader, cmd);
             }
+
 
 
             return tipPlata;
