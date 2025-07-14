@@ -272,6 +272,7 @@ namespace LiteSFATestWebService
         public string valTransportSap;
         public string parrentId;
         public string nrDocumentClp;
+        public string site;
 
 
     }
@@ -469,6 +470,7 @@ namespace LiteSFATestWebService
         public string tipClientInstPublica;
         public bool isAprobatDistrib;
         public bool isComandaACZC;
+        public string site;
 
 
     }

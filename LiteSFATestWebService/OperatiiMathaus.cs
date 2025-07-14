@@ -1557,7 +1557,7 @@ namespace LiteSFATestWebService
                         else if (dateArticol.ulStoc != null && dateArticol.ulStoc.Equals("BV90"))
                             articolComanda.deliveryWarehouse = "BV90";
                         else if (canal != null && canal.Equals("20") && (dateArticol.ulStoc == null || !dateArticol.ulStoc.Equals("BV90")))
-                            articolComanda.deliveryWarehouse = dateArticol.productCode.StartsWith("0000000000111") ? getULGed(comanda.sellingPlant) : comanda.sellingPlant.Split(',')[0];
+                            articolComanda.deliveryWarehouse = comanda.sellingPlant.Split(',')[0];
                         else
                             articolComanda.deliveryWarehouse = dateArticol.productCode.StartsWith("0000000000111") ? getULGed(comanda.sellingPlant) : comanda.sellingPlant.Split(',')[0];
 
@@ -1778,7 +1778,7 @@ namespace LiteSFATestWebService
 
                 urlDeliveryService = "https://wt1.arabesque.ro/arbsqintegration/optimiseDeliveryB2B";
 
-                if (canal.Equals("10"))
+                if (canal.Equals("10") || canal.Equals("60"))
                     urlDeliveryService = "https://wt1.arabesque.ro/arbsqintegration/cumulativeOptimiseDeliveryB2B"; 
                 else
                 {
@@ -1939,6 +1939,7 @@ namespace LiteSFATestWebService
                     urlStockService = "https://wt1.arabesque.ro/arbsqintegration/getCumulativeStocksB2C";
             }
 
+
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlStockService);
 
             request.Method = "POST";
@@ -1958,7 +1959,6 @@ namespace LiteSFATestWebService
             System.IO.StreamReader sr = new System.IO.StreamReader(response.GetResponseStream());
 
             string stockResponse = sr.ReadToEnd().Trim();
-
 
             return stockResponse;
 
@@ -2219,13 +2219,17 @@ namespace LiteSFATestWebService
             }
 
             if (antetCmd.tipTransp.Equals("TCLI") || antetCmd.tipTransp.Equals("TFRN"))
+            {
                 dateTransport.listCostTransport = new List<CostTransportMathaus>();
-            else
+            }
+            else {
                 dateTransport.listCostTransport = listTaxeTransp;
+            }
 
             dateTransport.listDepozite = listArticoleDepoz;
             dateTransport.listPaleti = OperatiiMacara.getPaletiDistincti(listPaleti);
             dateTransport.taxeMasini = setTaxeTransport(listTaxeMasini);
+
 
             return dateTransport;
 

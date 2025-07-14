@@ -72,8 +72,11 @@ namespace LiteSFATestWebService
 
                     string condDepart = " and b.divizie like '" + depart + "%' ";
 
+                    if (depart.Equals("03") || depart.Equals("09") || depart.Contains("04"))
+                        condDepart = " and (b.divizie like '" + depart + "%' or b.divizie = '16' )";
+
                     if (Utils.isFilialaMica04(filiala, depart))
-                        condDepart = " and substr(b.divizie,0,2) = '" + depart.Substring(0, 2) + "' ";
+                        condDepart = " and (substr(b.divizie,0,2) = '" + depart.Substring(0, 2) + "' or b.divizie = '16' )";
 
                     query = " select a.id, a.nrdocument, a.numeclient, to_char(to_date(a.datacreare,'yyyymmdd')),  a.statusaprob , b.nume from sapprd.zreturhead a, agenti b where " +
                             " a.codagent = b.cod and b.filiala =:filiala " + condDepart + condData + stareComanda + " order by a.id ";
