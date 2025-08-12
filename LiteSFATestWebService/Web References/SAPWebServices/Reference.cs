@@ -29322,6 +29322,10 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         private decimal taxaVuosorField;
         
+        private decimal valTotalField;
+        
+        private decimal valTotalTvaField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public string Werks {
@@ -29585,6 +29589,28 @@ namespace LiteSFATestWebService.SAPWebServices {
                 this.taxaVuosorField = value;
             }
         }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal ValTotal {
+            get {
+                return this.valTotalField;
+            }
+            set {
+                this.valTotalField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal ValTotalTva {
+            get {
+                return this.valTotalTvaField;
+            }
+            set {
+                this.valTotalTvaField = value;
+            }
+        }
     }
     
     /// <remarks/>
@@ -29616,6 +29642,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         private decimal pretPaletField;
         
         private string werksPaletField;
+        
+        private string lgortPaletField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
@@ -29735,6 +29763,17 @@ namespace LiteSFATestWebService.SAPWebServices {
             }
             set {
                 this.werksPaletField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string LgortPalet {
+            get {
+                return this.lgortPaletField;
+            }
+            set {
+                this.lgortPaletField = value;
             }
         }
     }
@@ -30646,6 +30685,10 @@ namespace LiteSFATestWebService.SAPWebServices {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="urn:sap-com:document:sap:soap:functions:mc-style")]
     public partial class ZdetTransportSfaResponse {
         
+        private decimal epValCmdField;
+        
+        private decimal epValCmdTvaField;
+        
         private ZsfilTransp[] itFilCostField;
         
         private ZsitemsComanda[] itItemsField;
@@ -30653,6 +30696,28 @@ namespace LiteSFATestWebService.SAPWebServices {
         private ZstEtMarfaPalet[] itMarfaPaletField;
         
         private ZstransportCom[] itTransComField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal EpValCmd {
+            get {
+                return this.epValCmdField;
+            }
+            set {
+                this.epValCmdField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public decimal EpValCmdTva {
+            get {
+                return this.epValCmdTvaField;
+            }
+            set {
+                this.epValCmdTvaField = value;
+            }
+        }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
@@ -36570,6 +36635,8 @@ namespace LiteSFATestWebService.SAPWebServices {
         
         private ZclientMin ipClientField;
         
+        private string ipPrctrField;
+        
         private string ipSimRfcField;
         
         /// <remarks/>
@@ -36591,6 +36658,17 @@ namespace LiteSFATestWebService.SAPWebServices {
             }
             set {
                 this.ipClientField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        public string IpPrctr {
+            get {
+                return this.ipPrctrField;
+            }
+            set {
+                this.ipPrctrField = value;
             }
         }
         

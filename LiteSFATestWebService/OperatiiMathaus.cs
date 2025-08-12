@@ -1618,6 +1618,7 @@ namespace LiteSFATestWebService
                 livrareMathaus.zileLivrare = dateTransport.zileLivrare;
                 livrareMathaus.taxeMasini = dateTransport.taxeMasini;
                 livrareMathaus.listPaleti = dateTransport.listPaleti;
+                livrareMathaus.totalCuTva = dateTransport.totalCuTva;
 
             }
             catch (Exception ex)
@@ -2073,6 +2074,8 @@ namespace LiteSFATestWebService
 
                 SAPWebServices.ZdetTransportSfaResponse resp = webService.ZdetTransportSfa(inParam);
 
+                dateTransport.totalCuTva = resp.EpValCmdTva.ToString();
+
                 int nrItems = resp.ItItems.Count();
 
                 bool artFound = false;
@@ -2176,6 +2179,7 @@ namespace LiteSFATestWebService
                     taxaMasina.taxaTransport = itemTaxeMasini.TaxaTransport.ToString();
                     taxaMasina.spart = itemTaxeMasini.Spart;
                     taxaMasina.traty = itemTaxeMasini.Traty.Equals("TERA") ? "TERT" : itemTaxeMasini.Traty;
+                    taxaMasina.totalCuTva = itemTaxeMasini.ValTotalTva.ToString();
 
                     listTaxeMasini.Add(taxaMasina);
                 }
@@ -2202,6 +2206,7 @@ namespace LiteSFATestWebService
                     artPalet.cantArticol = itemPalet.CantMarfa.ToString();
                     artPalet.umArticol = itemPalet.MeinsMarfa;
                     artPalet.filiala = itemPalet.WerksPalet;
+                    artPalet.depozit = itemPalet.LgortPalet;
                     listPaleti.Add(artPalet);
 
 
@@ -2226,6 +2231,7 @@ namespace LiteSFATestWebService
                 dateTransport.listCostTransport = listTaxeTransp;
             }
 
+            
             dateTransport.listDepozite = listArticoleDepoz;
             dateTransport.listPaleti = OperatiiMacara.getPaletiDistincti(listPaleti);
             dateTransport.taxeMasini = setTaxeTransport(listTaxeMasini);
@@ -2391,6 +2397,7 @@ namespace LiteSFATestWebService
             taxaMasina.taxaMacara = taxaServ.taxaMacara;
             taxaMasina.nrPaleti = taxaServ.nrPaleti;
             taxaMasina.taxaUsor = taxaServ.taxaUsor;
+            taxaMasina.totalCuTva = taxaServ.totalCuTva;
 
 
             if (Double.Parse(taxaServ.taxaAcces) > 0)
@@ -2439,6 +2446,7 @@ namespace LiteSFATestWebService
             taxaExist.taxaAcces = (Double.Parse(taxaExist.taxaAcces) + Double.Parse(taxaNoua.taxaAcces)).ToString();
             taxaExist.taxaTransport = (Double.Parse(taxaExist.taxaTransport) + Double.Parse(taxaNoua.taxaTransport)).ToString();
             taxaExist.taxaUsor = (Double.Parse(taxaExist.taxaUsor) + Double.Parse(taxaNoua.taxaUsor)).ToString();
+            taxaExist.totalCuTva = (Double.Parse(taxaNoua.totalCuTva)).ToString();
             setNumeTaxe(taxaExist, taxaNoua);
         }
 
@@ -2487,6 +2495,8 @@ namespace LiteSFATestWebService
             taxaMasina.taxaTransport = oTaxa.taxaTransport;
             taxaMasina.spart = oTaxa.spart;
             taxaMasina.traty = oTaxa.traty;
+            taxaMasina.totalCuTva = oTaxa.totalCuTva;
+
             listTaxe.Add(taxaMasina);
         }
 
@@ -2505,6 +2515,12 @@ namespace LiteSFATestWebService
             {
                 taxaExist.matnrAcces = taxaNoua.matnrAcces;
                 taxaExist.maktxAcces = taxaNoua.maktxAcces;
+            }
+
+            if (taxaNoua.matnrUsor.Trim().Length > 0)
+            {
+                taxaExist.matnrUsor = taxaNoua.matnrUsor;
+                taxaExist.maktxUsor = taxaNoua.maktxUsor;
             }
 
         }

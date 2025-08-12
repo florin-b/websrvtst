@@ -52,6 +52,7 @@ namespace LiteSFATestWebService
         public string cantArticol;
         public string umArticol;
         public string filiala;
+        public string depozit;
         public List<CantitateFiliala> paletiFiliala;
     }
 
@@ -68,6 +69,7 @@ namespace LiteSFATestWebService
         public string cantitate;
         public string pretUnitPalet;
         public string cantTotal;
+        public string depozit;
     }
 
    

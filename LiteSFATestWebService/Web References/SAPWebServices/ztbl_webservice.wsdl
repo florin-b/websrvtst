@@ -1031,6 +1031,8 @@
           <xsd:element name="MatnrVuosor" type="n0:char18" />
           <xsd:element name="MaktxVuosor" type="n0:char40" />
           <xsd:element name="TaxaVuosor" type="n0:decimal15.2" />
+          <xsd:element name="ValTotal" type="n0:curr15.2" />
+          <xsd:element name="ValTotalTva" type="n0:curr15.2" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="ZstTaxeAcces2">
@@ -1055,6 +1057,7 @@
           <xsd:element name="FurnizorPalet" type="n0:char10" />
           <xsd:element name="PretPalet" type="n0:curr15.2" />
           <xsd:element name="WerksPalet" type="n0:char4" />
+          <xsd:element name="LgortPalet" type="n0:char4" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="ZileIncarc">
@@ -3295,9 +3298,9 @@
           <xsd:element name="Fiscalcode" type="n0:char20" />
           <xsd:element name="Companyname" type="n0:char80" />
           <xsd:element name="Companyemail" type="n0:char241" />
-          <xsd:element name="Companystreet" type="n0:char60" />
+          <xsd:element name="Companystreet" type="tns:char200" />
           <xsd:element name="Companynumber" type="n0:char10" />
-          <xsd:element name="Companycity" type="n0:char40" />
+          <xsd:element name="Companycity" type="tns:char200" />
           <xsd:element name="Companycounty" type="n0:char20" />
           <xsd:element name="Firstname" type="n0:char30" />
           <xsd:element name="Lastname" type="n0:char30" />
@@ -3741,6 +3744,8 @@
       <xsd:element name="ZdetTransportSfaResponse">
         <xsd:complexType>
           <xsd:sequence>
+            <xsd:element name="EpValCmd" type="n0:curr15.2" />
+            <xsd:element name="EpValCmdTva" type="n0:curr15.2" />
             <xsd:element name="ItFilCost" type="tns:TableOfZsfilTransp" />
             <xsd:element name="ItItems" type="tns:TableOfZsitemsComanda" />
             <xsd:element name="ItMarfaPalet" type="tns:TableOfZstEtMarfaPalet" />
@@ -4483,6 +4488,7 @@
           <xsd:sequence>
             <xsd:element name="CodAv" type="n0:numeric8" />
             <xsd:element name="IpClient" type="tns:ZclientMin" />
+            <xsd:element minOccurs="0" name="IpPrctr" type="n0:char4" />
             <xsd:element minOccurs="0" name="IpSimRfc" type="n0:char1" />
           </xsd:sequence>
         </xsd:complexType>

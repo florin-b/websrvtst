@@ -798,6 +798,82 @@ namespace LiteSFATestWebService
             return statusComanda.Equals("20") || statusComanda.Equals("21");
         }
 
+        public static string getDepartTaxaVerde(List<ArticolComandaRap> listArticole)
+        {
+            string departTV = "00";
+
+            foreach (ArticolComandaRap articolComanda in listArticole)
+            {
+                if (articolComanda.infoArticol != null && articolComanda.infoArticol.ToLower().Contains("verde"))
+                {
+                    departTV = articolComanda.depart;
+                    break;
+                }
+                    
+            }
+
+
+            return departTV;
+        }
+
+
+        public static List<Comanda> getComenziGedDep16(OracleConnection connection,  string departSD, List<Comanda> listComenzi)
+        {
+
+            List<Comanda> listComenzi11 = new List<Comanda>();
+
+            if (listComenzi.Count == 0)
+                return listComenzi11;
+
+            string strIdComenzi = "";
+            foreach (Comanda comanda in listComenzi)
+            {
+
+                if (strIdComenzi == "")
+                    strIdComenzi = comanda.idComanda;
+                else
+                    strIdComenzi += "," + comanda.idComanda;
+            }
+
+            OracleCommand cmd = new OracleCommand();
+            OracleDataReader oReader = null;
+
+            try
+            {
+                cmd = connection.CreateCommand();
+
+                cmd.CommandText = " select distinct a.id from sapprd.zcomdet_tableta a, articole b  where a.id in (" + strIdComenzi + ") and b.cod = a.cod and " +
+                                  " substr(b.spart,0,2) = '" + departSD.Substring(0,2) +"' ";
+                cmd.CommandType = CommandType.Text;
+
+                oReader = cmd.ExecuteReader();
+
+                if (oReader.HasRows)
+                {
+                    while (oReader.Read())
+                    {
+                        foreach (Comanda comanda in listComenzi)
+                        {
+                            if (comanda.idComanda.Equals(oReader.GetInt32(0).ToString()))
+                                listComenzi11.Add(comanda);
+                                
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.sendErrorToMail(ex.ToString());
+            }
+            finally
+            {
+                DatabaseConnections.CloseConnections(oReader, cmd);
+            }
+
+            return listComenzi11;
+        }
+
 
     }
 }

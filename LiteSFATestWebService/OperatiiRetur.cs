@@ -994,7 +994,7 @@ namespace LiteSFATestWebService
                                   " (select nvl(max(u.val_uzura),0) from sapprd.ZPALETI_RETUR_FZ u where u.mandt = '900' and u.matnr = p.matnr) u ," + 
                                   " ( select nvl(sum(cp.KWMENG),0) from sapprd.vbap cp, sapprd.vbfa a, sapprd.vbak vk " +
                                   " where a.mandt = '900' and a.vbelv = p.vbeln and a.posnv = p.posnr and a.vbtyp_v = 'M' " +
-                                  " and a.vbtyp_n = 'H' and a.mandt = vk.mandt and a.vbeln = vk.vbeln and vk.auart in ('ZRI', 'ZRIA', 'ZRSA', 'ZRSA', 'ZRSS') " +
+                                  " and a.vbtyp_n = 'H' and a.mandt = vk.mandt and a.vbeln = vk.vbeln and vk.auart in ('ZRI', 'ZRIA', 'ZRSA', 'ZRSA', 'ZRSS', 'ZRDD') " +
                                   " and a.mandt = cp.mandt and a.vbeln = cp.vbeln and a.posnn = cp.posnr and cp.abgru = ' ') returnate, m.categ_mat " +
                                   " from sapprd.vbrp p " + tabelaPaleti + " where p.mandt = '900' and p.vbeln =:nrDoc " + condPaleti + "  ) where fkimg - returnate > 0 " +
                                   " group by matnr, arktx, vrkme, categ_mat order by codart ";

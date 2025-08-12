@@ -4309,10 +4309,17 @@ namespace LiteSFATestWebService
                         articol.Umb = oReader1.GetString(21);
                         articol.unitLogAlt = unitLogAlt;
                         articol.depart = oReader1.GetString(26);
+                        articol.departAprob = oReader1.GetString(27);
+
+                        if (articol.codArticol.Equals("00000000") && articol.depart.Trim().Length == 0)
+                        {
+                            articol.depart = HelperComenzi.getDepartTaxaVerde(listArticole);
+                            articol.departAprob = articol.depart;
+                        }
+
                         articol.tipArt = tipMat;
                         articol.ponderare = Int32.Parse(oReader1.GetString(25).Trim().Equals("") ? "1" : oReader1.GetString(25));
                         articol.departSintetic = oReader1.GetString(26);
-                        articol.departAprob = oReader1.GetString(27);
                         articol.istoricPret = GeneralUtils.formatIstoricPret(oReader1.GetString(29));
                         articol.vechime = oReader1.GetDouble(30).ToString();
                         articol.moneda = "RON";
@@ -7566,6 +7573,8 @@ namespace LiteSFATestWebService
             OracleCommand cmd = new OracleCommand(), cmd1 = new OracleCommand();
             OracleDataReader oReader = null, oReader1 = null;
 
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+
             List<Comanda> listComenzi = new List<Comanda>();
 
             try
@@ -7908,18 +7917,14 @@ namespace LiteSFATestWebService
 
 
                 
-                string condDepart = " and cl.depart = substr(a.depart,0,2) ";
+                string condDepart = "  ";
 
-
-                if (tipUser == "KA")
-                    condDepart = " and cl.depart = substr(a.depart,0,2) ";
-
-                //agentii pot vedea si vanzarile incrucisate
-                if (tipUser.Equals("AV") || (tipUserSap != null && tipUserSap.Equals(Constants.tipInfoAv)))
-                    condDepart = "";
 
                 if (Utils.isConditiiAV16(tipCmd, tipUserSap, departAgent))
-                    condDepart += " and substr(a.depart,0,2) = '" + depart.Substring(0,2) + "' ";
+                    condDepart = " and substr(a.depart,0,2) = '" + depart.Substring(0,2) + "' ";
+
+                if (Utils.isConditiiAV16_com11(tipCmd, tipUserSap, departAgent))
+                    condDepart = " and a.depart = '11' ";
 
                 string sqlAvans = " , 0 avans";
 
@@ -8346,8 +8351,12 @@ namespace LiteSFATestWebService
                     oReader1.Dispose();
                 }
 
+                if (Utils.isConditiiAV16(tipCmd, tipUserSap, departAgent))
+                {
+                    List<Comanda> listComenzi11 = serializer.Deserialize<List<Comanda>>(getListComenzi(filiala, codUser, tipCmd, tipUser, depart, interval, restrictii, codClient, tipUserSap, codSD, "1611"));
+                    listComenzi.AddRange(HelperComenzi.getComenziGedDep16(connection,depart,listComenzi11));
+                }
 
-               
 
             }
             catch (Exception ex)
@@ -8381,8 +8390,6 @@ namespace LiteSFATestWebService
                 InfoComenziSap.getDateHeader(listComenzi);
             }
 
-
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
             serializedResult = serializer.Serialize(listComenzi);
 
 
@@ -10630,8 +10637,10 @@ namespace LiteSFATestWebService
         public string getPret(string client, string articol, string cantitate, string depart, string um, string ul, string tipUser, string depoz, string codUser, string canalDistrib, string filialaAlternativa, string filialaClp, string tipTransport)
         {
 
-            Preturi preturi = new Preturi();
-            return preturi.getPret(client, articol, cantitate, depart, um, ul, tipUser, depoz, codUser, canalDistrib, filialaAlternativa, filialaClp, tipTransport);
+            //Preturi preturi = new Preturi();
+            //return preturi.getPret(client, articol, cantitate, depart, um, ul, tipUser, depoz, codUser, canalDistrib, filialaAlternativa, filialaClp, tipTransport);
+
+            return "-1";
 
         }
 
@@ -13311,7 +13320,7 @@ namespace LiteSFATestWebService
                     oReader.Close();
                     oReader.Dispose();
 
-                    if (articolComanda[0].depozit.ToUpper().Contains("MAV") && articolComanda[0].departAprob != null && !articolComanda[0].departAprob.Equals("00"))
+                    if (articolComanda[0].depozit.ToUpper().Contains("MAV") && articolComanda[0].departAprob != null && articolComanda[0].departAprob.Trim().Length > 0 && !articolComanda[0].departAprob.Equals("00"))
                     {
                         depart = articolComanda[0].departAprob;
                     }

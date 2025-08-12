@@ -59,6 +59,7 @@ namespace LiteSFATestWebService
 
     public class DateTransportMathaus
     {
+        public string totalCuTva;
         public List<CostTransportMathaus> listCostTransport;
         public List<DepozitArticolTransport> listDepozite;
         public List<DataLivrare> zileLivrare;
@@ -94,6 +95,7 @@ namespace LiteSFATestWebService
         public string taxaTransport;
         public string spart;
         public string traty;
+        public string totalCuTva;
         public List<TaxaMasina> taxeDivizii;
     }
 
@@ -132,6 +134,7 @@ namespace LiteSFATestWebService
     public class LivrareMathaus
     {
         public ComandaMathaus comandaMathaus;
+        public string totalCuTva;
         public List<CostTransportMathaus> costTransport;
         public List<DataLivrare> zileLivrare;
         public List<TaxaMasina> taxeMasini;

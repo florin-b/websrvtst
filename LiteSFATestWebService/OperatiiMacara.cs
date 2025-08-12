@@ -195,6 +195,7 @@ namespace LiteSFATestWebService
                     palet.numePalet = pal.numePalet;
                     palet.pretUnit = pal.pretUnit;
                     palet.codArticol = pal.codArticol;
+                    palet.depozit = pal.depozit;
                     break;
                 }
 
@@ -231,6 +232,7 @@ namespace LiteSFATestWebService
                     paletFiliala.cantitate = pal.cantitate;
                     paletFiliala.cantTotal = palet.cantitate;
                     paletFiliala.pretUnitPalet = pal.pretUnit;
+                    paletFiliala.depozit = pal.depozit;
                     listPaletiFiliala.Add(paletFiliala);
                 }
             }
